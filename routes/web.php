@@ -1,0 +1,46 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LRCLibController;
+use App\Http\Controllers\MusixmatchController;
+use App\Http\Controllers\NetEaseController;
+use App\Http\Controllers\QQMusicController;
+use App\Http\Controllers\SingleController;
+
+Route::view('/', 'index')->name('home');
+Route::get('result', [SingleController::class,'search'])->name('result');
+Route::prefix('lrclib')->name('lrclib.')->group(function () {
+	Route::view('/', 'lrclib.index')->name('index');
+	Route::view('advanced', 'lrclib.advanced.index')->name('advanced');
+	Route::controller(LRCLibController::class)->name('search')->group(function () {
+		Route::get('results', 'standard');
+		Route::get('advanced/results', 'advanced')->name('.advanced');
+	});
+});
+Route::prefix('musixmatch')->name('musixmatch.')->group(function () {
+	Route::view('/', 'musixmatch.index')->name('index');
+	Route::view('advanced', 'musixmatch.advanced.index')->name('advanced');
+	Route::controller(MusixmatchController::class)->name('search')->group(function () {
+		Route::get('results', 'standard');
+		Route::get('advanced/results', 'advanced')->name('.advanced');
+		Route::get('{id}/{type}', 'get')->name('.get');
+	});
+});
+Route::prefix('netease')->name('netease.')->group(function () {
+	Route::view('/', 'netease.index')->name('index');
+	Route::controller(NetEaseController::class)->name('search')->group(function () {
+		Route::get('results', 'search');
+		Route::get('{id}', 'get')->name('.get');
+	});
+});
+Route::prefix('qqmusic')->name('qqmusic.')->group(function () {
+	Route::view('/', 'qqmusic.index')->name('index');
+	Route::controller(QQMusicController::class)->name('search')->group(function () {
+		Route::get('results', 'search');
+		Route::get('{id}', 'get')->name('.get');
+	});
+});
+Route::view('laravel', 'welcome')->name('laravel');
+Route::get('phpinfo', function () {
+	return phpinfo();
+})->name('php');

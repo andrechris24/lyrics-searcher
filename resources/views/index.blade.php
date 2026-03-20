@@ -1,0 +1,410 @@
+@extends('layout')
+@section('title', 'Home')
+@section('content')
+	<div class="px-5 mx-5 py-5 my-5">
+		<h3 class="text-center">Laravel Lyrics Searcher</h3>
+		@if (Session::has('error') || $errors->any())
+			<x-error />
+		@endif
+		<form class="row g-3 mb-3" action="{{ route('result') }}" id="searchSongLyric">
+			<div class="col-12 col-md-8">
+				<label for="track-name" class="form-label">
+					Song Title <span class="text-danger"><b>*</b></span>
+				</label>
+				<div class="input-group input-group-lg">
+					<span class="input-group-text"><i class="fa-solid fa-music"></i></span>
+					<input type="text" class="form-control" id="track-name" placeholder="Song title"
+						name="title" required autofocus>
+				</div>
+			</div>
+			<div class="col-12 col-md-4">
+				<label for="lyric-source" class="form-label">
+					Source <span class="text-danger"><b>*</b></span>
+				</label>
+				<select class="form-select form-select-lg" name="source" id="lyric-source" required>
+					<option value="" selected>Choose</option>
+					<option value="musixmatch" @empty(env('MUSIXMATCH_TOKEN')) disabled @endempty>
+						Musixmatch
+					</option>
+					<option value="lrclib">LRCLib</option>
+				</select>
+			</div>
+			<div class="col-12 col-sm-6">
+				<label for="artist-name" class="form-label">
+					Artist <span class="text-danger"><b>*</b></span>
+				</label>
+				<div class="input-group input-group-lg">
+					<span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+					<input type="text" class="form-control" id="artist-name" placeholder="Artist"
+						name="artist" required>
+				</div>
+			</div>
+			<div class="col-12 col-sm-6">
+				<label for="album-name" class="form-label">Album</label>
+				<div class="input-group input-group-lg">
+					<span class="input-group-text">
+						<i class="fa-solid fa-compact-disc"></i>
+					</span>
+					<input type="text" class="form-control" id="album-name" placeholder="Album"
+						name="album">
+				</div>
+			</div>
+			<button type="submit" class="btn btn-primary">Search</button>
+		</form>
+	</div>
+	<div class="toast-container position-fixed top-0 end-0 p-3">
+		<div id="liveToast" class="toast" role="alert" aria-live="assertive"
+			aria-atomic="true" data-bs-delay="10000">
+			<div class="toast-header text-bg-danger">
+				<i class="fa-solid fa-circle-xmark me-2"></i>
+				<strong class="me-auto">Failed to load result</strong>
+				<small id="source-desc"></small>
+				<button type="button" class="btn-close" data-bs-dismiss="toast"
+					aria-label="Close"></button>
+			</div>
+			<div class="toast-body text-bg-danger">
+				<span id="toast-message">...</span>
+			</div>
+		</div>
+		<div class="toast align-items-center text-bg-primary border-0" role="alert"
+			aria-live="assertive" id="instrumentalToast" aria-atomic="true" data-bs-delay="10000">
+			<div class="d-flex">
+				<div class="toast-body">
+					Song you are searching for is marked as Instrumental
+				</div>
+				<button type="button" class="btn-close btn-close-white me-2 m-auto"
+					data-bs-dismiss="toast" aria-label="Close"></button>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" tabindex="-1" id="modalMX" aria-labelledby="modalMXLabel"
+		role="dialog" aria-hidden="true">
+		<div role="document"
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 id="modalMXLabel" class="modal-title">
+						Musixmatch Result for <span class="search-term">...</span>
+					</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="alert alert-warning">
+						Musixmatch search result might be inaccurate. For better results,
+						please search with song search instead.
+					</div>
+					<div class="row mb-3">
+						<div class="col-12 col-md-4">
+							<img src="" class="img-fluid" id="song-art">
+						</div>
+						<div class="col-12 col-md-8">
+							<div class="row mb-2">
+								<div class="col-4"><b>Title</b></div>
+								<div class="col-8"><span id="mx-song-title">...</span></div>
+								<div class="col-4"><b>Artist</b></div>
+								<div class="col-8"><span id="mx-song-artist">...</span></div>
+								<div class="col-4"><b>Album</b></div>
+								<div class="col-8"><span id="mx-song-album">-</span></div>
+								<div class="col-4"><b>Duration</b></div>
+								<div class="col-8"><span id="mx-song-duration"></span></div>
+								<div class="col-4"><b>Released</b></div>
+								<div class="col-8"><span id="song-release-date"></span></div>
+								<div class="col-4"><b>Last Update</b></div>
+								<div class="col-8"><span id="song-last-update"></span></div>
+							</div>
+							<p id="song-copyright"></p>
+							<div class="btn-group" role="group">
+								<a href="#" class="btn btn-success" target="_blank" id="spotify-btn">
+									<i class="fa-brands fa-spotify"></i> Spotify
+								</a>
+								<a href="#" class="btn btn-warning" target="_blank" id="musixmatch-btn">
+									<i class="fa-solid fa-music"></i> Musixmatch
+								</a>
+							</div>
+						</div>
+					</div>
+					<nav>
+						<div class="nav nav-pills mb-3" id="js-tabs-mx" role="tablist">
+							<button class="nav-link active" id="nav-mx-plain-tab" data-bs-toggle="tab"
+								data-bs-target="#nav-mx-plain" type="button" role="tab"
+								aria-controls="nav-mx-plain" aria-selected="true">Plain</button>
+							<button class="nav-link" id="nav-mx-synced-tab" data-bs-toggle="tab"
+								data-bs-target="#nav-mx-synced" type="button" role="tab"
+								aria-controls="nav-mx-synced" aria-selected="false">Synced</button>
+						</div>
+					</nav>
+					<div class="tab-content" id="js-tabs-content-mx">
+						<div class="tab-pane fade show active" id="nav-mx-plain" role="tabpanel"
+							aria-labelledby="nav-mx-plain-tab" tabindex="0">
+							<p id="mx-plain-lyrics-content" style="white-space: pre-line"></p>
+						</div>
+						<div class="tab-pane fade" id="nav-mx-synced" role="tabpanel"
+							aria-labelledby="nav-mx-synced-tab" tabindex="0">
+							<p id="mx-synced-lyrics-content" style="white-space: pre-line"></p>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+						Close
+					</button>
+					<div class="dropdown">
+						<button class="btn btn-primary dropdown-toggle" type="button"
+							data-bs-toggle="dropdown" aria-expanded="false">
+							Save to Device
+						</button>
+						<ul class="dropdown-menu">
+							<li>
+								<a class="dropdown-item" href="#" id="download-link-mx-plain">Plain</a>
+							</li>
+							<li>
+								<a class="dropdown-item" href="#" id="download-link-mx-synced">Synced</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" tabindex="-1" id="modalLRCLib"
+		aria-labelledby="modalLRCLibLabel" role="dialog" aria-hidden="true">
+		<div role="document"
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 id="modalLRCLibLabel" class="modal-title">
+						LRCLib Result for <span class="search-term">...</span>
+					</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="row mb-3">
+						<div class="col-3"><b>Artist</b></div>
+						<div class="col-9"><span id="lrclib-song-artist">...</span></div>
+						<div class="col-3"><b>Title</b></div>
+						<div class="col-9"><span id="lrclib-song-title">...</span></div>
+						<div class="col-3"><b>Album</b></div>
+						<div class="col-9"><span id="lrclib-song-album">-</span></div>
+						<div class="col-3"><b>Duration</b></div>
+						<div class="col-9"><span id="lrclib-song-duration"></span></div>
+					</div>
+					<nav>
+						<div class="nav nav-pills mb-3" id="js-tabs-lrclib" role="tablist">
+							<button class="nav-link active" id="nav-lrclib-plain-tab" data-bs-toggle="tab"
+								data-bs-target="#nav-lrclib-plain" type="button" role="tab"
+								aria-controls="nav-lrclib-plain" aria-selected="true">Plain</button>
+							<button class="nav-link" id="nav-lrclib-synced-tab" data-bs-toggle="tab"
+								data-bs-target="#nav-lrclib-synced" type="button" role="tab"
+								aria-controls="nav-lrclib-synced" aria-selected="false">Synced</button>
+						</div>
+					</nav>
+					<div class="tab-content" id="js-tabs-content-lrclib">
+						<div class="tab-pane fade show active" id="nav-lrclib-plain" role="tabpanel"
+							aria-labelledby="nav-lrclib-plain-tab" tabindex="0">
+							<p id="lrclib-plain-lyrics-content" style="white-space: pre-line"></p>
+						</div>
+						<div class="tab-pane fade" id="nav-lrclib-synced" role="tabpanel"
+							aria-labelledby="nav-lrclib-synced-tab" tabindex="0">
+							<p id="lrclib-synced-lyrics-content" style="white-space: pre-line"></p>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+						Close
+					</button>
+					<div class="dropdown">
+						<button class="btn btn-primary dropdown-toggle" type="button"
+							data-bs-toggle="dropdown" aria-expanded="false">
+							Save to Device
+						</button>
+						<ul class="dropdown-menu">
+							<li>
+								<a class="dropdown-item" href="#"
+									id="download-link-lrclib-plain">Plain</a>
+							</li>
+							<li>
+								<a class="dropdown-item" href="#"
+									id="download-link-lrclib-synced">Synced</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+@endsection
+@section('js')
+	<script type="text/javascript">
+		let plainContents, syncedContents, filename, searchTerm;
+		const mxPlainTab = document.querySelector(
+				'button[data-bs-target="#nav-mx-plain"]'
+			),
+			mxSyncedTab = document.querySelector(
+				'button[data-bs-target="#nav-mx-synced"]'
+			),
+			llPlainTab = document.querySelector(
+				'button[data-bs-target="#nav-lrclib-plain"]'
+			),
+			llSyncedTab = document.querySelector(
+				'button[data-bs-target="#nav-lrclib-synced"]'
+			),
+			mxPlainDL = document.querySelector("#download-link-mx-plain"),
+			mxSyncedDL = document.querySelector("#download-link-mx-synced"),
+			llPlainDL = document.querySelector("#download-link-lrclib-plain"),
+			llSyncedDL = document.querySelector("#download-link-lrclib-synced");
+		$("#searchSongLyric").on('submit', function(e) {
+			e.preventDefault();
+			$.ajax({
+				data: $("#searchSongLyric").serialize(),
+				url: "{{ route('result') }}",
+				beforeSend: function() {
+					$(":input").removeClass('is-invalid');
+					$("#searchSongLyric :input").prop('disabled', true);
+					$.LoadingOverlay("show");
+				},
+				complete: function() {
+					$("#searchSongLyric :input").prop('disabled', false);
+					$.LoadingOverlay("hide");
+				},
+				success: function(data) {
+					if (data.instrumental === true || data.instrumental ===
+						1)
+						$("#instrumentalToast").toast('show');
+					else {
+						searchTerm = $("#artist-name").val() + ' - ' + $(
+							"#track-name").val();
+						plainContent = data.plain.replace(/\n/g, "<br/>");
+						syncedContent = data.synced.replace(/\n/g, "<br/>");
+						syncedContents = data.synced;
+						fileName = data.artist + " - " + data.title;
+						plainContents = fileName + "\n\n" + data.plain;
+						if ($("#album-name").val() === '') $(".search-term")
+							.text(searchTerm);
+						else
+							$(".search-term").text(searchTerm + ' (' + $(
+								"#album-name").val() + ')');
+						if (data.source === 'lrclib') {
+							$("#lrclib-plain-lyrics-content").html(
+								plainContent);
+							$("#lrclib-synced-lyrics-content").html(
+								syncedContent);
+							$("#lrclib-song-artist").text(data.artist);
+							$("#lrclib-song-title").text(data.title);
+							$("#lrclib-song-album").text(data.album);
+							$("#lrclib-song-duration").text(data.duration);
+							$("#modalLRCLib").modal('show');
+						} else {
+							if (data.art800 !== '' && data.art800 !== null)
+								$("#song-art").attr('src', data.art800);
+							else if (data.art500 !== '' && data.art500 !==
+								null)
+								$("#song-art").attr('src', data.art500);
+							else if (data.art350 !== '' && data.art350 !==
+								null)
+								$("#song-art").attr('src', data.art350);
+							else $("#song-art").attr('src', data.art100);
+							if (data.spotify === '' || data.spotify === null)
+								$("#spotify-btn").prop('disabled', true);
+							else {
+								$("#spotify-btn").prop('disabled', false);
+								$("#spotify-btn").attr('href',
+									'https://open.spotify.com/track/' +
+									data.spotify);
+							}
+							$("#mx-plain-lyrics-content").html(plainContent);
+							$("#mx-synced-lyrics-content").html(
+								syncedContent);
+							$("#mx-song-artist").text(data.artist);
+							$("#mx-song-title").text(data.title);
+							$("#mx-song-album").text(data.album);
+							$("#mx-song-duration").text(data.duration);
+							$("#song-release-date").text(data.release);
+							$("#song-last-update").text(data.updated);
+							$("#song-copyright").text(data.copyright);
+							$("#musixmatch-btn").attr('href', data.share);
+							$("#modalMX").modal('show');
+						}
+						if (data.synced === "" || data.synced === null) {
+							if (data.source === 'lrclib') {
+								bootstrap.Tab.getInstance(llPlainTab).show();
+								llSyncedTab.disabled = true;
+								llSyncedDL.classList.add("disabled");
+							} else {
+								bootstrap.Tab.getInstance(mxPlainTab).show();
+								mxSyncedTab.disabled = true;
+								mxSyncedDL.classList.add("disabled");
+							}
+							syncedContents = null;
+						} else {
+							if (data.source === 'lrclib') {
+								llSyncedTab.disabled = false;
+								llSyncedDL.classList.remove("disabled");
+							} else {
+								mxSyncedTab.disabled = false;
+								mxSyncedDL.classList.remove("disabled");
+							}
+							syncedContents =
+								`[ar: ${data.artist}]\n` +
+								`[ti: ${data.title}]\n` +
+								`[al: ${data.album}]\n` +
+								`[by: ${data.source}]\n` +
+								`[length: ${data.duration}]\n` +
+								data.synced;
+						}
+					}
+				},
+				error: function(xhr, st) {
+					if (xhr.status === 400) {
+						$("#lyric-source").addClass('is-invalid');
+						$("#toast-message").text(xhr.responseJSON.message);
+					} else if (xhr.status === 422) {
+						if (typeof xhr.responseJSON.errors.title !==
+							"undefined")
+							$("#track-name").addClass('is-invalid');
+						if (typeof xhr.responseJSON.errors.artist !==
+							"undefined")
+							$("#artist-name").addClass('is-invalid');
+						if (typeof xhr.responseJSON.errors.album !==
+							"undefined")
+							$("#album-name").addClass('is-invalid');
+						if (typeof xhr.responseJSON.errors.source !==
+							"undefined")
+							$("#lyric-source").addClass('is-invalid');
+						$("#toast-message").text(xhr.responseJSON.message);
+					} else {
+						console.warn(xhr.responseJSON?.message);
+						$("#toast-message").text(xhr.responseJSON.message ??
+							st);
+					}
+					if (typeof xhr.responseJSON.source !== "undefined")
+						$("#source-desc").text(xhr.responseJSON.source);
+					else $("#source-desc").text('');
+					$('#liveToast').toast('show');
+				}
+			});
+		});
+		mxPlainDL.onclick = function() {
+			mxPlainDL.href =
+				"data:text/plain;charset=utf-8," + encodeURIComponent(plainContents);
+			mxPlainDL.download = fileName + ".txt";
+		};
+		mxSyncedDL.onclick = function() {
+			mxSyncedDL.href =
+				"data:text/plain;charset=utf-8," + encodeURIComponent(syncedContents);
+			mxSyncedDL.download = fileName + ".lrc";
+		};
+		llPlainDL.onclick = function() {
+			llPlainDL.href =
+				"data:text/plain;charset=utf-8," + encodeURIComponent(plainContents);
+			llPlainDL.download = fileName + ".txt";
+		};
+		llSyncedDL.onclick = function() {
+			llSyncedDL.href =
+				"data:text/plain;charset=utf-8," + encodeURIComponent(syncedContents);
+			llSyncedDL.download = fileName + ".lrc";
+		};
+	</script>
+@endsection
