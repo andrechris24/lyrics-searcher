@@ -18,6 +18,8 @@ abstract class Controller
 			else $msg = "Musixmatch returned an error with reason: " . $header['hint'];
 		} else if ($header['status_code'] === 401)
 			$msg = "Musixmatch rate limit exceeded. Please try again later.";
+		else if($header['status_code']===404)
+			$msg="Musixmatch query returned no result";
 		else $msg = "Musixmatch HTTP Error " . $header['status_code'];
 		return $msg;
 	}

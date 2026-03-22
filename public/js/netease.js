@@ -23,10 +23,10 @@ if (lyricsModal) {
 		$("#song-artist").text(artistName);
 
 		// Set file name and contents on save
-		fileName = artistName + " - " + songName;
+		fileName = `${artistName} - ${songName}`;
 		$.ajax({
 			method: "GET",
-			url: "/netease/" + songID,
+			url: `/netease/${songID}`,
 			beforeSend: function () {
 				$("#save-btn").prop("disabled", true);
 				$(".placeholder-glow").removeClass("d-none");
@@ -44,10 +44,10 @@ if (lyricsModal) {
 					`[ti: ${songName}]\n` +
 					`[al: ${albumName}]\n` +
 					`[by: NetEase]\n` +
-					`[length: ${duration}]\n` +
-					data.lrc.lyric;
+					`[length: ${duration}]\n${data.lrc.lyric}`;
 				$("#lyrics-content").html(data.lrc.lyric.replace(/\n/g, "<br/>"));
-				// console.log(data.klyric.lyric);
+				if(typeof data.klyric !== 'undefined')
+					console.log(data.klyric);
 			},
 			error: function (xhr, st) {
 				$("#error-message").text(xhr.responseJSON.message ?? st);
@@ -58,6 +58,6 @@ if (lyricsModal) {
 }
 lyricDL.onclick = function () {
 	lyricDL.href =
-		"data:text/plain;charset=utf-8," + encodeURIComponent(lyricContents);
-	lyricDL.download = fileName + ".lrc";
+		`data:text/plain;charset=utf-8,${encodeURIComponent(lyricContents)}`;
+	lyricDL.download = `${fileName}.lrc`;
 };

@@ -17,10 +17,10 @@ if (lyricsModal) {
 		$("#song-artist").text(artistName);
 
 		// Set file name and contents on save
-		fileName = artistName + " - " + songName;
+		fileName = `${artistName} - ${songName}`;
 		$.ajax({
 			method: "GET",
-			url: "/qqmusic/" + songID,
+			url: `/qqmusic/${songID}`,
 			beforeSend: function () {
 				$("#save-btn").prop("disabled", true);
 				$(".placeholder-glow").removeClass("d-none");
@@ -45,6 +45,6 @@ if (lyricsModal) {
 }
 lyricDL.onclick = function () {
 	lyricDL.href =
-		"data:text/plain;charset=utf-8," + encodeURIComponent(lyricContents);
-	lyricDL.download = fileName + ".lrc";
+		`data:text/plain;charset=utf-8,${encodeURIComponent(lyricContents)}`;
+	lyricDL.download = `${fileName}.lrc`;
 };

@@ -37,7 +37,7 @@ if (lyricsModal) {
 		songDuration.textContent = duration;
 
 		// Set file name and contents on save
-		fileName = songArtist.textContent + " - " + songTitle.textContent;
+		fileName = `${songArtist.textContent} - ${songTitle.textContent}`;
 		plainContents = plainContainer.textContent;
 		if (syncedLyrics === "") {
 			bootstrap.Tab.getInstance(plainTab).show();
@@ -52,18 +52,17 @@ if (lyricsModal) {
 				`[ti: ${songName}]\n` +
 				`[al: ${albumName}]\n` +
 				`[by: LRCLib]\n` +
-				`[length: ${songDuration.textContent}]\n` +
-				syncedContainer.textContent;
+				`[length: ${songDuration.textContent}]\n${syncedContainer.textContent}`;
 		}
 	});
 }
 plainDL.onclick = function () {
 	plainDL.href =
-		"data:text/plain;charset=utf-8," + encodeURIComponent(plainContents);
-	plainDL.download = fileName + ".txt";
+		`data:text/plain;charset=utf-8,${encodeURIComponent(plainContents)}`;
+	plainDL.download = `${fileName}.txt`;
 };
 syncedDL.onclick = function () {
 	syncedDL.href =
-		"data:text/plain;charset=utf-8," + encodeURIComponent(syncedContents);
-	syncedDL.download = fileName + ".lrc";
+		`data:text/plain;charset=utf-8,${encodeURIComponent(syncedContents)}`;
+	syncedDL.download = `${fileName}.lrc`;
 };

@@ -102,7 +102,7 @@ class MusixmatchController extends Controller
 		if (empty(env('MUSIXMATCH_TOKEN')))
 			return response()->json(['message' => 'Musixmatch token was not found'], 500);
 		else if (!in_array($type, ['subtitle', 'richsync', 'lyrics']))
-			return response()->json(['message' => 'Invalid type request'], 400);
+			return response()->json(['message' => 'Invalid lyric type request'], 400);
 		Sleep::for(5)->seconds();
 		try {
 			$response = Http::withHeaders([
@@ -135,7 +135,7 @@ class MusixmatchController extends Controller
 				$lyrics = [
 					'content' => $data['subtitle_body'],
 					'copyright' => $data['lyrics_copyright'],
-					'duration'
+					'duration'=>gmdate('i:s', $data['subtitle_length'])
 				];
 			} else if ($type === 'richsync') {
 				$data = $r['message']['body']['richsync'];
@@ -144,7 +144,7 @@ class MusixmatchController extends Controller
 				$lyrics = [
 					'content' => $this->richsync(json_decode($data['richsync_body'], true)),
 					'copyright' => $data['lyrics_copyright'],
-					'duration'
+					'duration'=>gmdate('i:s', $data['richsync_length'])
 				];
 			} else { //plain
 				$data = $r['message']['body']['lyrics'];
@@ -170,22 +170,23 @@ class MusixmatchController extends Controller
 	{
 		$richsync = '';
 		$lines=count($lrc);
-		$linenum=$lastTime=0;
+		$linenum=0;
 		foreach ($lrc as $line) {
 			$linenum++;
 			$words=count($line['l']);
 			$wordnum=0;
-			$richsync .= "[" . $this->formatTime($line['ts']) . ']';
+			if($line['ts']>5 && $linenum===1)
+				$richsync .= "[" . $this->formatTime($line['ts']-5) . ']';
+			else $richsync .= "[" . $this->formatTime($line['ts']) . ']';
 			foreach($line['l'] as $word){
 				$wordnum++;
 				$richsync.='<'.$this->formatTime($line['ts']+$word['o']).'>'.$word['c'];
 				if($wordnum===$words){
 					$richsync.='<'.$this->formatTime($line['te']).">\n";
-					$lastTime=$word['o'];
 				}
 			}
 			if($linenum===$lines)
-				$richsync .= "[" . $this->formatTime($line['te']+$lastTime) . ']';
+				$richsync .= "[" . $this->formatTime($line['te']+5) . "]\n";
 		}
 		return $richsync;
 	}

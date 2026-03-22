@@ -25,10 +25,10 @@
 							<div class="col-8"><span id="song-duration"></span></div>
 							<div class="col-4"><b>Last Update</b></div>
 							<div class="col-8"><span id="song-last-update"></span></div>
+							<div class="col"><p id="song-copyright"></p></div>
 						</div>
 					</div>
 				</div>
-				<p id="song-copyright"></p>
 				<div class="alert alert-info d-none" id="instrumental-message">
 					This song is Instrumental
 				</div>
@@ -126,10 +126,8 @@
 					</ul>
 					<div class="card-footer">
 						<div class="btn-group-vertical" role="group" aria-label="Vertical button group">
-							<button type="button" class="btn btn-info" data-bs-art="{{ $art }}"
-							@if($track['instrumental']||!$track['has_lyrics']) disabled
-							@else data-bs-toggle="modal" data-bs-target="#modalMX"
-							@endif
+							<button type="button" class="btn btn-info" data-bs-toggle="modal"
+							data-bs-target="#modalMX" data-bs-art="{{ $art }}"
 							data-bs-id="{{ $track['commontrack_id'] }}"
 							data-bs-album="{{ $track['album_name'] }}"
 							data-bs-artist="{{ $track['artist_name'] }}"
@@ -138,7 +136,9 @@
 							data-bs-synced="{{ $track['has_subtitles'] }}"
 							data-bs-richsync="{{ $track['has_richsync'] }}"
 							data-bs-duration="{{ $length }}" data-bs-explicit="{{ $track['explicit'] }}"
-							data-bs-update="{{ date_format(date_create($track['updated_time']), 'j F Y') }}">
+							data-bs-update="{{ date_format(date_create($track['updated_time']), 'j F Y') }}"
+							@if($track['instrumental']||!$track['has_lyrics']) disabled
+							@endif >
 								Show lyric
 							</button>
 							<a href="{{ $track['track_share_url'] }}" class="btn btn-danger" target="_blank">

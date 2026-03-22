@@ -279,12 +279,12 @@
 						plainContent = data.plain.replace(/\n/g, "<br/>");
 						syncedContent = data.synced.replace(/\n/g, "<br/>");
 						syncedContents = data.synced;
-						fileName = data.artist + " - " + data.title;
-						plainContents = fileName + "\n\n" + data.plain;
+						fileName = `${data.artist} - ${data.title}`;
+						plainContents = `${fileName}\n\n${data.plain}`;
 						if ($("#album-name").val() === '') $(".search-term")
 							.text(searchTerm);
 						else
-							$(".search-term").text(searchTerm + ' (' + $(
+							$(".search-term").text(`${searchTerm} (` + $(
 								"#album-name").val() + ')');
 						if (data.source === 'lrclib') {
 							$("#lrclib-plain-lyrics-content").html(
@@ -311,8 +311,7 @@
 							else {
 								$("#spotify-btn").prop('disabled', false);
 								$("#spotify-btn").attr('href',
-									'https://open.spotify.com/track/' +
-									data.spotify);
+									`https://open.spotify.com/track/${data.spotify}`);
 							}
 							$("#mx-plain-lyrics-content").html(plainContent);
 							$("#mx-synced-lyrics-content").html(
@@ -351,8 +350,7 @@
 								`[ti: ${data.title}]\n` +
 								`[al: ${data.album}]\n` +
 								`[by: ${data.source}]\n` +
-								`[length: ${data.duration}]\n` +
-								data.synced;
+								`[length: ${data.duration}]\n${data.synced}`;
 						}
 					}
 				},
@@ -388,23 +386,21 @@
 		});
 		mxPlainDL.onclick = function() {
 			mxPlainDL.href =
-				"data:text/plain;charset=utf-8," + encodeURIComponent(plainContents);
-			mxPlainDL.download = fileName + ".txt";
+				`data:text/plain;charset=utf-8,${encodeURIComponent(plainContents)}`;
+			mxPlainDL.download = `${fileName}.txt`;
 		};
 		mxSyncedDL.onclick = function() {
-			mxSyncedDL.href =
-				"data:text/plain;charset=utf-8," + encodeURIComponent(syncedContents);
-			mxSyncedDL.download = fileName + ".lrc";
+			mxSyncedDL.href =`data:text/plain;charset=utf-8,${encodeURIComponent(syncedContents)}`;
+			mxSyncedDL.download = `${fileName}.lrc`;
 		};
 		llPlainDL.onclick = function() {
 			llPlainDL.href =
-				"data:text/plain;charset=utf-8," + encodeURIComponent(plainContents);
-			llPlainDL.download = fileName + ".txt";
+				`data:text/plain;charset=utf-8,${encodeURIComponent(plainContents)}`;
+			llPlainDL.download = `${fileName}.txt`;
 		};
 		llSyncedDL.onclick = function() {
-			llSyncedDL.href =
-				"data:text/plain;charset=utf-8," + encodeURIComponent(syncedContents);
-			llSyncedDL.download = fileName + ".lrc";
+			llSyncedDL.href =`data:text/plain;charset=utf-8,${encodeURIComponent(syncedContents)}`;
+			llSyncedDL.download = `${fileName}.txt`;
 		};
 	</script>
 @endsection
