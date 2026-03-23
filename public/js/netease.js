@@ -10,13 +10,11 @@ if (lyricsModal) {
 			artistName = button.getAttribute("data-bs-artist"),
 			albumName = button.getAttribute("data-bs-album"),
 			songID = button.getAttribute("data-bs-id"),
-			albumArt = button.getAttribute("data-bs-art"),
 			duration = button.getAttribute("data-bs-duration");
 		// If necessary, you could initiate an Ajax request here
 		// and then do the updating in a callback
 
 		// Update the modal's content
-		$("#song-art").attr("src", albumArt);
 		$("#song-album").text(albumName);
 		$("#song-duration").text(duration);
 		$("#song-title").text(songName);
@@ -39,6 +37,12 @@ if (lyricsModal) {
 			},
 			success: function (data) {
 				$("#save-btn").prop("disabled", false);
+				if(typeof data.needDesc !== 'undefined' && data.needDesc===true){
+					toast.fire({
+						icon: 'warning',
+						text: 'Lyric might be incomplete or does not contain any lyric.'
+					});
+				}
 				lyricContents =
 					`[ar: ${artistName}]\n` +
 					`[ti: ${songName}]\n` +
@@ -46,12 +50,11 @@ if (lyricsModal) {
 					`[by: NetEase]\n` +
 					`[length: ${duration}]\n${data.lrc.lyric}`;
 				$("#lyrics-content").html(data.lrc.lyric.replace(/\n/g, "<br/>"));
-				if(typeof data.klyric !== 'undefined')
-					console.log(data.klyric);
+				// if(typeof data.klyric !== 'undefined')
+				// 	console.log(data.klyric);
 			},
 			error: function (xhr, st) {
-				$("#error-message").text(xhr.responseJSON.message ?? st);
-				$("#error-alert").removeClass("d-none");
+				toast.fire({icon: 'error',text: xhr.responseJSON.message ?? st});
 			},
 		});
 	});

@@ -91,7 +91,7 @@
 				@if (!$result->instrumental) data-bs-toggle="modal" data-bs-album="{{ $result->albumName }}" data-bs-duration="{{ $length }}"
 				data-bs-title="{{ $result->trackName }}" data-bs-artist="{{ $result->artistName }}"
 				data-bs-plain="{{ $result->plainLyrics }}"
-				data-bs-synced="{{ $result->syncedLyrics }}" @else onclick="alert('This song is Instrumental'); return false;" @endif
+				data-bs-synced="{{ $result->syncedLyrics }}" @else onclick="toast.fire({icon: 'info',text: 'This song is Instrumental'}); return false;" @endif
 				href="#modalLyrics">
 				<div class="d-flex w-100 justify-content-between">
 					<h5 class="mb-1">{{ $result->trackName }}</h5>

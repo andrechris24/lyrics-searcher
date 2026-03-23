@@ -52,31 +52,6 @@
 			<button type="submit" class="btn btn-primary">Search</button>
 		</form>
 	</div>
-	<div class="toast-container position-fixed top-0 end-0 p-3">
-		<div id="liveToast" class="toast" role="alert" aria-live="assertive"
-			aria-atomic="true" data-bs-delay="10000">
-			<div class="toast-header text-bg-danger">
-				<i class="fa-solid fa-circle-xmark me-2"></i>
-				<strong class="me-auto">Failed to load result</strong>
-				<small id="source-desc"></small>
-				<button type="button" class="btn-close" data-bs-dismiss="toast"
-					aria-label="Close"></button>
-			</div>
-			<div class="toast-body text-bg-danger">
-				<span id="toast-message">...</span>
-			</div>
-		</div>
-		<div class="toast align-items-center text-bg-primary border-0" role="alert"
-			aria-live="assertive" id="instrumentalToast" aria-atomic="true" data-bs-delay="10000">
-			<div class="d-flex">
-				<div class="toast-body">
-					Song you are searching for is marked as Instrumental
-				</div>
-				<button type="button" class="btn-close btn-close-white me-2 m-auto"
-					data-bs-dismiss="toast" aria-label="Close"></button>
-			</div>
-		</div>
-	</div>
 	<div class="modal fade" tabindex="-1" id="modalMX" aria-labelledby="modalMXLabel"
 		role="dialog" aria-hidden="true">
 		<div role="document"
@@ -271,8 +246,12 @@
 				},
 				success: function(data) {
 					if (data.instrumental === true || data.instrumental ===
-						1)
-						$("#instrumentalToast").toast('show');
+						1){
+						toast.fire({
+							icon: 'info',
+							text: 'Song you are searching for is marked as Instrumental'
+						});
+					}
 					else {
 						searchTerm = $("#artist-name").val() + ' - ' + $(
 							"#track-name").val();
@@ -355,10 +334,9 @@
 					}
 				},
 				error: function(xhr, st) {
-					if (xhr.status === 400) {
+					if (xhr.status === 400) 
 						$("#lyric-source").addClass('is-invalid');
-						$("#toast-message").text(xhr.responseJSON.message);
-					} else if (xhr.status === 422) {
+					else if (xhr.status === 422) {
 						if (typeof xhr.responseJSON.errors.title !==
 							"undefined")
 							$("#track-name").addClass('is-invalid');
@@ -371,16 +349,12 @@
 						if (typeof xhr.responseJSON.errors.source !==
 							"undefined")
 							$("#lyric-source").addClass('is-invalid');
-						$("#toast-message").text(xhr.responseJSON.message);
-					} else {
-						console.warn(xhr.responseJSON?.message);
-						$("#toast-message").text(xhr.responseJSON.message ??
-							st);
-					}
-					if (typeof xhr.responseJSON.source !== "undefined")
-						$("#source-desc").text(xhr.responseJSON.source);
-					else $("#source-desc").text('');
-					$('#liveToast').toast('show');
+					} else console.warn(xhr.responseJSON?.message ?? st);
+					toast.fire({
+						icon: 'error',
+						text: xhr.responseJSON.message ?? st,
+						titleText: (typeof xhr.responseJSON.source==='undefined')?'':xhr.responseJSON.source
+					});
 				}
 			});
 		});

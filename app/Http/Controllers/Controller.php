@@ -23,6 +23,7 @@ abstract class Controller
 		else $msg = "Musixmatch HTTP Error " . $header['status_code'];
 		return $msg;
 	}
+	
 	/**
 	 * Convert seconds (with decimals) to mm:ss.xx format
 	 *
@@ -30,9 +31,7 @@ abstract class Controller
 	 * @return string
 	 */
 	protected function formatTime($seconds) {
-		if (!is_numeric($seconds) || $seconds < 0) {
-			return "Invalid input";
-		}
+		if (!is_numeric($seconds) || $seconds < 0) return "Invalid input";
 
 		// Extract whole minutes
 		$minutes = floor($seconds / 60);

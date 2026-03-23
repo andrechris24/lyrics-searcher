@@ -126,8 +126,6 @@ class MusixmatchController extends Controller
 					'message' => $this->getMXerror($header)
 				], $header['status_code']);
 			}
-			// else if ($header['instrumental'] === true)
-			// 	return response()->json(['message' => 'This song is Instrumental'], 204);
 			if ($type === 'subtitle') {
 				$data = $r['message']['body']['subtitle'];
 				if ($data['restricted'] === true)
@@ -148,9 +146,6 @@ class MusixmatchController extends Controller
 				];
 			} else { //plain
 				$data = $r['message']['body']['lyrics'];
-				// if ($data['instrumental'] === true)
-				// 	return response()->json(['message' => 'This song is Instrumental'], 204);
-				// else
 				if ($data['restricted'] === true)
 					return response()->json(['message' => 'This lyric is restricted'], 403);
 				$lyrics = [
@@ -182,7 +177,7 @@ class MusixmatchController extends Controller
 				$wordnum++;
 				$richsync.='<'.$this->formatTime($line['ts']+$word['o']).'>'.$word['c'];
 				if($wordnum===$words){
-					$richsync.='<'.$this->formatTime($line['te']).">\n";
+					$richsync.='<'.$this->formatTime($line['te'])."> \n";
 				}
 			}
 			if($linenum===$lines)

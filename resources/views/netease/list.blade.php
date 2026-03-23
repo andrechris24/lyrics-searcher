@@ -9,12 +9,7 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<div class="row mb-3">
-					<div class="col-12 col-md-4">
-						<img src="" class="img-fluid" id="song-art">
-					</div>
-					<div class="col-12 col-md-8">
-						<div class="row">
+						<div class="row mb-3">
 							<div class="col-12 col-md-4">
 								<b>Artist</b>
 							</div>
@@ -40,11 +35,6 @@
 								<span id="song-duration">--:--</span>
 							</div>
 						</div>
-					</div>
-				</div>
-				<div class="alert alert-danger d-none mb-3" id="error-alert">
-					<span id="error-message"></span>
-				</div>
 				<p class="placeholder-glow d-none">
 					<span class="placeholder col-12"></span>
 					<span class="placeholder col-12"></span>
@@ -79,8 +69,7 @@
 			<a class="list-group-item list-group-item-action" data-bs-toggle="modal"
 				data-bs-album="{{ $result['album']['name'] }}" data-bs-duration="{{ $length }}"
 				data-bs-title="{{ $result['name'] }}" data-bs-id="{{ $result['id'] }}"
-				data-bs-artist="{{ implode(', ', $artists) }}"
-				data-bs-art="{{ $result['album']['artist']['img1v1Url'] }}" href="#modalLyrics">
+				data-bs-artist="{{ implode(', ', $artists) }}" href="#modalLyrics">
 				<div class="d-flex w-100 justify-content-between">
 					<h5 class="mb-1">{{ $result['name'] }}</h5>
 					<small>{{ $length }}</small>

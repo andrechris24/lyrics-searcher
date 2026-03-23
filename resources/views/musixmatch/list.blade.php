@@ -35,9 +35,6 @@
 				<div class="alert alert-warning d-none" id="no-lyrics-message">
 					There are no lyrics available for this song
 				</div>
-				<div class="alert alert-danger d-none" id="error-alert">
-					<span id="error-message"></span>
-				</div>
 				<p class="placeholder-glow d-none">
 					<span class="placeholder col-12"></span>
 					<span class="placeholder col-12"></span>
@@ -125,27 +122,50 @@
 						</li>
 					</ul>
 					<div class="card-footer">
-						<div class="btn-group-vertical" role="group" aria-label="Vertical button group">
-							<button type="button" class="btn btn-info" data-bs-toggle="modal"
+						<div class="btn-group" role="group">
+							<div class="btn-group" role="group">
+								<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
+								@if($track['instrumental']||!$track['has_lyrics']) aria-disabled="true" disabled
+								@endif >
+									<i class="fa-solid fa-download"></i>
+								</button>
+								<ul class="dropdown-menu">
+									<li>
+										<a @class(["dropdown-item",'download-btn','disabled'=>!$track['has_lyrics']]) href="#" data-id="{{ $track['commontrack_id'] }}" data-type="lyrics" data-album="{{ $track['album_name'] }}"
+											data-artist="{{ $track['artist_name'] }}" data-title="{{ $track['track_name'] }}">
+										Plain
+										</a>
+									</li>
+									<li>
+										<a @class(["dropdown-item",'download-btn','disabled'=>!$track['has_subtitles']]) href="#" data-id="{{ $track['commontrack_id'] }}" data-type="subtitle" data-album="{{ $track['album_name'] }}"
+											data-artist="{{ $track['artist_name'] }}" data-title="{{ $track['track_name'] }}">
+										Synced
+										</a>
+									</li>
+									<li>
+										<a @class(["dropdown-item",'download-btn','disabled'=>!$track['has_richsync']]) href="#" data-id="{{ $track['commontrack_id'] }}" data-type="richsync" data-album="{{ $track['album_name'] }}"
+											data-artist="{{ $track['artist_name'] }}" data-title="{{ $track['track_name'] }}">
+										Word-by-Word
+										</a>
+									</li>
+								</ul>
+							</div>
+							{{-- <button type="button" class="btn btn-info" data-bs-toggle="modal"
 							data-bs-target="#modalMX" data-bs-art="{{ $art }}"
-							data-bs-id="{{ $track['commontrack_id'] }}"
-							data-bs-album="{{ $track['album_name'] }}"
-							data-bs-artist="{{ $track['artist_name'] }}"
-							data-bs-track="{{ $track['track_name'] }}"
 							data-bs-plain="{{ $track['has_lyrics'] }}"
 							data-bs-synced="{{ $track['has_subtitles'] }}"
 							data-bs-richsync="{{ $track['has_richsync'] }}"
-							data-bs-duration="{{ $length }}" data-bs-explicit="{{ $track['explicit'] }}"
-							data-bs-update="{{ date_format(date_create($track['updated_time']), 'j F Y') }}"
-							@if($track['instrumental']||!$track['has_lyrics']) disabled
-							@endif >
-								Show lyric
-							</button>
-							<a href="{{ $track['track_share_url'] }}" class="btn btn-danger" target="_blank">
-							Musixmatch
+							data-bs-explicit="{{ $track['explicit'] }}"
+							data-bs-update="{{ date_format(date_create($track['updated_time']), 'j F Y') }}">
+							</button> --}}
+							<a href="{{ $track['track_share_url'] }}" @class(["btn", "btn-info", 'disabled'=>!$track['has_lyrics']]) @if(!$track['has_lyrics']) aria-disabled="true" @endif target="_blank">
+								<i class="fa-solid fa-eye"></i>
 							</a>
 							<a href="https://open.spotify.com/track/{{ $track['track_spotify_id'] }}"
-								class="btn btn-success" target="_blank">Spotify</a>
+								@class(["btn", "btn-success", 'disabled'=>empty($track['track_spotify_id'])])
+								@empty($track['track_spotify_id']) aria-disabled="true" @endempty target="_blank">
+								<i class="fa-brands fa-spotify"></i>
+							</a>
 						</div>
 					</div>
 				</div>

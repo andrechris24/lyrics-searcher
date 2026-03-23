@@ -132,6 +132,7 @@
 			src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"
 			integrity="sha256-jLFv9iIrIbqKULHpqp/jmePDqi989pKXOcOht3zgRcw="
 			crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<script type="text/javascript">
 			$.ajaxSetup({
 				timeout: 30000
@@ -139,6 +140,18 @@
 			const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 			const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap
 				.Tooltip(tooltipTriggerEl));
+			const toast=Swal.mixin({
+				toast: true,
+				position: "top-end",
+				showConfirmButton: false,
+				timer: 5000,
+				timerProgressBar: true,
+				theme: 'bootstrap-5',
+				didOpen: (toast) => {
+					toast.onmouseenter = Swal.stopTimer;
+					toast.onmouseleave = Swal.resumeTimer;
+				}
+			});
 		</script>
 		@yield('js')
 	</body>

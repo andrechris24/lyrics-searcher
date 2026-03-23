@@ -37,9 +37,8 @@ if (lyricsModal) {
 				$("#lyrics-content").html(lyricContents.replace(/\n/g, "<br/>"));
 			},
 			error: function (xhr, st) {
-				$("#error-message").text(xhr.responseJSON.message ?? st);
-				$("#error-alert").removeClass("d-none");
-			},
+				toast.fire({icon: 'error',text: xhr.responseJSON.message ?? st});
+			}
 		});
 	});
 }

@@ -23,9 +23,6 @@
 						<span id="song-title">...</span>
 					</div>
 				</div>
-				<div class="alert alert-danger d-none" id="error-alert">
-					<span id="error-message"></span>
-				</div>
 				<p class="placeholder-glow d-none">
 					<span class="placeholder col-12"></span>
 					<span class="placeholder col-12"></span>
