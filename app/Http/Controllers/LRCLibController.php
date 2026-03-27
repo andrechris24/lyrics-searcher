@@ -27,14 +27,14 @@ class LRCLibController extends Controller
 			Log::error($e);
 			return to_route('lrclib.index')->withInput()
 				->withError('LRCLib connection failed: ' . $e->getMessage());
-		}catch (ValidationException $e) {
+		} catch (ValidationException $e) {
 			return to_route('lrclib.index')->withInput()->withErrors($e->errors());
 		}
 	}
 	public function advanced(Request $request)
 	{
 		try {
-		$request->validate(['title' => 'required']);
+			$request->validate(['title' => 'required']);
 			$q = [
 				'track_name' => $request['title'],
 				'artist_name' => $request['artist'],
@@ -52,7 +52,7 @@ class LRCLibController extends Controller
 			Log::error($e);
 			return to_route('lrclib.advanced')->withInput()
 				->withError('LRCLib connection failed: ' . $e->getMessage());
-		}catch (ValidationException $e) {
+		} catch (ValidationException $e) {
 			return to_route('lrclib.advanced')->withInput()->withErrors($e->errors());
 		}
 	}

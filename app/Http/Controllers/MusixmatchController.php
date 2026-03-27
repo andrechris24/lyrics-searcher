@@ -15,7 +15,7 @@ class MusixmatchController extends Controller
 		if (empty(env('MUSIXMATCH_TOKEN')))
 			return to_route('index')->withError('Musixmatch token was not found');
 		try {
-			$req->validate(['query' => 'required','page'=>'nullable|integer|min:1'],[
+			$req->validate(['query' => 'required', 'page' => 'nullable|integer|min:1'], [
 				'integer' => 'The page number is malformed.'
 			]);
 			Sleep::for(5)->seconds();
@@ -26,8 +26,8 @@ class MusixmatchController extends Controller
 				'app_id' => 'web-desktop-app-v1.0',
 				'q' => $req['query'],
 				'usertoken' => env('MUSIXMATCH_TOKEN'),
-				'page'=>$req['page']??1,
-				'page_size'=>20//Match LRCLib result count
+				'page' => $req['page'] ?? 1,
+				'page_size' => 20 //Match LRCLib result count
 			]);
 			$r = json_decode($response->body(), true);
 			if (json_last_error() !== JSON_ERROR_NONE) {
@@ -45,7 +45,7 @@ class MusixmatchController extends Controller
 			Log::error($th);
 			return to_route('musixmatch.index')->withInput()
 				->withError('Musixmatch connection failed: ' . $th->getMessage());
-		}catch (ValidationException $e) {
+		} catch (ValidationException $e) {
 			return to_route('musixmatch.index')->withInput()->withErrors($e->errors());
 		}
 	}
@@ -58,10 +58,10 @@ class MusixmatchController extends Controller
 				'title' => 'nullable|required_without_all:artist,album|string',
 				'artist' => 'nullable|required_without_all:title,album|string',
 				'album' => 'nullable|required_without_all:title,artist|string',
-				'page'=>'nullable|integer|min:1'
-			],[
+				'page' => 'nullable|integer|min:1'
+			], [
 				'integer' => 'The page number is malformed.',
-				'min'=>'The page number is out of range.'
+				'min' => 'The page number is out of range.'
 			]);
 			Sleep::for(5)->seconds();
 			$response = Http::withHeaders([
@@ -73,8 +73,8 @@ class MusixmatchController extends Controller
 				'q_artist' => $req['artist'],
 				'q_track' => $req['title'],
 				'usertoken' => env('MUSIXMATCH_TOKEN'),
-				'page'=>$req['page']??1,
-				'page_size'=>20
+				'page' => $req['page'] ?? 1,
+				'page_size' => 20
 			]);
 			$r = json_decode($response->body(), true);
 			if (json_last_error() !== JSON_ERROR_NONE) {
@@ -92,7 +92,7 @@ class MusixmatchController extends Controller
 			Log::error($th);
 			return to_route('musixmatch.advanced')->withInput()
 				->withError('Musixmatch connection failed: ' . $th->getMessage());
-		}catch (ValidationException $e) {
+		} catch (ValidationException $e) {
 			return to_route('artist.index')->withInput(['artist'])
 				->withErrors($e->errors());
 		}
@@ -133,7 +133,7 @@ class MusixmatchController extends Controller
 				$lyrics = [
 					'content' => $data['subtitle_body'],
 					'copyright' => $data['lyrics_copyright'],
-					'duration'=>gmdate('i:s', $data['subtitle_length'])
+					'duration' => gmdate('i:s', $data['subtitle_length'])
 				];
 			} else if ($type === 'richsync') {
 				$data = $r['message']['body']['richsync'];
@@ -142,7 +142,7 @@ class MusixmatchController extends Controller
 				$lyrics = [
 					'content' => $this->richsync(json_decode($data['richsync_body'], true)),
 					'copyright' => $data['lyrics_copyright'],
-					'duration'=>gmdate('i:s', $data['richsync_length'])
+					'duration' => gmdate('i:s', $data['richsync_length'])
 				];
 			} else { //plain
 				$data = $r['message']['body']['lyrics'];
@@ -164,24 +164,24 @@ class MusixmatchController extends Controller
 	private function richsync($lrc)
 	{
 		$richsync = '';
-		$lines=count($lrc);
-		$linenum=0;
+		$lines = count($lrc);
+		$linenum = 0;
 		foreach ($lrc as $line) {
 			$linenum++;
-			$words=count($line['l']);
-			$wordnum=0;
-			if($line['ts']>5 && $linenum===1)
-				$richsync .= "[" . $this->formatTime($line['ts']-5) . ']';
+			$words = count($line['l']);
+			$wordnum = 0;
+			if ($line['ts'] > 5 && $linenum === 1)
+				$richsync .= "[" . $this->formatTime($line['ts'] - 5) . ']';
 			else $richsync .= "[" . $this->formatTime($line['ts']) . ']';
-			foreach($line['l'] as $word){
+			foreach ($line['l'] as $word) {
 				$wordnum++;
-				$richsync.='<'.$this->formatTime($line['ts']+$word['o']).'>'.$word['c'];
-				if($wordnum===$words){
-					$richsync.='<'.$this->formatTime($line['te'])."> \n";
+				$richsync .= '<' . $this->formatTime($line['ts'] + $word['o']) . '>' . $word['c'];
+				if ($wordnum === $words) {
+					$richsync .= '<' . $this->formatTime($line['te']) . "> \n";
 				}
 			}
-			if($linenum===$lines)
-				$richsync .= "[" . $this->formatTime($line['te']+5) . "]\n";
+			if ($linenum === $lines)
+				$richsync .= "[" . $this->formatTime($line['te'] + 5) . "]\n";
 		}
 		return $richsync;
 	}

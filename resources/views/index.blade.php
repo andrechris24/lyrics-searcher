@@ -6,6 +6,7 @@
 		@if (Session::has('error') || $errors->any())
 			<x-error />
 		@endif
+		<x-no-script />
 		<form class="row g-3 mb-3" action="{{ route('result') }}" id="searchSongLyric">
 			<div class="col-12 col-md-8">
 				<label for="track-name" class="form-label">
@@ -67,7 +68,7 @@
 				<div class="modal-body">
 					<div class="alert alert-warning">
 						Musixmatch search result might be inaccurate. For better results,
-						please search with song search instead.
+						please search with Musixmatch song search instead.
 					</div>
 					<div class="row mb-3">
 						<div class="col-12 col-md-4">
@@ -246,13 +247,12 @@
 				},
 				success: function(data) {
 					if (data.instrumental === true || data.instrumental ===
-						1){
+						1) {
 						toast.fire({
 							icon: 'info',
 							text: 'Song you are searching for is marked as Instrumental'
 						});
-					}
-					else {
+					} else {
 						searchTerm = $("#artist-name").val() + ' - ' + $(
 							"#track-name").val();
 						plainContent = data.plain.replace(/\n/g, "<br/>");
@@ -290,7 +290,8 @@
 							else {
 								$("#spotify-btn").prop('disabled', false);
 								$("#spotify-btn").attr('href',
-									`https://open.spotify.com/track/${data.spotify}`);
+									`https://open.spotify.com/track/${data.spotify}`
+								);
 							}
 							$("#mx-plain-lyrics-content").html(plainContent);
 							$("#mx-synced-lyrics-content").html(
@@ -334,7 +335,7 @@
 					}
 				},
 				error: function(xhr, st) {
-					if (xhr.status === 400) 
+					if (xhr.status === 400)
 						$("#lyric-source").addClass('is-invalid');
 					else if (xhr.status === 422) {
 						if (typeof xhr.responseJSON.errors.title !==
@@ -353,7 +354,9 @@
 					toast.fire({
 						icon: 'error',
 						text: xhr.responseJSON.message ?? st,
-						titleText: (typeof xhr.responseJSON.source==='undefined')?'':xhr.responseJSON.source
+						titleText: (typeof xhr.responseJSON
+								.source === 'undefined') ? '' : xhr
+							.responseJSON.source
 					});
 				}
 			});
@@ -364,7 +367,8 @@
 			mxPlainDL.download = `${fileName}.txt`;
 		};
 		mxSyncedDL.onclick = function() {
-			mxSyncedDL.href =`data:text/plain;charset=utf-8,${encodeURIComponent(syncedContents)}`;
+			mxSyncedDL.href =
+				`data:text/plain;charset=utf-8,${encodeURIComponent(syncedContents)}`;
 			mxSyncedDL.download = `${fileName}.lrc`;
 		};
 		llPlainDL.onclick = function() {
@@ -373,7 +377,8 @@
 			llPlainDL.download = `${fileName}.txt`;
 		};
 		llSyncedDL.onclick = function() {
-			llSyncedDL.href =`data:text/plain;charset=utf-8,${encodeURIComponent(syncedContents)}`;
+			llSyncedDL.href =
+				`data:text/plain;charset=utf-8,${encodeURIComponent(syncedContents)}`;
 			llSyncedDL.download = `${fileName}.txt`;
 		};
 	</script>

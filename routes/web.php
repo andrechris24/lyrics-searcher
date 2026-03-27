@@ -8,7 +8,7 @@ use App\Http\Controllers\QQMusicController;
 use App\Http\Controllers\SingleController;
 
 Route::view('/', 'index')->name('home');
-Route::get('result', [SingleController::class,'search'])->name('result');
+Route::get('result', [SingleController::class, 'search'])->name('result');
 Route::prefix('lrclib')->name('lrclib.')->group(function () {
 	Route::view('/', 'lrclib.index')->name('index');
 	Route::view('advanced', 'lrclib.advanced.index')->name('advanced');

@@ -31,7 +31,7 @@ class QQMusicController extends Controller
 			Log::error($th);
 			return to_route('qqmusic.index')
 				->withError('QQ Music connection failed: ' . $th->getMessage());
-		}catch (ValidationException $e) {
+		} catch (ValidationException $e) {
 			return to_route('qqmusic.index')->withInput()->withErrors($e->errors());
 		}
 	}

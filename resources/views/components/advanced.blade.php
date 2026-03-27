@@ -1,13 +1,16 @@
 <form class="row g-3 mb-3" action="{{ route($provider . '.search.advanced') }}">
 	<div class="col-12">
 		<label for="track-name" class="form-label">
-			Song Title @if($require===1) <span class="text-danger"><b>*</b></span> @endif
+			Song Title @if ($require === 1)
+				<span class="text-danger"><b>*</b></span>
+			@endif
 		</label>
 		<div class="input-group input-group-lg">
 			<span class="input-group-text"><i class="fa-solid fa-music"></i></span>
 			<input type="text" class="form-control @error('title') is-invalid @enderror "
 				id="track-name" placeholder="Song title" name="title"
-				value="{{ request('title') ?? old('title') }}" @if($require===1) required @endif >
+				value="{{ request('title') ?? old('title') }}"
+				@if ($require === 1) required @endif>
 		</div>
 	</div>
 	<div class="col-sm-6">

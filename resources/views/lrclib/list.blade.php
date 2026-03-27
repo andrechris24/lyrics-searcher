@@ -82,8 +82,9 @@
 		</div>
 	</div>
 </div>
+<x-no-script />
 @if (count($data) > 0)
-<p class="text-center">Only first 20 results are returned due to API limitation</p>
+	<p class="text-center">Only first 20 results are returned due to API limitation</p>
 	<div class="list-group mx-5 px-5 mb-5 pb-5">
 		@foreach ($data as $result)
 			@php($length = gmdate('i:s', $result->duration))

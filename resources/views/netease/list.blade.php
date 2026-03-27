@@ -9,32 +9,32 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-						<div class="row mb-3">
-							<div class="col-12 col-md-4">
-								<b>Artist</b>
-							</div>
-							<div class="col-12 col-md-8">
-								<span id="song-artist">...</span>
-							</div>
-							<div class="col-12 col-md-4">
-								<b>Title</b>
-							</div>
-							<div class="col-12 col-md-8">
-								<span id="song-title">...</span>
-							</div>
-							<div class="col-12 col-md-4">
-								<b>Album</b>
-							</div>
-							<div class="col-12 col-md-8">
-								<span id="song-album">-</span>
-							</div>
-							<div class="col-12 col-md-4">
-								<b>Duration</b>
-							</div>
-							<div class="col-12 col-md-8">
-								<span id="song-duration">--:--</span>
-							</div>
-						</div>
+				<div class="row mb-3">
+					<div class="col-12 col-md-4">
+						<b>Artist</b>
+					</div>
+					<div class="col-12 col-md-8">
+						<span id="song-artist">...</span>
+					</div>
+					<div class="col-12 col-md-4">
+						<b>Title</b>
+					</div>
+					<div class="col-12 col-md-8">
+						<span id="song-title">...</span>
+					</div>
+					<div class="col-12 col-md-4">
+						<b>Album</b>
+					</div>
+					<div class="col-12 col-md-8">
+						<span id="song-album">-</span>
+					</div>
+					<div class="col-12 col-md-4">
+						<b>Duration</b>
+					</div>
+					<div class="col-12 col-md-8">
+						<span id="song-duration">--:--</span>
+					</div>
+				</div>
 				<p class="placeholder-glow d-none">
 					<span class="placeholder col-12"></span>
 					<span class="placeholder col-12"></span>
@@ -54,9 +54,11 @@
 		</div>
 	</div>
 </div>
+<x-no-script />
 @if ($data['songCount'] > 0)
-	<p class="text-center">Showing {{ (request('offset')??0) + 1 }} to
-		{{ (request('offset')??0) + 20 > $data['songCount'] ? $data['songCount'] : request('offset') + 20 }} of {{ $data['songCount'] }} result(s)</p>
+	<p class="text-center">Showing {{ (request('offset') ?? 0) + 1 }} to
+		{{ (request('offset') ?? 0) + 20 > $data['songCount'] ? $data['songCount'] : request('offset') + 20 }}
+		of {{ $data['songCount'] }} result(s)</p>
 	<div class="list-group mx-5 px-5 mb-5 pb-5">
 		@foreach ($data['songs'] as $result)
 			@php
@@ -79,38 +81,38 @@
 			</a>
 		@endforeach
 	</div>
-	{{-- @if ((request('offset')??0)+20 < $data['songCount']) --}}
-		<div class="mx-5 px-5 mb-5 pb-5">
-			<nav role="navigation" aria-label="{!! __('Pagination Navigation') !!}">
-				<ul class="pagination justify-content-center">
-					{{-- Previous Page Link --}}
-					@if (request('offset') === null || request('offset')==0)
-						<li class="page-item disabled" aria-disabled="true">
-							<span class="page-link">{!! __('pagination.previous') !!}</span>
-						</li>
-					@else
-						<li class="page-item">
-							<a class="page-link" rel="prev"
-								href="{{ route('netease.search', ['query' => request('query'), 'offset' => request('offset')-20]) }}">
-								{!! __('pagination.previous') !!}
-							</a>
-						</li>
-					@endif
+	{{-- @if ((request('offset') ?? 0) + 20 < $data['songCount']) --}}
+	<div class="mx-5 px-5 mb-5 pb-5">
+		<nav role="navigation" aria-label="{!! __('Pagination Navigation') !!}">
+			<ul class="pagination justify-content-center">
+				{{-- Previous Page Link --}}
+				@if (request('offset') === null || request('offset') == 0)
+					<li class="page-item disabled" aria-disabled="true">
+						<span class="page-link">{!! __('pagination.previous') !!}</span>
+					</li>
+				@else
+					<li class="page-item">
+						<a class="page-link" rel="prev"
+							href="{{ route('netease.search', ['query' => request('query'), 'offset' => request('offset') - 20]) }}">
+							{!! __('pagination.previous') !!}
+						</a>
+					</li>
+				@endif
 
-					{{-- Next Page Link --}}
-					@if ((request('offset')??0)+20<$data['songCount'])
-						<li class="page-item">
-							<a class="page-link" rel="next"
-								href="{{ route('netease.search', ['query' => request('query'), 'offset' => (request('offset')??0)+20]) }}">{!! __('pagination.next') !!}</a>
-						</li>
-					@else
-						<li class="page-item disabled" aria-disabled="true">
-							<span class="page-link">{!! __('pagination.next') !!}</span>
-						</li>
-					@endif
-				</ul>
-			</nav>
-		</div>
+				{{-- Next Page Link --}}
+				@if ((request('offset') ?? 0) + 20 < $data['songCount'])
+					<li class="page-item">
+						<a class="page-link" rel="next"
+							href="{{ route('netease.search', ['query' => request('query'), 'offset' => (request('offset') ?? 0) + 20]) }}">{!! __('pagination.next') !!}</a>
+					</li>
+				@else
+					<li class="page-item disabled" aria-disabled="true">
+						<span class="page-link">{!! __('pagination.next') !!}</span>
+					</li>
+				@endif
+			</ul>
+		</nav>
+	</div>
 	{{-- @endif --}}
 @else
 	<x-no-results source="netease" />

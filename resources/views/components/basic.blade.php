@@ -5,7 +5,8 @@
 		</span>
 		<input type="search" name="query" placeholder="Enter search query here..."
 			class="form-control form-control-lg @error('query') is-invalid @enderror "
-			value="{{ request('query') ?? old('query') }}" required @if(empty(request('query'))) autofocus @endif >
+			value="{{ request('query') ?? old('query') }}" required
+			@if (empty(request('query'))) autofocus @endif>
 		<button type="submit" class="btn btn-primary">Search</button>
 	</div>
 	@if (in_array($provider, ['lrclib', 'musixmatch']))

@@ -140,7 +140,7 @@
 			const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 			const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap
 				.Tooltip(tooltipTriggerEl));
-			const toast=Swal.mixin({
+			const toast = Swal.mixin({
 				toast: true,
 				position: "top-end",
 				showConfirmButton: false,

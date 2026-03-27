@@ -1,5 +1,5 @@
 <div class="alert alert-danger alert-dismissible" role="alert">
-	<i class="fas fa-exclamation-triangle"></i>
+	<i class="fas fa-circle-xmark"></i>
 	{{ Session::get('error') ?? 'Error validating input:' }}
 	@if ($errors->any())
 		<ul>

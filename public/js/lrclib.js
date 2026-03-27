@@ -57,12 +57,10 @@ if (lyricsModal) {
 	});
 }
 plainDL.onclick = function () {
-	plainDL.href =
-		`data:text/plain;charset=utf-8,${encodeURIComponent(plainContents)}`;
+	plainDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(plainContents)}`;
 	plainDL.download = `${fileName}.txt`;
 };
 syncedDL.onclick = function () {
-	syncedDL.href =
-		`data:text/plain;charset=utf-8,${encodeURIComponent(syncedContents)}`;
+	syncedDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(syncedContents)}`;
 	syncedDL.download = `${fileName}.lrc`;
 };

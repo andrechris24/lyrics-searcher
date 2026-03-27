@@ -19,7 +19,6 @@ if (lyricsModal) {
 		// Set file name and contents on save
 		fileName = `${artistName} - ${songName}`;
 		$.ajax({
-			method: "GET",
 			url: `/qqmusic/${songID}`,
 			beforeSend: function () {
 				$("#save-btn").prop("disabled", true);
@@ -32,18 +31,17 @@ if (lyricsModal) {
 				$.LoadingOverlay("hide");
 			},
 			success: function (data) {
-				$("#save-btn").prop("disabled", false);
 				lyricContents = data.lyric;
+				$("#save-btn").prop("disabled", false);
 				$("#lyrics-content").html(lyricContents.replace(/\n/g, "<br/>"));
 			},
 			error: function (xhr, st) {
-				toast.fire({icon: 'error',text: xhr.responseJSON.message ?? st});
-			}
+				toast.fire({ icon: "error", text: xhr.responseJSON.message ?? st });
+			},
 		});
 	});
 }
 lyricDL.onclick = function () {
-	lyricDL.href =
-		`data:text/plain;charset=utf-8,${encodeURIComponent(lyricContents)}`;
+	lyricDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(lyricContents)}`;
 	lyricDL.download = `${fileName}.lrc`;
 };

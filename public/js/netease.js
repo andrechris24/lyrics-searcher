@@ -23,7 +23,6 @@ if (lyricsModal) {
 		// Set file name and contents on save
 		fileName = `${artistName} - ${songName}`;
 		$.ajax({
-			method: "GET",
 			url: `/netease/${songID}`,
 			beforeSend: function () {
 				$("#save-btn").prop("disabled", true);
@@ -37,10 +36,10 @@ if (lyricsModal) {
 			},
 			success: function (data) {
 				$("#save-btn").prop("disabled", false);
-				if(typeof data.needDesc !== 'undefined' && data.needDesc===true){
+				if (typeof data.needDesc !== "undefined" && data.needDesc === true) {
 					toast.fire({
-						icon: 'warning',
-						text: 'Lyric might be incomplete or does not contain any lyric.'
+						icon: "warning",
+						text: "Lyric might be incomplete or does not contain any lyric.",
 					});
 				}
 				lyricContents =
@@ -54,13 +53,12 @@ if (lyricsModal) {
 				// 	console.log(data.klyric);
 			},
 			error: function (xhr, st) {
-				toast.fire({icon: 'error',text: xhr.responseJSON.message ?? st});
+				toast.fire({ icon: "error", text: xhr.responseJSON.message ?? st });
 			},
 		});
 	});
 }
 lyricDL.onclick = function () {
-	lyricDL.href =
-		`data:text/plain;charset=utf-8,${encodeURIComponent(lyricContents)}`;
+	lyricDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(lyricContents)}`;
 	lyricDL.download = `${fileName}.lrc`;
 };
