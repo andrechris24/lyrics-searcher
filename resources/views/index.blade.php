@@ -100,7 +100,7 @@
 							</div>
 						</div>
 					</div>
-					<nav>
+					{{-- <nav>
 						<div class="nav nav-pills mb-3" id="js-tabs-mx" role="tablist">
 							<button class="nav-link active" id="nav-mx-plain-tab" data-bs-toggle="tab"
 								data-bs-target="#nav-mx-plain" type="button" role="tab"
@@ -112,14 +112,14 @@
 					</nav>
 					<div class="tab-content" id="js-tabs-content-mx">
 						<div class="tab-pane fade show active" id="nav-mx-plain" role="tabpanel"
-							aria-labelledby="nav-mx-plain-tab" tabindex="0">
-							<p id="mx-plain-lyrics-content" style="white-space: pre-line"></p>
-						</div>
+							aria-labelledby="nav-mx-plain-tab" tabindex="0"> --}}
+					<p id="mx-plain-lyrics-content" style="white-space: pre-line"></p>
+					{{-- </div>
 						<div class="tab-pane fade" id="nav-mx-synced" role="tabpanel"
 							aria-labelledby="nav-mx-synced-tab" tabindex="0">
 							<p id="mx-synced-lyrics-content" style="white-space: pre-line"></p>
 						</div>
-					</div>
+					</div> --}}
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -166,7 +166,7 @@
 						<div class="col-3"><b>Duration</b></div>
 						<div class="col-9"><span id="lrclib-song-duration"></span></div>
 					</div>
-					<nav>
+					{{-- <nav>
 						<div class="nav nav-pills mb-3" id="js-tabs-lrclib" role="tablist">
 							<button class="nav-link active" id="nav-lrclib-plain-tab" data-bs-toggle="tab"
 								data-bs-target="#nav-lrclib-plain" type="button" role="tab"
@@ -178,14 +178,14 @@
 					</nav>
 					<div class="tab-content" id="js-tabs-content-lrclib">
 						<div class="tab-pane fade show active" id="nav-lrclib-plain" role="tabpanel"
-							aria-labelledby="nav-lrclib-plain-tab" tabindex="0">
-							<p id="lrclib-plain-lyrics-content" style="white-space: pre-line"></p>
-						</div>
+							aria-labelledby="nav-lrclib-plain-tab" tabindex="0"> --}}
+					<p id="lrclib-plain-lyrics-content" style="white-space: pre-line"></p>
+					{{-- </div>
 						<div class="tab-pane fade" id="nav-lrclib-synced" role="tabpanel"
 							aria-labelledby="nav-lrclib-synced-tab" tabindex="0">
 							<p id="lrclib-synced-lyrics-content" style="white-space: pre-line"></p>
 						</div>
-					</div>
+					</div> --}}
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -214,20 +214,20 @@
 @endsection
 @section('js')
 	<script type="text/javascript">
-		let plainContents, syncedContents, filename, searchTerm;
-		const mxPlainTab = document.querySelector(
-				'button[data-bs-target="#nav-mx-plain"]'
-			),
-			mxSyncedTab = document.querySelector(
-				'button[data-bs-target="#nav-mx-synced"]'
-			),
-			llPlainTab = document.querySelector(
-				'button[data-bs-target="#nav-lrclib-plain"]'
-			),
-			llSyncedTab = document.querySelector(
-				'button[data-bs-target="#nav-lrclib-synced"]'
-			),
-			mxPlainDL = document.querySelector("#download-link-mx-plain"),
+		let plainContents, syncedContents, filename, searchTerm, message;
+		// mxPlainTab = document.querySelector(
+		// 		'button[data-bs-target="#nav-mx-plain"]'
+		// 	),
+		// 	mxSyncedTab = document.querySelector(
+		// 		'button[data-bs-target="#nav-mx-synced"]'
+		// 	),
+		// 	llPlainTab = document.querySelector(
+		// 		'button[data-bs-target="#nav-lrclib-plain"]'
+		// 	),
+		// 	llSyncedTab = document.querySelector(
+		// 		'button[data-bs-target="#nav-lrclib-synced"]'
+		// 	),
+		const mxPlainDL = document.querySelector("#download-link-mx-plain"),
 			mxSyncedDL = document.querySelector("#download-link-mx-synced"),
 			llPlainDL = document.querySelector("#download-link-lrclib-plain"),
 			llSyncedDL = document.querySelector("#download-link-lrclib-synced");
@@ -256,7 +256,7 @@
 						searchTerm = $("#artist-name").val() + ' - ' + $(
 							"#track-name").val();
 						plainContent = data.plain.replace(/\n/g, "<br/>");
-						syncedContent = data.synced.replace(/\n/g, "<br/>");
+						// syncedContent = data.synced.replace(/\n/g, "<br/>");
 						syncedContents = data.synced;
 						fileName = `${data.artist} - ${data.title}`;
 						plainContents = `${fileName}\n\n${data.plain}`;
@@ -268,8 +268,8 @@
 						if (data.source === 'lrclib') {
 							$("#lrclib-plain-lyrics-content").html(
 								plainContent);
-							$("#lrclib-synced-lyrics-content").html(
-								syncedContent);
+							// $("#lrclib-synced-lyrics-content").html(
+							// 	syncedContent);
 							$("#lrclib-song-artist").text(data.artist);
 							$("#lrclib-song-title").text(data.title);
 							$("#lrclib-song-album").text(data.album);
@@ -294,8 +294,8 @@
 								);
 							}
 							$("#mx-plain-lyrics-content").html(plainContent);
-							$("#mx-synced-lyrics-content").html(
-								syncedContent);
+							// $("#mx-synced-lyrics-content").html(
+							// 	syncedContent);
 							$("#mx-song-artist").text(data.artist);
 							$("#mx-song-title").text(data.title);
 							$("#mx-song-album").text(data.album);
@@ -307,24 +307,14 @@
 							$("#modalMX").modal('show');
 						}
 						if (data.synced === "" || data.synced === null) {
-							if (data.source === 'lrclib') {
-								bootstrap.Tab.getInstance(llPlainTab).show();
-								llSyncedTab.disabled = true;
-								llSyncedDL.classList.add("disabled");
-							} else {
-								bootstrap.Tab.getInstance(mxPlainTab).show();
-								mxSyncedTab.disabled = true;
-								mxSyncedDL.classList.add("disabled");
-							}
+							if (data.source === 'lrclib') llSyncedDL
+								.classList.add("disabled");
+							else mxSyncedDL.classList.add("disabled");
 							syncedContents = null;
 						} else {
-							if (data.source === 'lrclib') {
-								llSyncedTab.disabled = false;
-								llSyncedDL.classList.remove("disabled");
-							} else {
-								mxSyncedTab.disabled = false;
-								mxSyncedDL.classList.remove("disabled");
-							}
+							if (data.source === 'lrclib') llSyncedDL
+								.classList.remove("disabled");
+							else mxSyncedDL.classList.remove("disabled");
 							syncedContents =
 								`[ar: ${data.artist}]\n` +
 								`[ti: ${data.title}]\n` +
@@ -350,14 +340,14 @@
 						if (typeof xhr.responseJSON.errors.source !==
 							"undefined")
 							$("#lyric-source").addClass('is-invalid');
-					} else console.warn(xhr.responseJSON?.message ?? st);
+					}
+					if (st === 'timeout') message = "Connection timed out";
+					else message = xhr.responseJSON.message ?? st;
 					toast.fire({
-						icon: 'error',
-						text: xhr.responseJSON.message ?? st,
-						titleText: (typeof xhr.responseJSON
-								.source === 'undefined') ? '' : xhr
-							.responseJSON.source
+						icon: "error",
+						text: message
 					});
+					// console.error(xhr.responseJSON);
 				}
 			});
 		});
@@ -379,7 +369,7 @@
 		llSyncedDL.onclick = function() {
 			llSyncedDL.href =
 				`data:text/plain;charset=utf-8,${encodeURIComponent(syncedContents)}`;
-			llSyncedDL.download = `${fileName}.txt`;
+			llSyncedDL.download = `${fileName}.lrc`;
 		};
 	</script>
 @endsection

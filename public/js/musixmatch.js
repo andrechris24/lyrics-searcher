@@ -1,14 +1,3 @@
-function blobDL(data, filename) {
-	const blob = new Blob([data], { type: "text/plain", charset: "utf-8" });
-	let url = window.URL.createObjectURL(blob),
-		a = document.createElement("a");
-	a.href = url;
-	a.download = filename;
-	document.body.appendChild(a);
-	a.click();
-	a.remove();
-	window.URL.revokeObjectURL(url);
-}
 $(".download-btn").on("click", function (e) {
 	e.preventDefault();
 	const id = $(this).data("id"),
@@ -17,7 +6,7 @@ $(".download-btn").on("click", function (e) {
 		title = $(this).data("title"),
 		album = $(this).data("album");
 	const fileName = `${artist} - ${title}`;
-	let contents, ext;
+	let contents, ext, message;
 	$.ajax({
 		url: `/musixmatch/${id}/${type}`,
 		beforeSend: function () {
@@ -39,7 +28,9 @@ $(".download-btn").on("click", function (e) {
 			blobDL(contents + data.content, `${fileName}.${ext}`);
 		},
 		error: function (xhr, st) {
-			toast.fire({ icon: "error", text: xhr.responseJSON.message ?? st });
+			if (st === "timeout") message = "Connection timed out";
+			else message = xhr.responseJSON.message ?? st;
+			toast.fire({ icon: "error", text: message });
 		},
 	});
 });

@@ -4,6 +4,8 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="csrf-token" content="{{ csrf_token() }}">
+
 		<title>@yield('title') | Lyrics Searcher</title>
 
 		<!-- Bootstrap CSS -->
@@ -18,6 +20,11 @@
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
 			integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
 			crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+		<link href="https://cdn.datatables.net/v/bs5/dt-2.3.7/r-3.0.8/datatables.min.css"
+			rel="stylesheet"
+			integrity="sha384-6SydH6I4YnZdQJwxGJm7CTO/99Gi64VIvO2OVodF01nVIomEkil0N5WscsmC9+Dz"
+			crossorigin="anonymous">
 		<script type="text/javascript" src="{{ asset('js/theme.js') }}"></script>
 	</head>
 
@@ -108,6 +115,11 @@
 								@if (request()->routeIs('netease.*')) aria-current="page" @endif
 								href="{{ route('netease.index') }}">NetEase</a>
 						</li>
+						<li class="nav-item">
+							<a @class(['nav-link', 'active' => request()->routeIs('kugou.*')])
+								@if (request()->routeIs('kugou.*')) aria-current="page" @endif
+								href="{{ route('kugou.index') }}">Kugou</a>
+						</li>
 						@if (!empty(env('MUSIXMATCH_TOKEN')))
 							<li class="nav-item">
 								<a @class(['nav-link', 'active' => request()->routeIs('musixmatch.*')])
@@ -133,6 +145,9 @@
 			integrity="sha256-jLFv9iIrIbqKULHpqp/jmePDqi989pKXOcOht3zgRcw="
 			crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<script src="https://cdn.datatables.net/v/bs5/dt-2.3.7/r-3.0.8/datatables.min.js"
+			integrity="sha384-5L6UP+VtXWFTfdyUlr1LWG1lDU276xtuJbHZbCldV4v0FxVOCmuIN4SNnMsTMrGF"
+			crossorigin="anonymous"></script>
 		<script type="text/javascript">
 			$.ajaxSetup({
 				timeout: 30000
@@ -152,6 +167,21 @@
 					toast.onmouseleave = Swal.resumeTimer;
 				}
 			});
+
+			function blobDL(data, filename) {
+				const blob = new Blob([data], {
+					type: "text/plain",
+					charset: "utf-8"
+				});
+				let url = window.URL.createObjectURL(blob),
+					a = document.createElement("a");
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				a.remove();
+				window.URL.revokeObjectURL(url);
+			}
 		</script>
 		@yield('js')
 	</body>

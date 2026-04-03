@@ -27,18 +27,17 @@ class NetEaseController extends Controller
 			$r = json_decode($response->body(), true);
 			if (json_last_error() !== JSON_ERROR_NONE) {
 				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
-				return to_route('netease.index')
+				return to_route('netease.index')->withInput()
 					->withError('Error parsing JSON response: ' . json_last_error_msg());
 			} else if ($r['code'] !== 200) {
-				return to_route('netease.index')
+				return to_route('netease.index')->withInput()
 					->withError("NetEase Music HTTP Error " . $r['code']);
 			}
-			// dd($r);
 			$data = $r['result'];
 			return view('netease.result', compact('data'));
 		} catch (ConnectionException $th) {
 			Log::error($th);
-			return to_route('netease.index')
+			return to_route('netease.index')->withInput()
 				->withError('NetEase Music connection failed: ' . $th->getMessage());
 		} catch (ValidationException $e) {
 			return to_route('netease.index')->withInput()->withErrors($e->errors());

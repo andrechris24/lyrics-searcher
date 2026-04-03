@@ -1,4 +1,4 @@
-let lyricContents, fileName;
+let lyricContents, fileName, message;
 const lyricsModal = document.getElementById("modalLyrics"),
 	lyricDL = document.querySelector("#save-btn");
 if (lyricsModal) {
@@ -21,7 +21,7 @@ if (lyricsModal) {
 		$("#song-artist").text(artistName);
 
 		// Set file name and contents on save
-		fileName = `${artistName} - ${songName}`;
+		fileName = `${artistName} - ${songName}.lrc`;
 		$.ajax({
 			url: `/netease/${songID}`,
 			beforeSend: function () {
@@ -53,7 +53,9 @@ if (lyricsModal) {
 				// 	console.log(data.klyric);
 			},
 			error: function (xhr, st) {
-				toast.fire({ icon: "error", text: xhr.responseJSON.message ?? st });
+				if (st === "timeout") message = "Connection timed out";
+				else message = xhr.responseJSON.message ?? st;
+				toast.fire({ icon: "error", text: message });
 			},
 		});
 	});

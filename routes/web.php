@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\KugouController;
 use App\Http\Controllers\LRCLibController;
 use App\Http\Controllers\MusixmatchController;
 use App\Http\Controllers\NetEaseController;
@@ -38,6 +39,16 @@ Route::prefix('qqmusic')->name('qqmusic.')->group(function () {
 	Route::controller(QQMusicController::class)->name('search')->group(function () {
 		Route::get('results', 'search');
 		Route::get('{id}', 'get')->name('.get');
+	});
+});
+Route::prefix('kugou')->name('kugou.')->group(function () {
+	Route::view('/', 'kugou.index')->name('index');
+	Route::controller(KugouController::class)->group(function () {
+		Route::get('results', 'search')->name('search');
+		Route::prefix('{hash}')->group(function () {
+			Route::get('/', 'lyrics')->name('lyrics');
+			Route::post('/', 'get')->name('get');
+		});
 	});
 });
 Route::view('laravel', 'welcome')->name('laravel');

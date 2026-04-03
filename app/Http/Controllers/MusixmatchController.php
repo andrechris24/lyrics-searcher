@@ -32,12 +32,13 @@ class MusixmatchController extends Controller
 			$r = json_decode($response->body(), true);
 			if (json_last_error() !== JSON_ERROR_NONE) {
 				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
-				return to_route('musixmatch.advanced')
+				return to_route('musixmatch.advanced')->withInput()
 					->withError('Error parsing JSON response: ' . json_last_error_msg());
 			}
 			$header = $r['message']['header'];
 			if ($header['status_code'] !== 200) {
-				return to_route('musixmatch.index')->withError($this->getMXerror($header));
+				return to_route('musixmatch.index')->withInput()
+					->withError($this->getMXerror($header));
 			}
 			$data = $r['message']['body']['track_list'];
 			return view('musixmatch.result', compact('data', 'header'));
@@ -79,12 +80,13 @@ class MusixmatchController extends Controller
 			$r = json_decode($response->body(), true);
 			if (json_last_error() !== JSON_ERROR_NONE) {
 				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
-				return to_route('musixmatch.advanced')
+				return to_route('musixmatch.advanced')->withInput()
 					->withError('Error parsing JSON response: ' . json_last_error_msg());
 			}
 			$header = $r['message']['header'];
 			if ($header['status_code'] !== 200) {
-				return to_route('musixmatch.advanced')->withError($this->getMXerror($header));
+				return to_route('musixmatch.advanced')->withInput()
+					->withError($this->getMXerror($header));
 			}
 			$data = $r['message']['body']['track_list'];
 			return view('musixmatch.advanced.result', compact('data', 'header'));
