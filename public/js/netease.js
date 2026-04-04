@@ -36,11 +36,11 @@ if (lyricsModal) {
 			},
 			success: function (data) {
 				$("#save-btn").prop("disabled", false);
-				if (typeof data.needDesc !== "undefined" && data.needDesc === true) {
-					toast.fire({
-						icon: "warning",
-						text: "Lyric might be incomplete or does not contain any lyric.",
-					});
+				if(typeof data.klyric !== 'undefined'){
+					console.log(data.klyric.lyric);
+					if(data.klyric.lyric!==''){
+						toast.fire({icon: 'info', text: 'This song contains word-by word lyrics.'});
+					}
 				}
 				lyricContents =
 					`[ar: ${artistName}]\n` +
@@ -49,17 +49,44 @@ if (lyricsModal) {
 					`[by: NetEase]\n` +
 					`[length: ${duration}]\n${data.lrc.lyric}`;
 				$("#lyrics-content").html(data.lrc.lyric.replace(/\n/g, "<br/>"));
-				// if(typeof data.klyric !== 'undefined')
-				// 	console.log(data.klyric);
 			},
 			error: function (xhr, st) {
 				if (st === "timeout") message = "Connection timed out";
 				else message = xhr.responseJSON.message ?? st;
 				toast.fire({ icon: "error", text: message });
-			},
+			}
 		});
 	});
 }
+// function parseKLyric(lyricText){
+// 		let enhancedlyricText = "";
+// 		let matches;
+// 		let metaRegex = /^\[(\S+):(\S+)\]$/;
+// 		let timestampsRegex = /^\[(\d+),(\d+)\]/;
+// 		let timestamps2Regex = /\((\d+),(\d+)\)([^\(]*)/g;
+// 		let lines = lyricText.split(/[\r\n]/);
+// 		for (const line of lines) {
+// 				if (matches = metaRegex.exec(line)) { // meta info
+// 						enhancedlyricText += `${matches[0]}\r\n`;
+// 				} else if (matches = timestampsRegex.exec(line)) {
+// 						let startTime = parseInt(matches[1]);
+// 						let duration = parseInt(matches[2]);
+// 						let lyricLine = "[" + formatTime(startTime) + "]";
+// 						// parse sub-timestamps
+// 						let subMatches;
+// 						let subStartTime = startTime;
+// 						while (subMatches = timestamps2Regex.exec(line)) {
+// 								let subDuration = parseInt(subMatches[2]);
+// 								let subWord = subMatches[3];
+// 								lyricLine += "<" + formatTime(subStartTime) + `>${subWord}`;
+// 								subStartTime += subDuration;
+// 						}
+// 						lyricLine += "<" + formatTime(startTime + duration) + ">";
+// 						enhancedlyricText += `${lyricLine}\r\n`;
+// 				}
+// 		}
+// 		return enhancedlyricText;
+// }
 lyricDL.onclick = function () {
 	lyricDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(lyricContents)}`;
 	lyricDL.download = `${fileName}.lrc`;

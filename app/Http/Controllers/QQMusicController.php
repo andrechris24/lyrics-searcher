@@ -22,14 +22,14 @@ class QQMusicController extends Controller
 			$r = json_decode($response->body(), true);
 			if (json_last_error() !== JSON_ERROR_NONE) {
 				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
-				return to_route('qqmusic.index')
+				return to_route('qqmusic.index')->withInput()
 					->withError('Error parsing JSON response: ' . json_last_error_msg());
 			}
 			$data = $r['data']['song'];
 			return view('qqmusic.result', compact('data'));
 		} catch (ConnectionException $th) {
 			Log::error($th);
-			return to_route('qqmusic.index')
+			return to_route('qqmusic.index')->withInput()
 				->withError('QQ Music connection failed: ' . $th->getMessage());
 		} catch (ValidationException $e) {
 			return to_route('qqmusic.index')->withInput()->withErrors($e->errors());

@@ -1,4 +1,4 @@
-<div class="modal" tabindex="-1" id="modalLyrics" aria-labelledby="modalLyricsLabel"
+<div class="modal fade" tabindex="-1" id="modalLyrics" aria-labelledby="modalLyricsLabel"
 	role="dialog" aria-hidden="true">
 	<div role="document"
 		class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down modal-lg">

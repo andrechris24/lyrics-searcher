@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="csrf-token" content="{{ csrf_token() }}">
 
-		<title>@yield('title') | Lyrics Searcher</title>
+		<title>@yield('title') | Lyrics Searcher by andrechris24</title>
 
 		<!-- Bootstrap CSS -->
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
@@ -85,7 +85,9 @@
 		</div>
 		<nav class="navbar navbar-expand-lg bg-body-tertiary">
 			<div class="container-fluid">
-				<a class="navbar-brand" href="{{ route('home') }}">Navbar</a>
+				<a class="navbar-brand" href="{{ route('home') }}">
+					<i class="fa-solid fa-music fa-2x"></i>
+				</a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
 					data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
 					aria-expanded="false" aria-label="Toggle navigation">
@@ -121,12 +123,35 @@
 								href="{{ route('kugou.index') }}">Kugou</a>
 						</li>
 						@if (!empty(env('MUSIXMATCH_TOKEN')))
-							<li class="nav-item">
-								<a @class(['nav-link', 'active' => request()->routeIs('musixmatch.*')])
-									@if (request()->routeIs('musixmatch.*')) aria-current="page" @endif
-									href="{{ route('musixmatch.index') }}">Musixmatch</a>
-							</li>
+						<li class="nav-item dropdown">
+							<a @class(["nav-link", "dropdown-toggle", 'active' => request()->routeIs('musixmatch.*')]) @if(request()->routeIs('musixmatch.*')) aria-current="page" @endif href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								Musixmatch
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a class="dropdown-item" href="{{ route('musixmatch.index') }}">
+									Search
+									</a>
+								</li>
+								<li><hr class="dropdown-divider"></li>
+								<li>
+									<a class="dropdown-item" href="{{route('musixmatch.chart',['type'=>'top'])}}">
+									Top chart
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item" href="{{route('musixmatch.chart',['type'=>'hot'])}}">
+									Popular lyrics
+									</a>
+								</li>
+							</ul>
+						</li>
 						@endif
+						<li class="nav-item">
+							<a @class(['nav-link', 'active' => request()->routeIs('sodamusic.*')])
+								@if (request()->routeIs('sodamusic.*')) aria-current="page" @endif
+								href="{{ route('sodamusic.index') }}">Soda Music</a>
+						</li>
 					</ul>
 				</div>
 			</div>

@@ -6,6 +6,7 @@ use App\Http\Controllers\LRCLibController;
 use App\Http\Controllers\MusixmatchController;
 use App\Http\Controllers\NetEaseController;
 use App\Http\Controllers\QQMusicController;
+use App\Http\Controllers\SodaMusicController;
 use App\Http\Controllers\SingleController;
 
 Route::view('/', 'index')->name('home');
@@ -21,10 +22,13 @@ Route::prefix('lrclib')->name('lrclib.')->group(function () {
 Route::prefix('musixmatch')->name('musixmatch.')->group(function () {
 	Route::view('/', 'musixmatch.index')->name('index');
 	Route::view('advanced', 'musixmatch.advanced.index')->name('advanced');
-	Route::controller(MusixmatchController::class)->name('search')->group(function () {
-		Route::get('results', 'standard');
-		Route::get('advanced/results', 'advanced')->name('.advanced');
-		Route::get('{id}/{type}', 'get')->name('.get');
+	Route::controller(MusixmatchController::class)->group(function () {
+		Route::get('charts/{type}', 'charts')->name('chart');
+		Route::name('search')->group(function(){
+			Route::get('results', 'standard');
+			Route::get('advanced/results', 'advanced')->name('.advanced');
+			Route::get('{id}/{type}', 'get')->name('.get');
+		});
 	});
 });
 Route::prefix('netease')->name('netease.')->group(function () {
@@ -49,6 +53,13 @@ Route::prefix('kugou')->name('kugou.')->group(function () {
 			Route::get('/', 'lyrics')->name('lyrics');
 			Route::post('/', 'get')->name('get');
 		});
+	});
+});
+Route::prefix('sodamusic')->name('sodamusic.')->group(function(){
+	Route::view('/', 'sodamusic.index')->name('index');
+	Route::controller(SodaMusicController::class)->name('search')->group(function () {
+		Route::get('results', 'search');
+		Route::get('{id}', 'get')->name('.get');
 	});
 });
 Route::view('laravel', 'welcome')->name('laravel');

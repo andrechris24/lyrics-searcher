@@ -1,8 +1,8 @@
 @extends('layout')
-@section('title', 'Kugou Search Results for ' . request('query'))
+@section('title', 'Kugou Music Search Results for ' . request('query'))
 @section('content')
 	<div class="px-5 mx-5 py-5 my-5 text-center">
-		<h3>Kugou Search Results</h3>
+		<h3>Kugou Music Search Results</h3>
 		<x-basic provider="kugou" />
 	</div>
 	@include('kugou.list')

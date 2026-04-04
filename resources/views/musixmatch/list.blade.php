@@ -1,7 +1,9 @@
 <x-no-script />
 @if (count($data) > 0)
+	@if(!request()->routeIs('musixmatch.chart'))
 	<p class="text-center">Page {{ request('page') ?? 1 }} out of {{ $header['available'] }}
 		result(s), showing 20 results per page</p>
+	@endif
 	<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-3">
 		@foreach ($data as $result)
 			@php
@@ -104,14 +106,6 @@
 									</li>
 								</ul>
 							</div>
-							{{-- <button type="button" class="btn btn-info" data-bs-toggle="modal"
-							data-bs-target="#modalMX" data-bs-art="{{ $art }}"
-							data-bs-plain="{{ $track['has_lyrics'] }}"
-							data-bs-synced="{{ $track['has_subtitles'] }}"
-							data-bs-richsync="{{ $track['has_richsync'] }}"
-							data-bs-explicit="{{ $track['explicit'] }}"
-							data-bs-update="{{ date_format(date_create($track['updated_time']), 'j F Y') }}">
-							</button> --}}
 							<a href="{{ $track['track_share_url'] }}" @class(['btn', 'btn-info', 'disabled' => !$track['has_lyrics']])
 								@if (!$track['has_lyrics']) aria-disabled="true" @endif target="_blank">
 								<i class="fa-solid fa-eye"></i>
@@ -132,6 +126,7 @@
 			</div>
 		@endforeach
 	</div>
+	@if(!request()->routeIs('musixmatch.chart'))
 	@php
 		$curRoute = request()->route()->getName();
 		if (request('query')) {
@@ -142,7 +137,7 @@
 		        ],
 		        'next' => ['query' => request('query'), 'page' => (request('page') ?? 1) + 1],
 		    ];
-		} else {
+		} else{
 		    $queries = [
 		        'prev' => [
 		            'title' => request('title') ?? '',
@@ -191,6 +186,7 @@
 			</ul>
 		</nav>
 	</div>
+	@endif
 @else
 	<x-no-results source="musixmatch" />
 @endif

@@ -2,7 +2,7 @@
 @section('title', 'Home')
 @section('content')
 	<div class="px-5 mx-5 py-5 my-5">
-		<h3 class="text-center">Laravel Lyrics Searcher</h3>
+		<h3 class="text-center">Lyrics Searcher by andrechris24</h3>
 		@if (Session::has('error') || $errors->any())
 			<x-error />
 		@endif

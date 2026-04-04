@@ -77,7 +77,7 @@ abstract class Controller
 		$lines = preg_split("/[\r\n]/", $krcText);
 		foreach ($lines as $line) {
 			if (preg_match($metaRegex, $line, $matches)) { // meta info
-				if (in_array($matches[1], ['language', 'ar', 'id', 'ti'])) continue;
+				if (in_array($matches[1], ['language'])) continue;
 				$lyricText .= $matches[0] . "\r\n";
 			} else if (preg_match($timestampsRegex, $line, $matches)) {
 				$lyricLine = "";

@@ -1,20 +1,18 @@
 let songID,fileName,dt_lyrics;
 const lyricsModal = document.getElementById("modalLyrics");
 if (lyricsModal) {
-	lyricsModal.addEventListener("shown.bs.modal", (event) => {
-		const button = event.relatedTarget;
-
-		// Extract info from data-bs-* attributes
-		songID = button.getAttribute("data-bs-hash");
-		fileName = button.getAttribute("data-bs-query");
-
-		// If necessary, you could initiate an Ajax request here
-		// and then do the updating in a callback
-
-		// Update the modal's content
+	lyricsModal.addEventListener("show.bs.modal",(e)=>{
+		fileName = e.relatedTarget.getAttribute("data-bs-query");
 		$("#lrc-query").text(fileName);
 		if($.fn.dataTable.isDataTable('#lyrics-table')) dt_lyrics.destroy();
+	});
+	lyricsModal.addEventListener("shown.bs.modal", (event) => {
+		// Extract info from data-bs-* attributes
+		songID = event.relatedTarget.getAttribute("data-bs-hash");
+
+		// Update the modal's content
 		dt_lyrics=$("#lyrics-table").DataTable({
+				language: {emptyTable: "No lyrics available for this song"},
 				lengthChange: false,
 				processing: true,
 				responsive: true,
@@ -81,21 +79,21 @@ function download(id, key) {
 	});
 };
 function formatMilliseconds(ms) {
-    // Validate input
-    if (typeof ms !== "number" || isNaN(ms) || ms < 0) {
-        return "00:00"; // Default for invalid input
-    }
+	// Validate input
+	if (typeof ms !== "number" || isNaN(ms) || ms < 0) {
+		return "00:00"; // Default for invalid input
+	}
 
-    // Convert to total seconds
-    const totalSeconds = Math.floor(ms / 1000);
+	// Convert to total seconds
+	const totalSeconds = Math.floor(ms / 1000);
 
-    // Calculate minutes and seconds
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
+	// Calculate minutes and seconds
+	const minutes = Math.floor(totalSeconds / 60);
+	const seconds = totalSeconds % 60;
 
-    // Pad with leading zeros if needed
-    const formattedMinutes = String(minutes).padStart(2, "0");
-    const formattedSeconds = String(seconds).padStart(2, "0");
+	// Pad with leading zeros if needed
+	const formattedMinutes = String(minutes).padStart(2, "0");
+	const formattedSeconds = String(seconds).padStart(2, "0");
 
-    return `${formattedMinutes}:${formattedSeconds}`;
+	return `${formattedMinutes}:${formattedSeconds}`;
 }

@@ -27,7 +27,8 @@ class MusixmatchController extends Controller
 				'q' => $req['query'],
 				'usertoken' => env('MUSIXMATCH_TOKEN'),
 				'page' => $req['page'] ?? 1,
-				'page_size' => 20 //Match LRCLib result count
+				'page_size' => 20, //Match LRCLib result count
+				'f_has_lyrics'=>1 //Search tracks with lyrics only
 			]);
 			$r = json_decode($response->body(), true);
 			if (json_last_error() !== JSON_ERROR_NONE) {
@@ -75,7 +76,8 @@ class MusixmatchController extends Controller
 				'q_track' => $req['title'],
 				'usertoken' => env('MUSIXMATCH_TOKEN'),
 				'page' => $req['page'] ?? 1,
-				'page_size' => 20
+				'page_size' => 20,
+				'f_has_lyrics'=>1
 			]);
 			$r = json_decode($response->body(), true);
 			if (json_last_error() !== JSON_ERROR_NONE) {
@@ -95,8 +97,43 @@ class MusixmatchController extends Controller
 			return to_route('musixmatch.advanced')->withInput()
 				->withError('Musixmatch connection failed: ' . $th->getMessage());
 		} catch (ValidationException $e) {
-			return to_route('artist.index')->withInput(['artist'])
-				->withErrors($e->errors());
+			return to_route('musixmatch.advanced')->withInput()->withErrors($e->errors());
+		}
+	}
+	public function charts(string $type){
+		if (empty(env('MUSIXMATCH_TOKEN')))
+			return to_route('index')->withError('Musixmatch token was not found');
+		try {
+			
+			Sleep::for(5)->seconds();
+			$response = Http::withHeaders([
+				"cookie" => "AWSELBCORS=0; AWSELB=0"
+			])->get('https://apic-desktop.musixmatch.com/ws/1.1/chart.tracks.get', [
+				'user_language' => 'en',
+				'app_id' => 'web-desktop-app-v1.0',
+				'country' => 'id',
+				'chart_name'=>$type,
+				'usertoken' => env('MUSIXMATCH_TOKEN'),
+				'f_has_lyrics'=>1
+			]);
+			$r = json_decode($response->body(), true);
+			if (json_last_error() !== JSON_ERROR_NONE) {
+				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
+				return to_route('musixmatch.index')->withInput()
+					->withError('Error parsing JSON response: ' . json_last_error_msg());
+			}
+			$header = $r['message']['header'];
+			if ($header['status_code'] !== 200) {
+				return to_route('musixmatch.index')->withError($this->getMXerror($header));
+			}
+			$data = $r['message']['body']['track_list'];
+			return view('musixmatch.chart', compact('data', 'header'));
+		} catch (ConnectionException $th) {
+			Log::error($th);
+			return to_route('musixmatch.index')
+				->withError('Musixmatch connection failed: ' . $th->getMessage());
+		} catch (ValidationException $e) {
+			return to_route('musixmatch.index')->withErrors($e->errors());
 		}
 	}
 	public function get(int $id, string $type)
@@ -172,18 +209,19 @@ class MusixmatchController extends Controller
 			$linenum++;
 			$words = count($line['l']);
 			$wordnum = 0;
-			if ($line['ts'] > 5 && $linenum === 1)
-				$richsync .= "[" . $this->formatTime($line['ts'] - 5) . ']';
-			else $richsync .= "[" . $this->formatTime($line['ts']) . ']';
+			if ($linenum === 1){
+				if($line['ts'] > 5)
+					$richsync .= "[" . $this->formatTime($line['ts'] - 5) . ']';
+				else $richsync .= "[00:00.00]";
+			}	else $richsync .= "[" . $this->formatTime($line['ts']) . ']';
 			foreach ($line['l'] as $word) {
 				$wordnum++;
 				$richsync .= '<' . $this->formatTime($line['ts'] + $word['o']) . '>' . $word['c'];
-				if ($wordnum === $words) {
+				if ($wordnum === $words) 
 					$richsync .= '<' . $this->formatTime($line['te']) . "> \n";
-				}
 			}
-			if ($linenum === $lines)
-				$richsync .= "[" . $this->formatTime($line['te'] + 5) . "]\n";
+			// if ($linenum === $lines)
+			// 	$richsync .= "[" . $this->formatTime($line['te'] + 5) . "]\n";
 		}
 		return $richsync;
 	}

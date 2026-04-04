@@ -1,8 +1,8 @@
 @extends('layout')
-@section('title', 'NetEase Music Lyrics Searcher')
+@section('title', 'NetEase Music Search')
 @section('content')
 	<div class="px-5 mx-5 py-5 my-5 text-center">
-		<h3>NetEase Music Lyrics Searcher</h3>
+		<h3>NetEase Music Search</h3>
 		@if (Session::has('error') || $errors->any())
 			<x-error />
 		@endif

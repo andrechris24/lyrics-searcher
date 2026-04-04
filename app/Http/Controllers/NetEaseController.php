@@ -62,6 +62,8 @@ class NetEaseController extends Controller
 				return response()->json([
 					'message' => 'NetEase Music HTTP Error ' . $r['code']
 				], $r['code']);
+			}else if(array_key_exists('needDesc', $r) && $r['needDesc']===true){
+				return response()->json(['message'=>'No lyric available for this song'],404);
 			}
 			return response()->json($r);
 		} catch (ConnectionException $th) {
@@ -70,5 +72,36 @@ class NetEaseController extends Controller
 				'message' => 'NetEase Music connection failed: ' . $th->getMessage()
 			], 500);
 		}
+	}
+	private function parseKLyric($lyricText)
+	{
+		$enhancedlyricText = "";
+		$metaRegex = "/^\[(\S+):(\S+)\]$/";
+		$timestampsRegex = "/^\[(\d+),(\d+)\]/";
+		$timestamps2Regex = "/\((\d+),(\d+)\)([^\(]*)/";
+		$lines = preg_split("/[\r\n]/", $lyricText);
+		foreach ($lines as $line) {
+			if (preg_match($metaRegex, $line, $matches)) // meta info
+				$enhancedlyricText .= $matches[0] . "\r\n";
+			else if (preg_match($timestampsRegex,$line,$matches)) {
+				$lyricLine = "";
+				$startTime = (int)$matches[1];
+				$duration = (int)$matches[2];
+				$lyricLine = "[" . $this->formatTime($startTime/1000) . "]";
+				// parse sub-timestamps
+				$subStartTime = $startTime;
+				if (preg_match_all($timestamps2Regex, $line, $subMatches)) {
+					for ($a = 0; $a < count($subMatches[0]); $a++) {
+						$subDuration = (int)$subMatches[2][$a];
+						$subWord = $subMatches[3][$a];
+						$lyricLine .= "<" . $this->formatTime($subStartTime/1000) . ">" . $subWord;
+						$subStartTime += $subDuration;
+					}
+				}
+				$lyricLine .= "<" . $this->formatTime(($startTime + $duration)/1000) . "> ";
+				$enhancedlyricText .= $lyricLine . "\r\n";
+			}
+		}
+		return $enhancedlyricText;
 	}
 }
