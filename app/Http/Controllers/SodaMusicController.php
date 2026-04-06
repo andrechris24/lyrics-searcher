@@ -17,12 +17,12 @@ class SodaMusicController extends Controller
 				['integer' => 'The offset number is malformed.']
 			);
 			$response = Http::withHeaders([
-				"Referer" => "https://api.qishui.com/", 
+				"Referer" => "https://api.qishui.com/",
 				'User-Agent' => 'LunaPC/2.6.5(197449790)'
 			])->get('https://api.qishui.com/luna/pc/search/track', [
-				'aid'=>386088,
+				'aid' => 386088,
 				'q' => $req['query'],
-				'cursor'=>$req['offset']??0,
+				'cursor' => $req['offset'] ?? 0,
 				'search_method' => 'input'
 			]);
 			$r = json_decode($response->body(), true);
@@ -32,7 +32,6 @@ class SodaMusicController extends Controller
 					->withError('Error parsing JSON response: ' . json_last_error_msg());
 			}
 			$data = $r['result_groups'][0];
-			// dd($data);
 			return view('sodamusic.result', compact('data'));
 		} catch (ConnectionException $th) {
 			Log::error($th);
@@ -46,11 +45,11 @@ class SodaMusicController extends Controller
 	{
 		try {
 			$response = Http::withHeaders([
-				"Referer" => "https://api.qishui.com/", 
+				"Referer" => "https://api.qishui.com/",
 				'User-Agent' => 'LunaPC/2.6.5(197449790)'
 			])->get(
 				'https://api.qishui.com/luna/pc/track_v2',
-				["track_id"=> $id, "media_type"=> "track"]
+				["track_id" => $id, "media_type" => "track"]
 			);
 			$r = json_decode($response->body(), true);
 			if (json_last_error() !== JSON_ERROR_NONE) {
@@ -59,10 +58,10 @@ class SodaMusicController extends Controller
 					'message' => 'Error parsing JSON response: ' . json_last_error_msg()
 				], 500);
 			}
-			if(!array_key_exists('lyric', $r))
-				return response()->json(['message'=>'No lyric available for this song'],404);
-			if($r['lyric']['type']==='krc')
-				$r['lyric']['content']=$this->krc2lrc($r['lyric']['content']);
+			if (!array_key_exists('lyric', $r))
+				return response()->json(['message' => 'No lyric available for this song'], 404);
+			if ($r['lyric']['type'] === 'krc')
+				$r['lyric']['content'] = $this->krc2lrc($r['lyric']['content']);
 			return response()->json($r);
 		} catch (ConnectionException $th) {
 			Log::error($th);

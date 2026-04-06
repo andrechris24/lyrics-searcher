@@ -35,30 +35,7 @@
 						<span id="song-duration">--:--</span>
 					</div>
 				</div>
-				<nav>
-					<div class="nav nav-pills mb-3" id="js-tabs-2" role="tablist">
-						<button class="nav-link active" id="nav-plain-tab" data-bs-toggle="tab"
-							data-bs-target="#nav-plain" type="button" role="tab" aria-controls="nav-plain"
-							aria-selected="true">
-							Plain
-						</button>
-						<button class="nav-link" id="nav-synced-tab" data-bs-toggle="tab"
-							data-bs-target="#nav-synced" type="button" role="tab"
-							aria-controls="nav-synced" aria-selected="false">
-							Synced
-						</button>
-					</div>
-				</nav>
-				<div class="tab-content" id="js-tabs-content-2">
-					<div class="tab-pane fade show active" id="nav-plain" role="tabpanel"
-						aria-labelledby="nav-plain-tab" tabindex="0">
-						<p id="plain-lyrics-content" style="white-space: pre-line"></p>
-					</div>
-					<div class="tab-pane fade" id="nav-synced" role="tabpanel"
-						aria-labelledby="nav-synced-tab" tabindex="0">
-						<p id="synced-lyrics-content" style="white-space: pre-line"></p>
-					</div>
-				</div>
+				<p id="plain-lyrics-content" style="white-space: pre-line"></p>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">

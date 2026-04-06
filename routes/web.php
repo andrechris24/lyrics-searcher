@@ -24,7 +24,7 @@ Route::prefix('musixmatch')->name('musixmatch.')->group(function () {
 	Route::view('advanced', 'musixmatch.advanced.index')->name('advanced');
 	Route::controller(MusixmatchController::class)->group(function () {
 		Route::get('charts/{type}', 'charts')->name('chart');
-		Route::name('search')->group(function(){
+		Route::name('search')->group(function () {
 			Route::get('results', 'standard');
 			Route::get('advanced/results', 'advanced')->name('.advanced');
 			Route::get('{id}/{type}', 'get')->name('.get');
@@ -47,15 +47,17 @@ Route::prefix('qqmusic')->name('qqmusic.')->group(function () {
 });
 Route::prefix('kugou')->name('kugou.')->group(function () {
 	Route::view('/', 'kugou.index')->name('index');
+	Route::view('advanced', 'kugou.advanced.index')->name('advanced');
 	Route::controller(KugouController::class)->group(function () {
-		Route::get('results', 'search')->name('search');
-		Route::prefix('{hash}')->group(function () {
-			Route::get('/', 'lyrics')->name('lyrics');
-			Route::post('/', 'get')->name('get');
+		Route::name('search')->group(function () {
+			Route::get('results', 'search');
+			Route::get('advanced/results', 'advanced')->name('.advanced');
+			Route::post('get', 'get')->name('.get');
 		});
+		Route::get('{hash}', 'lyrics')->name('lyrics');
 	});
 });
-Route::prefix('sodamusic')->name('sodamusic.')->group(function(){
+Route::prefix('sodamusic')->name('sodamusic.')->group(function () {
 	Route::view('/', 'sodamusic.index')->name('index');
 	Route::controller(SodaMusicController::class)->name('search')->group(function () {
 		Route::get('results', 'search');

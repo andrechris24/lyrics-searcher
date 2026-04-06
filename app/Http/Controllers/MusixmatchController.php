@@ -28,7 +28,7 @@ class MusixmatchController extends Controller
 				'usertoken' => env('MUSIXMATCH_TOKEN'),
 				'page' => $req['page'] ?? 1,
 				'page_size' => 20, //Match LRCLib result count
-				'f_has_lyrics'=>1 //Search tracks with lyrics only
+				'f_has_lyrics' => 1 //Search tracks with lyrics only
 			]);
 			$r = json_decode($response->body(), true);
 			if (json_last_error() !== JSON_ERROR_NONE) {
@@ -77,7 +77,7 @@ class MusixmatchController extends Controller
 				'usertoken' => env('MUSIXMATCH_TOKEN'),
 				'page' => $req['page'] ?? 1,
 				'page_size' => 20,
-				'f_has_lyrics'=>1
+				'f_has_lyrics' => 1
 			]);
 			$r = json_decode($response->body(), true);
 			if (json_last_error() !== JSON_ERROR_NONE) {
@@ -100,11 +100,12 @@ class MusixmatchController extends Controller
 			return to_route('musixmatch.advanced')->withInput()->withErrors($e->errors());
 		}
 	}
-	public function charts(string $type){
+	public function charts(string $type)
+	{
 		if (empty(env('MUSIXMATCH_TOKEN')))
 			return to_route('index')->withError('Musixmatch token was not found');
 		try {
-			
+
 			Sleep::for(5)->seconds();
 			$response = Http::withHeaders([
 				"cookie" => "AWSELBCORS=0; AWSELB=0"
@@ -112,9 +113,9 @@ class MusixmatchController extends Controller
 				'user_language' => 'en',
 				'app_id' => 'web-desktop-app-v1.0',
 				'country' => 'id',
-				'chart_name'=>$type,
+				'chart_name' => $type,
 				'usertoken' => env('MUSIXMATCH_TOKEN'),
-				'f_has_lyrics'=>1
+				'f_has_lyrics' => 1
 			]);
 			$r = json_decode($response->body(), true);
 			if (json_last_error() !== JSON_ERROR_NONE) {
@@ -203,21 +204,21 @@ class MusixmatchController extends Controller
 	private function richsync($lrc)
 	{
 		$richsync = '';
-		$lines = count($lrc);
+		// $lines = count($lrc);
 		$linenum = 0;
 		foreach ($lrc as $line) {
 			$linenum++;
 			$words = count($line['l']);
 			$wordnum = 0;
-			if ($linenum === 1){
-				if($line['ts'] > 5)
+			if ($linenum === 1) {
+				if ($line['ts'] > 5)
 					$richsync .= "[" . $this->formatTime($line['ts'] - 5) . ']';
 				else $richsync .= "[00:00.00]";
-			}	else $richsync .= "[" . $this->formatTime($line['ts']) . ']';
+			} else $richsync .= "[" . $this->formatTime($line['ts']) . ']';
 			foreach ($line['l'] as $word) {
 				$wordnum++;
 				$richsync .= '<' . $this->formatTime($line['ts'] + $word['o']) . '>' . $word['c'];
-				if ($wordnum === $words) 
+				if ($wordnum === $words)
 					$richsync .= '<' . $this->formatTime($line['te']) . "> \n";
 			}
 			// if ($linenum === $lines)

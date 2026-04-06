@@ -49,18 +49,56 @@ class KugouController extends Controller
 			$r = json_decode($response->body(), true);
 			if (json_last_error() !== JSON_ERROR_NONE) {
 				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
-				return back()
-					->withError('Error parsing JSON response: ' . json_last_error_msg());
+				return response()->json([
+					'message' => 'Error parsing JSON response: ' . json_last_error_msg()
+				], 500);
 			} else if ($r['errcode'] !== 200) {
-				return back()->withError('Kugou Music error ' . $r['errcode'] . ': ' . $r['errmsg']);
+				Log::warning('Kugou Music error ' . $r['errcode'] . ': ' . $r['errmsg']);
+				return response()->json([
+					'message' => 'Kugou Music error ' . $r['errcode'] . ': ' . $r['errmsg']
+				], $r['errcode']);
 			}
 			$data = $r['candidates'];
 			return response()->json($r['candidates']);
 		} catch (ConnectionException $e) {
 			Log::error($e);
 			return response()->json([
-				'message'=>'Kugou Music connection failed: ' . $e->getMessage()
-			],500);
+				'message' => 'Kugou Music connection failed: ' . $e->getMessage()
+			], 500);
+		}
+	}
+	public function advanced(Request $req)
+	{
+		try {
+			$req->validate([
+				'query' => 'required',
+				'minutes' => 'required|numeric|between:0,59',
+				'seconds' => 'required|numeric|between:0,59'
+			]);
+			$response = Http::get('https://lyrics.kugou.com/search', [
+				'ver' => '1',
+				'man' => 'yes',
+				"client" => 'pc',
+				'keyword' => $req['query'],
+				'duration' => ($req['minutes'] * 60 + $req['seconds'])
+			]);
+			$r = json_decode($response->body(), true);
+			if (json_last_error() !== JSON_ERROR_NONE) {
+				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
+				return to_route('kugou.advanced')->withInput()
+					->withError('Error parsing JSON response: ' . json_last_error_msg());
+			} else if (!in_array($r['errcode'], [0, 200])) {
+				return to_route('kugou.advanced')->withInput()
+					->withError('Kugou Music error ' . $r['errcode'] . ': ' . $r['error']);
+			}
+			$data = $r['candidates'];
+			return view('kugou.advanced.result', compact('data'));
+		} catch (ConnectionException $th) {
+			Log::error($th);
+			return to_route('kugou.advanced')->withInput()
+				->withError('Kugou Music connection failed: ' . $th->getMessage());
+		} catch (ValidationException $e) {
+			return to_route('kugou.advanced')->withInput()->withErrors($e->errors());
 		}
 	}
 	public function get(Request $req)

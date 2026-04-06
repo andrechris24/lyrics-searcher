@@ -41,6 +41,7 @@
 				data-bs-hash="{{ $result['hash'] }}">
 				<div class="d-flex w-100 justify-content-between">
 					<h5 class="mb-1">{{ $result['songname'] }}</h5>
+					<small>{{ gmdate('i:s', $result['duration']) }}</small>
 				</div>
 				<p class="mb-1">{{ $result['singername'] }}</p>
 				<small>{{ $result['album_name'] }}</small>
@@ -51,13 +52,11 @@
 		$curRoute = request()->route()->getName();
 		$queries = [
 		    'prev' => [
-		        'title' => request('title') ?? '',
-		        'artist' => request('artist') ?? '',
+		        'query' => request('query'),
 		        'page' => request('page') === null ? 1 : request('page') - 1,
 		    ],
 		    'next' => [
-		        'title' => request('title') ?? '',
-		        'artist' => request('artist') ?? '',
+		        'query' => request('query'),
 		        'page' => (request('page') ?? 1) + 1,
 		    ],
 		];

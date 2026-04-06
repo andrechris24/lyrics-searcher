@@ -123,29 +123,39 @@
 								href="{{ route('kugou.index') }}">Kugou</a>
 						</li>
 						@if (!empty(env('MUSIXMATCH_TOKEN')))
-						<li class="nav-item dropdown">
-							<a @class(["nav-link", "dropdown-toggle", 'active' => request()->routeIs('musixmatch.*')]) @if(request()->routeIs('musixmatch.*')) aria-current="page" @endif href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-								Musixmatch
-							</a>
-							<ul class="dropdown-menu">
-								<li>
-									<a class="dropdown-item" href="{{ route('musixmatch.index') }}">
-									Search
-									</a>
-								</li>
-								<li><hr class="dropdown-divider"></li>
-								<li>
-									<a class="dropdown-item" href="{{route('musixmatch.chart',['type'=>'top'])}}">
-									Top chart
-									</a>
-								</li>
-								<li>
-									<a class="dropdown-item" href="{{route('musixmatch.chart',['type'=>'hot'])}}">
-									Popular lyrics
-									</a>
-								</li>
-							</ul>
-						</li>
+							<li class="nav-item dropdown">
+								<a @class([
+									'nav-link',
+									'dropdown-toggle',
+									'active' => request()->routeIs('musixmatch.*'),
+								])
+									@if (request()->routeIs('musixmatch.*')) aria-current="page" @endif href="#"
+									role="button" data-bs-toggle="dropdown" aria-expanded="false">
+									Musixmatch
+								</a>
+								<ul class="dropdown-menu">
+									<li>
+										<a class="dropdown-item" href="{{ route('musixmatch.index') }}">
+											Search
+										</a>
+									</li>
+									<li>
+										<hr class="dropdown-divider">
+									</li>
+									<li>
+										<a class="dropdown-item"
+											href="{{ route('musixmatch.chart', ['type' => 'top']) }}">
+											Top chart
+										</a>
+									</li>
+									<li>
+										<a class="dropdown-item"
+											href="{{ route('musixmatch.chart', ['type' => 'hot']) }}">
+											Popular lyrics
+										</a>
+									</li>
+								</ul>
+							</li>
 						@endif
 						<li class="nav-item">
 							<a @class(['nav-link', 'active' => request()->routeIs('sodamusic.*')])
@@ -177,9 +187,9 @@
 			$.ajaxSetup({
 				timeout: 30000
 			});
-			const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-			const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap
-				.Tooltip(tooltipTriggerEl));
+			// const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+			// const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap
+			// 	.Tooltip(tooltipTriggerEl));
 			const toast = Swal.mixin({
 				toast: true,
 				position: "top-end",
@@ -191,6 +201,12 @@
 					toast.onmouseenter = Swal.stopTimer;
 					toast.onmouseleave = Swal.resumeTimer;
 				}
+			});
+			$.LoadingOverlaySetup({
+				background: "rgba(0, 0, 0, 0.5)",
+				image: "",
+				fontawesome: "fas fa-circle-notch fa-spin",
+				fontawesomeColor: "#ffffff"
 			});
 
 			function blobDL(data, filename) {

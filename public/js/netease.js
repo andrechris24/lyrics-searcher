@@ -36,10 +36,13 @@ if (lyricsModal) {
 			},
 			success: function (data) {
 				$("#save-btn").prop("disabled", false);
-				if(typeof data.klyric !== 'undefined'){
+				if (typeof data.klyric !== "undefined") {
 					console.log(data.klyric.lyric);
-					if(data.klyric.lyric!==''){
-						toast.fire({icon: 'info', text: 'This song contains word-by word lyrics.'});
+					if (data.klyric.lyric !== "") {
+						toast.fire({
+							icon: "info",
+							text: "This song contains word-by word lyrics.",
+						});
 					}
 				}
 				lyricContents =
@@ -54,6 +57,7 @@ if (lyricsModal) {
 				if (st === "timeout") message = "Connection timed out";
 				else message = xhr.responseJSON.message ?? st;
 				toast.fire({ icon: "error", text: message });
+				$("#modalLyrics").modal('hide');
 			}
 		});
 	});

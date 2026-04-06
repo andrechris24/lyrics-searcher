@@ -3,11 +3,12 @@ $(".list-group-item-action").on("click", function (e) {
 	e.preventDefault();
 	const songName = $(this).data("title"),
 		artistName = $(this).data("artist"),
-		albumName = $(this).data('album'),
-		duration=$(this).data('duration'),
+		albumName = $(this).data("album"),
+		duration = $(this).data("duration"),
 		songID = $(this).data("id");
 	fileName = `${artistName} - ${songName}.lrc`;
-	contents=`[ti: ${songName}]\n[ar: ${artistName}]\n[al: ${albumName}]\n[length: ${duration}]\n[by: Soda Music]`;
+	contents = `[ti: ${songName}]\n[ar: ${artistName}]\n`+
+		`[al: ${albumName}]\n[length: ${duration}]\n[by: Soda Music]`;
 	$.ajax({
 		url: `/sodamusic/${songID}`,
 		beforeSend: function () {
@@ -17,7 +18,7 @@ $(".list-group-item-action").on("click", function (e) {
 			$.LoadingOverlay("hide");
 		},
 		success: function (data) {
-			console.info('Downloading in Enhanced LRC format');
+			console.info("Downloading in Enhanced LRC format");
 			blobDL(`${contents}\n${data.lyric.content}`, fileName);
 		},
 		error: function (xhr, st) {

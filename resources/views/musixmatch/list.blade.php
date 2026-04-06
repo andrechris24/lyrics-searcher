@@ -1,8 +1,8 @@
 <x-no-script />
 @if (count($data) > 0)
-	@if(!request()->routeIs('musixmatch.chart'))
-	<p class="text-center">Page {{ request('page') ?? 1 }} out of {{ $header['available'] }}
-		result(s), showing 20 results per page</p>
+	@if (!request()->routeIs('musixmatch.chart'))
+		<p class="text-center">Page {{ request('page') ?? 1 }} out of
+			{{ $header['available'] }} result(s), showing 20 results per page</p>
 	@endif
 	<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-3">
 		@foreach ($data as $result)
@@ -126,66 +126,66 @@
 			</div>
 		@endforeach
 	</div>
-	@if(!request()->routeIs('musixmatch.chart'))
-	@php
-		$curRoute = request()->route()->getName();
-		if (request('query')) {
-		    $queries = [
-		        'prev' => [
-		            'query' => request('query'),
-		            'page' => request('page') === null ? 1 : request('page') - 1,
-		        ],
-		        'next' => ['query' => request('query'), 'page' => (request('page') ?? 1) + 1],
-		    ];
-		} else{
-		    $queries = [
-		        'prev' => [
-		            'title' => request('title') ?? '',
-		            'artist' => request('artist') ?? '',
-		            'album' => request('album') ?? '',
-		            'page' => request('page') === null ? 1 : request('page') - 1,
-		        ],
-		        'next' => [
-		            'title' => request('title') ?? '',
-		            'artist' => request('artist') ?? '',
-		            'album' => request('album') ?? '',
-		            'page' => (request('page') ?? 1) + 1,
-		        ],
-		    ];
-		}
-	@endphp
-	<div class="mx-5 px-5 mb-5 pb-5">
-		<nav role="navigation" aria-label="{!! __('Pagination Navigation') !!}">
-			<ul class="pagination justify-content-center">
-				{{-- Previous Page Link --}}
-				@if (request('page') === null || request('page') == 1)
-					<li class="page-item disabled" aria-disabled="true">
-						<span class="page-link">{!! __('pagination.previous') !!}</span>
-					</li>
-				@else
-					<li class="page-item">
-						<a class="page-link" rel="prev"
-							href="{{ route($curRoute, $queries['prev']) }}">
-							{!! __('pagination.previous') !!}
-						</a>
-					</li>
-				@endif
-				{{-- Next Page Link --}}
-				@if (20 * (request('page') ?? 1) < $header['available'])
-					<li class="page-item">
-						<a class="page-link" rel="next"
-							href="{{ route($curRoute, $queries['next']) }}">
-							{!! __('pagination.next') !!}
-						</a>
-					</li>
-				@else
-					<li class="page-item disabled" aria-disabled="true">
-						<span class="page-link">{!! __('pagination.next') !!}</span>
-					</li>
-				@endif
-			</ul>
-		</nav>
-	</div>
+	@if (!request()->routeIs('musixmatch.chart'))
+		@php
+			$curRoute = request()->route()->getName();
+			if (request('query')) {
+			    $queries = [
+			        'prev' => [
+			            'query' => request('query'),
+			            'page' => request('page') === null ? 1 : request('page') - 1,
+			        ],
+			        'next' => ['query' => request('query'), 'page' => (request('page') ?? 1) + 1],
+			    ];
+			} else {
+			    $queries = [
+			        'prev' => [
+			            'title' => request('title') ?? '',
+			            'artist' => request('artist') ?? '',
+			            'album' => request('album') ?? '',
+			            'page' => request('page') === null ? 1 : request('page') - 1,
+			        ],
+			        'next' => [
+			            'title' => request('title') ?? '',
+			            'artist' => request('artist') ?? '',
+			            'album' => request('album') ?? '',
+			            'page' => (request('page') ?? 1) + 1,
+			        ],
+			    ];
+			}
+		@endphp
+		<div class="mx-5 px-5 mb-5 pb-5">
+			<nav role="navigation" aria-label="{!! __('Pagination Navigation') !!}">
+				<ul class="pagination justify-content-center">
+					{{-- Previous Page Link --}}
+					@if (request('page') === null || request('page') == 1)
+						<li class="page-item disabled" aria-disabled="true">
+							<span class="page-link">{!! __('pagination.previous') !!}</span>
+						</li>
+					@else
+						<li class="page-item">
+							<a class="page-link" rel="prev"
+								href="{{ route($curRoute, $queries['prev']) }}">
+								{!! __('pagination.previous') !!}
+							</a>
+						</li>
+					@endif
+					{{-- Next Page Link --}}
+					@if (20 * (request('page') ?? 1) < $header['available'])
+						<li class="page-item">
+							<a class="page-link" rel="next"
+								href="{{ route($curRoute, $queries['next']) }}">
+								{!! __('pagination.next') !!}
+							</a>
+						</li>
+					@else
+						<li class="page-item disabled" aria-disabled="true">
+							<span class="page-link">{!! __('pagination.next') !!}</span>
+						</li>
+					@endif
+				</ul>
+			</nav>
+		</div>
 	@endif
 @else
 	<x-no-results source="musixmatch" />

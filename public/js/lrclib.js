@@ -1,11 +1,5 @@
 let plainContents, syncedContents, fileName;
 const lyricsModal = document.getElementById("modalLyrics"),
-	plainTab = document.querySelector(
-		'#js-tabs-2 button[data-bs-target="#nav-plain"]',
-	),
-	syncedTab = document.querySelector(
-		'#js-tabs-2 button[data-bs-target="#nav-synced"]',
-	),
 	plainDL = document.querySelector("#download-link-plain"),
 	syncedDL = document.querySelector("#download-link-synced");
 if (lyricsModal) {
@@ -27,10 +21,8 @@ if (lyricsModal) {
 			songTitle = lyricsModal.querySelector("#song-title"),
 			songAlbum = lyricsModal.querySelector("#song-album"),
 			songDuration = lyricsModal.querySelector("#song-duration"),
-			plainContainer = lyricsModal.querySelector("#plain-lyrics-content"),
-			syncedContainer = lyricsModal.querySelector("#synced-lyrics-content");
+			plainContainer = lyricsModal.querySelector("#plain-lyrics-content");
 		plainContainer.textContent = plainLyrics;
-		syncedContainer.textContent = syncedLyrics;
 		songArtist.textContent = artistName;
 		songTitle.textContent = songName;
 		songAlbum.textContent = albumName;
@@ -40,19 +32,14 @@ if (lyricsModal) {
 		fileName = `${songArtist.textContent} - ${songTitle.textContent}`;
 		plainContents = plainContainer.textContent;
 		if (syncedLyrics === "") {
-			bootstrap.Tab.getInstance(plainTab).show();
-			syncedTab.disabled = true;
 			syncedDL.classList.add("disabled");
 			syncedContents = null;
 		} else {
-			syncedTab.disabled = false;
 			syncedDL.classList.remove("disabled");
 			syncedContents =
-				`[ar: ${artistName}]\n` +
-				`[ti: ${songName}]\n` +
-				`[al: ${albumName}]\n` +
-				`[by: LRCLib]\n` +
-				`[length: ${songDuration.textContent}]\n${syncedContainer.textContent}`;
+				`[ar: ${artistName}]\n[ti: ${songName}]\n` +
+				`[al: ${albumName}]\n[by: LRCLib]\n` +
+				`[length: ${songDuration.textContent}]\n${syncedLyrics}`;
 		}
 	});
 }

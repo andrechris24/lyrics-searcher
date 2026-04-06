@@ -1,40 +1,41 @@
-let songID,fileName,dt_lyrics;
+let songID, fileName, dt_lyrics;
 const lyricsModal = document.getElementById("modalLyrics");
 if (lyricsModal) {
-	lyricsModal.addEventListener("show.bs.modal",(e)=>{
-		fileName = e.relatedTarget.getAttribute("data-bs-query");
-		$("#lrc-query").text(fileName);
-		if($.fn.dataTable.isDataTable('#lyrics-table')) dt_lyrics.destroy();
-	});
-	lyricsModal.addEventListener("shown.bs.modal", (event) => {
+	$.fn.dataTable.ext.errMode = "none";
+	lyricsModal.addEventListener("show.bs.modal", (event) => {
 		// Extract info from data-bs-* attributes
 		songID = event.relatedTarget.getAttribute("data-bs-hash");
+		fileName = event.relatedTarget.getAttribute("data-bs-query");
+		$("#lrc-query").text(fileName);
+		if ($.fn.dataTable.isDataTable("#lyrics-table")) dt_lyrics.destroy();
 
 		// Update the modal's content
-		dt_lyrics=$("#lyrics-table").DataTable({
-				language: {emptyTable: "No lyrics available for this song"},
+		dt_lyrics = $("#lyrics-table")
+			.DataTable({
+				language: { emptyTable: "No lyrics available for this song" },
 				lengthChange: false,
 				processing: true,
 				responsive: true,
 				searching: false,
-				ajax: {url: `/kugou/${songID}`, dataSrc: ''},
+				ajax: { url: `/kugou/${songID}`, dataSrc: "" },
 				columns: [
 					{ data: "singer" },
 					{ data: "song" },
 					{ data: "duration" },
-					{ data: "id" },
+					{ data: "id" }
 				],
 				columnDefs: [
 					{
 						target: 2,
-						render: function(data){
+						render: function (data) {
 							return formatMilliseconds(data);
 						}
-					},{
+					},
+					{
 						orderable: false,
 						target: 3,
 						render: function (data, type, full) {
-							const access=full['accesskey'];
+							const access = full["accesskey"];
 							return (
 								`<button type="button" class="btn btn-primary btn-sm" onclick="download(${data},'${access}')">` +
 								'<i class="fa-solid fa-download"></i>' +
@@ -43,7 +44,8 @@ if (lyricsModal) {
 						}
 					}
 				]
-			}).on("dt-error", function (e, settings, tn, message) {
+			})
+			.on("dt-error", function (e, settings, tn, message) {
 				toast.fire({ icon: "warning", text: message });
 			});
 	});
@@ -51,8 +53,8 @@ if (lyricsModal) {
 
 function download(id, key) {
 	const csrfToken = document
-			.querySelector('meta[name="csrf-token"]')
-			.getAttribute("content");
+		.querySelector('meta[name="csrf-token"]')
+		.getAttribute("content");
 
 	let message;
 	$.ajax({
@@ -67,8 +69,8 @@ function download(id, key) {
 			$.LoadingOverlay("hide");
 		},
 		success: function (data) {
-			if(data.fmt==='krc')
-				console.info('Downloading in Enhanced LRC format');
+			if (data.fmt === "krc")
+				console.info("Downloading in Enhanced LRC format");
 			blobDL(data.content, `${fileName}.lrc`);
 		},
 		error: function (xhr, st) {
@@ -77,12 +79,10 @@ function download(id, key) {
 			toast.fire({ icon: "error", text: message });
 		},
 	});
-};
+}
 function formatMilliseconds(ms) {
 	// Validate input
-	if (typeof ms !== "number" || isNaN(ms) || ms < 0) {
-		return "00:00"; // Default for invalid input
-	}
+	if (typeof ms !== "number" || isNaN(ms) || ms < 0) return "00:00"; // Default for invalid input
 
 	// Convert to total seconds
 	const totalSeconds = Math.floor(ms / 1000);
