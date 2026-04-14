@@ -9,24 +9,24 @@ use Illuminate\Validation\ValidationException;
 
 class NetEaseController extends Controller
 {
+	public const array NETEASE_HEADERS =
+	["Referer" => "https://music.163.com", 'X-Real-IP' => '202.96.0.0'];
+	public static string $url = 'https://music.163.com/api/';
 	public function search(Request $req)
 	{
 		try {
 			$req->validate(
-				['query' => 'required', 'offset' => 'nullable|integer|min:0|multiple_of:20'],
-				['integer' => 'The offset number is malformed.']
+				['query' => 'required', 'offset' => 'nullable|integer|min:0|multiple_of:20']
 			);
-			$response = Http::withHeaders(
-				["Referer" => "https://music.163.com", 'X-Real-IP' => '202.96.0.0']
-			)->get('https://music.163.com/api/search/get', [
-				's' => $req['query'],
-				'type' => '1',
-				'limit' => 20, //Match result count as LRCLib
-				'offset' => $req['offset'] ?? 0
-			]);
-			$r = json_decode($response->body(), true);
-			if (json_last_error() !== JSON_ERROR_NONE) {
-				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
+			$response = Http::withHeaders(self::NETEASE_HEADERS)
+				->get(self::$url . 'search/get', [
+					's' => $req['query'],
+					'type' => '1',
+					'limit' => 20, //Match result count as LRCLib
+					'offset' => $req['offset'] ?? 0
+				]);
+			$r = self::decodeJson($response->body());
+			if ($r === false) {
 				return to_route('netease.index')->withInput()
 					->withError('Error parsing JSON response: ' . json_last_error_msg());
 			} else if ($r['code'] !== 200) {
@@ -46,62 +46,18 @@ class NetEaseController extends Controller
 	public function get(int $id)
 	{
 		try {
-			$response = Http::withHeaders(
-				["Referer" => "https://music.163.com", 'X-Real-IP' => '202.96.0.0']
-			)->get(
-				'https://music.163.com/api/song/lyric',
+			$response = Http::withHeaders(self::NETEASE_HEADERS)->get(
+				self::$url . 'song/lyric',
 				['kv' => '-1', 'lv' => '-1', 'os' => 'pc', 'id' => $id]
 			);
-			$r = json_decode($response->body(), true);
-			if (json_last_error() !== JSON_ERROR_NONE) {
-				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
-				return response()->json([
-					'message' => 'Error parsing JSON response: ' . json_last_error_msg()
-				], 500);
-			} else if ($r['code'] !== 200) {
-				return response()->json([
-					'message' => 'NetEase Music HTTP Error ' . $r['code']
-				], $r['code']);
-			} else if (array_key_exists('needDesc', $r) && $r['needDesc'] === true) {
-				return response()->json(['message' => 'No lyric available for this song'], 404);
-			}
+			$r = self::decodeJson($response->body());
+			abort_if($r === false, 500, 'Error parsing JSON response: ' . json_last_error_msg());
+			abort_if($r['code'] !== 200, $r['code'], 'NetEase Music HTTP Error ' . $r['code']);
+			abort_if(array_key_exists('needDesc', $r), 404, 'No lyric available for this song');
 			return response()->json($r);
 		} catch (ConnectionException $th) {
 			Log::error($th);
-			return response()->json([
-				'message' => 'NetEase Music connection failed: ' . $th->getMessage()
-			], 500);
+			abort(500, 'NetEase Music connection failed: ' . $th->getMessage());
 		}
-	}
-	private function parseKLyric($lyricText)
-	{
-		$enhancedlyricText = "";
-		$metaRegex = "/^\[(\S+):(\S+)\]$/";
-		$timestampsRegex = "/^\[(\d+),(\d+)\]/";
-		$timestamps2Regex = "/\((\d+),(\d+)\)([^\(]*)/";
-		$lines = preg_split("/[\r\n]/", $lyricText);
-		foreach ($lines as $line) {
-			if (preg_match($metaRegex, $line, $matches)) // meta info
-				$enhancedlyricText .= $matches[0] . "\r\n";
-			else if (preg_match($timestampsRegex, $line, $matches)) {
-				$lyricLine = "";
-				$startTime = (int)$matches[1];
-				$duration = (int)$matches[2];
-				$lyricLine = "[" . $this->formatTime($startTime / 1000) . "]";
-				// parse sub-timestamps
-				$subStartTime = $startTime;
-				if (preg_match_all($timestamps2Regex, $line, $subMatches)) {
-					for ($a = 0; $a < count($subMatches[0]); $a++) {
-						$subDuration = (int)$subMatches[2][$a];
-						$subWord = $subMatches[3][$a];
-						$lyricLine .= "<" . $this->formatTime($subStartTime / 1000) . ">" . $subWord;
-						$subStartTime += $subDuration;
-					}
-				}
-				$lyricLine .= "<" . $this->formatTime(($startTime + $duration) / 1000) . "> ";
-				$enhancedlyricText .= $lyricLine . "\r\n";
-			}
-		}
-		return $enhancedlyricText;
 	}
 }

@@ -100,26 +100,7 @@
 							</div>
 						</div>
 					</div>
-					{{-- <nav>
-						<div class="nav nav-pills mb-3" id="js-tabs-mx" role="tablist">
-							<button class="nav-link active" id="nav-mx-plain-tab" data-bs-toggle="tab"
-								data-bs-target="#nav-mx-plain" type="button" role="tab"
-								aria-controls="nav-mx-plain" aria-selected="true">Plain</button>
-							<button class="nav-link" id="nav-mx-synced-tab" data-bs-toggle="tab"
-								data-bs-target="#nav-mx-synced" type="button" role="tab"
-								aria-controls="nav-mx-synced" aria-selected="false">Synced</button>
-						</div>
-					</nav>
-					<div class="tab-content" id="js-tabs-content-mx">
-						<div class="tab-pane fade show active" id="nav-mx-plain" role="tabpanel"
-							aria-labelledby="nav-mx-plain-tab" tabindex="0"> --}}
 					<p id="mx-plain-lyrics-content" style="white-space: pre-line"></p>
-					{{-- </div>
-						<div class="tab-pane fade" id="nav-mx-synced" role="tabpanel"
-							aria-labelledby="nav-mx-synced-tab" tabindex="0">
-							<p id="mx-synced-lyrics-content" style="white-space: pre-line"></p>
-						</div>
-					</div> --}}
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -166,26 +147,7 @@
 						<div class="col-3"><b>Duration</b></div>
 						<div class="col-9"><span id="lrclib-song-duration"></span></div>
 					</div>
-					{{-- <nav>
-						<div class="nav nav-pills mb-3" id="js-tabs-lrclib" role="tablist">
-							<button class="nav-link active" id="nav-lrclib-plain-tab" data-bs-toggle="tab"
-								data-bs-target="#nav-lrclib-plain" type="button" role="tab"
-								aria-controls="nav-lrclib-plain" aria-selected="true">Plain</button>
-							<button class="nav-link" id="nav-lrclib-synced-tab" data-bs-toggle="tab"
-								data-bs-target="#nav-lrclib-synced" type="button" role="tab"
-								aria-controls="nav-lrclib-synced" aria-selected="false">Synced</button>
-						</div>
-					</nav>
-					<div class="tab-content" id="js-tabs-content-lrclib">
-						<div class="tab-pane fade show active" id="nav-lrclib-plain" role="tabpanel"
-							aria-labelledby="nav-lrclib-plain-tab" tabindex="0"> --}}
 					<p id="lrclib-plain-lyrics-content" style="white-space: pre-line"></p>
-					{{-- </div>
-						<div class="tab-pane fade" id="nav-lrclib-synced" role="tabpanel"
-							aria-labelledby="nav-lrclib-synced-tab" tabindex="0">
-							<p id="lrclib-synced-lyrics-content" style="white-space: pre-line"></p>
-						</div>
-					</div> --}}
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -194,7 +156,7 @@
 					<div class="dropdown">
 						<button class="btn btn-primary dropdown-toggle" type="button"
 							data-bs-toggle="dropdown" aria-expanded="false">
-							Save to Device
+							Save
 						</button>
 						<ul class="dropdown-menu">
 							<li>
@@ -215,18 +177,6 @@
 @section('js')
 	<script type="text/javascript">
 		let plainContents, syncedContents, filename, searchTerm, message;
-		// mxPlainTab = document.querySelector(
-		// 		'button[data-bs-target="#nav-mx-plain"]'
-		// 	),
-		// 	mxSyncedTab = document.querySelector(
-		// 		'button[data-bs-target="#nav-mx-synced"]'
-		// 	),
-		// 	llPlainTab = document.querySelector(
-		// 		'button[data-bs-target="#nav-lrclib-plain"]'
-		// 	),
-		// 	llSyncedTab = document.querySelector(
-		// 		'button[data-bs-target="#nav-lrclib-synced"]'
-		// 	),
 		const mxPlainDL = document.querySelector("#download-link-mx-plain"),
 			mxSyncedDL = document.querySelector("#download-link-mx-synced"),
 			llPlainDL = document.querySelector("#download-link-lrclib-plain"),
@@ -256,7 +206,6 @@
 						searchTerm = $("#artist-name").val() + ' - ' + $(
 							"#track-name").val();
 						plainContent = data.plain.replace(/\n/g, "<br/>");
-						// syncedContent = data.synced.replace(/\n/g, "<br/>");
 						syncedContents = data.synced;
 						fileName = `${data.artist} - ${data.title}`;
 						plainContents = `${fileName}\n\n${data.plain}`;
@@ -268,8 +217,6 @@
 						if (data.source === 'lrclib') {
 							$("#lrclib-plain-lyrics-content").html(
 								plainContent);
-							// $("#lrclib-synced-lyrics-content").html(
-							// 	syncedContent);
 							$("#lrclib-song-artist").text(data.artist);
 							$("#lrclib-song-title").text(data.title);
 							$("#lrclib-song-album").text(data.album);
@@ -294,8 +241,6 @@
 								);
 							}
 							$("#mx-plain-lyrics-content").html(plainContent);
-							// $("#mx-synced-lyrics-content").html(
-							// 	syncedContent);
 							$("#mx-song-artist").text(data.artist);
 							$("#mx-song-title").text(data.title);
 							$("#mx-song-album").text(data.album);
@@ -347,7 +292,6 @@
 						icon: "error",
 						text: message
 					});
-					// console.error(xhr.responseJSON);
 				}
 			});
 		});

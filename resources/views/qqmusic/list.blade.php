@@ -1,8 +1,8 @@
 <x-no-script />
-@empty($data)
+@empty($data['itemlist'])
 	<x-no-results source="qqmusic" />
 @else
-	<p class="text-center">Found {{ $data['count'] }} result(s)</p>
+	<p class="text-center">Found {{ $data['count'] }} result(s). Click on a list to save.</p>
 	<div class="list-group mx-5 px-5 mb-5 pb-5">
 		@foreach ($data['itemlist'] as $result)
 			<a class="list-group-item list-group-item-action" href="#"

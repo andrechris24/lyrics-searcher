@@ -18,7 +18,8 @@ $(".list-group-item-action").on("click", function (e) {
 			$.LoadingOverlay("hide");
 		},
 		success: function (data) {
-			console.info("Downloading in Enhanced LRC format");
+			// if(data.lyric.type==='krc')
+			// 	console.info("Downloading in Enhanced LRC format");
 			blobDL(`${contents}\n${data.lyric.content}`, fileName);
 		},
 		error: function (xhr, st) {

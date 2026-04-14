@@ -1,6 +1,7 @@
-let lyricContents, fileName, message;
+let lyricContents, klyricContent, fileName, message;
 const lyricsModal = document.getElementById("modalLyrics"),
-	lyricDL = document.querySelector("#save-btn");
+	lyricDL = document.querySelector("#dl-synced"),
+	klyricDL = document.querySelector("#dl-klyric");
 if (lyricsModal) {
 	lyricsModal.addEventListener("show.bs.modal", (event) => {
 		const button = event.relatedTarget;
@@ -25,7 +26,6 @@ if (lyricsModal) {
 		$.ajax({
 			url: `/netease/${songID}`,
 			beforeSend: function () {
-				$("#save-btn").prop("disabled", true);
 				$(".placeholder-glow").removeClass("d-none");
 				$("#lyrics-content").html("");
 				$.LoadingOverlay("show");
@@ -35,15 +35,17 @@ if (lyricsModal) {
 				$.LoadingOverlay("hide");
 			},
 			success: function (data) {
-				$("#save-btn").prop("disabled", false);
 				if (typeof data.klyric !== "undefined") {
-					console.log(data.klyric.lyric);
 					if (data.klyric.lyric !== "") {
-						toast.fire({
-							icon: "info",
-							text: "This song contains word-by word lyrics.",
-						});
+						$("#dl-klyric").removeClass("disabled");
+						klyricContent = parseKLyric(data.klyric.lyric);
+					} else {
+						$("#dl-klyric").addClass("disabled");
+						klyricContent = "";
 					}
+				} else {
+					$("#dl-klyric").addClass("disabled");
+					klyricContent = "";
 				}
 				lyricContents =
 					`[ar: ${artistName}]\n` +
@@ -57,41 +59,64 @@ if (lyricsModal) {
 				if (st === "timeout") message = "Connection timed out";
 				else message = xhr.responseJSON.message ?? st;
 				toast.fire({ icon: "error", text: message });
-				$("#modalLyrics").modal('hide');
-			}
+				$("#modalLyrics").modal("hide");
+			},
 		});
 	});
 }
-// function parseKLyric(lyricText){
-// 		let enhancedlyricText = "";
-// 		let matches;
-// 		let metaRegex = /^\[(\S+):(\S+)\]$/;
-// 		let timestampsRegex = /^\[(\d+),(\d+)\]/;
-// 		let timestamps2Regex = /\((\d+),(\d+)\)([^\(]*)/g;
-// 		let lines = lyricText.split(/[\r\n]/);
-// 		for (const line of lines) {
-// 				if (matches = metaRegex.exec(line)) { // meta info
-// 						enhancedlyricText += `${matches[0]}\r\n`;
-// 				} else if (matches = timestampsRegex.exec(line)) {
-// 						let startTime = parseInt(matches[1]);
-// 						let duration = parseInt(matches[2]);
-// 						let lyricLine = "[" + formatTime(startTime) + "]";
-// 						// parse sub-timestamps
-// 						let subMatches;
-// 						let subStartTime = startTime;
-// 						while (subMatches = timestamps2Regex.exec(line)) {
-// 								let subDuration = parseInt(subMatches[2]);
-// 								let subWord = subMatches[3];
-// 								lyricLine += "<" + formatTime(subStartTime) + `>${subWord}`;
-// 								subStartTime += subDuration;
-// 						}
-// 						lyricLine += "<" + formatTime(startTime + duration) + ">";
-// 						enhancedlyricText += `${lyricLine}\r\n`;
-// 				}
-// 		}
-// 		return enhancedlyricText;
-// }
 lyricDL.onclick = function () {
 	lyricDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(lyricContents)}`;
-	lyricDL.download = `${fileName}.lrc`;
+	lyricDL.download = `${fileName}`;
 };
+klyricDL.onclick = function () {
+	klyricDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(klyricContent)}`;
+	klyricDL.download = `${fileName}`;
+};
+function parseKLyric(lyricText) {
+	let enhancedlyricText = "";
+	let matches;
+	let metaRegex = /^\[(\S+):(\S+)\]$/;
+	let timestampsRegex = /^\[(\d+),(\d+)\]/;
+	let timestamps2Regex = /\((\d+),(\d+)\)([^\(]*)/g;
+	let lines = lyricText.split(/[\r\n]/);
+	for (const line of lines) {
+		if ((matches = metaRegex.exec(line))) {
+			// meta info
+			enhancedlyricText += `${matches[0]}\r\n`;
+		} else if ((matches = timestampsRegex.exec(line))) {
+			let startTime = parseInt(matches[1]);
+			let duration = parseInt(matches[2]);
+			let lyricLine = `[${formatTime(startTime)}]`;
+			// parse sub-timestamps
+			let subMatches;
+			let subStartTime = startTime;
+			while ((subMatches = timestamps2Regex.exec(line))) {
+				let subDuration = parseInt(subMatches[2]);
+				let subWord = subMatches[3];
+				lyricLine += `<${formatTime(subStartTime)}>${subWord}`;
+				subStartTime += subDuration;
+			}
+			lyricLine += `<${formatTime(startTime + duration)}>`;
+			enhancedlyricText += `${lyricLine}\r\n`;
+		}
+	}
+	return enhancedlyricText;
+}
+function formatTime(time) {
+	const zpad = (n) => {
+		const s = n.toString();
+		return s.length < 2 ? `0${s}` : s;
+	};
+
+	let t = Math.abs(time / 1000);
+	const h = Math.floor(t / 3600);
+	t -= h * 3600;
+
+	const m = Math.floor(t / 60);
+	t -= m * 60;
+
+	const s = Math.floor(t);
+	const ms = t - s;
+
+	return `${(h ? `${zpad(h)}:` : "") + zpad(m)}:${zpad(s)}.${zpad(Math.floor(ms * 100))}`;
+}

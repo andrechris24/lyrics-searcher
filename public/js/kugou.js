@@ -24,7 +24,12 @@ if (lyricsModal) {
 					{ data: "duration" },
 					{ data: "id" }
 				],
-				columnDefs: [
+				columnDefs: [{
+					target: 0,
+					render: function(data){
+						return data.replace("\u{3001}",', ');
+					}
+				},
 					{
 						target: 2,
 						render: function (data) {
@@ -36,6 +41,7 @@ if (lyricsModal) {
 						target: 3,
 						render: function (data, type, full) {
 							const access = full["accesskey"];
+							// console.log(full['krctype']);
 							return (
 								`<button type="button" class="btn btn-primary btn-sm" onclick="download(${data},'${access}')">` +
 								'<i class="fa-solid fa-download"></i>' +
@@ -58,7 +64,7 @@ function download(id, key) {
 
 	let message;
 	$.ajax({
-		url: `/kugou/${songID}`,
+		url: `/kugou/get`,
 		headers: { "X-CSRF-TOKEN": csrfToken },
 		method: "POST",
 		data: { id: id, key: key },
@@ -69,15 +75,15 @@ function download(id, key) {
 			$.LoadingOverlay("hide");
 		},
 		success: function (data) {
-			if (data.fmt === "krc")
-				console.info("Downloading in Enhanced LRC format");
+			// if (data.fmt === "krc")
+			// 	console.info("Downloading in Enhanced LRC format");
 			blobDL(data.content, `${fileName}.lrc`);
 		},
 		error: function (xhr, st) {
 			if (st === "timeout") message = "Connection timed out";
 			else message = xhr.responseJSON.message ?? st;
 			toast.fire({ icon: "error", text: message });
-		},
+		}
 	});
 }
 function formatMilliseconds(ms) {

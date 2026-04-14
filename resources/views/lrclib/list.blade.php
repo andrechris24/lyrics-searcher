@@ -44,7 +44,7 @@
 				<div class="dropdown">
 					<button class="btn btn-primary dropdown-toggle" type="button"
 						data-bs-toggle="dropdown" aria-expanded="false">
-						Save to Device
+						Save
 					</button>
 					<ul class="dropdown-menu">
 						<li>
@@ -60,34 +60,34 @@
 	</div>
 </div>
 <x-no-script />
-@if (count($data) > 0)
+@empty($data)
+	<x-no-results source="lrclib" />
+@else
 	<p class="text-center">Only first 20 results are returned due to API limitation</p>
 	<div class="list-group mx-5 px-5 mb-5 pb-5">
 		@foreach ($data as $result)
-			@php($length = gmdate('i:s', $result->duration))
+			@php($length = gmdate('i:s', $result['duration']))
 			<a class="list-group-item list-group-item-action"
-				@if (!$result->instrumental) data-bs-toggle="modal" data-bs-album="{{ $result->albumName }}" data-bs-duration="{{ $length }}"
-				data-bs-title="{{ $result->trackName }}" data-bs-artist="{{ $result->artistName }}"
-				data-bs-plain="{{ $result->plainLyrics }}"
-				data-bs-synced="{{ $result->syncedLyrics }}" @else onclick="toast.fire({icon: 'info',text: 'This song is Instrumental'}); return false;" @endif
+				@if (!$result['instrumental']) data-bs-toggle="modal" data-bs-album="{{ $result['albumName'] }}" data-bs-duration="{{ $length }}"
+				data-bs-title="{{ $result['trackName'] }}" data-bs-artist="{{ $result['artistName'] }}"
+				data-bs-plain="{{ $result['plainLyrics'] }}"
+				data-bs-synced="{{ $result['syncedLyrics'] }}" @else onclick="toast.fire({icon: 'info',text: 'This song is Instrumental'});return false;" @endif
 				href="#modalLyrics">
 				<div class="d-flex w-100 justify-content-between">
-					<h5 class="mb-1">{{ $result->trackName }}</h5>
+					<h5 class="mb-1">{{ $result['trackName'] }}</h5>
 					<small>{{ $length }} |
-						@if ($result->instrumental)
+						@if ($result['instrumental'])
 							<span class="text-info">Instrumental</span>
-						@elseif(!empty($result->syncedLyrics))
+						@elseif(!empty($result['syncedLyrics']))
 							<span class="text-success">Synced</span>
 						@else
 							<span class="text-secondary">Plain</span>
 						@endif
 					</small>
 				</div>
-				<p class="mb-1">{{ $result->artistName }}</p>
-				<small>{{ $result->albumName }}</small>
+				<p class="mb-1">{{ $result['artistName'] }}</p>
+				<small>{{ $result['albumName'] }}</small>
 			</a>
 		@endforeach
 	</div>
-@else
-	<x-no-results source="lrclib" />
-@endif
+	@endif

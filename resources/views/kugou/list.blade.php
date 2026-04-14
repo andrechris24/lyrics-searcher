@@ -11,6 +11,7 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
+				<x-enhanced-only />
 				<table id="lyrics-table" class="table table-striped">
 					<thead>
 						<tr>
@@ -37,13 +38,13 @@
 	<div class="list-group mx-5 px-5 mb-5 pb-5">
 		@foreach ($data['info'] as $result)
 			<a class="list-group-item list-group-item-action" data-bs-toggle="modal"
-				href="#modalLyrics" data-bs-query="{{ $result['filename'] }}"
-				data-bs-hash="{{ $result['hash'] }}">
+				href="#modalLyrics" data-bs-hash="{{ $result['hash'] }}"
+				data-bs-query="{{ str_replace("\u{3001}", ', ', $result['filename']) }}">
 				<div class="d-flex w-100 justify-content-between">
 					<h5 class="mb-1">{{ $result['songname'] }}</h5>
 					<small>{{ gmdate('i:s', $result['duration']) }}</small>
 				</div>
-				<p class="mb-1">{{ $result['singername'] }}</p>
+				<p class="mb-1">{{ str_replace("\u{3001}", ', ', $result['singername']) }}</p>
 				<small>{{ $result['album_name'] }}</small>
 			</a>
 		@endforeach

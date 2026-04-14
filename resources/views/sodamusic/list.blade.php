@@ -1,7 +1,10 @@
 <x-no-script />
-@if (count($data['data']) > 0)
+@empty($data['data'])
+	<x-no-results source="sodamusic" />
+@else
 	<p class="text-center">Showing {{ (request('offset') ?? 0) + 1 }} to
-		{{ $data['next_cursor'] }} result(s)</p>
+		{{ $data['next_cursor'] }} result(s). Click on a list to save.</p>
+	<x-enhanced-only />
 	<div class="list-group mx-5 px-5 mb-5 pb-5">
 		@foreach ($data['data'] as $result)
 			@php
@@ -55,6 +58,4 @@
 			</ul>
 		</nav>
 	</div>
-@else
-	<x-no-results source="sodamusic" />
-@endif
+	@endif

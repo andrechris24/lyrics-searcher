@@ -47,9 +47,20 @@
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
 					Close
 				</button>
-				<a class="btn btn-primary" href="#" id="save-btn" disabled>
-					Save to Device
-				</a>
+				<div class="dropdown">
+					<button class="btn btn-primary dropdown-toggle" type="button"
+						data-bs-toggle="dropdown" aria-expanded="false">
+						Save
+					</button>
+					<ul class="dropdown-menu">
+						<li>
+							<a class="dropdown-item" href="#" id="dl-synced">Synced</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="#" id="dl-klyric">Word by word</a>
+						</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</div>

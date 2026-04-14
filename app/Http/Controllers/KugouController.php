@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 
 class KugouController extends Controller
 {
+	public static string $lrcUrl = 'https://lyrics.kugou.com/';
 	public function search(Request $req)
 	{
 		try {
@@ -20,9 +21,8 @@ class KugouController extends Controller
 				"pagesize" => 20,
 				'showtype' => 1
 			]);
-			$r = json_decode($response->body(), true);
-			if (json_last_error() !== JSON_ERROR_NONE) {
-				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
+			$r = self::decodeJson($response);
+			if ($r === false) {
 				return to_route('kugou.index')->withInput()
 					->withError('Error parsing JSON response: ' . json_last_error_msg());
 			} else if (!in_array($r['errcode'], [0, 200])) {
@@ -43,28 +43,25 @@ class KugouController extends Controller
 	{
 		try {
 			$response = Http::get(
-				'https://lyrics.kugou.com/search',
-				['ver' => '1', 'man' => 'yes', "client" => 'pc', 'hash' => $hash]
+				self::$lrcUrl . 'search',
+				['ver' => '1', 'man' => 'yes', 'client' => 'pc', 'hash' => $hash]
 			);
-			$r = json_decode($response->body(), true);
-			if (json_last_error() !== JSON_ERROR_NONE) {
-				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
-				return response()->json([
-					'message' => 'Error parsing JSON response: ' . json_last_error_msg()
-				], 500);
-			} else if ($r['errcode'] !== 200) {
-				Log::warning('Kugou Music error ' . $r['errcode'] . ': ' . $r['errmsg']);
-				return response()->json([
-					'message' => 'Kugou Music error ' . $r['errcode'] . ': ' . $r['errmsg']
-				], $r['errcode']);
-			}
-			$data = $r['candidates'];
+			$r = self::decodeJson($response->body());
+			abort_if(
+				$r === false,
+				500,
+				'Error parsing JSON response: ' . json_last_error_msg()
+			);
+			abort_if(
+				$r['errcode'] !== 200,
+				$r['errcode'],
+				'Kugou Music error ' . $r['errcode'] . ': ' . $r['errmsg']
+			);
+			// Log::warning('Kugou Music error ' . $r['errcode'] . ': ' . $r['errmsg']);
 			return response()->json($r['candidates']);
 		} catch (ConnectionException $e) {
 			Log::error($e);
-			return response()->json([
-				'message' => 'Kugou Music connection failed: ' . $e->getMessage()
-			], 500);
+			abort(500, 'Kugou Music connection failed: ' . $e->getMessage());
 		}
 	}
 	public function advanced(Request $req)
@@ -75,16 +72,15 @@ class KugouController extends Controller
 				'minutes' => 'required|numeric|between:0,59',
 				'seconds' => 'required|numeric|between:0,59'
 			]);
-			$response = Http::get('https://lyrics.kugou.com/search', [
+			$response = Http::get(self::$lrcUrl . 'search', [
 				'ver' => '1',
 				'man' => 'yes',
-				"client" => 'pc',
+				'client' => 'pc',
 				'keyword' => $req['query'],
 				'duration' => ($req['minutes'] * 60 + $req['seconds'])
 			]);
-			$r = json_decode($response->body(), true);
-			if (json_last_error() !== JSON_ERROR_NONE) {
-				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
+			$r = self::decodeJson($response->body());
+			if ($r === false) {
 				return to_route('kugou.advanced')->withInput()
 					->withError('Error parsing JSON response: ' . json_last_error_msg());
 			} else if (!in_array($r['errcode'], [0, 200])) {
@@ -105,24 +101,25 @@ class KugouController extends Controller
 	{
 		$req->validate(['id' => 'required|integer', 'key' => 'required']);
 		try {
-			$response = Http::get('https://lyrics.kugou.com/download', [
+			$response = Http::get(self::$lrcUrl . 'download', [
 				'ver' => '1',
 				'id' => $req['id'],
 				"client" => 'pc',
 				'accesskey' => $req['key'],
 				'charset' => 'utf8'
 			]);
-			$r = json_decode($response->body(), true);
-			if (json_last_error() !== JSON_ERROR_NONE) {
-				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
-				return response()->json([
-					'message' => 'Error parsing JSON response: ' . json_last_error_msg()
-				], 500);
-			} else if ($r['status'] !== 200) {
-				return response()->json([
-					'Kugou Music error ' . $r['error_code'] . ': ' . $r['info']
-				], $r['status']);
-			}
+			$r = self::decodeJson($response->body());
+			abort_if(
+				$r === false,
+				500,
+				'Error parsing JSON response: ' . json_last_error_msg()
+			);
+			// Log::warning('Kugou Music error ' . $r['error_code'] . ': ' . $r['info']);
+			abort_if(
+				$r['status'] !== 200,
+				$r['status'],
+				'Kugou Music error ' . $r['error_code'] . ': ' . $r['info']
+			);
 			if ($r['fmt'] !== 'krc') $context = $r['content'];
 			else {
 				$krc = base64_decode($r['content']);
@@ -135,7 +132,7 @@ class KugouController extends Controller
 			return response()->json(['format' => $r['fmt'], 'content' => $context]);
 		} catch (ConnectionException $e) {
 			Log::error($e);
-			return back()->withError('Kugou Music connection failed: ' . $e->getMessage());
+			abort(500, 'Kugou Music connection failed: ' . $e->getMessage());
 		}
 	}
 }

@@ -9,16 +9,14 @@ use Illuminate\Validation\ValidationException;
 
 class LRCLibController extends Controller
 {
+	public static string $url = 'https://lrclib.net/api/search';
 	public function standard(Request $request)
 	{
 		try {
 			$request->validate(['query' => 'required']);
-			$response = Http::get('https://lrclib.net/api/search', [
-				'q' => $request['query']
-			]);
-			$data = json_decode($response->body());
-			if (json_last_error() !== JSON_ERROR_NONE) {
-				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
+			$response = Http::get(self::$url, ['q' => $request['query']]);
+			$data = self::decodeJson($response->body());
+			if ($data === false) {
 				return to_route('lrclib.index')->withInput()
 					->withError('Error parsing JSON response: ' . json_last_error_msg());
 			}
@@ -35,15 +33,13 @@ class LRCLibController extends Controller
 	{
 		try {
 			$request->validate(['title' => 'required']);
-			$q = [
+			$response = Http::get(self::$url, [
 				'track_name' => $request['title'],
 				'artist_name' => $request['artist'],
 				'album_name' => $request['album']
-			];
-			$response = Http::get('https://lrclib.net/api/search', $q);
-			$data = json_decode($response->body());
-			if (json_last_error() !== JSON_ERROR_NONE) {
-				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
+			]);
+			$data = self::decodeJson($response->body());
+			if ($data === false) {
 				return to_route('lrclib.advanced')->withInput()
 					->withError('Error parsing JSON response: ' . json_last_error_msg());
 			}

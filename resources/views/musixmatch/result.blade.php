@@ -1,8 +1,8 @@
 @extends('layout')
-@section('title', 'Musixmatch Search Results for ' . request('query'))
+@section('title', 'Musixmatch Lyrics Search Results for ' . request('query'))
 @section('content')
 	<div class="px-5 mx-5 py-5 my-5 text-center">
-		<h3>Musixmatch Search Results</h3>
+		<h3>Musixmatch Lyrics Search Results</h3>
 		<x-limitation />
 		<x-basic provider="musixmatch" />
 	</div>

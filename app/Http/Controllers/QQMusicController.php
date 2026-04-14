@@ -9,19 +9,18 @@ use Illuminate\Validation\ValidationException;
 
 class QQMusicController extends Controller
 {
+	public const array QQ_HEADER = ["Referer" => "https://y.qq.com/portal/player.html"];
+	public static string $url = 'https://c.y.qq.com/';
 	public function search(Request $req)
 	{
 		try {
 			$req->validate(['query' => 'required']);
-			$response = Http::withHeaders([
-				"Referer" => "http://y.qq.com/portal/player.html"
-			])->get(
-				'https://c.y.qq.com/splcloud/fcgi-bin/smartbox_new.fcg',
+			$response = Http::withHeaders(self::QQ_HEADER)->get(
+				self::$url . 'splcloud/fcgi-bin/smartbox_new.fcg',
 				['inCharset' => 'utf-8', 'outCharset' => 'utf-8', 'key' => $req['query']]
 			);
-			$r = json_decode($response->body(), true);
-			if (json_last_error() !== JSON_ERROR_NONE) {
-				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
+			$r = self::decodeJson($response->body());
+			if ($r === false) {
 				return to_route('qqmusic.index')->withInput()
 					->withError('Error parsing JSON response: ' . json_last_error_msg());
 			}
@@ -38,30 +37,28 @@ class QQMusicController extends Controller
 	public function get(string $id)
 	{
 		try {
-			$response = Http::withHeaders([
-				"Referer" => "http://y.qq.com/portal/player.html"
-			])->get('http://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg', [
-				'g_tk' => '5381',
-				'format' => 'json',
-				'inCharset' => 'utf-8',
-				'outCharset' => 'utf-8',
-				'songmid' => $id
-			]);
-			$r = json_decode($response->body(), true);
-			if (json_last_error() !== JSON_ERROR_NONE) {
-				Log::error($response->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
-				return response()->json([
-					'message' => 'Error parsing JSON response: ' . json_last_error_msg()
-				], 500);
-			} else if (!array_key_exists('lyric', $r))
-				return response()->json(['message' => 'No lyric available for this song'], 404);
+			$response = Http::withHeaders(self::QQ_HEADER)
+				->get(self::$url . 'lyric/fcgi-bin/fcg_query_lyric_new.fcg', [
+					'g_tk' => '5381',
+					'format' => 'json',
+					'inCharset' => 'utf-8',
+					'outCharset' => 'utf-8',
+					'songmid' => $id
+				]);
+			$r = self::decodeJson($response->body());
+			abort_if($r === false, 500, 'Error parsing JSON response: ' . json_last_error_msg());
+			if (!array_key_exists('lyric', $r)) {
+				Log::info(
+					'No lyric available for songmid {id}, response code: {code}',
+					['id' => $id, 'code' => json_encode($r)]
+				);
+				abort(404, 'No lyric available for this song');
+			}
 			$data = ['lyric' => base64_decode($r['lyric'])];
 			return response()->json($data);
 		} catch (ConnectionException $th) {
 			Log::error($th);
-			return response()->json([
-				'message' => 'QQ Music connection failed: ' . $th->getMessage()
-			], 500);
+			abort(500, 'QQ Music connection failed: ' . $th->getMessage());
 		}
 	}
 }
