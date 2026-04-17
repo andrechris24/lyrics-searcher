@@ -57,7 +57,6 @@ class KugouController extends Controller
 				$r['errcode'],
 				'Kugou Music error ' . $r['errcode'] . ': ' . $r['errmsg']
 			);
-			// Log::warning('Kugou Music error ' . $r['errcode'] . ': ' . $r['errmsg']);
 			return response()->json($r['candidates']);
 		} catch (ConnectionException $e) {
 			Log::error($e);
@@ -114,7 +113,6 @@ class KugouController extends Controller
 				500,
 				'Error parsing JSON response: ' . json_last_error_msg()
 			);
-			// Log::warning('Kugou Music error ' . $r['error_code'] . ': ' . $r['info']);
 			abort_if(
 				$r['status'] !== 200,
 				$r['status'],
@@ -122,8 +120,7 @@ class KugouController extends Controller
 			);
 			if ($r['fmt'] !== 'krc') $context = $r['content'];
 			else {
-				$krc = base64_decode($r['content']);
-				$zip = $this->krchex_xor($krc);
+				$zip = $this->krchex_xor(base64_decode($r['content']));
 				if (!$zip) abort(500, 'Failed to decrypt KRC data');
 				$decoded = zlib_decode($zip);
 				if (!$decoded) abort(500, 'Failed to decode KRC data');

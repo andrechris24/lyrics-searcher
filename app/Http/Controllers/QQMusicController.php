@@ -9,23 +9,49 @@ use Illuminate\Validation\ValidationException;
 
 class QQMusicController extends Controller
 {
-	public const array QQ_HEADER = ["Referer" => "https://y.qq.com/portal/player.html"];
-	public static string $url = 'https://c.y.qq.com/';
+	public const array QQ_HEADER = [
+		"User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0",
+		"Accept" => "application/json, text/plain, */*",
+		"Accept-Language" => "en-US;q=0.3,en;q=0.2",
+		// "Content-Type"=> "application/json;charset=utf-8",
+		"Sec-Fetch-Dest" => "empty",
+		"Sec-Fetch-Mode" => "cors",
+		"Sec-Fetch-Site" => "same-origin"
+	];
+	public static string $url = 'https://u.y.qq.com/cgi-bin/musicu.fcg';
 	public function search(Request $req)
 	{
 		try {
-			$req->validate(['query' => 'required']);
-			$response = Http::withHeaders(self::QQ_HEADER)->get(
-				self::$url . 'splcloud/fcgi-bin/smartbox_new.fcg',
-				['inCharset' => 'utf-8', 'outCharset' => 'utf-8', 'key' => $req['query']]
-			);
+			$req->validate(['query' => 'required', 'page' => 'nullable|integer|min:1']);
+			$response = Http::withHeaders(self::QQ_HEADER)->post(self::$url, [
+				'comm' => ['ct' => 19, 'cv' => 1859, 'uin' => 0],
+				'req' => [
+					'method' => "DoSearchForQQMusicDesktop",
+					"module" => "music.search.SearchCgiService",
+					"param" => [
+						'grp' => 1,
+						'num_per_page' => 20,
+						'page_num' => (int)$req['page'] ?? 1,
+						'query' => $req['query'],
+						'search_type' => 0
+					]
+				]
+			]);
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
 				return to_route('qqmusic.index')->withInput()
 					->withError('Error parsing JSON response: ' . json_last_error_msg());
+			} else if (!in_array($r['code'], [0, 200])) {
+				return to_route('qqmusic.index')->withInput()
+					->withError('QQ Music error ' . $r['code']);
+			} else if (!in_array($r['req']['code'], [0, 200])) {
+				return to_route('qqmusic.index')->withInput()
+					->withError('QQ Music request error ' . $r['req']['code']);
+			} else if (!in_array($r['req']['data']['code'], [0, 200])) {
+				return to_route('qqmusic.index')->withInput()
+					->withError('QQ Music data error ' . $r['req']['data']['code']);
 			}
-			$data = $r['data']['song'];
-			return view('qqmusic.result', compact('data'));
+			return view('qqmusic.result', $r['req']['data']);
 		} catch (ConnectionException $th) {
 			Log::error($th);
 			return to_route('qqmusic.index')->withInput()
@@ -37,8 +63,8 @@ class QQMusicController extends Controller
 	public function get(string $id)
 	{
 		try {
-			$response = Http::withHeaders(self::QQ_HEADER)
-				->get(self::$url . 'lyric/fcgi-bin/fcg_query_lyric_new.fcg', [
+			$response = Http::withHeaders(["Referer" => "https://y.qq.com/portal/player.html"])
+				->get('https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg', [
 					'g_tk' => '5381',
 					'format' => 'json',
 					'inCharset' => 'utf-8',

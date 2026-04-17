@@ -179,18 +179,15 @@ class MusixmatchController extends Controller
 		foreach ($lrc as $line) {
 			$linenum++;
 			$words = count($line['l']);
-			$wordnum = 0;
 			if ($linenum === 1) {
 				if ($line['ts'] > 5)
 					$richsync .= "[" . $this->formatTime($line['ts'] - 5) . ']';
 				else $richsync .= "[00:00.00]";
 			} else $richsync .= "[" . $this->formatTime($line['ts']) . ']';
 			foreach ($line['l'] as $word) {
-				$wordnum++;
 				$richsync .= '<' . $this->formatTime($line['ts'] + $word['o']) . '>' . $word['c'];
-				if ($wordnum === $words)
-					$richsync .= '<' . $this->formatTime($line['te']) . "> \n";
 			}
+			$richsync .= '<' . $this->formatTime($line['te']) . "> \n";
 		}
 		return $richsync;
 	}

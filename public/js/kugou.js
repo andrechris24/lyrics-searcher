@@ -1,4 +1,4 @@
-let songID, fileName, dt_lyrics;
+let songID, fileName, dt_lyrics, lyricContent;
 const lyricsModal = document.getElementById("modalLyrics");
 if (lyricsModal) {
 	$.fn.dataTable.ext.errMode = "none";
@@ -24,12 +24,13 @@ if (lyricsModal) {
 					{ data: "duration" },
 					{ data: "id" }
 				],
-				columnDefs: [{
-					target: 0,
-					render: function(data){
-						return data.replace("\u{3001}",', ');
-					}
-				},
+				columnDefs: [
+					{
+						target: 0,
+						render: function (data) {
+							return data.replace("\u{3001}", ", ");
+						}
+					},
 					{
 						target: 2,
 						render: function (data) {
@@ -74,10 +75,28 @@ function download(id, key) {
 		complete: function () {
 			$.LoadingOverlay("hide");
 		},
-		success: function (data) {
-			// if (data.fmt === "krc")
-			// 	console.info("Downloading in Enhanced LRC format");
-			blobDL(data.content, `${fileName}.lrc`);
+		success: async function (data) {
+			try {
+				if (data.format === "krc") {
+					const choice = await Swal.fire({
+						title: "Choose lyric type to download",
+						text: "Note: only a few players support word-by-word lyrics.",
+						theme: "bootstrap-5",
+						showDenyButton: true,
+						showCancelButton: true,
+						confirmButtonText: "Synced",
+						denyButtonText: "Word-by-Word",
+					});
+					if (choice.isConfirmed)
+						lyricContent = data.content.replace(/<\d{2}:\d{2}\.\d{2}>/g, "");
+					else if (choice.isDenied) lyricContent = data.content;
+					else if (choice.isDismissed) return false;
+					else throw "Unknown choice";
+				} else lyricContent = data.content;
+				blobDL(lyricContent, `${fileName}.lrc`);
+			} catch (e) {
+				console.warn(e);
+			}
 		},
 		error: function (xhr, st) {
 			if (st === "timeout") message = "Connection timed out";

@@ -1,4 +1,4 @@
-let lyricContents, klyricContent, fileName, message;
+let lyricContents, klyricContent, fileName, message, ext;
 const lyricsModal = document.getElementById("modalLyrics"),
 	lyricDL = document.querySelector("#dl-synced"),
 	klyricDL = document.querySelector("#dl-klyric");
@@ -12,6 +12,9 @@ if (lyricsModal) {
 			albumName = button.getAttribute("data-bs-album"),
 			songID = button.getAttribute("data-bs-id"),
 			duration = button.getAttribute("data-bs-duration");
+		const metaLyric =
+			`[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n` +
+			`[by: NetEase]\n[length: ${duration}]\n`;
 		// If necessary, you could initiate an Ajax request here
 		// and then do the updating in a callback
 
@@ -22,7 +25,7 @@ if (lyricsModal) {
 		$("#song-artist").text(artistName);
 
 		// Set file name and contents on save
-		fileName = `${artistName} - ${songName}.lrc`;
+		fileName = `${artistName} - ${songName}`;
 		$.ajax({
 			url: `/netease/${songID}`,
 			beforeSend: function () {
@@ -38,7 +41,7 @@ if (lyricsModal) {
 				if (typeof data.klyric !== "undefined") {
 					if (data.klyric.lyric !== "") {
 						$("#dl-klyric").removeClass("disabled");
-						klyricContent = parseKLyric(data.klyric.lyric);
+						klyricContent = `${metaLyric}[ve: ${data.klyric.version}]\n${parseKLyric(data.klyric.lyric)}`;
 					} else {
 						$("#dl-klyric").addClass("disabled");
 						klyricContent = "";
@@ -47,12 +50,13 @@ if (lyricsModal) {
 					$("#dl-klyric").addClass("disabled");
 					klyricContent = "";
 				}
-				lyricContents =
-					`[ar: ${artistName}]\n` +
-					`[ti: ${songName}]\n` +
-					`[al: ${albumName}]\n` +
-					`[by: NetEase]\n` +
-					`[length: ${duration}]\n${data.lrc.lyric}`;
+				if(!data.lrc.lyric.match(/\[(\d+):(\d+).(\d+)\]/)){
+					lyricContents = data.lrc.lyric;
+					ext="txt";
+				}else{
+					lyricContents = `${metaLyric}[ve: ${data.lrc.version}]\n${data.lrc.lyric}`;
+					ext="lrc";
+				}
 				$("#lyrics-content").html(data.lrc.lyric.replace(/\n/g, "<br/>"));
 			},
 			error: function (xhr, st) {
@@ -60,24 +64,24 @@ if (lyricsModal) {
 				else message = xhr.responseJSON.message ?? st;
 				toast.fire({ icon: "error", text: message });
 				$("#modalLyrics").modal("hide");
-			},
+			}
 		});
 	});
 }
 lyricDL.onclick = function () {
 	lyricDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(lyricContents)}`;
-	lyricDL.download = `${fileName}`;
+	lyricDL.download = `${fileName}.${ext}`;
 };
 klyricDL.onclick = function () {
 	klyricDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(klyricContent)}`;
-	klyricDL.download = `${fileName}`;
+	klyricDL.download = `${fileName}.lrc`;
 };
 function parseKLyric(lyricText) {
 	let enhancedlyricText = "";
 	let matches;
 	let metaRegex = /^\[(\S+):(\S+)\]$/;
 	let timestampsRegex = /^\[(\d+),(\d+)\]/;
-	let timestamps2Regex = /\((\d+),(\d+)\)([^\(]*)/g;
+	let timestamps2Regex = /\((\d+),(\d+)\)([^(]*)/g;
 	let lines = lyricText.split(/[\r\n]/);
 	for (const line of lines) {
 		if ((matches = metaRegex.exec(line))) {

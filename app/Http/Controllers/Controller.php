@@ -24,6 +24,9 @@ abstract class Controller
 			$msg = match ($header['status_code']) {
 				401 => "Musixmatch rate limit exceeded. Please try again later.",
 				404 => "Musixmatch query returned no result",
+				400 => "Bad request sent to Musixmatch. Please report this issue.",
+				500 => "Musixmatch server error. Please try again later.",
+				503 => "Musixmatch service unavailable. Please try again later.",
 				default => "Musixmatch HTTP Error " . $header['status_code'],
 			};
 		}

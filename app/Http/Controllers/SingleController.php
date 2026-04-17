@@ -43,7 +43,7 @@ class SingleController extends Controller
 				$response = Http::withHeaders([
 					"authority" => "apic-desktop.musixmatch.com",
 					"cookie" => "x-mxm-token-guid="
-				])->get('https://apic-desktop.musixmatch.com/ws/1.1/macro.subtitles.get', [
+				])->get(MusixmatchController::$url . 'macro.subtitles.get', [
 					'format' => 'json',
 					'namespace' => 'lyrics_richsynched',
 					'app_id' => 'web-desktop-app-v1.0',
@@ -67,6 +67,8 @@ class SingleController extends Controller
 						404 => "Song does not exist on database",
 						401 => "Too many requests. Wait for a few minutes, then try again.",
 						400 => "Invalid input, please make sure all * fields is filled.",
+						500 => "Database server error. Please try again later.",
+						503 => "Database service unavailable. Please try again later.",
 						default => "Database HTTP Error " . $tmHeader['status_code'],
 					};
 					abort($tmHeader['status_code'], $msg);
@@ -128,10 +130,117 @@ class SingleController extends Controller
 		$req->validate(['keyword' => 'required']);
 		$data = $error = [];
 		try {
-			// TODO: Provider-wide search
+			$response = Http::get('http://mobilecdn.kugou.com/api/v3/search/song', [
+				'format' => 'json',
+				'keyword' => $req['keyword'],
+				'page' => 1,
+				"pagesize" => 20,
+				'showtype' => 1
+			]);
+			$r = self::decodeJson($response);
+			if ($r === false)
+				$error['kugou'] = 'Error parsing JSON response: ' . json_last_error_msg();
+			else if (!in_array($r['errcode'], [0, 200]))
+				$error['kugou'] = 'Kugou Music error ' . $r['errcode'] . ': ' . $r['error'];
+			$data['kugou'] = $r['data'];
+		} catch (ConnectionException $th) {
+			Log::error($th);
+			$error['kugou'] = 'Kugou Music connection failed: ' . $th->getMessage();
+		}
+		try {
+			$response = Http::get(LRCLibController::$url, ['q' => $req['keyword']]);
+			$data['lrclib'] = self::decodeJson($response->body());
+			if ($data['lrclib'] === false)
+				$error['lrclib'] = 'Error parsing JSON response: ' . json_last_error_msg();
 		} catch (ConnectionException $e) {
 			Log::error($e);
-			$error[] = "Connection failed: " . $e->getMessage();
+			$error['lrclib'] = 'LRCLib connection failed: ' . $e->getMessage();
+		}
+		if (!empty(env('MUSIXMATCH_TOKEN'))) {
+			try {
+				$response = Http::withHeaders(MusixmatchController::MX_HEADER)
+					->get(MusixmatchController::$url . 'track.search', [
+						'user_language' => 'en',
+						'app_id' => 'web-desktop-app-v1.0',
+						'q' => $req['keyword'],
+						'usertoken' => env('MUSIXMATCH_TOKEN'),
+						'page' => 1,
+						'page_size' => 20,
+						'f_has_lyrics' => 1 //Search tracks with lyrics only
+					]);
+				$r = self::decodeJson($response->body());
+				if ($r === false)
+					$error['musixmatch'] = 'Error parsing JSON response: ' . json_last_error_msg();
+				$header = $r['message']['header'];
+				if ($header['status_code'] !== 200)
+					$error['musixmatch'] = $this->getMXerror($header);
+				$data['musixmatch'] =
+					['list' => $r['message']['body']['track_list'], 'header' => $header];
+			} catch (ConnectionException $th) {
+				Log::error($th);
+				$error['musixmatch'] = 'Musixmatch connection failed: ' . $th->getMessage();
+			}
+		}
+		try {
+			$response = Http::withHeaders(NetEaseController::NETEASE_HEADERS)->get(
+				NetEaseController::$url . 'search/get',
+				['s' => $req['keyword'], 'type' => '1', 'limit' => 20, 'offset' => 0]
+			);
+			$r = self::decodeJson($response->body());
+			if ($r === false)
+				$error['netease'] = 'Error parsing JSON response: ' . json_last_error_msg();
+			else if ($r['code'] !== 200)
+				$error['netease'] = "NetEase Music HTTP Error " . $r['code'];
+			$data['netease'] = $r['result'];
+		} catch (ConnectionException $th) {
+			Log::error($th);
+			$error['netease'] = 'NetEase Music connection failed: ' . $th->getMessage();
+		}
+		try {
+			$response = Http::withHeaders(QQMusicController::QQ_HEADER)
+				->post(QQMusicController::$url, [
+					'comm' => ['ct' => 19, 'cv' => 1859, 'uin' => 0],
+					'req' => [
+						'method' => "DoSearchForQQMusicDesktop",
+						"module" => "music.search.SearchCgiService",
+						"param" => [
+							'grp' => 1,
+							'num_per_page' => 20,
+							'page_num' => 1,
+							'query' => $req['keyword'],
+							'search_type' => 0
+						]
+					]
+				]);
+			$r = self::decodeJson($response->body());
+			if ($r === false)
+				$error['qqmusic'] = 'Error parsing JSON response: ' . json_last_error_msg();
+			else if (!in_array($r['code'], [0, 200]))
+				$error['qqmusic'] = 'QQ Music error ' . $r['code'];
+			else if (!in_array($r['req']['code'], [0, 200]))
+				$error['qqmusic'] = 'QQ Music request error ' . $r['req']['code'];
+			else if (!in_array($r['req']['data']['code'], [0, 200]))
+				$error['qqmusic'] = 'QQ Music data error ' . $r['req']['data']['code'];
+			$data['qqmusic'] = $r['req']['data'];
+		} catch (ConnectionException $th) {
+			Log::error($th);
+			$error['qqmusic'] = 'QQ Music connection failed: ' . $th->getMessage();
+		}
+		try {
+			$response = Http::withHeaders(SodaMusicController::SODAMUSIC_HEADERS)
+				->get(SodaMusicController::$url . 'search/track', [
+					'aid' => 386088,
+					'q' => $req['keyword'],
+					'cursor' => 0,
+					'search_method' => 'input'
+				]);
+			$r = self::decodeJson($response->body());
+			if ($r === false)
+				$error['sodamusic'] = 'Error parsing JSON response: ' . json_last_error_msg();
+			$data['sodamusic'] = $r['result_groups'][0];
+		} catch (ConnectionException $th) {
+			Log::error($th);
+			$error['sodamusic'] = 'Soda Music connection failed: ' . $th->getMessage();
 		}
 		return view('search', compact('data', 'error'));
 	}
