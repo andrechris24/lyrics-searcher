@@ -12,31 +12,31 @@
 				$track = $result['track'];
 				$length = gmdate('i:s', $track['track_length']);
 				if ($track['instrumental']) {
-						$lyricType = 'Instrumental';
-						$color = 'text-warning';
+					$lyricType = 'Instrumental';
+					$color = 'text-warning';
 				} elseif ($track['has_subtitles']) {
-						$lyricType = 'Synced';
-						$color = 'text-primary';
+					$lyricType = 'Synced';
+					$color = 'text-primary';
 				} elseif ($track['has_lyrics']) {
-						$lyricType = 'Plain';
-						$color = 'text-info';
+					$lyricType = 'Plain';
+					$color = 'text-info';
 				} elseif ($track['has_richsync']) {
-						$lyricType = 'Word by Word';
-						$color = 'text-success';
+					$lyricType = 'Word by Word';
+					$color = 'text-success';
 				} else {
-						$lyricType = 'No Lyrics';
-						$color = 'text-danger';
+					$lyricType = 'No Lyrics';
+					$color = 'text-danger';
 				}
 				$art = !empty($track['album_coverart_800x800'])
-						? $track['album_coverart_800x800']
-						: (!empty($track['album_coverart_500x500'])
-								? $track['album_coverart_500x500']
-								: (!empty($track['album_coverart_350x350'])
-										? $track['album_coverart_350x350']
-										: (!empty($track['album_coverart_100x100'])
-												? $track['album_coverart_100x100']
-												: 'https://placehold.co/500?text=' .
-														urlencode($track['album_name']))));
+					? $track['album_coverart_800x800']
+					: (!empty($track['album_coverart_500x500'])
+						? $track['album_coverart_500x500']
+						: (!empty($track['album_coverart_350x350'])
+							? $track['album_coverart_350x350']
+							: (!empty($track['album_coverart_100x100'])
+								? $track['album_coverart_100x100']
+								: 'https://placehold.co/500?text=' .
+									urlencode($track['album_name']))));
 			@endphp
 			<div class="col">
 				<div class="card">
@@ -139,12 +139,12 @@
 				$queries['prev']['query'] = request('query');
 				$queries['next']['query'] = request('query');
 			} else {
-				$queries ['prev']['title'] = request('title') ?? '';
-				$queries ['prev']['artist'] = request('artist') ?? '';
-				$queries ['prev']['album']= request('album') ?? '';
-				$queries ['next']['title'] = request('title') ?? '';
-				$queries ['next']['artist'] = request('artist') ?? '';
-				$queries ['next']['album']= request('album') ?? '';
+				$queries['prev']['title'] = request('title') ?? '';
+				$queries['prev']['artist'] = request('artist') ?? '';
+				$queries['prev']['album']= request('album') ?? '';
+				$queries['next']['title'] = request('title') ?? '';
+				$queries['next']['artist'] = request('artist') ?? '';
+				$queries['next']['album']= request('album') ?? '';
 			}
 		@endphp
 		<div class="mx-5 px-5 mb-5 pb-5">

@@ -28,6 +28,7 @@
 						Musixmatch
 					</option>
 					<option value="lrclib">LRCLib</option>
+					<option value="plains">Lyrics.ovh</option>
 				</select>
 			</div>
 			<div class="col-12 col-sm-6">
@@ -118,6 +119,10 @@
 							<li>
 								<a class="dropdown-item" href="#" id="download-link-mx-synced">Synced</a>
 							</li>
+							<li>
+								<a class="dropdown-item" href="#"
+									id="download-link-mx-richsync">Word-by-word</a>
+							</li>
 						</ul>
 					</div>
 				</div>
@@ -173,12 +178,41 @@
 			</div>
 		</div>
 	</div>
+	<div class="modal fade" tabindex="-1" id="modalLyricsOVH"
+		aria-labelledby="modalLyricsOVHLabel" role="dialog" aria-hidden="true">
+		<div role="document"
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 id="modalLyricsOVHLabel" class="modal-title">
+						Lyrics.ovh Result for <span class="search-term">...</span>
+					</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="alert alert-info">
+						Lyrics.ovh returns lyrics from either Genius, AZLyrics, Paroles.net,
+						LyricsMania, Letras.mus.br, and Lyrics.com in plain format only,
+						without artist, title, and album information.
+					</div>
+					<p id="lyrics-ovh-content" style="white-space: pre-line"></p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+						Close
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 @endsection
 @section('js')
 	<script type="text/javascript">
-		let plainContents, syncedContents, filename, searchTerm, message;
+		let plainContents, syncedContents, filename, searchTerm, message, track_id, meta;
 		const mxPlainDL = document.querySelector("#download-link-mx-plain"),
 			mxSyncedDL = document.querySelector("#download-link-mx-synced"),
+			mxRichsyncDL = document.querySelector("#download-link-mx-richsync"),
 			llPlainDL = document.querySelector("#download-link-lrclib-plain"),
 			llSyncedDL = document.querySelector("#download-link-lrclib-synced");
 		$("#searchSongLyric").on('submit', function(e) {
@@ -200,79 +234,117 @@
 						1) {
 						toast.fire({
 							icon: 'info',
-							text: 'Song you are searching for is marked as Instrumental'
+							text: `Found song ${data.artist} - ${data.title} but it's marked as Instrumental`
 						});
 					} else {
 						searchTerm = $("#artist-name").val() + ' - ' + $(
-							"#track-name").val();
-						plainContent = data.plain.replace(/\n/g, "<br/>");
-						syncedContents = data.synced;
-						fileName = `${data.artist} - ${data.title}`;
-						plainContents = `${fileName}\n\n${data.plain}`;
-						if ($("#album-name").val() === '') $(".search-term")
-							.text(searchTerm);
-						else
-							$(".search-term").text(`${searchTerm} (` + $(
-								"#album-name").val() + ')');
-						if (data.source === 'lrclib') {
-							$("#lrclib-plain-lyrics-content").html(
-								plainContent);
-							$("#lrclib-song-artist").text(data.artist);
-							$("#lrclib-song-title").text(data.title);
-							$("#lrclib-song-album").text(data.album);
-							$("#lrclib-song-duration").text(data.duration);
-							$("#modalLRCLib").modal('show');
-						} else {
-							if (data.art800 !== '' && data.art800 !== null)
-								$("#song-art").attr('src', data.art800);
-							else if (data.art500 !== '' && data.art500 !==
-								null)
-								$("#song-art").attr('src', data.art500);
-							else if (data.art350 !== '' && data.art350 !==
-								null)
-								$("#song-art").attr('src', data.art350);
-							else $("#song-art").attr('src', data.art100);
-							if (data.spotify === '' || data.spotify === null)
-								$("#spotify-btn").prop('disabled', true);
-							else {
-								$("#spotify-btn").prop('disabled', false);
-								$("#spotify-btn").attr('href',
-									`https://open.spotify.com/track/${data.spotify}`
-								);
+							"#track-name").val() + ($("#album-name")
+							.val() !== '' ? (' (' + $("#album-name")
+								.val() + ')') : '');
+						if (data.source !== 'lyrics.ovh') {
+							plainContent = data.plain.replace(/\n/g,
+								"<br/>");
+							fileName = `${data.artist} - ${data.title}`;
+							plainContents = `${fileName}\n\n${data.plain}`;
+							meta =
+								`\n[ar: ${data.artist}]\n[ti: ${data.title}]\n` +
+								`[al: ${data.album}]\n[by: ${data.source}]\n` +
+								`[length: ${data.duration}]\n`;
+							if (data.synced === "" || data.synced === null) {
+								if (data.source === 'lrclib') llSyncedDL
+									.classList.add("disabled");
+								else mxSyncedDL.classList.add("disabled");
+								syncedContents = null;
+							} else {
+								if (data.source === 'lrclib') llSyncedDL
+									.classList.remove("disabled");
+								else mxSyncedDL.classList.remove("disabled");
+								syncedContents =
+									`[id: ${data.id}]${meta}${data.synced}`;
 							}
-							$("#mx-plain-lyrics-content").html(plainContent);
-							$("#mx-song-artist").text(data.artist);
-							$("#mx-song-title").text(data.title);
-							$("#mx-song-album").text(data.album);
-							$("#mx-song-duration").text(data.duration);
-							$("#song-release-date").text(data.release);
-							$("#song-last-update").text(data.updated);
-							$("#song-copyright").text(data.copyright);
-							$("#musixmatch-btn").attr('href', data.share);
-							$("#modalMX").modal('show');
 						}
-						if (data.synced === "" || data.synced === null) {
-							if (data.source === 'lrclib') llSyncedDL
-								.classList.add("disabled");
-							else mxSyncedDL.classList.add("disabled");
-							syncedContents = null;
-						} else {
-							if (data.source === 'lrclib') llSyncedDL
-								.classList.remove("disabled");
-							else mxSyncedDL.classList.remove("disabled");
-							syncedContents =
-								`[ar: ${data.artist}]\n` +
-								`[ti: ${data.title}]\n` +
-								`[al: ${data.album}]\n` +
-								`[by: ${data.source}]\n` +
-								`[length: ${data.duration}]\n${data.synced}`;
+						$(".search-term").text(searchTerm);
+						switch (data.source) {
+							case 'lrclib':
+								$("#lrclib-plain-lyrics-content").html(
+									plainContent);
+								$("#lrclib-song-artist").text(data.artist);
+								$("#lrclib-song-title").text(data.title);
+								$("#lrclib-song-album").text(data.album);
+								$("#lrclib-song-duration").text(data
+									.duration);
+								$("#modalLRCLib").modal('show');
+								break;
+							case 'musixmatch':
+								if (data.art800 !== '' && data.art800 !==
+									null)
+									$("#song-art").attr('src', data.art800);
+								else if (data.art500 !== '' && data
+									.art500 !==
+									null)
+									$("#song-art").attr('src', data.art500);
+								else if (data.art350 !== '' && data
+									.art350 !==
+									null)
+									$("#song-art").attr('src', data.art350);
+								else if (data.art100 !== '' && data
+									.art100 !==
+									null)
+									$("#song-art").attr('src', data.art100);
+								else {
+									$("#song-art").attr('src',
+										"https://placehold.co/500?text=" +
+										encodeURIComponent(data.album)
+									);
+								}
+								if (data.spotify === '' || data.spotify ===
+									null)
+									$("#spotify-btn").prop('disabled', true);
+								else {
+									$("#spotify-btn").prop('disabled',
+										false);
+									$("#spotify-btn").attr('href',
+										`https://open.spotify.com/track/${data.spotify}`
+									);
+								}
+								if (data.richsync === true || data
+									.richsync === 1) {
+									track_id = data.track_id;
+									mxRichsyncDL.classList.remove(
+										'disabled');
+								} else {
+									track_id = null;
+									mxRichsyncDL.classList.add('disabled');
+								}
+								$("#mx-plain-lyrics-content").html(
+									plainContent);
+								$("#mx-song-artist").text(data.artist);
+								$("#mx-song-title").text(data.title + (data
+									.explicit === 1 ? ' [E]' : ''));
+								$("#mx-song-album").text(data.album);
+								$("#mx-song-duration").text(data.duration);
+								$("#song-release-date").text(data.release);
+								$("#song-last-update").text(data.updated);
+								$("#song-copyright").text(data.copyright);
+								$("#musixmatch-btn").attr('href', data
+									.share);
+								$("#modalMX").modal('show');
+								break;
+							case 'lyrics.ovh':
+								$("#lyrics-ovh-content").html(data.content);
+								$("#modalLyricsOVH").modal('show');
+								break;
+							default:
+								toast.fire({
+									icon: 'error',
+									text: "Unsupported source"
+								});
+								break;
 						}
 					}
 				},
 				error: function(xhr, st) {
-					if (xhr.status === 400)
-						$("#lyric-source").addClass('is-invalid');
-					else if (xhr.status === 422) {
+					if (xhr.status === 422) {
 						if (typeof xhr.responseJSON.errors.title !==
 							"undefined")
 							$("#track-name").addClass('is-invalid');
@@ -304,6 +376,30 @@
 			mxSyncedDL.href =
 				`data:text/plain;charset=utf-8,${encodeURIComponent(syncedContents)}`;
 			mxSyncedDL.download = `${fileName}.lrc`;
+		};
+		mxRichsyncDL.onclick = function(e) {
+			e.preventDefault();
+			$.ajax({
+				url: `/musixmatch/${track_id}/richsync`,
+				beforeSend: function() {
+					$.LoadingOverlay("show");
+				},
+				complete: function() {
+					$.LoadingOverlay("hide");
+				},
+				success: function(data) {
+					blobDL(`[id: ${data.id}]${meta}${data.content}`,
+						`${fileName}.lrc`);
+				},
+				error: function(xhr, st) {
+					if (st === "timeout") message = "Connection timed out";
+					else message = xhr.responseJSON.message ?? st;
+					toast.fire({
+						icon: "error",
+						text: message
+					});
+				}
+			});
 		};
 		llPlainDL.onclick = function() {
 			llPlainDL.href =

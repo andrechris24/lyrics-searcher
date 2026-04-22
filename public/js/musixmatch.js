@@ -21,7 +21,7 @@ $(".download-btn").on("click", function (e) {
 				ext = "txt";
 			} else {
 				contents =
-					`[ar: ${artist}]\n[ti: ${title}]\n` +
+					`[id: ${data.id}]\n[ar: ${artist}]\n[ti: ${title}]\n` +
 					`[al: ${album}]\n[by: Musixmatch]\n[length: ${data.duration}]\n`;
 				ext = "lrc";
 			}

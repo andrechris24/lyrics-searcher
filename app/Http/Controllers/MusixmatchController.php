@@ -26,6 +26,7 @@ class MusixmatchController extends Controller
 				'usertoken' => env('MUSIXMATCH_TOKEN'),
 				'page' => $req['page'] ?? 1,
 				'page_size' => 20, //Match LRCLib result count
+				// 's_artist_rating' => 'desc',
 				'f_has_lyrics' => 1 //Search tracks with lyrics only
 			]);
 			$r = self::decodeJson($response->body());
@@ -158,10 +159,12 @@ class MusixmatchController extends Controller
 			$lyrics = match ($type) {
 				'subtitle' => [
 					'content' => $data['subtitle_body'],
+					'id' => $data['subtitle_id'],
 					'duration' => gmdate('i:s', $data['subtitle_length'])
 				],
 				'richsync' => [
 					'content' => $this->richsync(json_decode($data['richsync_body'], true)),
+					'id' => $data['richsync_id'],
 					'duration' => gmdate('i:s', $data['richsync_length'])
 				],
 				default => ['content' => $data['lyrics_body']]
@@ -178,7 +181,6 @@ class MusixmatchController extends Controller
 		$linenum = 0;
 		foreach ($lrc as $line) {
 			$linenum++;
-			$words = count($line['l']);
 			if ($linenum === 1) {
 				if ($line['ts'] > 5)
 					$richsync .= "[" . $this->formatTime($line['ts'] - 5) . ']';
@@ -187,7 +189,7 @@ class MusixmatchController extends Controller
 			foreach ($line['l'] as $word) {
 				$richsync .= '<' . $this->formatTime($line['ts'] + $word['o']) . '>' . $word['c'];
 			}
-			$richsync .= '<' . $this->formatTime($line['te']) . "> \n";
+			$richsync .= '<' . $this->formatTime($line['te']) . "> \r\n";
 		}
 		return $richsync;
 	}

@@ -12,7 +12,8 @@ if (lyricsModal) {
 			albumName = button.getAttribute("data-bs-album"),
 			syncedLyrics = button.getAttribute("data-bs-synced"),
 			plainLyrics = button.getAttribute("data-bs-plain"),
-			duration = button.getAttribute("data-bs-duration");
+			duration = button.getAttribute("data-bs-duration"),
+			lyricID=button.getAttribute("data-bs-id");
 		// If necessary, you could initiate an Ajax request here
 		// and then do the updating in a callback
 
@@ -37,7 +38,7 @@ if (lyricsModal) {
 		} else {
 			syncedDL.classList.remove("disabled");
 			syncedContents =
-				`[ar: ${artistName}]\n[ti: ${songName}]\n` +
+				`[id: ${lyricID}]\n[ar: ${artistName}]\n[ti: ${songName}]\n` +
 				`[al: ${albumName}]\n[by: LRCLib]\n` +
 				`[length: ${songDuration.textContent}]\n${syncedLyrics}`;
 		}

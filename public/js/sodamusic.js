@@ -34,7 +34,7 @@ $(".list-group-item-action").on("click", function (e) {
 						contents += data.lyric.content.replace(/<\d{2}:\d{2}\.\d{2}>/g, "");
 					else if (choice.isDenied) contents += data.lyric.content;
 					else if (choice.isDismissed) return false;
-					else throw "Unknown choice";
+					else throw new Error("Unknown choice");
 				} else contents += data.lyric.content;
 				blobDL(contents, `${fileName}`);
 			} catch (e) {

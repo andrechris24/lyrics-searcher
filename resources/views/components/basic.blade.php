@@ -9,7 +9,7 @@
 			@if (empty(request('query'))) autofocus @endif>
 		<button type="submit" class="btn btn-primary">Search</button>
 	</div>
-	@if (in_array($provider, ['lrclib', 'musixmatch', 'kugou']))
+	@if (in_array($provider, ['lrclib', 'musixmatch', 'kugou', 'local']))
 		<small class="form-text">
 			<a href="{{ route($provider . '.advanced') }}">Advanced search</a>
 		</small>

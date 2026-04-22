@@ -116,8 +116,7 @@ abstract class Controller
 						$lyricLine .= "<" . $this->formatTime(($startTime + $offset) / 1000) . ">" . $subWord;
 					}
 				}
-				$lyricLine .= "<" . $this->formatTime(($startTime + $duration) / 1000) . "> ";
-				$lyricText .= $lyricLine . "\r\n";
+				$lyricText .= $lyricLine . "<" . $this->formatTime(($startTime + $duration) / 1000) . "> \r\n";
 			}
 		}
 		return $lyricText;

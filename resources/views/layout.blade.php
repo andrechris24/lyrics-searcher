@@ -162,6 +162,11 @@
 								@if (request()->routeIs('sodamusic.*')) aria-current="page" @endif
 								href="{{ route('sodamusic.index') }}">Soda Music</a>
 						</li>
+						<li class="nav-item">
+							<a @class(['nav-link', 'active' => request()->routeIs('local.*')])
+								@if (request()->routeIs('local.*')) aria-current="page" @endif
+								href="{{ route('local.index') }}">Local</a>
+						</li>
 					</ul>
 				</div>
 			</div>

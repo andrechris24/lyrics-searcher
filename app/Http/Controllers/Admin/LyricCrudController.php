@@ -1,0 +1,114 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use Backpack\CRUD\app\Http\Controllers\CrudController;
+use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+
+/**
+ * Class LyricCrudController
+ * @package App\Http\Controllers\Admin
+ * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
+ */
+class LyricCrudController extends CrudController
+{
+	use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+	use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
+	use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+	use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+	use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+
+	/**
+	 * Configure the CrudPanel object. Apply settings to all operations.
+	 *
+	 * @return void
+	 */
+	public function setup()
+	{
+		CRUD::setModel(\App\Models\Lyric::class);
+		CRUD::setRoute(config('backpack.base.route_prefix') . '/lyric');
+		CRUD::setEntityNameStrings('lyric', 'lyrics');
+	}
+
+	/**
+	 * Define what happens when the List operation is loaded.
+	 *
+	 * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
+	 * @return void
+	 */
+	protected function setupListOperation()
+	{
+		CRUD::column('title');
+		CRUD::column('artist');
+		CRUD::column('album');
+		CRUD::column('duration')->type('model_function')->function_name('showRealDuration');
+		CRUD::column('by');
+		CRUD::column('offset')->type('number');
+
+		/**
+		 * Columns can be defined using the fluent syntax:
+		 * - CRUD::column('price')->type('number');
+		 */
+	}
+
+	/**
+	 * Define what happens when the Create operation is loaded.
+	 *
+	 * @see https://backpackforlaravel.com/docs/crud-operation-create
+	 * @return void
+	 */
+	protected function setupCreateOperation()
+	{
+		CRUD::group(CRUD::field('title'), CRUD::field('artist'), CRUD::field('album'))
+			->attributes(['required'=>true])->validationRules('required');
+		CRUD::group(
+			CRUD::group(
+				CRUD::field('minutes')->attributes(['required'=>true,'min'=>0])
+					->validationRules('required|numeric|min:0'),
+				CRUD::field('seconds')->attributes(['required'=>true,'min'=>0,'max' => 59])
+					->validationRules('required|numeric|between:0,59')
+			)->fake(true)->store_in('duration'),
+			CRUD::field('offset')->validationRules('nullable|integer')
+		)->type('number')->default(0);
+		CRUD::field('content')->type('textarea')->attributes(['rows' => 20, 'required'=>true])
+			->validationRules('required|min:30');
+		CRUD::field('by')->type('hidden')->value(backpack_user()->name);
+
+		/**
+		 * Fields can be defined using the fluent syntax:
+		 * - CRUD::field('price')->type('number');
+		 */
+	}
+
+	/**
+	 * Define what happens when the Update operation is loaded.
+	 *
+	 * @see https://backpackforlaravel.com/docs/crud-operation-update
+	 * @return void
+	 */
+	protected function setupUpdateOperation()
+	{
+		$entries = json_decode(CRUD::getCurrentEntry(), true);
+		CRUD::group(CRUD::field('title'), CRUD::field('artist'), CRUD::field('album'))
+			->attributes(['required'=>true])->validationRules('required');
+		CRUD::group(
+			CRUD::group(
+				CRUD::field('minutes')->attributes(['required'=>true,'min' => 0])
+					->value(floor($entries['duration'] / 60))
+					->validationRules('required|numeric|min:0'),
+				CRUD::field('seconds')->attributes(['required'=>true,'min' => 0, 'max' => 59])
+					->value($entries['duration'] % 60)->validationRules('required|numeric|between:0,59')
+			)->fake(true)->store_in('duration'),
+			CRUD::field('offset')->validationRules('nullable|integer')
+		)->type('number')->default(0);
+		CRUD::field('content')->type('textarea')->attributes(['rows' => 20])
+			->validationRules('required|min:30');
+		CRUD::field('by')->type('hidden');
+	}
+
+	protected function setupShowOperation()
+	{
+		$this->setupListOperation();
+		CRUD::column('content')->type('textarea');
+	}
+}
