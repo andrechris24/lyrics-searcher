@@ -17,7 +17,8 @@ class LyricCrudController extends CrudController
 	use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
-
+	use \App\CrudPermissionTrait;
+	
 	/**
 	 * Configure the CrudPanel object. Apply settings to all operations.
 	 *
@@ -25,9 +26,11 @@ class LyricCrudController extends CrudController
 	 */
 	public function setup()
 	{
+		// parent::setup();
 		CRUD::setModel(\App\Models\Lyric::class);
 		CRUD::setRoute(config('backpack.base.route_prefix') . '/lyric');
 		CRUD::setEntityNameStrings('lyric', 'lyrics');
+    $this->setAccessUsingPermissions();
 	}
 
 	/**
@@ -59,18 +62,19 @@ class LyricCrudController extends CrudController
 	 */
 	protected function setupCreateOperation()
 	{
-		CRUD::group(CRUD::field('title'), CRUD::field('artist'), CRUD::field('album'))
-			->attributes(['required'=>true])->validationRules('required');
+		CRUD::group(CRUD::field('title'), CRUD::field('artist'))
+			->attributes(['required' => true])->validationRules('required');
+		CRUD::field('album');
 		CRUD::group(
 			CRUD::group(
-				CRUD::field('minutes')->attributes(['required'=>true,'min'=>0])
+				CRUD::field('minutes')->attributes(['required' => true, 'min' => 0])
 					->validationRules('required|numeric|min:0'),
-				CRUD::field('seconds')->attributes(['required'=>true,'min'=>0,'max' => 59])
+				CRUD::field('seconds')->attributes(['required' => true, 'min' => 0, 'max' => 59])
 					->validationRules('required|numeric|between:0,59')
 			)->fake(true)->store_in('duration'),
 			CRUD::field('offset')->validationRules('nullable|integer')
 		)->type('number')->default(0);
-		CRUD::field('content')->type('textarea')->attributes(['rows' => 20, 'required'=>true])
+		CRUD::field('content')->type('textarea')->attributes(['rows' => 20, 'required' => true])
 			->validationRules('required|min:30');
 		CRUD::field('by')->type('hidden')->value(backpack_user()->name);
 
@@ -89,15 +93,17 @@ class LyricCrudController extends CrudController
 	protected function setupUpdateOperation()
 	{
 		$entries = json_decode(CRUD::getCurrentEntry(), true);
-		CRUD::group(CRUD::field('title'), CRUD::field('artist'), CRUD::field('album'))
-			->attributes(['required'=>true])->validationRules('required');
+		CRUD::group(CRUD::field('title'), CRUD::field('artist'))
+			->attributes(['required' => true])->validationRules('required');
+		CRUD::field('album');
 		CRUD::group(
 			CRUD::group(
-				CRUD::field('minutes')->attributes(['required'=>true,'min' => 0])
+				CRUD::field('minutes')->attributes(['required' => true, 'min' => 0])
 					->value(floor($entries['duration'] / 60))
 					->validationRules('required|numeric|min:0'),
-				CRUD::field('seconds')->attributes(['required'=>true,'min' => 0, 'max' => 59])
-					->value($entries['duration'] % 60)->validationRules('required|numeric|between:0,59')
+				CRUD::field('seconds')->attributes(['required' => true, 'min' => 0, 'max' => 59])
+					->value($entries['duration'] % 60)
+					->validationRules('required|numeric|between:0,59')
 			)->fake(true)->store_in('duration'),
 			CRUD::field('offset')->validationRules('nullable|integer')
 		)->type('number')->default(0);

@@ -65,13 +65,13 @@ Route::prefix('sodamusic')->name('sodamusic.')->group(function () {
 		Route::get('{id}', 'get')->name('.get');
 	});
 });
-Route::prefix('local')->name('local.')->group(function(){
+Route::prefix('local')->name('local.')->group(function () {
 	Route::view('/', 'local.index')->name('index');
 	Route::view('advanced', 'local.advanced.index')->name('advanced');
 	Route::controller(LocalController::class)->name('search')->group(function () {
-			Route::get('results', 'standard');
-			Route::get('advanced/results', 'advanced')->name('.advanced');
-			Route::get('{id}', 'AIMP')->name('.get');
+		Route::get('results', 'standard');
+		Route::get('advanced/results', 'advanced')->name('.advanced');
+		Route::get('{id}', 'AIMP')->name('.get');
 	});
 });
 Route::view('laravel', 'welcome')->name('laravel');

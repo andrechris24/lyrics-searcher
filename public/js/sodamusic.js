@@ -28,10 +28,10 @@ $(".list-group-item-action").on("click", function (e) {
 						showDenyButton: true,
 						showCancelButton: true,
 						confirmButtonText: "Synced",
-						denyButtonText: "Word-by-Word",
+						denyButtonText: "Word-by-Word"
 					});
 					if (choice.isConfirmed)
-						contents += data.lyric.content.replace(/<\d{2}:\d{2}\.\d{2}>/g, "");
+						contents += data.lyric.content.replace(/<(\d+):(\d+).(\d+)>/g, "");
 					else if (choice.isDenied) contents += data.lyric.content;
 					else if (choice.isDismissed) return false;
 					else throw new Error("Unknown choice");
@@ -45,6 +45,6 @@ $(".list-group-item-action").on("click", function (e) {
 			if (st === "timeout") message = "Connection timed out";
 			else message = xhr.responseJSON.message ?? st;
 			toast.fire({ icon: "error", text: message });
-		},
+		}
 	});
 });

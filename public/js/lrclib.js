@@ -1,7 +1,7 @@
 let plainContents, syncedContents, fileName;
-const lyricsModal = document.getElementById("modalLyrics"),
-	plainDL = document.querySelector("#download-link-plain"),
-	syncedDL = document.querySelector("#download-link-synced");
+const lyricsModal = document.getElementById("modalLRCLib"),
+	plainDL = document.getElementById("download-link-lrclib-plain"),
+	syncedDL = document.getElementById("download-link-lrclib-synced");
 if (lyricsModal) {
 	lyricsModal.addEventListener("show.bs.modal", (event) => {
 		const button = event.relatedTarget;
@@ -18,11 +18,11 @@ if (lyricsModal) {
 		// and then do the updating in a callback
 
 		// Update the modal's content
-		const songArtist = lyricsModal.querySelector("#song-artist"),
-			songTitle = lyricsModal.querySelector("#song-title"),
-			songAlbum = lyricsModal.querySelector("#song-album"),
-			songDuration = lyricsModal.querySelector("#song-duration"),
-			plainContainer = lyricsModal.querySelector("#plain-lyrics-content");
+		const songArtist = lyricsModal.getElementById("lrclib-song-artist"),
+			songTitle = lyricsModal.getElementById("lrclib-song-title"),
+			songAlbum = lyricsModal.getElementById("lrclib-song-album"),
+			songDuration = lyricsModal.getElementById("lrclib-song-duration"),
+			plainContainer = lyricsModal.getElementById("lrclib-content");
 		plainContainer.textContent = plainLyrics;
 		songArtist.textContent = artistName;
 		songTitle.textContent = songName;

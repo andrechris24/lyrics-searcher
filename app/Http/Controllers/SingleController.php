@@ -17,7 +17,7 @@ class SingleController extends Controller
 			'title' => 'required|string',
 			'artist' => 'required|string',
 			'album' => 'nullable|string',
-			'source' => 'required|in:lrclib,musixmatch,plains'
+			'source' => 'required|in:lrclib,musixmatch,plains,local'
 		]);
 		try {
 			switch ($req['source']) {
@@ -145,10 +145,10 @@ class SingleController extends Controller
 					abort_if($response->notFound(), 404, $r['error']);
 					break;
 				case 'local':
-					$model = Lyric::where('title', 'like', '%' . $req['title'] . '%')
-						->where('artist', 'like', '%' . $req['artist'] . '%');
+					$model = Lyric::whereLike('title', '%' . $req['title'] . '%')
+						->whereLike('artist', '%' . $req['artist'] . '%');
 					if (!empty($req['album']))
-						$model->where('album', 'like', '%' . $req['album'] . '%');
+						$model->whereLike('album', '%' . $req['album'] . '%');
 					$data = $model->firstOrFail();
 					$data['source'] = 'local';
 					$data['instrumental'] = false;

@@ -17,6 +17,7 @@ class UserCrudController extends CrudController
 	use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+	use \App\CrudPermissionTrait;
 
 	/**
 	 * Configure the CrudPanel object. Apply settings to all operations.
@@ -24,10 +25,12 @@ class UserCrudController extends CrudController
 	 * @return void
 	 */
 	public function setup()
-	{
+	{	
+		parent::setup();
 		CRUD::setModel(\App\Models\User::class);
 		CRUD::setRoute(config('backpack.base.route_prefix') . '/user');
 		CRUD::setEntityNameStrings('user', 'users');
+    $this->setAccessUsingPermissions();
 	}
 
 	/**

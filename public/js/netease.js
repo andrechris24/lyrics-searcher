@@ -1,7 +1,7 @@
 let lyricContents, klyricContent, fileName, message, ext;
 const lyricsModal = document.getElementById("modalLyrics"),
-	lyricDL = document.querySelector("#dl-synced"),
-	klyricDL = document.querySelector("#dl-klyric");
+	lyricDL = document.getElementById("dl-synced"),
+	klyricDL = document.getElementById("dl-klyric");
 if (lyricsModal) {
 	lyricsModal.addEventListener("show.bs.modal", (event) => {
 		const button = event.relatedTarget;

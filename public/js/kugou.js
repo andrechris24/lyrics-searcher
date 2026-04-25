@@ -28,7 +28,7 @@ if (lyricsModal) {
 					{
 						target: 0,
 						render: function (data) {
-							return data.replace("\u{3001}", ", ");
+							return data.replaceAll("\u{3001}", ", ");
 						}
 					},
 					{
@@ -88,7 +88,7 @@ function download(id, key) {
 						denyButtonText: "Word-by-Word",
 					});
 					if (choice.isConfirmed)
-						lyricContent = data.content.replace(/<\d{2}:\d{2}\.\d{2}>/g, "");
+						lyricContent = data.content.replace(/<(\d+):(\d+).(\d+)>/g, "");
 					else if (choice.isDenied) lyricContent = data.content;
 					else if (choice.isDismissed) return false;
 					else throw new Error("Unknown choice");
@@ -107,7 +107,8 @@ function download(id, key) {
 }
 function formatMilliseconds(ms) {
 	// Validate input
-	if (typeof ms !== "number" || isNaN(ms) || ms < 0) return "00:00"; // Default for invalid input
+	if (typeof ms !== "number" || isNaN(ms) || ms < 0)
+		return "00:00"; // Default for invalid input
 
 	// Convert to total seconds
 	const totalSeconds = Math.floor(ms / 1000);

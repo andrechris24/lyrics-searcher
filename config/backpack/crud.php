@@ -217,7 +217,7 @@ return [
         // "ig_NG" => "Igbo (Nigeria)",
         // "ig" => "Igbo",
         // "id_ID" => "Indonesian (Indonesia)",
-        // "id" => "Indonesian",
+        "id" => "Indonesian",
         // "ga_IE" => "Irish (Ireland)",
         // "ga" => "Irish",
         // "it_IT" => "Italian (Italy)",

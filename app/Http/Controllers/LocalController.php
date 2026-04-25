@@ -29,11 +29,11 @@ class LocalController extends Controller
 	{
 		try {
 			$request->validate(['title' => 'required']);
-			$model = Lyric::where('title', 'like', '%' . $request['title'] . '%');
+			$model = Lyric::whereLike('title', '%' . $request['title'] . '%');
 			if (!empty($request['artist']))
-				$model->where('artist', 'like', '%' . $request['artist'] . '%');
+				$model->whereLike('artist', '%' . $request['artist'] . '%');
 			if (!empty($request['album']))
-				$model->where('album', 'like', '%' . $request['album'] . '%');
+				$model->whereLike('album', '%' . $request['album'] . '%');
 			$data = $model->paginate(20);
 			return view('local.advanced.result', compact('data'));
 		} catch (QueryException $e) {
