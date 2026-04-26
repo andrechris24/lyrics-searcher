@@ -7,7 +7,8 @@
 			<span class="input-group-text"><i class="fa-solid fa-music"></i></span>
 			<input type="text" class="form-control @error('title') is-invalid @enderror "
 				id="track-name" placeholder="Song title" name="title"
-				value="{{ request('title') ?? old('title') }}" required>
+				value="{{ request('title') ?? old('title') }}" required
+				@if(request()->routeIs('*.index')) autofocus @endif >
 		</div>
 	</div>
 	<div class="col-sm-6">
@@ -22,7 +23,7 @@
 		</div>
 	</div>
 	<button type="submit" class="btn btn-primary">Search</button>
-	{{-- <small class="form-text">
-		<a href="{{ route($provider . '.index') }}">Basic search</a>
-	</small> --}}
+	<small class="form-text">
+		<a href="{{ route($provider . '.advanced') }}">Advanced search</a>
+	</small>
 </form>

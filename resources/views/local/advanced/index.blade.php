@@ -6,6 +6,6 @@
 		@if (Session::has('error'))
 			<x-error />
 		@endif
-		<x-advanced provider="local" require="1" />
+		<x-advanced provider="local" require="0" />
 	</div>
 @endsection

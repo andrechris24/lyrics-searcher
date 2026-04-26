@@ -55,6 +55,9 @@ Route::prefix('kugou')->name('kugou.')->group(function () {
 			Route::get('advanced/results', 'advanced')->name('.advanced');
 			Route::post('get', 'get')->name('.get');
 		});
+		Route::name('aimp')->prefix('aimp')->group(function(){
+			// TODO: Special routing for AIMP
+		});
 		Route::get('{hash}', 'lyrics')->name('lyrics');
 	});
 });
@@ -71,7 +74,7 @@ Route::prefix('local')->name('local.')->group(function () {
 	Route::controller(LocalController::class)->name('search')->group(function () {
 		Route::get('results', 'standard');
 		Route::get('advanced/results', 'advanced')->name('.advanced');
-		Route::get('{id}', 'AIMP')->name('.get');
+		Route::get('{id}', 'aimp')->name('.get');
 	});
 });
 Route::view('laravel', 'welcome')->name('laravel');

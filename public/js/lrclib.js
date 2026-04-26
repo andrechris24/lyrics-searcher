@@ -18,11 +18,11 @@ if (lyricsModal) {
 		// and then do the updating in a callback
 
 		// Update the modal's content
-		const songArtist = lyricsModal.getElementById("lrclib-song-artist"),
-			songTitle = lyricsModal.getElementById("lrclib-song-title"),
-			songAlbum = lyricsModal.getElementById("lrclib-song-album"),
-			songDuration = lyricsModal.getElementById("lrclib-song-duration"),
-			plainContainer = lyricsModal.getElementById("lrclib-content");
+		const songArtist = document.getElementById("lrclib-song-artist"),
+			songTitle = document.getElementById("lrclib-song-title"),
+			songAlbum = document.getElementById("lrclib-song-album"),
+			songDuration = document.getElementById("lrclib-song-duration"),
+			plainContainer = document.getElementById("lrclib-content");
 		plainContainer.textContent = plainLyrics;
 		songArtist.textContent = artistName;
 		songTitle.textContent = songName;

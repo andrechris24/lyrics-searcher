@@ -13,9 +13,9 @@ class LocalController extends Controller
 	public function standard(Request $request)
 	{
 		try {
-			$request->validate(['query' => 'required']);
-			$data = Lyric::whereAny(['title', 'artist', 'album'], 'like', '%' . $request['query'] . '%')
-				->paginate(20);
+			$request->validate(['title' => 'required','artist'=>'required']);
+			$data = Lyric::whereLike('title', '%' . $request['title'] . '%')
+				->orWhereLike('artist','%'.$request['artist'].'%')->paginate(20);
 			return view('local.result', compact('data'));
 		} catch (QueryException $e) {
 			Log::error($e);
@@ -28,7 +28,11 @@ class LocalController extends Controller
 	public function advanced(Request $request)
 	{
 		try {
-			$request->validate(['title' => 'required']);
+			$request->validate([
+				'title' => 'nullable|required_without_all:artist,album|string',
+				'artist' => 'nullable|required_without_all:title,album|string',
+				'album' => 'nullable|required_without_all:title,artist|string',
+			]);
 			$model = Lyric::whereLike('title', '%' . $request['title'] . '%');
 			if (!empty($request['artist']))
 				$model->whereLike('artist', '%' . $request['artist'] . '%');
@@ -44,7 +48,7 @@ class LocalController extends Controller
 			return to_route('local.advanced')->withInput()->withErrors($e->errors());
 		}
 	}
-	public function AIMP(int $id){
+	public function aimp(int $id){
 		// TODO: Get lyric by ID (Special function for AIMP)
 	}
 }

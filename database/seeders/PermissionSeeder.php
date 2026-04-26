@@ -22,12 +22,13 @@ class PermissionSeeder extends Seeder
 		])->crossJoin([ // levels
 			'see',
 			'edit',
+			'all'
 		])->each(
-			fn (array $item) => Permission::firstOrCreate([
+			fn(array $item) => Permission::firstOrCreate([
 				'name' => implode('.', $item)
 			])->save()
 		);
 		User::first()
-			->givePermissionTo(['users.edit','roles.edit','lyrics.edit']);
+			->givePermissionTo(['users.edit', 'roles.edit', 'lyrics.edit', 'lyrics.viewall']);
 	}
 }

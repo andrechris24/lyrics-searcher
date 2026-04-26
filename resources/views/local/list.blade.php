@@ -5,15 +5,30 @@
 	<p class="text-center">Page {{$data->currentPage()}} out of {{$data->total()}} result(s), showing {{$data->perPage()}} per page. Click on a list to download.</p>
 	<div class="list-group mx-5 mb-5 pb-5">
 		@foreach ($data as $result)
-			@php($length = gmdate('i:s', $result['duration']))
-			<a class="list-group-item list-group-item-action"
+			@php
+			$length = gmdate('i:s', $result['duration']);
+			if(preg_match("/<(\d+):(\d+).(\d+)>/",$result['content'])){
+				$type='Syllable';
+				$color='success';
+			}else if(preg_match("/\[(\d+):(\d+).(\d+)\]/",$result['content'])){
+				$type='Synced';
+				$color='primary';
+			}else{
+				$type='Plain';
+				$color='secondary';
+			}
+			@endphp
+			<a class="list-group-item list-group-item-action" href="#"
 				data-album="{{ $result['album'] }}" data-duration="{{ $length }}"
 				data-title="{{ $result['title'] }}" data-artist="{{ $result['artist'] }}"
 				data-content="{{ $result['content'] }}" data-id="{{$result['id']}}"
-				data-user="{{ $result['by'] }}" data-offset="{{$result['offset']}}" href="#">
+				data-user="{{ $result->user->name??'Guest' }}" data-offset="{{$result['offset']}}">
 				<div class="d-flex w-100 justify-content-between">
 					<h5 class="mb-1">{{ $result['title'] }}</h5>
-					<small>{{ $length }} | by {{$result['by']}}</small>
+					<small>
+						{{ $length }} | by {{$result->user->name??'Guest'}} 
+						<span class="badge text-bg-{{$color}}">{{$type}}</span>
+					</small>
 				</div>
 				<p class="mb-1">{{ $result['artist'] }}</p>
 				<small>{{ $result['album'] }}</small>

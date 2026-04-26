@@ -3,7 +3,7 @@
 @section('content')
 	<div class="px-5 mx-5 py-5 my-5">
 		<h3 class="text-center">Lyrics Searcher by andrechris24</h3>
-		<p>Welcome to andrechris24's Lyrics Searcher! This site provides synchronized lyrics search from Kugou, NetEase, QQ Music, Musixmatch, LRCLib, Soda Music, and on local server. This form below is a quick search to 4 providers (might be inaccurate).</p>
+		<p class="text-center">Welcome to andrechris24's Lyrics Searcher! This site provides synchronized lyrics search from Kugou, NetEase, QQ Music, Musixmatch, LRCLib, Soda Music, and on local server. This form below is a quick search to 4 providers (might be inaccurate).</p>
 		@if (Session::has('error') || $errors->any())
 			<x-error />
 		@endif
@@ -217,7 +217,7 @@
 @endsection
 @section('js')
 	<script type="text/javascript">
-		let plainContents, syncedContents, fileName, formData, message, track_id, meta, plainContent, localContent, localContents;
+		let plainContents, syncedContents, fileName, formData, message, track_id, meta, plainContent, localContents;
 		const mxPlainDL = document.getElementById("download-link-mx-plain"),
 			mxSyncedDL = document.getElementById("download-link-mx-synced"),
 			mxRichsyncDL = document.getElementById("download-link-mx-richsync"),
@@ -251,15 +251,13 @@
 							meta =
 								`\n[ar: ${data.artist}]\n[ti: ${data.title}]\n[al: ${data.album}]\n`;
 							if(data.source==='local'){
-								{{-- localContent=data.content.replace(/\r\n/g,"<br/>"); --}}
 								localContents=
 									`[id: ${data.id}]${meta}[length: ${formatSeconds(data.duration)}]\n`+
-									`[by: ${data.by}]\n[offset: ${data.offset}]\n${data.content}`;
+									`[by: ${data.user.name}]\n[offset: ${data.offset}]\n${data.content}`;
 								plainContent=null;
 							}else{
 								plainContent = data.plain.replace(/\n/g,"<br/>");
 								plainContents = `${fileName}\n\n${data.plain}`;
-								{{-- localContent=null; --}}
 								if (data.synced === "" || data.synced === null) {
 									if (data.source === 'lrclib') 
 										llSyncedDL.classList.add("disabled");
@@ -340,7 +338,7 @@
 								$("#local-song-duration").text(
 									`${formatSeconds(data.duration)} (offset: ${data.offset})`
 								);
-								$("#lyric-by").text(data.by);
+								$("#lyric-by").text(data.user.name);
 								$("#modalLocal").modal('show');
 								break;
 							default:

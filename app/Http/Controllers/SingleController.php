@@ -150,6 +150,7 @@ class SingleController extends Controller
 					if (!empty($req['album']))
 						$model->whereLike('album', '%' . $req['album'] . '%');
 					$data = $model->firstOrFail();
+					$data['user']=$data->user;
 					$data['source'] = 'local';
 					$data['instrumental'] = false;
 					return response()->json($data);

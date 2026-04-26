@@ -10,7 +10,8 @@
 			<input type="text" class="form-control @error('title') is-invalid @enderror "
 				id="track-name" placeholder="Song title" name="title"
 				value="{{ request('title') ?? old('title') }}"
-				@if ($require === 1) required @endif>
+				@if ($require === 1) required @endif
+				@if(request()->routeIs('*.index')) autofocus @endif >
 		</div>
 	</div>
 	<div class="col-sm-6">

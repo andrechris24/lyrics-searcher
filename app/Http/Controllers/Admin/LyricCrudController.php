@@ -18,7 +18,7 @@ class LyricCrudController extends CrudController
 	use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 	use \App\CrudPermissionTrait;
-	
+
 	/**
 	 * Configure the CrudPanel object. Apply settings to all operations.
 	 *
@@ -26,11 +26,11 @@ class LyricCrudController extends CrudController
 	 */
 	public function setup()
 	{
-		// parent::setup();
 		CRUD::setModel(\App\Models\Lyric::class);
 		CRUD::setRoute(config('backpack.base.route_prefix') . '/lyric');
 		CRUD::setEntityNameStrings('lyric', 'lyrics');
-    $this->setAccessUsingPermissions();
+		$this->setAccessUsingPermissions();
+		$this->setListByPermission();
 	}
 
 	/**
@@ -45,7 +45,7 @@ class LyricCrudController extends CrudController
 		CRUD::column('artist');
 		CRUD::column('album');
 		CRUD::column('duration')->type('model_function')->function_name('showRealDuration');
-		CRUD::column('by');
+		CRUD::column('user_id')->entity('user')->model('App\Models\User')->attribute('name');
 		CRUD::column('offset')->type('number');
 
 		/**
@@ -75,8 +75,8 @@ class LyricCrudController extends CrudController
 			CRUD::field('offset')->validationRules('nullable|integer')
 		)->type('number')->default(0);
 		CRUD::field('content')->type('textarea')->attributes(['rows' => 20, 'required' => true])
-			->validationRules('required|min:30');
-		CRUD::field('by')->type('hidden')->value(backpack_user()->name);
+			->validationRules('required|min:50');
+		CRUD::field('user_id')->type('hidden')->value(backpack_user()->id);
 
 		/**
 		 * Fields can be defined using the fluent syntax:
@@ -108,8 +108,8 @@ class LyricCrudController extends CrudController
 			CRUD::field('offset')->validationRules('nullable|integer')
 		)->type('number')->default(0);
 		CRUD::field('content')->type('textarea')->attributes(['rows' => 20])
-			->validationRules('required|min:30');
-		CRUD::field('by')->type('hidden');
+			->validationRules('required|min:50');
+		// CRUD::field('user_id')->type('hidden');
 	}
 
 	protected function setupShowOperation()

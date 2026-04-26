@@ -9,8 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Lyric extends Model
 {
-	use CrudTrait;
-	use HasFactory;
+	use CrudTrait, HasFactory;
 
 	/*
 	|--------------------------------------------------------------------------
@@ -34,11 +33,16 @@ class Lyric extends Model
 	{
 		return gmdate("i:s", $this->duration);
 	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| RELATIONS
 	|--------------------------------------------------------------------------
 	*/
+	public function user()
+	{
+		return $this->belongsTo(User::class);
+	}
 
 	/*
 	|--------------------------------------------------------------------------

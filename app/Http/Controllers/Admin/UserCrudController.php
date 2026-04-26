@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Backpack\PermissionManager\app\Http\Controllers\UserCrudController as UserParent;
 
 /**
  * Class UserCrudController
@@ -17,7 +18,7 @@ class UserCrudController extends CrudController
 	use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
-	use \App\CrudPermissionTrait;
+	// use \App\CrudPermissionTrait;
 
 	/**
 	 * Configure the CrudPanel object. Apply settings to all operations.
@@ -25,12 +26,12 @@ class UserCrudController extends CrudController
 	 * @return void
 	 */
 	public function setup()
-	{	
-		parent::setup();
+	{
+		// parent::setup();
 		CRUD::setModel(\App\Models\User::class);
 		CRUD::setRoute(config('backpack.base.route_prefix') . '/user');
 		CRUD::setEntityNameStrings('user', 'users');
-    $this->setAccessUsingPermissions();
+		// $this->setAccessUsingPermissions();
 	}
 
 	/**
@@ -76,7 +77,8 @@ class UserCrudController extends CrudController
 	protected function setupUpdateOperation()
 	{
 		CRUD::field('name')->validationRules('required|min:5');
-		CRUD::field('email')->validationRules('required|email|unique:users,email,' . CRUD::getCurrentEntryId());
+		CRUD::field('email')
+			->validationRules('required|email|unique:users,email,' . CRUD::getCurrentEntryId());
 		CRUD::field('password')->hint('Type a password to change it.');
 	}
 }
