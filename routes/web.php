@@ -53,11 +53,9 @@ Route::prefix('kugou')->name('kugou.')->group(function () {
 		Route::name('search')->group(function () {
 			Route::get('results', 'search');
 			Route::get('advanced/results', 'advanced')->name('.advanced');
-			Route::post('get', 'get')->name('.get');
+			Route::get('get', 'get')->name('.get');
 		});
-		Route::name('aimp')->prefix('aimp')->group(function(){
-			// TODO: Special routing for AIMP
-		});
+		Route::get('aimp','aimp')->name('aimp');
 		Route::get('{hash}', 'lyrics')->name('lyrics');
 	});
 });
@@ -71,10 +69,13 @@ Route::prefix('sodamusic')->name('sodamusic.')->group(function () {
 Route::prefix('local')->name('local.')->group(function () {
 	Route::view('/', 'local.index')->name('index');
 	Route::view('advanced', 'local.advanced.index')->name('advanced');
-	Route::controller(LocalController::class)->name('search')->group(function () {
-		Route::get('results', 'standard');
-		Route::get('advanced/results', 'advanced')->name('.advanced');
-		Route::get('{id}', 'aimp')->name('.get');
+	Route::controller(LocalController::class)->group(function () {
+		Route::get('latest', 'latest')->name('latest');
+		Route::name('search')->group(function () {
+			Route::get('results', 'standard');
+			Route::get('advanced/results', 'advanced')->name('.advanced');
+			Route::get('{id}', 'aimp')->name('.get');
+		});
 	});
 });
 Route::view('laravel', 'welcome')->name('laravel');

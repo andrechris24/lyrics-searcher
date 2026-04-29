@@ -175,7 +175,7 @@ class MusixmatchController extends Controller
 			abort(500, 'Musixmatch connection failed: ' . $th->getMessage());
 		}
 	}
-	private function richsync($lrc)
+	private function richsync(array $lrc)
 	{
 		$richsync = '';
 		$linenum = 0;

@@ -22,7 +22,7 @@ class PermissionSeeder extends Seeder
 		])->crossJoin([ // levels
 			'see',
 			'edit',
-			'all'
+			'viewall'
 		])->each(
 			fn(array $item) => Permission::firstOrCreate([
 				'name' => implode('.', $item)

@@ -6,6 +6,6 @@
 		@if (Session::has('error') || $errors->any())
 			<x-error />
 		@endif
-		<x-alternative provider="kugou" />
+		<x-advanced-alt provider="kugou" />
 	</div>
 @endsection

@@ -59,15 +59,15 @@ if (lyricsModal) {
 }
 
 function download(id, key) {
-	const csrfToken = document
-		.querySelector('meta[name="csrf-token"]')
-		.getAttribute("content");
+	// const csrfToken = document
+	// 	.querySelector('meta[name="csrf-token"]')
+	// 	.getAttribute("content");
 
 	let message;
 	$.ajax({
 		url: `/kugou/get`,
-		headers: { "X-CSRF-TOKEN": csrfToken },
-		method: "POST",
+		// headers: { "X-CSRF-TOKEN": csrfToken },
+		// method: "POST",
 		data: { id: id, key: key },
 		beforeSend: function () {
 			$.LoadingOverlay("show");

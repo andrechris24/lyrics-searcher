@@ -162,10 +162,28 @@
 								@if (request()->routeIs('sodamusic.*')) aria-current="page" @endif
 								href="{{ route('sodamusic.index') }}">Soda Music</a>
 						</li>
-						<li class="nav-item">
-							<a @class(['nav-link', 'active' => request()->routeIs('local.*')])
-								@if (request()->routeIs('local.*')) aria-current="page" @endif
-								href="{{ route('local.index') }}">Local</a>
+						<li class="nav-item dropdown">
+							<a @class([
+								'nav-link',
+								'dropdown-toggle',
+								'active' => request()->routeIs('local.*')
+							])
+								@if (request()->routeIs('local.*')) aria-current="page" @endif href="#"
+								role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								Local
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a class="dropdown-item" href="{{ route('local.index') }}">
+										Search
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item" href="{{ route('local.latest') }}">
+										Latest upload
+									</a>
+								</li>
+							</ul>
 						</li>
 					</ul>
 				</div>

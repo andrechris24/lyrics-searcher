@@ -17,7 +17,7 @@ $(".download-btn").on("click", function (e) {
 		},
 		success: function (data) {
 			if (type === "lyrics") {
-				contents = fileName;
+				contents = `${fileName}\n\n`;
 				ext = "txt";
 			} else {
 				contents =
@@ -31,6 +31,6 @@ $(".download-btn").on("click", function (e) {
 			if (st === "timeout") message = "Connection timed out";
 			else message = xhr.responseJSON.message ?? st;
 			toast.fire({ icon: "error", text: message });
-		},
+		}
 	});
 });

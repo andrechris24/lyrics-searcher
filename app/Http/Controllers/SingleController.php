@@ -127,7 +127,6 @@ class SingleController extends Controller
 						'explicit' => $tmBody['explicit'],
 						'source' => 'musixmatch'
 					]);
-					break;
 				case 'plains':
 					$response = Http::get('https://api.lyrics.ovh/v1/' . $req['artist'] . '/' . $req['title']);
 					$r = self::decodeJson($response->body());
@@ -150,11 +149,10 @@ class SingleController extends Controller
 					if (!empty($req['album']))
 						$model->whereLike('album', '%' . $req['album'] . '%');
 					$data = $model->firstOrFail();
-					$data['user']=$data->user;
+					$data['user'] = $data->user;
 					$data['source'] = 'local';
 					$data['instrumental'] = false;
 					return response()->json($data);
-					break;
 				default:
 					abort(422, 'Unsupported source');
 					break;

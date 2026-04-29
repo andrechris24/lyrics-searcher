@@ -1,15 +1,19 @@
+@if ($provider === 'kugou')
+	<div class="alert alert-warning">
+		Kugou's Advanced search is case sensitive. Consider word casing if no results.
+	</div>
+@endif
 <form class="row g-3 mb-3" action="{{ route($provider . '.search.advanced') }}">
 	<div class="col-12">
 		<label for="track-name" class="form-label">
 			Song Title <span class="text-danger"><b>*</b></span>
-			@endif
 		</label>
 		<div class="input-group input-group-lg">
 			<span class="input-group-text"><i class="fa-solid fa-music"></i></span>
 			<input type="text" class="form-control @error('title') is-invalid @enderror "
 				id="track-name" placeholder="Song title" name="title"
 				value="{{ request('title') ?? old('title') }}" required
-				@if(request()->routeIs('*.index')) autofocus @endif >
+				@if (request()->routeIs('*.index')) autofocus @endif>
 		</div>
 	</div>
 	<div class="col-sm-6">

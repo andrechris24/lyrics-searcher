@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\{Http, Log};
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class KugouController extends Controller
@@ -67,7 +68,8 @@ class KugouController extends Controller
 	{
 		try {
 			$req->validate([
-				'query' => 'required',
+				'artist' => 'required',
+				'title' => 'required',
 				'minutes' => 'required|numeric|between:0,59',
 				'seconds' => 'required|numeric|between:0,59'
 			]);
@@ -75,8 +77,8 @@ class KugouController extends Controller
 				'ver' => '1',
 				'man' => 'yes',
 				'client' => 'pc',
-				'keyword' => $req['query'],
-				'duration' => ($req['minutes'] * 60 + $req['seconds'])
+				'keyword' => $req['artist'] . ' - ' . $req['title'],
+				'duration' => ($req['minutes'] * 60 + $req['seconds']) * 1000
 			]);
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
@@ -94,6 +96,44 @@ class KugouController extends Controller
 				->withError('Kugou Music connection failed: ' . $th->getMessage());
 		} catch (ValidationException $e) {
 			return to_route('kugou.advanced')->withInput()->withErrors($e->errors());
+		}
+	}
+	public function aimp(Request $req)
+	{
+		Log::debug($req);
+		try {
+			$req->validate([
+				'query' => 'required',
+				'minutes' => 'required|numeric|between:0,59',
+				'seconds' => 'required|numeric|between:0,59'
+			]);
+			$response = Http::get(self::$lrcUrl . 'search', [
+				'ver' => '1',
+				'man' => 'yes',
+				'client' => 'pc',
+				'keyword' => $req['query'],
+				'duration' => ($req['minutes'] * 60 + $req['seconds']) * 1000
+			]);
+			$r = self::decodeJson($response->body());
+			abort_if($r === false, 500, 'Error parsing JSON response: ' . json_last_error_msg());
+			abort_if(
+				!in_array($r['errcode'], [0, 200]),
+				$r['errcode'],
+				'Kugou Music error ' . $r['errcode'] . ': ' . $r['error']
+			);
+			// dd($r);
+			$data = [];
+			foreach ($r['candidates'] as $result) {
+				$data[] = [
+					'singer' => Str::replace("\u{3001}", ', ', $result['singer']),
+					'song' => $result['song'],
+					'url' => route('kugou.search.get', ['id' => $result['id'], 'key' => $result['accesskey']])
+				];
+			}
+			return response()->json($data);
+		} catch (ConnectionException $th) {
+			Log::error($th);
+			abort(500, 'Kugou Music connection failed: ' . $th->getMessage());
 		}
 	}
 	public function get(Request $req)

@@ -13,7 +13,7 @@ if (lyricsModal) {
 			syncedLyrics = button.getAttribute("data-bs-synced"),
 			plainLyrics = button.getAttribute("data-bs-plain"),
 			duration = button.getAttribute("data-bs-duration"),
-			lyricID=button.getAttribute("data-bs-id");
+			lyricID = button.getAttribute("data-bs-id");
 		// If necessary, you could initiate an Ajax request here
 		// and then do the updating in a callback
 
@@ -31,7 +31,7 @@ if (lyricsModal) {
 
 		// Set file name and contents on save
 		fileName = `${songArtist.textContent} - ${songTitle.textContent}`;
-		plainContents = plainContainer.textContent;
+		plainContents = `${fileName}\n\n${plainLyrics}`;
 		if (syncedLyrics === "") {
 			syncedDL.classList.add("disabled");
 			syncedContents = null;

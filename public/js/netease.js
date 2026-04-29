@@ -51,7 +51,7 @@ if (lyricsModal) {
 					klyricContent = "";
 				}
 				if(!data.lrc.lyric.match(/\[(\d+):(\d+).(\d+)\]/)){
-					lyricContents = data.lrc.lyric;
+					lyricContents = `${fileName}\n\n${data.lrc.lyric}`;
 					ext="txt";
 				}else{
 					lyricContents = `${metaLyric}[ve: ${data.lrc.version}]\n${data.lrc.lyric}`;
