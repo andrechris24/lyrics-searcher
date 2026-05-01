@@ -26,7 +26,7 @@ class SingleController extends Controller
 					if (!empty($req['album'])) $param['album_name'] = $req['album'];
 					$response = Http::get('https://lrclib.net/api/get', $param);
 					$r = self::decodeJson($response->body());
-					abort_if($r === false, 500, 'Error parsing JSON response: ' . json_last_error_msg());
+					abort_if($r===false, 500, 'Error parsing response: ' . json_last_error_msg());
 					if ($response->successful()) {
 						return response()->json([
 							'title' => $r['trackName'],
@@ -58,7 +58,7 @@ class SingleController extends Controller
 						'usertoken' => env('MUSIXMATCH_TOKEN')
 					]);
 					$r = self::decodeJson($response->body());
-					abort_if($r === false, 500, 'Error parsing JSON response: ' . json_last_error_msg());
+					abort_if($r===false, 500, 'Error parsing response: ' . json_last_error_msg());
 					$header = $r['message']['header'];
 					abort_if(
 						$header['status_code'] !== 200,

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\QrcDecrypter;
+use FFI;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\{Http, Log};
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class QQMusicController extends Controller
@@ -18,6 +21,7 @@ class QQMusicController extends Controller
 		"Sec-Fetch-Mode" => "cors",
 		"Sec-Fetch-Site" => "same-origin"
 	];
+	private const QQ_KEY = '!@#)(*$%123ZXC!@!@#)(NHL';
 	public static string $url = 'https://u.y.qq.com/cgi-bin/musicu.fcg';
 	public function search(Request $req)
 	{
@@ -40,7 +44,7 @@ class QQMusicController extends Controller
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
 				return to_route('qqmusic.index')->withInput()
-					->withError('Error parsing JSON response: ' . json_last_error_msg());
+					->withError('Error parsing response: ' . json_last_error_msg());
 			} else if (!in_array($r['code'], [0, 200])) {
 				return to_route('qqmusic.index')->withInput()
 					->withError('QQ Music error ' . $r['code']);
@@ -65,14 +69,14 @@ class QQMusicController extends Controller
 		try {
 			$response = Http::withHeaders(["Referer" => "https://y.qq.com/portal/player.html"])
 				->get('https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg', [
-					'g_tk' => '5381',
+					'g_tk' => 5381,
 					'format' => 'json',
 					'inCharset' => 'utf-8',
 					'outCharset' => 'utf-8',
 					'songmid' => $id
 				]);
 			$r = self::decodeJson($response->body());
-			abort_if($r === false, 500, 'Error parsing JSON response: ' . json_last_error_msg());
+			abort_if($r===false, 500, 'Error parsing response: ' . json_last_error_msg());
 			if (!array_key_exists('lyric', $r)) {
 				Log::info(
 					'No lyric available for songmid {id}, response code: {code}',

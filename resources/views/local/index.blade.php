@@ -6,6 +6,6 @@
 		@if (Session::has('error') || $errors->any())
 			<x-error />
 		@endif
-		<x-two-form provider="local" />
+		<x-two-form provider="local" type="basic" />
 	</div>
 @endsection

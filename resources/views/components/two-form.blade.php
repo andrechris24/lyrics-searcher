@@ -1,4 +1,5 @@
-<form class="row g-3 mb-3" action="{{ route($provider . '.search') }}">
+<form class="row g-3 mb-3" 
+	action="{{ route($provider . ($type==='advanced'?'.search.advanced':'.search')) }}">
 	<div class="col-sm-6">
 		<label for="track-name" class="form-label">
 			Song Title <span class="text-danger"><b>*</b></span>
@@ -24,6 +25,10 @@
 	</div>
 	<button type="submit" class="btn btn-primary">Search</button>
 	<small class="form-text">
+		@if($type==='advanced')
+		<a href="{{ route($provider . '.index') }}">Basic search</a>
+		@else
 		<a href="{{ route($provider . '.advanced') }}">Advanced search</a>
+		@endif
 	</small>
 </form>

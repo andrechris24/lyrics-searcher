@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\KrcDecoder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\{Http, Log};
@@ -25,7 +26,7 @@ class KugouController extends Controller
 			$r = self::decodeJson($response);
 			if ($r === false) {
 				return to_route('kugou.index')->withInput()
-					->withError('Error parsing JSON response: ' . json_last_error_msg());
+					->withError('Error parsing response: ' . json_last_error_msg());
 			} else if (!in_array($r['errcode'], [0, 200])) {
 				return to_route('kugou.index')->withInput()
 					->withError('Kugou Music error ' . $r['errcode'] . ': ' . $r['error']);
@@ -45,13 +46,13 @@ class KugouController extends Controller
 		try {
 			$response = Http::get(
 				self::$lrcUrl . 'search',
-				['ver' => '1', 'man' => 'yes', 'client' => 'pc', 'hash' => $hash]
+				['ver' => 1, 'man' => 'yes', 'client' => 'pc', 'hash' => $hash]
 			);
 			$r = self::decodeJson($response->body());
 			abort_if(
 				$r === false,
 				500,
-				'Error parsing JSON response: ' . json_last_error_msg()
+				'Error parsing response: ' . json_last_error_msg()
 			);
 			abort_if(
 				$r['errcode'] !== 200,
@@ -74,7 +75,7 @@ class KugouController extends Controller
 				'seconds' => 'required|numeric|between:0,59'
 			]);
 			$response = Http::get(self::$lrcUrl . 'search', [
-				'ver' => '1',
+				'ver' => 1,
 				'man' => 'yes',
 				'client' => 'pc',
 				'keyword' => $req['artist'] . ' - ' . $req['title'],
@@ -83,7 +84,7 @@ class KugouController extends Controller
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
 				return to_route('kugou.advanced')->withInput()
-					->withError('Error parsing JSON response: ' . json_last_error_msg());
+					->withError('Error parsing response: ' . json_last_error_msg());
 			} else if (!in_array($r['errcode'], [0, 200])) {
 				return to_route('kugou.advanced')->withInput()
 					->withError('Kugou Music error ' . $r['errcode'] . ': ' . $r['error']);
@@ -108,26 +109,28 @@ class KugouController extends Controller
 				'seconds' => 'required|numeric|between:0,59'
 			]);
 			$response = Http::get(self::$lrcUrl . 'search', [
-				'ver' => '1',
+				'ver' => 1,
 				'man' => 'yes',
 				'client' => 'pc',
 				'keyword' => $req['query'],
 				'duration' => ($req['minutes'] * 60 + $req['seconds']) * 1000
 			]);
 			$r = self::decodeJson($response->body());
-			abort_if($r === false, 500, 'Error parsing JSON response: ' . json_last_error_msg());
+			abort_if($r===false, 500, 'Error parsing response: ' . json_last_error_msg());
 			abort_if(
 				!in_array($r['errcode'], [0, 200]),
 				$r['errcode'],
 				'Kugou Music error ' . $r['errcode'] . ': ' . $r['error']
 			);
-			// dd($r);
 			$data = [];
 			foreach ($r['candidates'] as $result) {
 				$data[] = [
 					'singer' => Str::replace("\u{3001}", ', ', $result['singer']),
 					'song' => $result['song'],
-					'url' => route('kugou.search.get', ['id' => $result['id'], 'key' => $result['accesskey']])
+					'url' => route(
+						'kugou.search.get',
+						['id' => $result['id'], 'key' => $result['accesskey']]
+					)
 				];
 			}
 			return response()->json($data);
@@ -141,18 +144,14 @@ class KugouController extends Controller
 		$req->validate(['id' => 'required|integer', 'key' => 'required']);
 		try {
 			$response = Http::get(self::$lrcUrl . 'download', [
-				'ver' => '1',
+				'ver' => 1,
 				'id' => $req['id'],
-				"client" => 'pc',
+				'client' => 'pc',
 				'accesskey' => $req['key'],
 				'charset' => 'utf8'
 			]);
 			$r = self::decodeJson($response->body());
-			abort_if(
-				$r === false,
-				500,
-				'Error parsing JSON response: ' . json_last_error_msg()
-			);
+			abort_if($r===false, 500, 'Error parsing response: ' . json_last_error_msg());
 			abort_if(
 				$r['status'] !== 200,
 				$r['status'],
@@ -160,11 +159,8 @@ class KugouController extends Controller
 			);
 			if ($r['fmt'] !== 'krc') $context = $r['content'];
 			else {
-				$zip = $this->krchex_xor(base64_decode($r['content']));
-				if (!$zip) abort(500, 'Failed to decrypt KRC data');
-				$decoded = zlib_decode($zip);
-				if (!$decoded) abort(500, 'Failed to decode KRC data');
-				$context = $this->krc2lrc($decoded);
+				$text=KrcDecoder::decode($r['content']);
+				$context = $this->krc2lrc($text);
 			}
 			return response()->json(['format' => $r['fmt'], 'content' => $context]);
 		} catch (ConnectionException $e) {

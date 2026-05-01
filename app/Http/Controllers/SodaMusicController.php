@@ -30,7 +30,7 @@ class SodaMusicController extends Controller
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
 				return to_route('sodamusic.index')->withInput()
-					->withError('Error parsing JSON response: ' . json_last_error_msg());
+					->withError('Error parsing response: ' . json_last_error_msg());
 			}
 			$data = $r['result_groups'][0];
 			return view('sodamusic.result', compact('data'));
@@ -50,9 +50,9 @@ class SodaMusicController extends Controller
 				["track_id" => $id, "media_type" => "track"]
 			);
 			$r = self::decodeJson($response->body());
-			abort_if($r === false, 500, 'Error parsing JSON response: ' . json_last_error_msg());
+			abort_if($r===false, 500, 'Error parsing response: ' . json_last_error_msg());
 			abort_if(
-				!array_key_exists('content', $r['lyric']),
+				!array_key_exists('lyric', $r),
 				404,
 				'No lyric available for this song'
 			);

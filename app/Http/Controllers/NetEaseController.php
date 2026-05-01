@@ -21,14 +21,14 @@ class NetEaseController extends Controller
 			$response = Http::withHeaders(self::NETEASE_HEADERS)
 				->get(self::$url . 'search/get', [
 					's' => $req['query'],
-					'type' => '1',
+					'type' => 1,
 					'limit' => 20, //Match result count as LRCLib
 					'offset' => $req['offset'] ?? 0
 				]);
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
 				return to_route('netease.index')->withInput()
-					->withError('Error parsing JSON response: ' . json_last_error_msg());
+					->withError('Error parsing response: ' . json_last_error_msg());
 			} else if ($r['code'] !== 200) {
 				return to_route('netease.index')->withInput()
 					->withError("NetEase Music HTTP Error " . $r['code']);
@@ -48,10 +48,10 @@ class NetEaseController extends Controller
 		try {
 			$response = Http::withHeaders(self::NETEASE_HEADERS)->get(
 				self::$url . 'song/lyric',
-				['kv' => '-1', 'lv' => '-1', 'os' => 'pc', 'id' => $id]
+				['kv' => -1, 'lv' => -1, 'os' => 'pc', 'id' => $id]
 			);
 			$r = self::decodeJson($response->body());
-			abort_if($r === false, 500, 'Error parsing JSON response: ' . json_last_error_msg());
+			abort_if($r===false, 500, 'Error parsing response: ' . json_last_error_msg());
 			abort_if($r['code'] !== 200, $r['code'], 'NetEase Music HTTP Error ' . $r['code']);
 			abort_if(array_key_exists('needDesc', $r), 404, 'No lyric available for this song');
 			return response()->json($r);

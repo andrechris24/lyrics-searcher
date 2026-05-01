@@ -31,8 +31,8 @@ class MusixmatchController extends Controller
 			]);
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
-				return to_route('musixmatch.advanced')->withInput()
-					->withError('Error parsing JSON response: ' . json_last_error_msg());
+				return to_route('musixmatch.index')->withInput()
+					->withError('Error parsing response: ' . json_last_error_msg());
 			}
 			$header = $r['message']['header'];
 			if ($header['status_code'] !== 200) {
@@ -75,7 +75,7 @@ class MusixmatchController extends Controller
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
 				return to_route('musixmatch.advanced')->withInput()
-					->withError('Error parsing JSON response: ' . json_last_error_msg());
+					->withError('Error parsing response: ' . json_last_error_msg());
 			}
 			$header = $r['message']['header'];
 			if ($header['status_code'] !== 200) {
@@ -109,8 +109,8 @@ class MusixmatchController extends Controller
 				]);
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
-				return to_route('musixmatch.index')->withInput()
-					->withError('Error parsing JSON response: ' . json_last_error_msg());
+				return to_route('musixmatch.index')
+					->withError('Error parsing response: ' . json_last_error_msg());
 			}
 			$header = $r['message']['header'];
 			if ($header['status_code'] !== 200)
@@ -143,11 +143,7 @@ class MusixmatchController extends Controller
 					'usertoken' => env('MUSIXMATCH_TOKEN')
 				]);
 			$r = self::decodeJson($response->body());
-			abort_if(
-				$r === false,
-				500,
-				'Error parsing JSON response: ' . json_last_error_msg()
-			);
+			abort_if($r===false, 500, 'Error parsing response: ' . json_last_error_msg());
 			$header = $r['message']['header'];
 			abort_if(
 				$header['status_code'] !== 200,

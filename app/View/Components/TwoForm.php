@@ -11,7 +11,7 @@ class TwoForm extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct(public string $provider)
+    public function __construct(public string $provider, public string $type)
     {
         //
     }

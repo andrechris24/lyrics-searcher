@@ -18,7 +18,7 @@ class LRCLibController extends Controller
 			$data = self::decodeJson($response->body());
 			if ($data === false) {
 				return to_route('lrclib.index')->withInput()
-					->withError('Error parsing JSON response: ' . json_last_error_msg());
+					->withError('Error parsing response: ' . json_last_error_msg());
 			}
 			return view('lrclib.result', compact('data'));
 		} catch (ConnectionException $e) {
@@ -41,7 +41,7 @@ class LRCLibController extends Controller
 			$data = self::decodeJson($response->body());
 			if ($data === false) {
 				return to_route('lrclib.advanced')->withInput()
-					->withError('Error parsing JSON response: ' . json_last_error_msg());
+					->withError('Error parsing response: ' . json_last_error_msg());
 			}
 			return view('lrclib.advanced.result', compact('data'));
 		} catch (ConnectionException $e) {
