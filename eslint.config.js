@@ -10,10 +10,18 @@ export default defineConfig([
 		files: ["**/*.{js,mjs,cjs}"],
 		plugins: { js, jquery },
 		extends: ["js/recommended"],
-		languageOptions: { globals: globals.browser }
+		languageOptions: { globals: globals.browser },
+		rules: {
+			"no-unused-vars": ["warn"],
+			"@typescript-eslint/no-unused-vars": ["off"]
+		}
 	},
 	{
 		files: ["**/*.js"],
-		languageOptions: { sourceType: "script", globals: { ...globals.jquery } }
+		languageOptions: { sourceType: "script", globals: { ...globals.jquery } },
+		rules: {
+			"no-unused-vars": ["warn"],
+			"@typescript-eslint/no-unused-vars": ["off"]
+		}
 	}
 ]);

@@ -19,16 +19,17 @@ class MusixmatchController extends Controller
 		try {
 			$req->validate(['query' => 'required', 'page' => 'nullable|integer|min:1']);
 			Sleep::for(5)->seconds();
-			$response = Http::withHeaders(self::MX_HEADER)->get(self::$url . 'track.search', [
-				'user_language' => 'en',
-				'app_id' => 'web-desktop-app-v1.0',
-				'q' => $req['query'],
-				'usertoken' => env('MUSIXMATCH_TOKEN'),
-				'page' => $req['page'] ?? 1,
-				'page_size' => 20, //Match LRCLib result count
-				// 's_artist_rating' => 'desc',
-				'f_has_lyrics' => 1 //Search tracks with lyrics only
-			]);
+			$response = Http::connectTimeout(30)->withHeaders(self::MX_HEADER)
+				->get(self::$url . 'track.search', [
+					'user_language' => 'en',
+					'app_id' => 'web-desktop-app-v1.0',
+					'q' => $req['query'],
+					'usertoken' => env('MUSIXMATCH_TOKEN'),
+					'page' => $req['page'] ?? 1,
+					'page_size' => 20, //Match LRCLib result count
+					// 's_artist_rating' => 'desc',
+					'f_has_lyrics' => 1 //Search tracks with lyrics only
+				]);
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
 				return to_route('musixmatch.index')->withInput()
@@ -61,17 +62,19 @@ class MusixmatchController extends Controller
 				'page' => 'nullable|integer|min:1'
 			]);
 			Sleep::for(5)->seconds();
-			$response = Http::withHeaders(self::MX_HEADER)->get(self::$url . 'track.search', [
-				'user_language' => 'en',
-				'app_id' => 'web-desktop-app-v1.0',
-				'q_album' => $req['album'],
-				'q_artist' => $req['artist'],
-				'q_track' => $req['title'],
-				'usertoken' => env('MUSIXMATCH_TOKEN'),
-				'page' => $req['page'] ?? 1,
-				'page_size' => 20,
-				'f_has_lyrics' => 1
-			]);
+			$response = Http::connectTimeout(30)->withHeaders(self::MX_HEADER)
+				->get(self::$url . 'track.search', [
+					'user_language' => 'en',
+					'app_id' => 'web-desktop-app-v1.0',
+					'q_album' => $req['album'],
+					'q_artist' => $req['artist'],
+					'q_track' => $req['title'],
+					'usertoken' => env('MUSIXMATCH_TOKEN'),
+					// 's_track_rating' => 'desc',
+					'page' => $req['page'] ?? 1,
+					'page_size' => 20,
+					'f_has_lyrics' => 1
+				]);
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
 				return to_route('musixmatch.advanced')->withInput()
@@ -98,7 +101,7 @@ class MusixmatchController extends Controller
 			return to_route('index')->withError('Musixmatch token was not found');
 		try {
 			Sleep::for(5)->seconds();
-			$response = Http::withHeaders(self::MX_HEADER)
+			$response = Http::connectTimeout(30)->withHeaders(self::MX_HEADER)
 				->get(self::$url . 'chart.tracks.get', [
 					'user_language' => 'en',
 					'app_id' => 'web-desktop-app-v1.0',
@@ -135,7 +138,7 @@ class MusixmatchController extends Controller
 		);
 		Sleep::for(5)->seconds();
 		try {
-			$response = Http::withHeaders(self::MX_HEADER)
+			$response = Http::connectTimeout(30)->withHeaders(self::MX_HEADER)
 				->get(self::$url . 'track.' . $type . '.get', [
 					'user_language' => 'en',
 					'app_id' => 'web-desktop-app-v1.0',
@@ -143,7 +146,7 @@ class MusixmatchController extends Controller
 					'usertoken' => env('MUSIXMATCH_TOKEN')
 				]);
 			$r = self::decodeJson($response->body());
-			abort_if($r===false, 500, 'Error parsing response: ' . json_last_error_msg());
+			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 			$header = $r['message']['header'];
 			abort_if(
 				$header['status_code'] !== 200,

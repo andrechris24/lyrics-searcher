@@ -12,11 +12,12 @@ use Illuminate\Validation\ValidationException;
 class KugouController extends Controller
 {
 	public static string $lrcUrl = 'https://lyrics.kugou.com/';
+	public static array $query=['ver' => 1, 'man' => 'yes', 'client' => 'pc'];
 	public function search(Request $req)
 	{
 		try {
 			$req->validate(['query' => 'required', 'page' => 'nullable|integer|min:1']);
-			$response = Http::get('http://mobilecdn.kugou.com/api/v3/search/song', [
+			$response = Http::connectTimeout(30)->get('http://mobilecdn.kugou.com/api/v3/search/song', [
 				'format' => 'json',
 				'keyword' => $req['query'],
 				'page' => $req['page'] ?? 1,
@@ -44,16 +45,12 @@ class KugouController extends Controller
 	public function lyrics(string $hash)
 	{
 		try {
-			$response = Http::get(
+			$response = Http::connectTimeout(30)->get(
 				self::$lrcUrl . 'search',
 				['ver' => 1, 'man' => 'yes', 'client' => 'pc', 'hash' => $hash]
 			);
 			$r = self::decodeJson($response->body());
-			abort_if(
-				$r === false,
-				500,
-				'Error parsing response: ' . json_last_error_msg()
-			);
+			abort_if($r === false,500,'Error parsing response: ' . json_last_error_msg());
 			abort_if(
 				$r['errcode'] !== 200,
 				$r['errcode'],
@@ -74,7 +71,7 @@ class KugouController extends Controller
 				'minutes' => 'required|numeric|between:0,59',
 				'seconds' => 'required|numeric|between:0,59'
 			]);
-			$response = Http::get(self::$lrcUrl . 'search', [
+			$response = Http::connectTimeout(30)->get(self::$lrcUrl . 'search', [
 				'ver' => 1,
 				'man' => 'yes',
 				'client' => 'pc',
@@ -108,7 +105,7 @@ class KugouController extends Controller
 				'minutes' => 'required|numeric|between:0,59',
 				'seconds' => 'required|numeric|between:0,59'
 			]);
-			$response = Http::get(self::$lrcUrl . 'search', [
+			$response = Http::connectTimeout(30)->get(self::$lrcUrl . 'search', [
 				'ver' => 1,
 				'man' => 'yes',
 				'client' => 'pc',
@@ -116,7 +113,7 @@ class KugouController extends Controller
 				'duration' => ($req['minutes'] * 60 + $req['seconds']) * 1000
 			]);
 			$r = self::decodeJson($response->body());
-			abort_if($r===false, 500, 'Error parsing response: ' . json_last_error_msg());
+			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 			abort_if(
 				!in_array($r['errcode'], [0, 200]),
 				$r['errcode'],
@@ -143,7 +140,7 @@ class KugouController extends Controller
 	{
 		$req->validate(['id' => 'required|integer', 'key' => 'required']);
 		try {
-			$response = Http::get(self::$lrcUrl . 'download', [
+			$response = Http::connectTimeout(30)->get(self::$lrcUrl . 'download', [
 				'ver' => 1,
 				'id' => $req['id'],
 				'client' => 'pc',
@@ -151,7 +148,7 @@ class KugouController extends Controller
 				'charset' => 'utf8'
 			]);
 			$r = self::decodeJson($response->body());
-			abort_if($r===false, 500, 'Error parsing response: ' . json_last_error_msg());
+			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 			abort_if(
 				$r['status'] !== 200,
 				$r['status'],
@@ -159,10 +156,12 @@ class KugouController extends Controller
 			);
 			if ($r['fmt'] !== 'krc') $context = $r['content'];
 			else {
-				$text=KrcDecoder::decode($r['content']);
+				$text = KrcDecoder::decode($r['content']);
 				$context = $this->krc2lrc($text);
 			}
-			return response()->json(['format' => $r['fmt'], 'content' => $context]);
+			return response()->json(
+				['format' => $r['fmt'], 'content' => $context, 'raw' => $r['content']]
+			);
 		} catch (ConnectionException $e) {
 			Log::error($e);
 			abort(500, 'Kugou Music connection failed: ' . $e->getMessage());

@@ -42,9 +42,8 @@ if (lyricsModal) {
 						target: 3,
 						render: function (data, type, full) {
 							const access = full["accesskey"];
-							// console.log(full['krctype']);
 							return (
-								`<button type="button" class="btn btn-primary btn-sm" onclick="download(${data},'${access}')">` +
+								`<button type="button" class="btn btn-primary btn-sm dl-btn" onclick="download(${data},'${access}')">` +
 								'<i class="fa-solid fa-download"></i>' +
 								"</button>"
 							);
@@ -57,17 +56,14 @@ if (lyricsModal) {
 			});
 	});
 }
-
+document.addEventListener('focusin', (e) => {
+	if (e.target.closest('[class*="swal2-"]') !== null)
+		e.stopImmediatePropagation();//Prevent modal from stealing focus
+});
 function download(id, key) {
-	// const csrfToken = document
-	// 	.querySelector('meta[name="csrf-token"]')
-	// 	.getAttribute("content");
-
-	let message;
+	let message, ext;
 	$.ajax({
 		url: `/kugou/get`,
-		// headers: { "X-CSRF-TOKEN": csrfToken },
-		// method: "POST",
 		data: { id: id, key: key },
 		beforeSend: function () {
 			$.LoadingOverlay("show");
@@ -75,40 +71,75 @@ function download(id, key) {
 		complete: function () {
 			$.LoadingOverlay("hide");
 		},
-		success: async function (data) {
-			try {
-				if (data.format === "krc") {
-					const choice = await Swal.fire({
-						title: "Choose lyric type to download",
-						text: "Note: only a few players support word-by-word lyrics.",
-						theme: "bootstrap-5",
-						showDenyButton: true,
-						showCancelButton: true,
-						confirmButtonText: "Synced",
-						denyButtonText: "Word-by-Word",
-					});
-					if (choice.isConfirmed)
-						lyricContent = data.content.replace(/<(\d+):(\d+).(\d+)>/g, "");
-					else if (choice.isDenied) lyricContent = data.content;
-					else if (choice.isDismissed) return false;
-					else throw new Error("Unknown choice");
-				} else lyricContent = data.content;
-				blobDL(lyricContent, `${fileName}.lrc`);
-			} catch (e) {
-				console.warn(e);
+		success: function (data) {
+			if (data.format === "krc") {
+				Swal.fire({
+					title: "Choose lyric type to download",
+					text: "To edit lyric in Aegisub (requires additional script), choose KRC Raw. For Word-by-Word lyrics, only a few players supported.",
+					footer: "<a href=\"https://github.com/qwe7989199/Lyric-Importer-for-Aegisub\">Additional script for Aegisub</a>",
+					theme: "bootstrap-5",
+					buttonsStyling: false,
+					customClass: {
+						confirmButton: "btn btn-primary btn-lg me-2",
+						cancelButton: "btn btn-danger btn-lg"
+					},
+					topLayer: true,
+					inputOptions: {
+						synced: "Synced",
+						wordbyword: "Word-by-Word",
+						raw: "KRC Raw",
+						plain: "Plain"
+					},
+					input: "select",
+					inputPlaceholder: "Select lyric type",
+					showCancelButton: true,
+					inputValidator: (value) => {
+						return new Promise((resolve) => {
+							if (!value) resolve("Please select lyric type to continue");
+							else resolve();
+						});
+					}
+				}).then((result) => {
+					if (result.isConfirmed && result.value) {
+						switch (result.value) {
+							case "synced":
+								lyricContent = data.content.replace(/<(\d+):(\d+).(\d+)>/g, "");
+								ext = ".lrc";
+								break;
+							case "wordbyword":
+								lyricContent = data.content;
+								ext = ".lrc";
+								break;
+							case "raw":
+								lyricContent = Uint8Array.fromBase64(data.raw);
+								ext = ".krc";
+								break;
+							default: //plain or unknown
+								lyricContent = data.content
+									.replace(/<(\d+):(\d+).(\d+)>/g, "")
+									.replace(/\[(\d+):(\d+).(\d+)\]/g, "");
+								ext = ".txt";
+								break;
+						}
+						blobDL(lyricContent, fileName + ext);
+					}
+				});
+			} else {
+				console.info(`Lyric type: ${data.format}`);
+				blobDL(data.content, `${fileName}.lrc`);
 			}
 		},
 		error: function (xhr, st) {
+			console.warn(xhr.responseJSON?.message ?? st)
 			if (st === "timeout") message = "Connection timed out";
-			else message = xhr.responseJSON.message ?? st;
-			toast.fire({ icon: "error", text: message });
+			else message = xhr.responseJSON?.message ?? st;
+			toast.fire({icon: 'error', text: message});
 		}
 	});
 }
 function formatMilliseconds(ms) {
 	// Validate input
-	if (typeof ms !== "number" || isNaN(ms) || ms < 0)
-		return "00:00"; // Default for invalid input
+	if (typeof ms !== "number" || isNaN(ms) || ms < 0) return "00:00"; // Default for invalid input
 
 	// Convert to total seconds
 	const totalSeconds = Math.floor(ms / 1000);

@@ -18,7 +18,7 @@ abstract class Controller
 			$msg = match ($header['hint']) {
 				'renew' => "Invalid Musixmatch token",
 				'captcha' => "Musixmatch blocked your IP",
-				default => "Musixmatch returned an error with reason: " . $header['hint'],
+				default => "Musixmatch returned an error with reason: " . $header['hint']
 			};
 		} else {
 			$msg = match ($header['status_code']) {
@@ -27,7 +27,7 @@ abstract class Controller
 				400 => "Bad request sent to Musixmatch. Please report this issue.",
 				500 => "Musixmatch server error. Please try again later.",
 				503 => "Musixmatch service unavailable. Please try again later.",
-				default => "Musixmatch HTTP Error " . $header['status_code'],
+				default => "Musixmatch HTTP Error " . $header['status_code']
 			};
 		}
 		return $msg;
@@ -66,12 +66,12 @@ abstract class Controller
 	{
 		$res = json_decode($response, true);
 		if (json_last_error() !== JSON_ERROR_NONE) {
-			Log::error($response . ' is not a valid JSON response, reason: '. json_last_error_msg());
+			Log::error($response . ' is not a valid JSON response, reason: ' . json_last_error_msg());
 			return false;
 		}
 		return $res;
 	}
-	protected function krc2lrc($krcText)
+	protected function krc2lrc(string $krcText)
 	{
 		$lyricText = "";
 		$metaRegex = "/^\[(\S+):(\S+)\]$/";

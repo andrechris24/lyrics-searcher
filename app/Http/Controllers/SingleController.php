@@ -24,9 +24,9 @@ class SingleController extends Controller
 				case 'lrclib':
 					$param = ['artist_name' => $req['artist'], 'track_name' => $req['title']];
 					if (!empty($req['album'])) $param['album_name'] = $req['album'];
-					$response = Http::get('https://lrclib.net/api/get', $param);
+					$response = Http::connectTimeout(30)->get('https://lrclib.net/api/get', $param);
 					$r = self::decodeJson($response->body());
-					abort_if($r===false, 500, 'Error parsing response: ' . json_last_error_msg());
+					abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 					if ($response->successful()) {
 						return response()->json([
 							'title' => $r['trackName'],
@@ -45,7 +45,7 @@ class SingleController extends Controller
 				case 'musixmatch':
 					abort_if(empty(env('MUSIXMATCH_TOKEN')), 500, 'Musixmatch token was not found');
 					Sleep::for(5)->seconds();
-					$response = Http::withHeaders([
+					$response = Http::connectTimeout(30)->withHeaders([
 						"authority" => "apic-desktop.musixmatch.com",
 						"cookie" => "x-mxm-token-guid="
 					])->get(MusixmatchController::$url . 'macro.subtitles.get', [
@@ -58,7 +58,7 @@ class SingleController extends Controller
 						'usertoken' => env('MUSIXMATCH_TOKEN')
 					]);
 					$r = self::decodeJson($response->body());
-					abort_if($r===false, 500, 'Error parsing response: ' . json_last_error_msg());
+					abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 					$header = $r['message']['header'];
 					abort_if(
 						$header['status_code'] !== 200,
@@ -128,9 +128,10 @@ class SingleController extends Controller
 						'source' => 'musixmatch'
 					]);
 				case 'plains':
-					$response = Http::get('https://api.lyrics.ovh/v1/' . $req['artist'] . '/' . $req['title']);
+					$response = Http::connectTimeout(30)
+						->get('https://api.lyrics.ovh/v1/' . $req['artist'] . '/' . $req['title']);
 					$r = self::decodeJson($response->body());
-					abort_if($r === false, 500, 'Error parsing JSON response: ' . json_last_error_msg());
+					abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 					if ($response->successful()) {
 						return response()->json([
 							'title' => $req['title'],
@@ -139,9 +140,14 @@ class SingleController extends Controller
 							'instrumental' => false,
 							'source' => 'lyrics.ovh'
 						]);
+					}else if(array_key_exists('error', $r)){
+						abort_if($response->badRequest(), 400, $r['error']);
+						abort_if($response->notFound(), 404, $r['error']);
+						abort(500, $r['error']);
+					}else{
+						Log::error('Unknown Lyrics.ovh response: ',$r);
+						abort(500, 'Unknown response: '.json_encode($r));
 					}
-					abort_if($response->badRequest(), 400, $r['error']);
-					abort_if($response->notFound(), 404, $r['error']);
 					break;
 				case 'local':
 					$model = Lyric::whereLike('title', '%' . $req['title'] . '%')

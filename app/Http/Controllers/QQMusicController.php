@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\QrcDecrypter;
-use FFI;
+// use App\QrcDecrypter;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\{Http, Log};
-use Illuminate\Support\Str;
+// use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class QQMusicController extends Controller
@@ -21,26 +20,27 @@ class QQMusicController extends Controller
 		"Sec-Fetch-Mode" => "cors",
 		"Sec-Fetch-Site" => "same-origin"
 	];
-	private const QQ_KEY = '!@#)(*$%123ZXC!@!@#)(NHL';
+	// private const QQ_KEY = '!@#)(*$%123ZXC!@!@#)(NHL';
 	public static string $url = 'https://u.y.qq.com/cgi-bin/musicu.fcg';
 	public function search(Request $req)
 	{
 		try {
 			$req->validate(['query' => 'required', 'page' => 'nullable|integer|min:1']);
-			$response = Http::withHeaders(self::QQ_HEADER)->post(self::$url, [
-				'comm' => ['ct' => 19, 'cv' => 1859, 'uin' => 0],
-				'req' => [
-					'method' => "DoSearchForQQMusicDesktop",
-					"module" => "music.search.SearchCgiService",
-					"param" => [
-						'grp' => 1,
-						'num_per_page' => 20,
-						'page_num' => (int)$req['page'] ?? 1,
-						'query' => $req['query'],
-						'search_type' => 0
+			$response = Http::connectTimeout(30)->withHeaders(self::QQ_HEADER)
+				->post(self::$url, [
+					'comm' => ['ct' => 19, 'cv' => 1859, 'uin' => 0],
+					'req' => [
+						'method' => "DoSearchForQQMusicDesktop",
+						"module" => "music.search.SearchCgiService",
+						"param" => [
+							'grp' => 1,
+							'num_per_page' => 20,
+							'page_num' => (int)$req['page'] ?? 1,
+							'query' => $req['query'],
+							'search_type' => 0
+						]
 					]
-				]
-			]);
+				]);
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
 				return to_route('qqmusic.index')->withInput()
@@ -67,7 +67,8 @@ class QQMusicController extends Controller
 	public function get(string $id)
 	{
 		try {
-			$response = Http::withHeaders(["Referer" => "https://y.qq.com/portal/player.html"])
+			$response = Http::connectTimeout(30)
+				->withHeaders(["Referer" => "https://y.qq.com/portal/player.html"])
 				->get('https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg', [
 					'g_tk' => 5381,
 					'format' => 'json',
@@ -76,7 +77,7 @@ class QQMusicController extends Controller
 					'songmid' => $id
 				]);
 			$r = self::decodeJson($response->body());
-			abort_if($r===false, 500, 'Error parsing response: ' . json_last_error_msg());
+			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 			if (!array_key_exists('lyric', $r)) {
 				Log::info(
 					'No lyric available for songmid {id}, response code: {code}',

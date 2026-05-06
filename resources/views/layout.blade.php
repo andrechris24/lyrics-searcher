@@ -206,47 +206,7 @@
 		<script src="https://cdn.datatables.net/v/bs5/dt-2.3.7/r-3.0.8/datatables.min.js"
 			integrity="sha384-5L6UP+VtXWFTfdyUlr1LWG1lDU276xtuJbHZbCldV4v0FxVOCmuIN4SNnMsTMrGF"
 			crossorigin="anonymous"></script>
-		<script type="text/javascript">
-			$.ajaxSetup({
-				timeout: 30000
-			});
-			// const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-			// const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap
-			// 	.Tooltip(tooltipTriggerEl));
-			const toast = Swal.mixin({
-				toast: true,
-				position: "top-end",
-				showConfirmButton: false,
-				timer: 5000,
-				timerProgressBar: true,
-				theme: 'bootstrap-5',
-				didOpen: (toast) => {
-					toast.onmouseenter = Swal.stopTimer;
-					toast.onmouseleave = Swal.resumeTimer;
-				}
-			});
-			$.LoadingOverlaySetup({
-				background: "rgba(0, 0, 0, 0.5)",
-				image: "",
-				fontawesome: "fas fa-circle-notch fa-spin",
-				fontawesomeColor: "#ffffff"
-			});
-
-			function blobDL(data, filename) {
-				const blob = new Blob([data], {
-					type: "text/plain",
-					charset: "utf-8"
-				});
-				let url = window.URL.createObjectURL(blob),
-					a = document.createElement("a");
-				a.href = url;
-				a.download = filename;
-				document.body.appendChild(a);
-				a.click();
-				a.remove();
-				window.URL.revokeObjectURL(url);
-			}
-		</script>
+		<script type="text/javascript" src="{{ asset('js/setup.js') }}"></script>
 		@yield('js')
 	</body>
 

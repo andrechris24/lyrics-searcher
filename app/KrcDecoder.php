@@ -11,7 +11,7 @@ class KrcDecoder
 	{
 		//
 	}
-	private static function krchex_xor($s)
+	private static function krchex_xor(mixed $s)
 	{
 		$magic_bytes = "\x6b\x72\x63\x31"; // 'k' , 'r' , 'c' ,'1'
 		if (strlen($s) < strlen($magic_bytes)) return;
@@ -30,11 +30,12 @@ class KrcDecoder
 		}
 		return $buf;
 	}
-	public static function decode($str){
+	public static function decode(string $str)
+	{
 		$zip = self::krchex_xor(base64_decode($str));
-		if (!$zip) abort(500, 'Failed to decrypt KRC data');
+		abort_if(!$zip, 500, 'Failed to decrypt KRC data');
 		$decoded = zlib_decode($zip);
-		if (!$decoded) abort(500, 'Failed to decode KRC data');
+		abort_if(!$decoded, 500, 'Failed to decode KRC data');
 		return $decoded;
 	}
 }

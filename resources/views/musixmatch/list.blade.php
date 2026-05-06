@@ -14,15 +14,15 @@
 				if ($track['instrumental']) {
 					$lyricType = 'Instrumental';
 					$color = 'text-warning';
+				} elseif ($track['has_richsync']) {
+					$lyricType = 'Word by Word';
+					$color = 'text-success';
 				} elseif ($track['has_subtitles']) {
 					$lyricType = 'Synced';
 					$color = 'text-primary';
 				} elseif ($track['has_lyrics']) {
 					$lyricType = 'Plain';
 					$color = 'text-info';
-				} elseif ($track['has_richsync']) {
-					$lyricType = 'Word by Word';
-					$color = 'text-success';
 				} else {
 					$lyricType = 'No Lyrics';
 					$color = 'text-danger';

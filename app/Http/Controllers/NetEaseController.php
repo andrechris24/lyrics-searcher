@@ -18,7 +18,7 @@ class NetEaseController extends Controller
 			$req->validate(
 				['query' => 'required', 'offset' => 'nullable|integer|min:0|multiple_of:20']
 			);
-			$response = Http::withHeaders(self::NETEASE_HEADERS)
+			$response = Http::connectTimeout(30)->withHeaders(self::NETEASE_HEADERS)
 				->get(self::$url . 'search/get', [
 					's' => $req['query'],
 					'type' => 1,
@@ -46,12 +46,12 @@ class NetEaseController extends Controller
 	public function get(int $id)
 	{
 		try {
-			$response = Http::withHeaders(self::NETEASE_HEADERS)->get(
+			$response = Http::connectTimeout(30)->withHeaders(self::NETEASE_HEADERS)->get(
 				self::$url . 'song/lyric',
 				['kv' => -1, 'lv' => -1, 'os' => 'pc', 'id' => $id]
 			);
 			$r = self::decodeJson($response->body());
-			abort_if($r===false, 500, 'Error parsing response: ' . json_last_error_msg());
+			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 			abort_if($r['code'] !== 200, $r['code'], 'NetEase Music HTTP Error ' . $r['code']);
 			abort_if(array_key_exists('needDesc', $r), 404, 'No lyric available for this song');
 			return response()->json($r);

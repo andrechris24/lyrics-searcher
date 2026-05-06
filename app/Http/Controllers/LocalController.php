@@ -33,7 +33,9 @@ class LocalController extends Controller
 				'artist' => 'nullable|required_without_all:title,album|string',
 				'album' => 'nullable|required_without_all:title,artist|string'
 			]);
-			$model = Lyric::whereLike('title', '%' . $request['title'] . '%');
+			$model = new Lyric();
+			if(!empty($request['title']))
+				$model->whereLike('title', '%' . $request['title'] . '%');
 			if (!empty($request['artist']))
 				$model->whereLike('artist', '%' . $request['artist'] . '%');
 			if (!empty($request['album']))

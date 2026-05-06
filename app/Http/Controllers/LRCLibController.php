@@ -14,7 +14,7 @@ class LRCLibController extends Controller
 	{
 		try {
 			$request->validate(['query' => 'required']);
-			$response = Http::get(self::$url, ['q' => $request['query']]);
+			$response = Http::connectTimeout(30)->get(self::$url, ['q' => $request['query']]);
 			$data = self::decodeJson($response->body());
 			if ($data === false) {
 				return to_route('lrclib.index')->withInput()
@@ -33,7 +33,7 @@ class LRCLibController extends Controller
 	{
 		try {
 			$request->validate(['title' => 'required']);
-			$response = Http::get(self::$url, [
+			$response = Http::connectTimeout(30)->get(self::$url, [
 				'track_name' => $request['title'],
 				'artist_name' => $request['artist'],
 				'album_name' => $request['album']
