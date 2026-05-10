@@ -56,9 +56,14 @@ class SodaMusicController extends Controller
 				404,
 				'No lyric available for this song'
 			);
+			abort_if(
+				!array_key_exists('content', $r['lyric']),
+				404,
+				'Empty lyric, download aborted'
+			);
 			if ($r['lyric']['type'] === 'krc')
 				$r['lyric']['content'] = $this->krc2lrc($r['lyric']['content']);
-			return response()->json($r);
+			return response()->json($r['lyric']);
 		} catch (ConnectionException $th) {
 			Log::error($th);
 			abort(500, 'Soda Music connection failed: ' . $th->getMessage());

@@ -1,6 +1,6 @@
 @if ($provider === 'kugou')
 	<div class="alert alert-warning">
-		Kugou's Advanced search is case sensitive. Consider word casing if no results.
+		Kugou's Advanced search is case sensitive, so please check word casing if no results.
 	</div>
 @endif
 <form class="row g-3 mb-3" action="{{ route($provider . '.search.advanced') }}">
@@ -17,7 +17,9 @@
 		</div>
 	</div>
 	<div class="col-sm-6">
-		<label for="artist-name" class="form-label">Artist</label>
+		<label for="artist-name" class="form-label">
+			Artist <span class="text-danger"><b>*</b></span>
+		</label>
 		<div class="input-group input-group-lg">
 			<span class="input-group-text"><i class="fa-solid fa-user"></i></span>
 			<input type="text" class="form-control @error('artist') is-invalid @enderror "
@@ -28,7 +30,7 @@
 	<div class="col-sm-6">
 		<label for="song-duration" class="form-label">Duration</label>
 		<div class="input-group input-group-lg" id="song-duration">
-			<input type="number" name="minutes" min="0" max="59"
+			<input type="number" name="minutes" min="0" max="199"
 				class="form-control @error('minutes') is-invalid @enderror "
 				value="{{ request('minutes') ?? (old('minutes') ?? 0) }}" required>
 			<span class="input-group-text">:</span>

@@ -4,8 +4,6 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="csrf-token" content="{{ csrf_token() }}">
-
 		<title>@yield('title') | Lyrics Searcher by andrechris24</title>
 
 		<!-- Bootstrap CSS -->
@@ -122,41 +120,41 @@
 								@if (request()->routeIs('kugou.*')) aria-current="page" @endif
 								href="{{ route('kugou.index') }}">Kugou</a>
 						</li>
-						@if (!empty(env('MUSIXMATCH_TOKEN')))
-							<li class="nav-item dropdown">
-								<a @class([
-									'nav-link',
-									'dropdown-toggle',
-									'active' => request()->routeIs('musixmatch.*'),
-								])
-									@if (request()->routeIs('musixmatch.*')) aria-current="page" @endif href="#"
-									role="button" data-bs-toggle="dropdown" aria-expanded="false">
-									Musixmatch
-								</a>
-								<ul class="dropdown-menu">
-									<li>
-										<a class="dropdown-item" href="{{ route('musixmatch.index') }}">
-											Search
-										</a>
-									</li>
-									<li>
-										<hr class="dropdown-divider">
-									</li>
-									<li>
-										<a class="dropdown-item"
-											href="{{ route('musixmatch.chart', ['type' => 'top']) }}">
-											Top chart
-										</a>
-									</li>
-									<li>
-										<a class="dropdown-item"
-											href="{{ route('musixmatch.chart', ['type' => 'hot']) }}">
-											Popular lyrics
-										</a>
-									</li>
-								</ul>
-							</li>
-						@endif
+						<li class="nav-item dropdown">
+							<a @class([
+								'nav-link',
+								'dropdown-toggle',
+								'active' => request()->routeIs('musixmatch.*'),
+								'disabled' => empty(env('MUSIXMATCH_TOKEN'))
+							]) href="#"
+								@if (request()->routeIs('musixmatch.*')) aria-current="page" @endif role="button"
+								data-bs-toggle="dropdown" aria-expanded="false"
+								@if (empty(env('MUSIXMATCH_TOKEN'))) aria-disabled="true" @endif>
+								Musixmatch
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a class="dropdown-item" href="{{ route('musixmatch.index') }}">
+										Search
+									</a>
+								</li>
+								<li>
+									<hr class="dropdown-divider">
+								</li>
+								<li>
+									<a class="dropdown-item"
+										href="{{ route('musixmatch.chart', ['type' => 'top']) }}">
+										Top chart
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item"
+										href="{{ route('musixmatch.chart', ['type' => 'hot']) }}">
+										Popular lyrics
+									</a>
+								</li>
+							</ul>
+						</li>
 						<li class="nav-item">
 							<a @class(['nav-link', 'active' => request()->routeIs('sodamusic.*')])
 								@if (request()->routeIs('sodamusic.*')) aria-current="page" @endif
@@ -185,11 +183,63 @@
 								</li>
 							</ul>
 						</li>
+						<button class="btn btn-outline-success" data-bs-toggle="modal"
+							data-bs-target="#modalConvert">Convert</button>
 					</ul>
 				</div>
 			</div>
 		</nav>
 		<div class="container">
+			<div class="modal fade" tabindex="-1" id="modalConvert"
+				aria-labelledby="modalConvertLabel" role="dialog" aria-hidden="true">
+				<div role="document"
+					class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 id="modalConvertLabel" class="modal-title">Convert lyric</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal"
+								aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<form class="mb-5" id="lyric-converter-form">
+								<div class="mb-3">
+									<label for="convert-type" class="form-label">
+										Conversion type
+									</label>
+									<select class="form-select" name="type" id="convert-type" required>
+										<option value="" selected>Choose</option>
+										<option value="fromSrt">SRT to LRC</option>
+										<option value="fromKrc">KRC to LRC</option>
+										<option value="fromQrc">QRC to LRC</option>
+									</select>
+								</div>
+								<div class="mb-3">
+									<label for="lyrics-content-form" class="form-label">
+										Content
+									</label>
+									<textarea id="lyrics-content-form" name="content" class="form-control"
+									 placeholder="Paste the contents of lyrics file here." rows="10" required></textarea>
+								</div>
+							</form>
+							<div class="mb-3">
+								Conversion result:
+								<pre id="converted-lyric">...</pre>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+								Close
+							</button>
+							<button type="button" class="btn btn-success" id="save-converted" disabled>
+								Save
+							</button>
+							<button type="submit" class="btn btn-primary" form="lyric-converter-form">
+								Convert
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
 			@yield('content')
 		</div>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
@@ -206,6 +256,7 @@
 		<script src="https://cdn.datatables.net/v/bs5/dt-2.3.7/r-3.0.8/datatables.min.js"
 			integrity="sha384-5L6UP+VtXWFTfdyUlr1LWG1lDU276xtuJbHZbCldV4v0FxVOCmuIN4SNnMsTMrGF"
 			crossorigin="anonymous"></script>
+		<script type="text/javascript" src="{{ asset('js/convert.js') }}"></script>
 		<script type="text/javascript" src="{{ asset('js/setup.js') }}"></script>
 		@yield('js')
 	</body>

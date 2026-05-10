@@ -221,7 +221,7 @@
 @section('js')
 	<script type="text/javascript">
 		let plainContents, syncedContents, fileName, formData, message, track_id, meta,
-			plainContent, localContents;
+			localContents;
 		const mxPlainDL = document.getElementById("download-link-mx-plain"),
 			mxSyncedDL = document.getElementById("download-link-mx-synced"),
 			mxRichsyncDL = document.getElementById("download-link-mx-richsync"),
@@ -259,10 +259,7 @@
 								localContents =
 									`[id: ${data.id}]${meta}[length: ${formatSeconds(data.duration)}]\n` +
 									`[by: ${data.user.name}]\n[offset: ${data.offset}]\n${data.content}`;
-								plainContent = null;
 							} else {
-								plainContent = data.plain.replace(/\n/g,
-									"<br/>");
 								plainContents =
 									`${fileName}\n\n${data.plain}`;
 								if (data.synced === "" || data.synced ===
@@ -289,7 +286,7 @@
 								`(${formData[3].value})` : ''));
 						switch (data.source) {
 							case 'lrclib':
-								$("#lrclib-content").html(plainContent);
+								$("#lrclib-content").text(data.plain);
 								$("#lrclib-song-artist").text(data.artist);
 								$("#lrclib-song-title").text(data.title);
 								$("#lrclib-song-album").text(data.album);
@@ -334,8 +331,8 @@
 									track_id = null;
 									mxRichsyncDL.classList.add('disabled');
 								}
-								$("#mx-plain-lyrics-content").html(
-									plainContent);
+								$("#mx-plain-lyrics-content").text(data
+									.plain);
 								$("#mx-song-artist").text(data.artist);
 								$("#mx-song-title").text(data.title + (data
 									.explicit === 1 ? ' [E]' : ''));
@@ -349,11 +346,11 @@
 								$("#modalMX").modal('show');
 								break;
 							case 'lyrics.ovh':
-								$("#lyrics-ovh-content").html(data.content);
+								$("#lyrics-ovh-content").text(data.content);
 								$("#modalLyricsOVH").modal('show');
 								break;
 							case 'local':
-								$("#local-content").html(data.content);
+								$("#local-content").text(data.content);
 								$("#local-song-artist").text(data.artist);
 								$("#local-song-title").text(data.title);
 								$("#local-song-album").text(data.album);
@@ -391,6 +388,9 @@
 					else message = xhr.responseJSON.message ?? st;
 					toast.fire({
 						icon: "error",
+						titleText: (typeof xhr.responseJSON
+								.source !== "undefined") ? xhr
+							.responseJSON.source : '',
 						text: message
 					});
 				}
@@ -456,8 +456,8 @@
 			const seconds = s % 60;
 
 			// Pad with leading zeros if needed
-			const formattedMinutes = String(minutes).padStart(2, "0");
-			const formattedSeconds = String(seconds).padStart(2, "0");
+			const formattedMinutes = zpad(minutes);
+			const formattedSeconds = zpad(seconds);
 
 			return `${formattedMinutes}:${formattedSeconds}`;
 		}

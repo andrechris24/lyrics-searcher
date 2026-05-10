@@ -67,8 +67,8 @@ class LyricCrudController extends CrudController
 		CRUD::field('album');
 		CRUD::group(
 			CRUD::group(
-				CRUD::field('minutes')->attributes(['required' => true, 'min' => 0])
-					->validationRules('required|numeric|min:0'),
+				CRUD::field('minutes')->attributes(['required' => true, 'min' => 0, 'max' => 199])
+					->validationRules('required|numeric|between:0,199'),
 				CRUD::field('seconds')->attributes(['required' => true, 'min' => 0, 'max' => 59])
 					->validationRules('required|numeric|between:0,59')
 			)->fake(true)->store_in('duration'),
@@ -98,9 +98,9 @@ class LyricCrudController extends CrudController
 		CRUD::field('album');
 		CRUD::group(
 			CRUD::group(
-				CRUD::field('minutes')->attributes(['required' => true, 'min' => 0])
+				CRUD::field('minutes')->attributes(['required' => true, 'min' => 0, 'max' => 199])
 					->value(floor($entries['duration'] / 60))
-					->validationRules('required|numeric|min:0'),
+					->validationRules('required|numeric|between:0,199'),
 				CRUD::field('seconds')->attributes(['required' => true, 'min' => 0, 'max' => 59])
 					->value($entries['duration'] % 60)
 					->validationRules('required|numeric|between:0,59')

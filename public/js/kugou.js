@@ -43,7 +43,7 @@ if (lyricsModal) {
 						render: function (data, type, full) {
 							const access = full["accesskey"];
 							return (
-								`<button type="button" class="btn btn-primary btn-sm dl-btn" onclick="download(${data},'${access}')">` +
+								`<button type="button" class="btn btn-primary btn-sm dl-btn" onclick="dlLRC(${data},'${access}')">` +
 								'<i class="fa-solid fa-download"></i>' +
 								"</button>"
 							);
@@ -56,11 +56,12 @@ if (lyricsModal) {
 			});
 	});
 }
-document.addEventListener('focusin', (e) => {
+document.addEventListener("focusin", (e) => {
 	if (e.target.closest('[class*="swal2-"]') !== null)
-		e.stopImmediatePropagation();//Prevent modal from stealing focus
+		e.stopImmediatePropagation(); //Prevent modal from stealing focus
 });
-function download(id, key) {
+
+function dlLRC(id, key) {
 	let message, ext;
 	$.ajax({
 		url: `/kugou/get`,
@@ -75,8 +76,9 @@ function download(id, key) {
 			if (data.format === "krc") {
 				Swal.fire({
 					title: "Choose lyric type to download",
-					text: "To edit lyric in Aegisub (requires additional script), choose KRC Raw. For Word-by-Word lyrics, only a few players supported.",
-					footer: "<a href=\"https://github.com/qwe7989199/Lyric-Importer-for-Aegisub\">Additional script for Aegisub</a>",
+					text: "To import lyric to Aegisub (requires additional script), choose KRC Raw or Synced. For Word-by-Word lyrics, only a few players supported.",
+					footer:
+						'<a href="https://github.com/qwe7989199/Lyric-Importer-for-Aegisub">Additional script for Aegisub</a>',
 					theme: "bootstrap-5",
 					buttonsStyling: false,
 					customClass: {
@@ -130,10 +132,10 @@ function download(id, key) {
 			}
 		},
 		error: function (xhr, st) {
-			console.warn(xhr.responseJSON?.message ?? st)
+			console.warn(xhr.responseJSON?.message ?? st);
 			if (st === "timeout") message = "Connection timed out";
 			else message = xhr.responseJSON?.message ?? st;
-			toast.fire({icon: 'error', text: message});
+			toast.fire({ icon: "error", text: message });
 		}
 	});
 }

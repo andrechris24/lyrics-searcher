@@ -14,7 +14,7 @@
 	<div class="col-md-4">
 		<label for="song-duration" class="form-label">Duration</label>
 		<div class="input-group input-group-lg" id="song-duration">
-			<input type="number" name="minutes" min="0" max="59"
+			<input type="number" name="minutes" min="0" max="199"
 				class="form-control @error('minutes') is-invalid @enderror "
 				value="{{ request('minutes') ?? (old('minutes') ?? 0) }}" required>
 			<span class="input-group-text">:</span>

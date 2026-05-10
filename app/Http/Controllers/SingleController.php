@@ -74,7 +74,7 @@ class SingleController extends Controller
 							400 => "Invalid input, please make sure all * fields is filled.",
 							500 => "Database server error. Please try again later.",
 							503 => "Database service unavailable. Please try again later.",
-							default => "Database HTTP Error " . $tmHeader['status_code'],
+							default => "Database HTTP Error " . $tmHeader['status_code']
 						};
 						abort($tmHeader['status_code'], $msg);
 					}
@@ -140,13 +140,14 @@ class SingleController extends Controller
 							'instrumental' => false,
 							'source' => 'lyrics.ovh'
 						]);
-					}else if(array_key_exists('error', $r)){
+					} else if (array_key_exists('error', $r)) {
+						Log::warning($r);
 						abort_if($response->badRequest(), 400, $r['error']);
 						abort_if($response->notFound(), 404, $r['error']);
 						abort(500, $r['error']);
-					}else{
-						Log::error('Unknown Lyrics.ovh response: ',$r);
-						abort(500, 'Unknown response: '.json_encode($r));
+					} else {
+						Log::error('Unknown Lyrics.ovh response', $r);
+						abort(500, 'Unknown response: ' . json_encode($r));
 					}
 					break;
 				case 'local':

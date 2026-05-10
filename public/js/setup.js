@@ -1,5 +1,16 @@
-$.ajaxSetup({
-	timeout: 30000
+$.ajaxSetup({ timeout: 30000 });
+$(document).on("keydown", function (e) {
+	// Ignore if user is already typing in an input, textarea, or contenteditable
+	if ($(e.target).is('input, textarea, [contenteditable="true"]')) {
+		return;
+	}
+
+	// Check if the pressed key is forward slash "/"
+	if (e.key === "/" || e.keyCode === 191) {
+		e.preventDefault(); // Prevent browser's quick find (especially in Firefox)
+		if ($("#track-name").length) $("#track-name").focus();
+		else $('input[type="search"]').focus();
+	}
 });
 // eslint-disable-next-line no-undef
 const toast = Swal.mixin({

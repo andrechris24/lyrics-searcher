@@ -12,6 +12,12 @@ class MusixmatchController extends Controller
 {
 	public const array MX_HEADER = ["cookie" => "AWSELBCORS=0; AWSELB=0"];
 	public static string $url = 'https://apic-desktop.musixmatch.com/ws/1.1/';
+	public static array $query = [
+		'user_language' => 'en',
+		'app_id' => 'web-desktop-app-v1.0',
+		'page_size' => 20,
+		'f_has_lyrics' => 1
+	];
 	public function standard(Request $req)
 	{
 		if (empty(env('MUSIXMATCH_TOKEN')))
@@ -19,17 +25,12 @@ class MusixmatchController extends Controller
 		try {
 			$req->validate(['query' => 'required', 'page' => 'nullable|integer|min:1']);
 			Sleep::for(5)->seconds();
+			$query = self::$query;
+			$query['usertoken'] = env('MUSIXMATCH_TOKEN');
+			$query['q'] = $req['query'];
+			$query['page'] = $req['page'] ?? 1;
 			$response = Http::connectTimeout(30)->withHeaders(self::MX_HEADER)
-				->get(self::$url . 'track.search', [
-					'user_language' => 'en',
-					'app_id' => 'web-desktop-app-v1.0',
-					'q' => $req['query'],
-					'usertoken' => env('MUSIXMATCH_TOKEN'),
-					'page' => $req['page'] ?? 1,
-					'page_size' => 20, //Match LRCLib result count
-					// 's_artist_rating' => 'desc',
-					'f_has_lyrics' => 1 //Search tracks with lyrics only
-				]);
+				->get(self::$url . 'track.search', $query);
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
 				return to_route('musixmatch.index')->withInput()
@@ -62,19 +63,14 @@ class MusixmatchController extends Controller
 				'page' => 'nullable|integer|min:1'
 			]);
 			Sleep::for(5)->seconds();
+			$query = self::$query;
+			$query['usertoken'] = env('MUSIXMATCH_TOKEN');
+			$query['q_track'] = $req['title'];
+			$query['q_artist'] = $req['artist'];
+			$query['q_album'] = $req['album'];
+			$query['page'] = $req['page'] ?? 1;
 			$response = Http::connectTimeout(30)->withHeaders(self::MX_HEADER)
-				->get(self::$url . 'track.search', [
-					'user_language' => 'en',
-					'app_id' => 'web-desktop-app-v1.0',
-					'q_album' => $req['album'],
-					'q_artist' => $req['artist'],
-					'q_track' => $req['title'],
-					'usertoken' => env('MUSIXMATCH_TOKEN'),
-					// 's_track_rating' => 'desc',
-					'page' => $req['page'] ?? 1,
-					'page_size' => 20,
-					'f_has_lyrics' => 1
-				]);
+				->get(self::$url . 'track.search', $query);
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
 				return to_route('musixmatch.advanced')->withInput()
@@ -99,17 +95,14 @@ class MusixmatchController extends Controller
 	{
 		if (empty(env('MUSIXMATCH_TOKEN')))
 			return to_route('index')->withError('Musixmatch token was not found');
+		Sleep::for(5)->seconds();
+		$query = self::$query;
+		$query['usertoken'] = env('MUSIXMATCH_TOKEN');
+		$query['chart_name'] = $type;
+		$query['country'] = 'id';
 		try {
-			Sleep::for(5)->seconds();
 			$response = Http::connectTimeout(30)->withHeaders(self::MX_HEADER)
-				->get(self::$url . 'chart.tracks.get', [
-					'user_language' => 'en',
-					'app_id' => 'web-desktop-app-v1.0',
-					'country' => 'id',
-					'chart_name' => $type,
-					'usertoken' => env('MUSIXMATCH_TOKEN'),
-					'f_has_lyrics' => 1
-				]);
+				->get(self::$url . 'chart.tracks.get', $query);
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
 				return to_route('musixmatch.index')
@@ -137,14 +130,14 @@ class MusixmatchController extends Controller
 			'Invalid lyric type request'
 		);
 		Sleep::for(5)->seconds();
+		$query = self::$query;
+		$query['usertoken'] = env('MUSIXMATCH_TOKEN');
+		$query['commontrack_id'] = $id;
+		unset($query['f_has_lyrics']);
+		unset($query['page_size']);
 		try {
 			$response = Http::connectTimeout(30)->withHeaders(self::MX_HEADER)
-				->get(self::$url . 'track.' . $type . '.get', [
-					'user_language' => 'en',
-					'app_id' => 'web-desktop-app-v1.0',
-					'commontrack_id' => $id,
-					'usertoken' => env('MUSIXMATCH_TOKEN')
-				]);
+				->get(self::$url . 'track.' . $type . '.get', $query);
 			$r = self::decodeJson($response->body());
 			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 			$header = $r['message']['header'];
@@ -177,10 +170,8 @@ class MusixmatchController extends Controller
 	private function richsync(array $lrc)
 	{
 		$richsync = '';
-		$linenum = 0;
-		foreach ($lrc as $line) {
-			$linenum++;
-			if ($linenum === 1) {
+		foreach ($lrc as $idx=>$line) {
+			if ($idx === 0) {
 				if ($line['ts'] > 5)
 					$richsync .= "[" . $this->formatTime($line['ts'] - 5) . ']';
 				else $richsync .= "[00:00.00]";

@@ -15,7 +15,6 @@ class QQMusicController extends Controller
 		"User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0",
 		"Accept" => "application/json, text/plain, */*",
 		"Accept-Language" => "en-US;q=0.3,en;q=0.2",
-		// "Content-Type"=> "application/json;charset=utf-8",
 		"Sec-Fetch-Dest" => "empty",
 		"Sec-Fetch-Mode" => "cors",
 		"Sec-Fetch-Site" => "same-origin"
@@ -80,12 +79,12 @@ class QQMusicController extends Controller
 			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 			if (!array_key_exists('lyric', $r)) {
 				Log::info(
-					'No lyric available for songmid {id}, response code: {code}',
-					['id' => $id, 'code' => json_encode($r)]
+					'No lyric available for songmid {id}, codes:',
+					['id' => $id, 'code' => $r]
 				);
 				abort(404, 'No lyric available for this song');
 			}
-			$data = ['lyric' => base64_decode($r['lyric'])];
+			$data = ['lyric' => base64_decode($r['lyric']), 'id' => $id];
 			return response()->json($data);
 		} catch (ConnectionException $th) {
 			Log::error($th);
