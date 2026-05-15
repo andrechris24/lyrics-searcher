@@ -1,3 +1,4 @@
+/* global blobDL, toast */
 $(".download-btn").on("click", function (e) {
 	e.preventDefault();
 	const id = $(this).data("id"),

@@ -12,6 +12,7 @@ if (lyricsModal) {
 			albumName = button.getAttribute("data-bs-album"),
 			syncedLyrics = button.getAttribute("data-bs-synced"),
 			plainLyrics = button.getAttribute("data-bs-plain"),
+			wbwLyrics = button.getAttribute("data-bs-wordbyword"),
 			duration = button.getAttribute("data-bs-duration"),
 			lyricID = button.getAttribute("data-bs-id");
 		// If necessary, you could initiate an Ajax request here
@@ -28,6 +29,9 @@ if (lyricsModal) {
 		songTitle.textContent = songName;
 		songAlbum.textContent = albumName;
 		songDuration.textContent = duration;
+
+		if (wbwLyrics===null || wbwLyrics==='') $("#lrclib-wbw").addClass('d-none');
+		else $("#lrclib-wbw").removeClass('d-none');
 
 		// Set file name and contents on save
 		fileName = `${songArtist.textContent} - ${songTitle.textContent}`;

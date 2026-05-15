@@ -1,3 +1,4 @@
+/* global toast */
 let lyricContents, klyricContent, fileName, message, ext;
 const lyricsModal = document.getElementById("modalLyrics"),
 	lyricDL = document.getElementById("dl-synced"),
@@ -50,12 +51,12 @@ if (lyricsModal) {
 					$("#dl-klyric").addClass("disabled");
 					klyricContent = "";
 				}
-				if(!data.lrc.lyric.match(/\[(\d+):(\d+).(\d+)\]/)){
+				if (!data.lrc.lyric.match(/\[(\d+):(\d+).(\d+)\]/)) {
 					lyricContents = `${fileName}\n\n${data.lrc.lyric}`;
-					ext="txt";
-				}else{
+					ext = "txt";
+				} else {
 					lyricContents = `${metaLyric}[ve: ${data.lrc.version}]\n${data.lrc.lyric}`;
-					ext="lrc";
+					ext = "lrc";
 				}
 				$("#lyrics-content").html(data.lrc.lyric.replace(/\n/g, "<br/>"));
 			},
@@ -64,7 +65,7 @@ if (lyricsModal) {
 				else message = xhr.responseJSON.message ?? st;
 				toast.fire({ icon: "error", text: message });
 				$("#modalLyrics").modal("hide");
-			}
+			},
 		});
 	});
 }
@@ -100,8 +101,7 @@ function parseKLyric(lyricText) {
 				lyricLine += `<${formatTime(subStartTime)}>${subWord}`;
 				subStartTime += subDuration;
 			}
-			lyricLine += `<${formatTime(startTime + duration)}>`;
-			enhancedlyricText += `${lyricLine}\r\n`;
+			enhancedlyricText += `${lyricLine}<${formatTime(startTime + duration)}> \r\n`;
 		}
 	}
 	return enhancedlyricText;

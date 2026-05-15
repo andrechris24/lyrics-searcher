@@ -9,7 +9,6 @@ trait CrudPermissionTrait
 	// the operations defined for CRUD controller
 	public array $operations = ['list', 'show', 'create', 'update', 'delete'];
 
-
 	/**
 	 * set CRUD access using spatie Permissions defined for logged in user
 	 *

@@ -1,3 +1,4 @@
+/* global blobDL, toast, Swal */
 let songID, fileName, dt_lyrics, lyricContent;
 const lyricsModal = document.getElementById("modalLyrics");
 if (lyricsModal) {

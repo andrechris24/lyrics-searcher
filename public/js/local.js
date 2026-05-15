@@ -1,3 +1,4 @@
+/* global blobDL, Swal */
 let ext;
 $(".list-group-item-action").on("click", function (e) {
 	e.preventDefault();

@@ -1,3 +1,4 @@
+/* global blobDL, toast, Swal */
 let fileName, message, contents, ext, lyricContent;
 $(".list-group-item-action").on("click", function (e) {
 	e.preventDefault();

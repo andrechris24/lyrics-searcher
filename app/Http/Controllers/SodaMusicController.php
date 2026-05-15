@@ -45,10 +45,8 @@ class SodaMusicController extends Controller
 	public function get(int $id)
 	{
 		try {
-			$response = Http::connectTimeout(30)->withHeaders(self::SODAMUSIC_HEADERS)->get(
-				self::$url . 'track_v2',
-				["track_id" => $id, "media_type" => "track"]
-			);
+			$response = Http::connectTimeout(30)->withHeaders(self::SODAMUSIC_HEADERS)
+				->get(self::$url . 'track_v2', ["track_id" => $id, "media_type" => "track"]);
 			$r = self::decodeJson($response->body());
 			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 			abort_if(

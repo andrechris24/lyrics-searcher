@@ -18,13 +18,13 @@ class KugouController extends Controller
 		try {
 			$req->validate(['query' => 'required', 'page' => 'nullable|integer|min:1']);
 			$response = Http::connectTimeout(30)
-			->get('http://mobilecdn.kugou.com/api/v3/search/song', [
-				'format' => 'json',
-				'keyword' => $req['query'],
-				'page' => $req['page'] ?? 1,
-				"pagesize" => 20,
-				'showtype' => 1
-			]);
+				->get('http://mobilecdn.kugou.com/api/v3/search/song', [
+					'format' => 'json',
+					'keyword' => $req['query'],
+					'page' => $req['page'] ?? 1,
+					"pagesize" => 20,
+					'showtype' => 1
+				]);
 			$r = self::decodeJson($response);
 			if ($r === false) {
 				return to_route('kugou.index')->withInput()
@@ -97,21 +97,23 @@ class KugouController extends Controller
 	{
 		Log::debug($req);
 		try {
-			$req->validate([
-				'query' => 'required',
-				'minutes' => 'required|numeric|between:0,59',
-				'seconds' => 'required|numeric|between:0,59'
-			]);
+			$req->validate(['query' => 'required', 'duration' => 'required']);
+			$duration = explode(':', $req['duration']);
 			$query = self::$query;
 			$query['keyword'] = $req['query'];
-			$query['duration'] = ($req['minutes'] * 60 + $req['seconds']) * 1000;
+			if (count($duration) === 3){
+				$query['duration'] = (int)$duration[0] * 3600 + (int)$duration[1] * 60 + (int)$duration[2];
+			}
+			else if (count($duration) === 2)
+				$query['duration'] = (int)$duration[0] * 60 + (int)$duration[1];
+			else $query['duration'] = (int)$duration[0];
 			$response = Http::connectTimeout(30)->get(self::$lrcUrl . 'search', $query);
 			$r = self::decodeJson($response->body());
 			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 			abort_if(
 				!in_array($r['errcode'], [0, 200]),
 				$r['errcode'],
-				'Kugou Music error ' . $r['errcode'] . ': ' . $r['error']
+				'Kugou Music error ' . $r['errcode']
 			);
 			$data = [];
 			foreach ($r['candidates'] as $result) {
@@ -127,7 +129,10 @@ class KugouController extends Controller
 			return response()->json($data);
 		} catch (ConnectionException $th) {
 			Log::error($th);
-			abort(500, 'Kugou Music connection failed: ' . $th->getMessage());
+			return response()->json($th, 500);
+		} catch (ValidationException $e) {
+			Log::error($e);
+			return response()->json($e, 422);
 		}
 	}
 	public function get(Request $req)
@@ -160,5 +165,11 @@ class KugouController extends Controller
 			Log::error($e);
 			abort(500, 'Kugou Music connection failed: ' . $e->getMessage());
 		}
+	}
+	protected function lowCaseDict(string $str)
+	{
+		$arrayDict=['Yovie Widianto'];
+		if(in_array($str,$arrayDict)) $str=Str::lower($str);
+		return $str;
 	}
 }

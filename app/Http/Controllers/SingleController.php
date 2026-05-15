@@ -35,6 +35,7 @@ class SingleController extends Controller
 							'duration' => gmdate('i:s', $r['duration']),
 							'plain' => $r['plainLyrics'],
 							'synced' => $r['syncedLyrics'],
+							'wbw' => $r['lyricsfile'],
 							'instrumental' => $r['instrumental'],
 							'id' => $r['id'],
 							'source' => 'lrclib'

@@ -11,6 +11,7 @@
     "require": {
         "php": "^8.2",
         "backpack/crud": "^7.0",
+        "backpack/logmanager": "^5.1",
         "backpack/permissionmanager": "^7.3",
         "backpack/theme-tabler": "^2.0",
         "laravel/framework": "^13.0",

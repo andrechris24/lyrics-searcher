@@ -292,6 +292,9 @@
 								$("#lrclib-song-album").text(data.album);
 								$("#lrclib-song-duration").text(data
 									.duration);
+								if (data.wbw===null || data.wbw==='') 
+									$("#lrclib-wbw").addClass('d-none');
+								else $("#lrclib-wbw").removeClass('d-none');
 								$("#modalLRCLib").modal('show');
 								break;
 							case 'musixmatch':

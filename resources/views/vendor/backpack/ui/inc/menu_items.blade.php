@@ -8,3 +8,5 @@
 	<x-backpack::menu-dropdown-item title="Roles" icon="la la-group" :link="backpack_url('role')" />
 	<x-backpack::menu-dropdown-item title="Permissions" icon="la la-key" :link="backpack_url('permission')" />
 </x-backpack::menu-dropdown>
+
+<x-backpack::menu-item title='Logs' icon='la la-terminal' :link="backpack_url('log')" />

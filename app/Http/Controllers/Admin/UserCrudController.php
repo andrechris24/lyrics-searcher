@@ -22,5 +22,6 @@ class UserCrudController extends BackpackUserCrudController
 	{
 		parent::setup();
 		$this->setAccessUsingPermissions();
+		$this->crud->addBaseClause('where', 'id', '<>', backpack_user()->id);
 	}
 }

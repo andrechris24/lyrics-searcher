@@ -1,3 +1,4 @@
+/* global blobDL, toast */
 let fileName, message, ext;
 $(".list-group-item-action").on("click", function (e) {
 	e.preventDefault();

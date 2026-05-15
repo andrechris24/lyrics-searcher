@@ -1,3 +1,4 @@
+/* global blobDL, toast */
 function krc2lrc(krcText) {
 	let lyricText = "";
 	let matches;
@@ -9,10 +10,6 @@ function krc2lrc(krcText) {
 		if ((matches = metaRegex.exec(line))) {
 			// meta info
 			if (matches[1] == "language") {
-				const langObj = JSON.parse(atob(matches[2]));
-				const contentArrayObj = langObj["content"] || [];
-				if (contentArrayObj.length == 0 || contentArrayObj[0].type != 1)
-					continue;
 				continue;
 			}
 			lyricText += `${matches[0]}\r\n`;
@@ -27,8 +24,7 @@ function krc2lrc(krcText) {
 				const subWord = subMatches[4];
 				lyricLine += `<${formatTime(startTime + offset)}>${subWord}`;
 			}
-			lyricLine += `<${formatTime(startTime + duration)}> `;
-			lyricText += `${lyricLine}\r\n`;
+			lyricText += `${lyricLine}<${formatTime(startTime + duration)}> \r\n`;
 		}
 	}
 	return lyricText;
@@ -94,7 +90,7 @@ function formatTime(time) {
 	if (isNaN(time)) {
 		const srtTime = time.match(/^(\d{2}):(\d{2}):(\d{2}),(\d{3})$/);
 		let hours = parseInt(srtTime[1], 10);
-		let minutes = parseInt(srtTime[2], 10) + hours * 60; // LRC doesn't use hours
+		let minutes = parseInt(srtTime[2], 10) + hours * 60;
 		let seconds = parseInt(srtTime[3], 10);
 		let centiseconds = Math.floor(parseInt(srtTime[4], 10) / 10); // mmm → xx
 		str = `${(hours ? `${zpad(hours)}:` : "") + zpad(minutes)}:${zpad(seconds)}.${zpad(centiseconds)}`;
@@ -134,7 +130,7 @@ $("#lyric-converter-form").on("submit", function (e) {
 			let srtBlocks = fromSrt(lyricContent, false);
 			for (const block of srtBlocks) {
 				lrcText +=
-					`[${formatTime(block.startTime)}]` + block.text.replace(/\n/g, " ");
+					`[${formatTime(block.startTime)}]${block.text.replace(/\n/g, " ")}`;
 				lrcText += `\r\n[${formatTime(block.endTime)}]\r\n`;
 			}
 			break;
@@ -150,6 +146,7 @@ $("#lyric-converter-form").on("submit", function (e) {
 			break;
 	}
 	$("#converted-lyric").text(lrcText);
+	$("#converted-lyric").focus();
 	if (lrcText !== "") $("#save-converted").prop("disabled", false);
 	else $("#save-converted").prop("disabled", true);
 });
@@ -158,7 +155,7 @@ $("#save-converted").on("click", function () {
 	const lrcContent = $("#converted-lyric").text();
 	if (
 		lrcContent.match(
-			/(\d+)\n(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})/,
+			/(\d+)\n(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})/
 		)
 	)
 		ext = "srt";

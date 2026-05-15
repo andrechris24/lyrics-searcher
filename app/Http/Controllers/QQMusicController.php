@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-// use App\QrcDecrypter;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\{Http, Log};
-// use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class QQMusicController extends Controller
@@ -19,7 +17,6 @@ class QQMusicController extends Controller
 		"Sec-Fetch-Mode" => "cors",
 		"Sec-Fetch-Site" => "same-origin"
 	];
-	// private const QQ_KEY = '!@#)(*$%123ZXC!@!@#)(NHL';
 	public static string $url = 'https://u.y.qq.com/cgi-bin/musicu.fcg';
 	public function search(Request $req)
 	{
