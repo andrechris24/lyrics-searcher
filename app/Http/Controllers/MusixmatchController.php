@@ -133,8 +133,7 @@ class MusixmatchController extends Controller
 		$query = self::$query;
 		$query['usertoken'] = env('MUSIXMATCH_TOKEN');
 		$query['commontrack_id'] = $id;
-		unset($query['f_has_lyrics']);
-		unset($query['page_size']);
+		unset($query['f_has_lyrics'], $query['page_size']);
 		try {
 			$response = Http::connectTimeout(30)->withHeaders(self::MX_HEADER)
 				->get(self::$url . 'track.' . $type . '.get', $query);
@@ -156,6 +155,7 @@ class MusixmatchController extends Controller
 				],
 				'richsync' => [
 					'content' => $this->richsync(json_decode($data['richsync_body'], true)),
+					'raw' => $data['richsync_body'],
 					'id' => $data['richsync_id'],
 					'duration' => gmdate('i:s', $data['richsync_length'])
 				],
@@ -169,8 +169,9 @@ class MusixmatchController extends Controller
 	}
 	private function richsync(array $lrc)
 	{
+		if (empty($lrc)) return null;
 		$richsync = '';
-		foreach ($lrc as $idx=>$line) {
+		foreach ($lrc as $idx => $line) {
 			if ($idx === 0) {
 				if ($line['ts'] > 5)
 					$richsync .= "[" . $this->formatTime($line['ts'] - 5) . ']';
@@ -179,7 +180,7 @@ class MusixmatchController extends Controller
 			foreach ($line['l'] as $word) {
 				$richsync .= '<' . $this->formatTime($line['ts'] + $word['o']) . '>' . $word['c'];
 			}
-			$richsync .= '<' . $this->formatTime($line['te']) . "> \r\n";
+			$richsync .= '<' . $this->formatTime($line['te']) . "> \n";
 		}
 		return $richsync;
 	}

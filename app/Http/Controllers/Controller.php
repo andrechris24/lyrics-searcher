@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 
 abstract class Controller
@@ -23,7 +22,7 @@ abstract class Controller
 			};
 		} else {
 			$msg = match ($header['status_code']) {
-				401 => "Musixmatch rate limit exceeded. Please try again later.",
+				401 => "Musixmatch rate limit exceeded. Please try again in a few minutes.",
 				404 => "Musixmatch query returned no result",
 				400 => "Bad request sent to Musixmatch. Please report this issue.",
 				500 => "Musixmatch server error. Please try again later.",
@@ -74,6 +73,7 @@ abstract class Controller
 	}
 	protected function krc2lrc(string $krcText)
 	{
+		if (empty($krcText)) return null;
 		$lyricText = "";
 		$metaRegex = "/^\[(\S+):(\S+)\]$/";
 		$timestampsRegex = "/^\[(\d+),(\d+)\]/";
@@ -81,12 +81,14 @@ abstract class Controller
 		$lines = preg_split("/[\r\n]/", $krcText);
 		foreach ($lines as $idx => $line) {
 			if (preg_match($metaRegex, $line, $matches)) { // meta info
-				if (in_array($matches[1], ['language', 'sign', 'id'])) continue;
+				if (
+					in_array($matches[1], ['language', 'sign', 'id']) ||
+					(in_array($matches[1], ['ar', 'ti']) && is_numeric($matches[2]))
+				) continue;
 				else if (in_array($matches[1], ['total'])) {
 					$lyricText .= '[length: ' . gmdate('i:s', floor($matches[2])) . "]\r\n";
 					continue;
-				} else if (in_array($matches[1], ['ar', 'ti']) && is_numeric($matches[2]))
-					continue;//skip artist and title meta info if it's numeric
+				}
 				$lyricText .= $matches[0] . "\r\n";
 			} else if (preg_match($timestampsRegex, $line, $matches)) {
 				$lyricLine = "";

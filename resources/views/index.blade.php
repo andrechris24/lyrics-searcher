@@ -4,9 +4,9 @@
 	<div class="px-5 mx-5 py-5 my-5">
 		<h3 class="text-center">Lyrics Searcher by andrechris24</h3>
 		<p class="text-center">Welcome to andrechris24's Lyrics Searcher! This site provides
-			synchronized lyrics search from Kugou, NetEase, QQ Music, Musixmatch, LRCLib, Soda
-			Music, and on local server. This form below is a quick search to 4 providers (might be
-			inaccurate).</p>
+			synchronized lyrics search from Kugou, NetEase, QQ Music, Musixmatch (throttled
+			request), LRCLib, Soda Music, and on local server. This form below is a quick search
+			to 4 providers (might be inaccurate).</p>
 		@if (Session::has('error') || $errors->any())
 			<x-error />
 		@endif
@@ -122,7 +122,7 @@
 							</li>
 							<li>
 								<a class="dropdown-item" href="#"
-									id="download-link-mx-richsync">Word-by-word</a>
+									id="download-link-mx-richsync">Richsync</a>
 							</li>
 						</ul>
 					</div>
@@ -221,13 +221,18 @@
 @section('js')
 	<script type="text/javascript">
 		let plainContents, syncedContents, fileName, formData, message, track_id, meta,
-			localContents;
+			localContents, wbwContents;
 		const mxPlainDL = document.getElementById("download-link-mx-plain"),
 			mxSyncedDL = document.getElementById("download-link-mx-synced"),
 			mxRichsyncDL = document.getElementById("download-link-mx-richsync"),
 			llPlainDL = document.getElementById("download-link-lrclib-plain"),
 			llSyncedDL = document.getElementById("download-link-lrclib-synced"),
+			wbwDL = document.getElementById("download-link-lrclib-wbw"),
 			localDL = document.getElementById("download-link-local");
+		document.addEventListener("focusin", (e) => {
+			if (e.target.closest('[class*="swal2-"]') !== null)
+				e.stopImmediatePropagation(); //Prevent modal from stealing focus
+		});
 		$("#searchSongLyric").on('submit', function(e) {
 			e.preventDefault();
 			formData = $("#searchSongLyric").serializeArray();
@@ -281,9 +286,9 @@
 							}
 						}
 						$(".search-term").text(
-							`${formData[2].value} - ${formData[0].value} ` +
-							(formData[3].value !== '' ?
-								`(${formData[3].value})` : ''));
+							`${formData[2].value} - ${formData[0].value} ${ 
+							formData[3].value !== '' ?
+								`(${formData[3].value})` : ''}`);
 						switch (data.source) {
 							case 'lrclib':
 								$("#lrclib-content").text(data.plain);
@@ -292,9 +297,14 @@
 								$("#lrclib-song-album").text(data.album);
 								$("#lrclib-song-duration").text(data
 									.duration);
-								if (data.wbw===null || data.wbw==='') 
+								if (data.wbw === null || data.wbw === ''){
 									$("#lrclib-wbw").addClass('d-none');
-								else $("#lrclib-wbw").removeClass('d-none');
+									wbwContents=null;
+								}
+								else {
+									$("#lrclib-wbw").removeClass('d-none');
+									wbwContents=data.wbw;
+								}
 								$("#modalLRCLib").modal('show');
 								break;
 							case 'musixmatch':
@@ -372,7 +382,8 @@
 						}
 					}
 				},
-				error: function(xhr, st) {
+				error: function(xhr, st, err) {
+					console.warn(err);
 					if (xhr.status === 422) {
 						if (typeof xhr.responseJSON.errors.title !==
 							"undefined")
@@ -388,7 +399,7 @@
 							$("#lyric-source").addClass('is-invalid');
 					}
 					if (st === 'timeout') message = "Connection timed out";
-					else message = xhr.responseJSON.message ?? st;
+					else message = xhr.responseJSON?.message ?? err ?? st;
 					toast.fire({
 						icon: "error",
 						titleText: (typeof xhr.responseJSON
@@ -411,27 +422,39 @@
 		};
 		mxRichsyncDL.onclick = function(e) {
 			e.preventDefault();
-			$.ajax({
-				url: `/musixmatch/${track_id}/richsync`,
-				beforeSend: function() {
-					$.LoadingOverlay("show");
+			swalConfirm.fire({
+				title: 'Download Richsync lyric?',
+				text: 'Musixmatch richsync lyric is an either word-by-word or syllable version of synced lyric and not all players are supported.',
+				customClass: {
+					confirmButton: "btn btn-primary btn-lg me-2",
+					cancelButton: "btn btn-danger btn-lg"
 				},
-				complete: function() {
-					$.LoadingOverlay("hide");
-				},
-				success: function(data) {
+				cancelButtonText: 'No',
+				preConfirm: async function () {
+					try {
+						const response = await $.ajax({
+							url: `/musixmatch/${track_id}/richsync`,
+							success: function(data) {
+								return JSON.stringify(data);
+							},
+							error: function(xhr, st, err) {
+								throw new Error(xhr.responseJSON?.message ?? err ?? st);
+							}
+						});
+						return response;
+					} catch (e) {
+						console.warn(e);
+						Swal.showValidationMessage(
+							`Download failed: ${e.responseJSON?.message ?? "Server connection was lost"}`
+						);
+					}
+				}
+			}).then((result) => {
+				if (result.isConfirmed) {
 					blobDL(
-						`[id: ${data.id}]${meta}[length: ${data.duration}]\n[by: Musixmatch (Word-by-Word)]\n${data.content}`,
+						`[id: ${result.value.id}]${meta}[length: ${result.value.duration}]\n[by: Musixmatch (Richsync)]\n${result.value.content}`, 
 						`${fileName}.lrc`
 					);
-				},
-				error: function(xhr, st) {
-					if (st === "timeout") message = "Connection timed out";
-					else message = xhr.responseJSON.message ?? st;
-					toast.fire({
-						icon: "error",
-						text: message
-					});
 				}
 			});
 		};
@@ -445,6 +468,52 @@
 				`data:text/plain;charset=utf-8,${encodeURIComponent(syncedContents)}`;
 			llSyncedDL.download = `${fileName}.lrc`;
 		};
+		wbwDL.onclick = function (e) {
+			e.preventDefault();
+			swalConfirm.fire({
+				title: "Convert to LRC format?",
+				text: 'LRCLib\'s Word-by-word lyric is in YAML format and only a few players supported. Convert to LRC?',
+				customClass: {
+					confirmButton: "btn btn-primary btn-lg me-2",
+					denyButton: "btn btn-danger btn-lg me-2",
+					cancelButton: "btn btn-warning btn-lg"
+				},
+				denyButtonText: "No",
+				showDenyButton: true,
+				preConfirm: async function () {
+					try {
+						const response = await $.ajax({
+							headers: {
+								"X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+							},
+							type: "POST",
+							url: "/lrclib/convert",
+							data: { content: wbwContents },
+							success: function (data) {
+								return JSON.stringify(data);
+							},
+							error: function (xhr, st, err) {
+								throw new Error(xhr.responseJSON?.message ?? err ?? st);
+							}
+						});
+						return response;
+					} catch (e) {
+						console.warn(e);
+						Swal.showValidationMessage(
+							`Failed to convert: ${e.responseJSON?.message ?? "Server connection was lost"}`
+						);
+					}
+				}
+			}).then((result) => {
+				if (result.isConfirmed) {
+					if(result.value.instrumental===true)
+						toast.fire({icon: 'warning',text:'Conversion aborted, song is Instrumental'});
+					else blobDL(result.value.lrc, `${fileName}.lrc`);
+				}
+				else if (result.isDenied) blobDL(wbwContents, `${fileName}.yaml`);
+			});
+		};
+
 		localDL.onclick = function() {
 			blobDL(localContents, `${fileName}.lrc`);
 		};

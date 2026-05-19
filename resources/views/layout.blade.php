@@ -4,6 +4,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="csrf-token" content="{{ csrf_token() }}">
 		<title>@yield('title') | Lyrics Searcher by andrechris24</title>
 
 		<!-- Bootstrap CSS -->
@@ -125,7 +126,7 @@
 								'nav-link',
 								'dropdown-toggle',
 								'active' => request()->routeIs('musixmatch.*'),
-								'disabled' => empty(env('MUSIXMATCH_TOKEN'))
+								'disabled' => empty(env('MUSIXMATCH_TOKEN')),
 							]) href="#"
 								@if (request()->routeIs('musixmatch.*')) aria-current="page" @endif role="button"
 								data-bs-toggle="dropdown" aria-expanded="false"
@@ -164,7 +165,7 @@
 							<a @class([
 								'nav-link',
 								'dropdown-toggle',
-								'active' => request()->routeIs('local.*')
+								'active' => request()->routeIs('local.*'),
 							])
 								@if (request()->routeIs('local.*')) aria-current="page" @endif href="#"
 								role="button" data-bs-toggle="dropdown" aria-expanded="false">

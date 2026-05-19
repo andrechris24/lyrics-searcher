@@ -13,6 +13,7 @@ export default defineConfig([
 		languageOptions: { globals: globals.browser },
 		rules: {
 			"no-unused-vars": ["warn"],
+			"no-console": ["warn"],
 			"@typescript-eslint/no-unused-vars": ["off"]
 		}
 	},
@@ -21,6 +22,7 @@ export default defineConfig([
 		languageOptions: { sourceType: "script", globals: { ...globals.jquery } },
 		rules: {
 			"no-unused-vars": ["warn"],
+			"no-console": ["warn"],
 			"@typescript-eslint/no-unused-vars": ["off"]
 		}
 	}

@@ -60,12 +60,13 @@ if (lyricsModal) {
 				}
 				$("#lyrics-content").html(data.lrc.lyric.replace(/\n/g, "<br/>"));
 			},
-			error: function (xhr, st) {
+			error: function (xhr, st, err) {
+				console.warn(err);
 				if (st === "timeout") message = "Connection timed out";
-				else message = xhr.responseJSON.message ?? st;
+				else message = xhr.responseJSON?.message ?? err ?? st;
 				toast.fire({ icon: "error", text: message });
 				$("#modalLyrics").modal("hide");
-			},
+			}
 		});
 	});
 }

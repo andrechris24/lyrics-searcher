@@ -15,9 +15,12 @@ Route::get('result', [SingleController::class, 'search'])->name('result');
 Route::prefix('lrclib')->name('lrclib.')->group(function () {
 	Route::view('/', 'lrclib.index')->name('index');
 	Route::view('advanced', 'lrclib.advanced.index')->name('advanced');
-	Route::controller(LRCLibController::class)->name('search')->group(function () {
-		Route::get('results', 'standard');
-		Route::get('advanced/results', 'advanced')->name('.advanced');
+	Route::controller(LRCLibController::class)->group(function () {
+		Route::name('search')->group(function () {
+			Route::get('results', 'standard');
+			Route::get('advanced/results', 'advanced')->name('.advanced');
+		});
+		Route::post('convert', 'convert')->name('convert');
 	});
 });
 Route::prefix('musixmatch')->name('musixmatch.')->group(function () {
@@ -55,7 +58,7 @@ Route::prefix('kugou')->name('kugou.')->group(function () {
 			Route::get('advanced/results', 'advanced')->name('.advanced');
 			Route::get('get', 'get')->name('.get');
 		});
-		Route::get('aimp','aimp')->name('aimp');
+		Route::get('aimp', 'aimp')->name('aimp');
 		Route::get('{hash}', 'lyrics')->name('lyrics');
 	});
 });

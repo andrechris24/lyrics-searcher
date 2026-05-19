@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* global Swal */
-$.ajaxSetup({ timeout: 30000 });
+$.ajaxSetup({ timeout: 33000 });
 $(document).on("keydown", function (e) {
 	// Ignore if user is already typing in an input, textarea, or contenteditable
 	if ($(e.target).is('input, textarea, [contenteditable="true"]')) 
@@ -25,11 +25,24 @@ const toast = Swal.mixin({
 		toast.onmouseleave = Swal.resumeTimer;
 	}
 });
+const swalConfirm = Swal.mixin({
+	icon: "question",
+	theme: "bootstrap-5",
+	buttonsStyling: false,
+	confirmButtonText: "Yes",
+	showLoaderOnConfirm: true,
+	showCancelButton: true,
+	allowOutsideClick: !Swal.isLoading(),
+	allowEscapeKey: !Swal.isLoading()
+});
 $.LoadingOverlaySetup({
 	background: "rgba(0, 0, 0, 0.5)",
 	image: "",
 	fontawesome: "fas fa-circle-notch fa-spin",
-	fontawesomeColor: "#ffffff"
+	fontawesomeColor: "#0d6efd",
+	text: "Loading...",
+	textColor: "#0d6efd",
+	textResizeFactor: 0.2
 });
 
 function blobDL(data, filename) {

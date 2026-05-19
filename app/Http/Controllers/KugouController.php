@@ -100,11 +100,10 @@ class KugouController extends Controller
 			$req->validate(['query' => 'required', 'duration' => 'required']);
 			$duration = explode(':', $req['duration']);
 			$query = self::$query;
-			$query['keyword'] = $req['query'];
-			if (count($duration) === 3){
+			$query['keyword'] = Str::replace(', ', "\u{3001}", $req['query']);
+			if (count($duration) === 3) {
 				$query['duration'] = (int)$duration[0] * 3600 + (int)$duration[1] * 60 + (int)$duration[2];
-			}
-			else if (count($duration) === 2)
+			} else if (count($duration) === 2)
 				$query['duration'] = (int)$duration[0] * 60 + (int)$duration[1];
 			else $query['duration'] = (int)$duration[0];
 			$response = Http::connectTimeout(30)->get(self::$lrcUrl . 'search', $query);
@@ -168,8 +167,8 @@ class KugouController extends Controller
 	}
 	protected function lowCaseDict(string $str)
 	{
-		$arrayDict=['Yovie Widianto'];
-		if(in_array($str,$arrayDict)) $str=Str::lower($str);
+		$arrayDict = ['Yovie Widianto'];
+		if (in_array($str, $arrayDict)) $str = Str::lower($str);
 		return $str;
 	}
 }

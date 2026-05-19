@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\{Http, Log};
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 class LRCLibController extends Controller
 {
@@ -50,6 +52,41 @@ class LRCLibController extends Controller
 				->withError('LRCLib connection failed: ' . $e->getMessage());
 		} catch (ValidationException $e) {
 			return to_route('lrclib.advanced')->withInput()->withErrors($e->errors());
+		}
+	}
+	public function convert(Request $req)
+	{
+		$req->validate(['content' => 'required']);
+		try {
+			$yaml = Yaml::parse($req['content']);
+			$lyricsfile = '[ti: ' . $yaml['metadata']['title'] .
+				"]\n[ar: " . $yaml['metadata']['artist'] ."]\n";
+			if(array_key_exists('album', $yaml['metadata']))
+				$lyricsfile.="[al: " . $yaml['metadata']['album']."]\n";
+			if(array_key_exists('duration_ms',$yaml['metadata']))
+				$lyricsfile.="[length: " . gmdate('i:s', floor($yaml['metadata']['duration_ms'] / 1000))."]\n";
+			if(array_key_exists('offset_ms',$yaml['metadata']))
+				$lyricsfile.="[offset: " . $yaml['metadata']['duration_ms']."]\n";
+			if(!array_key_exists('instrumental', $yaml['metadata']) || $yaml['metadata']['instrumental']===false){
+				$lyricsfile.="[by: LRCLib]\n[ve: " . $yaml['version'] . "]\n";
+				foreach ($yaml['lines'] as $idx => $line) {
+					if ($idx === 0) {
+						if ($line['start_ms'] > 5000)
+							$lyricsfile .= "[" . $this->formatTime(floor($line['start_ms'] / 1000) - 5) . ']';
+						else $lyricsfile .= "[00:00.00]";
+					} else $lyricsfile .= "[" . $this->formatTime(floor($line['start_ms'] / 1000)) . ']';
+					foreach ($line['words'] as $word) {
+						$lyricsfile .= '<' . $this->formatTime(floor($word['start_ms'] / 1000)) . '>' . $word['text'];
+					}
+					if (!empty($line['text']))
+						$lyricsfile .= '<' . $this->formatTime(floor($line['end_ms'] / 1000)) . "> \n";
+					else $lyricsfile .= "\n";
+				}
+			}else return response()->json(['instrumental'=>true,'contents'=>$yaml]);
+			return response()->json(['instrumental'=>false,'lrc' => $lyricsfile]);
+		} catch (ParseException $e) {
+			Log::error($e);
+			abort(500, $e->getMessage());
 		}
 	}
 }

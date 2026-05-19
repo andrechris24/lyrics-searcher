@@ -4,7 +4,7 @@
 @else
 	<p class="text-center">Showing {{ (request('offset') ?? 0) + 1 }} to
 		{{ $data['next_cursor'] }} result(s). Click on a list to save.</p>
-	<x-enhanced-only />
+	{{-- <x-enhanced-only /> --}}
 	<div class="list-group mx-5 px-5 mb-5 pb-5">
 		@foreach ($data['data'] as $result)
 			@php
@@ -12,7 +12,7 @@
 				$res = $result['entity']['track'];
 				$length = gmdate('i:s', round($res['duration'] / 1000, 0, PHP_ROUND_HALF_UP));
 				foreach ($res['artists'] as $ar) {
-				    $artists[] = $ar['name'];
+					$artists[] = $ar['name'];
 				}
 			@endphp
 			<a class="list-group-item list-group-item-action" data-duration="{{ $length }}"
@@ -58,4 +58,4 @@
 			</ul>
 		</nav>
 	</div>
-	@endif
+@endif

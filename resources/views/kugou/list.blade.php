@@ -11,7 +11,7 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<x-enhanced-only />
+				{{-- <x-enhanced-only /> --}}
 				<table id="lyrics-table" class="table table-striped">
 					<thead>
 						<tr>

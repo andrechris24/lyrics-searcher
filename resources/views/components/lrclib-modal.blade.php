@@ -9,9 +9,9 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<div class="alert alert-info d-none" id="lrclib-wbw" role="alert">
+				{{-- <div class="alert alert-info d-none" id="lrclib-wbw" role="alert">
 					This song contains word-by-word lyric, but LRCLib's word-by-word download is coming soon.
-				</div>
+				</div> --}}
 				<div class="row mb-3">
 					<div class="col-12 col-md-4">
 						<b>Artist</b>
@@ -55,6 +55,9 @@
 						</li>
 						<li>
 							<a class="dropdown-item" href="#" id="download-link-lrclib-synced">Synced</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="#" id="download-link-lrclib-wbw">Word-by-word</a>
 						</li>
 					</ul>
 				</div>

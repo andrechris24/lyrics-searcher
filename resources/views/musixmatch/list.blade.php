@@ -15,7 +15,7 @@
 					$lyricType = 'Instrumental';
 					$color = 'text-warning';
 				} elseif ($track['has_richsync']) {
-					$lyricType = 'Word by Word';
+					$lyricType = 'Richsync';
 					$color = 'text-success';
 				} elseif ($track['has_subtitles']) {
 					$lyricType = 'Synced';
@@ -104,7 +104,7 @@
 											data-album="{{ $track['album_name'] }}"
 											data-artist="{{ $track['artist_name'] }}"
 											data-title="{{ $track['track_name'] }}">
-											Word-by-Word
+											Richsync
 										</a>
 									</li>
 								</ul>

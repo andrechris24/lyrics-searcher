@@ -15,15 +15,19 @@ $(".list-group-item-action").on("click", function (e) {
 			$.LoadingOverlay("hide");
 		},
 		success: function (data) {
-			if(!data.lyric.match(/\[(\d+):(\d+).(\d+)\]/)){
-				toast.fire({icon: "warning", text: "Downloading lyric in plain format"});
+			if (!data.lyric.match(/\[(\d+):(\d+).(\d+)\]/)) {
+				toast.fire({
+					icon: "warning",
+					text: "Downloading lyric in plain format"
+				});
 				ext = "txt";
-			}else ext="lrc";
-			blobDL(data.lyric, fileName+ext);
+			} else ext = "lrc";
+			blobDL(data.lyric, fileName + ext);
 		},
-		error: function (xhr, st) {
+		error: function (xhr, st, err) {
+			console.warn(err);
 			if (st === "timeout") message = "Connection timed out";
-			else message = xhr.responseJSON.message ?? st;
+			else message = xhr.responseJSON?.message ?? err ?? st;
 			toast.fire({ icon: "error", text: message });
 		}
 	});

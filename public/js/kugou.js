@@ -132,10 +132,10 @@ function dlLRC(id, key) {
 				blobDL(data.content, `${fileName}.lrc`);
 			}
 		},
-		error: function (xhr, st) {
-			console.warn(xhr.responseJSON?.message ?? st);
+		error: function (xhr, st, err) {
+			console.warn(err);
 			if (st === "timeout") message = "Connection timed out";
-			else message = xhr.responseJSON?.message ?? st;
+			else message = xhr.responseJSON?.message ?? err ?? st;
 			toast.fire({ icon: "error", text: message });
 		}
 	});

@@ -15,7 +15,8 @@
         "backpack/permissionmanager": "^7.3",
         "backpack/theme-tabler": "^2.0",
         "laravel/framework": "^13.0",
-        "laravel/tinker": "^3.0"
+        "laravel/tinker": "^3.0",
+        "symfony/yaml": "^8.0"
     },
     "require-dev": {
         "backpack/generators": "^4.1",

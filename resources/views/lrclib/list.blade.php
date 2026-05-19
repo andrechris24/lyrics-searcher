@@ -1,4 +1,4 @@
-<x-lrclib-modal text="Preview lyric"/>
+<x-lrclib-modal text="Preview lyric" />
 <x-no-script />
 @empty($data)
 	<x-no-results source="lrclib" />
@@ -10,9 +10,9 @@
 			<a class="list-group-item list-group-item-action"
 				@if (!$result['instrumental']) data-bs-toggle="modal" data-bs-album="{{ $result['albumName'] }}" data-bs-duration="{{ $length }}"
 				data-bs-title="{{ $result['trackName'] }}" data-bs-artist="{{ $result['artistName'] }}"
-				data-bs-plain="{{ $result['plainLyrics'] }}" data-bs-id="{{$result['id']}}"
+				data-bs-plain="{{ $result['plainLyrics'] }}" data-bs-id="{{ $result['id'] }}"
 				data-bs-synced="{{ $result['syncedLyrics'] }}" data-bs-wordbyword="{{ $result['lyricsfile'] }}"
-				@else onclick="toast.fire({icon: 'info',text: 'This song is Instrumental'});return false;" @endif
+				@else onclick="toast.fire({icon: 'info',text: 'This song is Instrumental'});return;" @endif
 				href="#modalLRCLib">
 				<div class="d-flex w-100 justify-content-between">
 					<h5 class="mb-1">{{ $result['trackName'] }}</h5>
