@@ -4,9 +4,9 @@
 	<div class="px-5 mx-5 py-5 my-5">
 		<h3 class="text-center">Lyrics Searcher by andrechris24</h3>
 		<p class="text-center">Welcome to andrechris24's Lyrics Searcher! This site provides
-			synchronized lyrics search from Kugou, NetEase, QQ Music, Musixmatch (throttled
-			request), LRCLib, Soda Music, and on local server. This form below is a quick search
-			to 4 providers (might be inaccurate).</p>
+			lyrics search from Kugou, NetEase, QQ Music, Musixmatch (throttled request),
+			LRCLib, Soda Music, plus optionally local server and Lyrics.ovh.
+			This form below is a quick search to 4 providers and might be inaccurate.</p>
 		@if (Session::has('error') || $errors->any())
 			<x-error />
 		@endif
@@ -286,7 +286,7 @@
 							}
 						}
 						$(".search-term").text(
-							`${formData[2].value} - ${formData[0].value} ${ 
+							`${formData[2].value} - ${formData[0].value} ${
 							formData[3].value !== '' ?
 								`(${formData[3].value})` : ''}`);
 						switch (data.source) {
@@ -297,13 +297,12 @@
 								$("#lrclib-song-album").text(data.album);
 								$("#lrclib-song-duration").text(data
 									.duration);
-								if (data.wbw === null || data.wbw === ''){
+								if (data.wbw === null || data.wbw === '') {
 									$("#lrclib-wbw").addClass('d-none');
-									wbwContents=null;
-								}
-								else {
+									wbwContents = null;
+								} else {
 									$("#lrclib-wbw").removeClass('d-none');
-									wbwContents=data.wbw;
+									wbwContents = data.wbw;
 								}
 								$("#modalLRCLib").modal('show');
 								break;
@@ -430,7 +429,7 @@
 					cancelButton: "btn btn-danger btn-lg"
 				},
 				cancelButtonText: 'No',
-				preConfirm: async function () {
+				preConfirm: async function() {
 					try {
 						const response = await $.ajax({
 							url: `/musixmatch/${track_id}/richsync`,
@@ -438,7 +437,8 @@
 								return JSON.stringify(data);
 							},
 							error: function(xhr, st, err) {
-								throw new Error(xhr.responseJSON?.message ?? err ?? st);
+								throw new Error(xhr.responseJSON
+									?.message ?? err ?? st);
 							}
 						});
 						return response;
@@ -452,7 +452,7 @@
 			}).then((result) => {
 				if (result.isConfirmed) {
 					blobDL(
-						`[id: ${result.value.id}]${meta}[length: ${result.value.duration}]\n[by: Musixmatch (Richsync)]\n${result.value.content}`, 
+						`[id: ${result.value.id}]${meta}[length: ${result.value.duration}]\n[by: Musixmatch (Richsync)]\n${result.value.content}`,
 						`${fileName}.lrc`
 					);
 				}
@@ -468,7 +468,7 @@
 				`data:text/plain;charset=utf-8,${encodeURIComponent(syncedContents)}`;
 			llSyncedDL.download = `${fileName}.lrc`;
 		};
-		wbwDL.onclick = function (e) {
+		wbwDL.onclick = function(e) {
 			e.preventDefault();
 			swalConfirm.fire({
 				title: "Convert to LRC format?",
@@ -480,20 +480,25 @@
 				},
 				denyButtonText: "No",
 				showDenyButton: true,
-				preConfirm: async function () {
+				preConfirm: async function() {
 					try {
 						const response = await $.ajax({
 							headers: {
-								"X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+								"X-CSRF-TOKEN": $(
+									'meta[name="csrf-token"]').attr(
+									"content")
 							},
 							type: "POST",
 							url: "/lrclib/convert",
-							data: { content: wbwContents },
-							success: function (data) {
+							data: {
+								content: wbwContents
+							},
+							success: function(data) {
 								return JSON.stringify(data);
 							},
-							error: function (xhr, st, err) {
-								throw new Error(xhr.responseJSON?.message ?? err ?? st);
+							error: function(xhr, st, err) {
+								throw new Error(xhr.responseJSON
+									?.message ?? err ?? st);
 							}
 						});
 						return response;
@@ -506,15 +511,43 @@
 				}
 			}).then((result) => {
 				if (result.isConfirmed) {
-					if(result.value.instrumental===true)
-						toast.fire({icon: 'warning',text:'Conversion aborted, song is Instrumental'});
+					if (result.value.instrumental === true)
+						toast.fire({
+							icon: 'warning',
+							text: 'Conversion aborted, song is Instrumental'
+						});
 					else blobDL(result.value.lrc, `${fileName}.lrc`);
-				}
-				else if (result.isDenied) blobDL(wbwContents, `${fileName}.yaml`);
+				} else if (result.isDenied) blobDL(wbwContents, `${fileName}.yaml`);
 			});
 		};
 
 		localDL.onclick = function() {
+			if (!localContents.match(/\[(\d+):(\d+).(\d+)\]/)) {
+				ext = ".txt";
+				blobDL(`${fileName}\n\n${content}`, fileName + ext);
+			} else {
+				const meta = `[id: ${songID}]\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n[by: ${user}]\n[length: ${duration}]\n[offset: ${offset}]\n`;
+				ext = ".lrc";
+				if (content.match(/<(\d+):(\d+).(\d+)>/g)) {
+					Swal.fire({
+						icon: "question",
+						title:
+							"This lyric contains syllable timestamps and only a few players supports this type. Do you want to keep them?",
+						theme: "bootstrap-5",
+						showDenyButton: true,
+						showCancelButton: true,
+						confirmButtonText: "Yes",
+						denyButtonText: "No"
+					}).then((result) => {
+						if (result.isConfirmed) {
+							blobDL(meta + content, fileName + ext);
+						} else if (result.isDenied) {
+							const plainContent = content.replace(/<(\d+):(\d+).(\d+)>/g, "");
+							blobDL(meta + plainContent, fileName + ext);
+						} else console.warn("Download cancelled");
+					});
+				} else blobDL(meta + content, fileName + ext);
+			}
 			blobDL(localContents, `${fileName}.lrc`);
 		};
 

@@ -78,7 +78,7 @@ abstract class Controller
 		$metaRegex = "/^\[(\S+):(\S+)\]$/";
 		$timestampsRegex = "/^\[(\d+),(\d+)\]/";
 		$timestamps2Regex = "/<(\d+),(\d+),(\d+)>([^<]*)/";
-		$lines = preg_split("/[\r\n]/", $krcText);
+		$lines = preg_split("/[\n]/", $krcText);
 		foreach ($lines as $idx => $line) {
 			if (preg_match($metaRegex, $line, $matches)) { // meta info
 				if (
@@ -86,10 +86,10 @@ abstract class Controller
 					(in_array($matches[1], ['ar', 'ti']) && is_numeric($matches[2]))
 				) continue;
 				else if (in_array($matches[1], ['total'])) {
-					$lyricText .= '[length: ' . gmdate('i:s', floor($matches[2])) . "]\r\n";
+					$lyricText .= '[length: ' . gmdate('i:s', floor($matches[2] / 1000)) . "]\n";
 					continue;
 				}
-				$lyricText .= $matches[0] . "\r\n";
+				$lyricText .= $matches[0] . "\n";
 			} else if (preg_match($timestampsRegex, $line, $matches)) {
 				$lyricLine = "";
 				$startTime = (int)$matches[1];
@@ -108,7 +108,7 @@ abstract class Controller
 						$lyricLine .= "<" . $this->formatTime(($startTime + $offset) / 1000) . ">" . $subWord;
 					}
 				}
-				$lyricText .= $lyricLine . "<" . $this->formatTime(($startTime + $duration) / 1000) . "> \r\n";
+				$lyricText .= $lyricLine . "<" . $this->formatTime(($startTime + $duration) / 1000) . "> \n";
 			}
 		}
 		return $lyricText;

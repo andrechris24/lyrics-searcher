@@ -15,10 +15,8 @@
 		<link rel="stylesheet" type="text/css" href="{{ asset('css/theme.css') }}">
 
 		<!-- FontAwesome -->
-		<link rel="stylesheet"
-			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
-			integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
-			crossorigin="anonymous" referrerpolicy="no-referrer" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" integrity="sha256-MVopmdyC2tYTiJ8wlktf0uh0v4NgT+vNdyVFepi7Q0c=" crossorigin="anonymous">
+		{{-- <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/js/all.min.js" integrity="sha256-YbayIEYGVLmyi3xj7wG91wgAa+Iz3qf7HuK6e1N40/w=" crossorigin="anonymous"></script> --}}
 
 		<link href="https://cdn.datatables.net/v/bs5/dt-2.3.7/r-3.0.8/datatables.min.css"
 			rel="stylesheet"
@@ -184,9 +182,14 @@
 								</li>
 							</ul>
 						</li>
+					</ul>
+					<div class="d-flex">
 						<button class="btn btn-outline-success" data-bs-toggle="modal"
 							data-bs-target="#modalConvert">Convert</button>
-					</ul>
+						@auth(backpack_guard_name())
+							<a href="{{route('backpack')}}" class="btn btn-secondary ms-2">Admin</a>
+						@endauth
+					</div>
 				</div>
 			</div>
 		</nav>
@@ -219,12 +222,12 @@
 										Content
 									</label>
 									<textarea id="lyrics-content-form" name="content" class="form-control"
-									 placeholder="Paste the contents of lyrics file here." rows="10" required></textarea>
+									 placeholder="Paste the contents of lyrics file here and remove SRT subtitle tags." rows="10" required></textarea>
 								</div>
 							</form>
 							<div class="mb-3">
-								Conversion result:
-								<pre id="converted-lyric">...</pre>
+								<b>Conversion result:</b>
+								<p id="converted-lyric" style="white-space: pre-line">...</p>
 							</div>
 						</div>
 						<div class="modal-footer">

@@ -24,6 +24,6 @@ class AsSecond implements CastsAttributes
 	 */
 	public function set(Model $model, string $key, mixed $value, array $attributes): mixed
 	{
-		return $value['minutes'] * 60 + $value['seconds'];
+		return (int)$value['minutes'] * 60 + (int)$value['seconds'];
 	}
 }

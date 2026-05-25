@@ -5,18 +5,17 @@ function krc2lrc(krcText) {
 	const metaRegex = /^\[(\S+):(\S+)\]$/,
 		timestampsRegex = /^\[(\d+),(\d+)\]/,
 		timestamps2Regex = /<(\d+),(\d+),(\d+)>([^<]*)/g,
-		lines = krcText.split(/[\r\n]/);
+		lines = krcText.split(/[\n]/);
 	for (const line of lines) {
 		if ((matches = metaRegex.exec(line))) {
 			// meta info
-			if (matches[1] == "language") {
-				continue;
-			}
-			lyricText += `${matches[0]}\r\n`;
+			if (matches[1] == "language") continue;
+			lyricText += `${matches[0]}\n`;
 		} else if ((matches = timestampsRegex.exec(line))) {
 			const startTime = parseInt(matches[1]),
 				duration = parseInt(matches[2]);
 			let lyricLine = `[${formatTime(startTime)}]`;
+
 			// parse sub-timestamps
 			let subMatches;
 			while ((subMatches = timestamps2Regex.exec(line))) {
@@ -24,7 +23,7 @@ function krc2lrc(krcText) {
 				const subWord = subMatches[4];
 				lyricLine += `<${formatTime(startTime + offset)}>${subWord}`;
 			}
-			lyricText += `${lyricLine}<${formatTime(startTime + duration)}> \r\n`;
+			lyricText += `${lyricLine}<${formatTime(startTime + duration)}> \n`;
 		}
 	}
 	return lyricText;
@@ -89,10 +88,10 @@ function formatTime(time) {
 	let str;
 	if (isNaN(time)) {
 		const srtTime = time.match(/^(\d{2}):(\d{2}):(\d{2}),(\d{3})$/);
-		let hours = parseInt(srtTime[1], 10);
-		let minutes = parseInt(srtTime[2], 10) + hours * 60;
-		let seconds = parseInt(srtTime[3], 10);
-		let centiseconds = Math.floor(parseInt(srtTime[4], 10) / 10); // mmm → xx
+		let hours = parseInt(srtTime[1], 10),
+			minutes = parseInt(srtTime[2], 10) + hours * 60,
+			seconds = parseInt(srtTime[3], 10),
+			centiseconds = Math.floor(parseInt(srtTime[4], 10) / 10); // mmm → xx
 		str = `${(hours ? `${zpad(hours)}:` : "") + zpad(minutes)}:${zpad(seconds)}.${zpad(centiseconds)}`;
 	} else {
 		let t = Math.abs(time / 1000);
@@ -131,7 +130,7 @@ $("#lyric-converter-form").on("submit", function (e) {
 			for (const block of srtBlocks) {
 				lrcText +=
 					`[${formatTime(block.startTime)}]${block.text.replace(/\n/g, " ")}`;
-				lrcText += `\r\n[${formatTime(block.endTime)}]\r\n`;
+				lrcText += `\n[${formatTime(block.endTime)}]\n`;
 			}
 			break;
 		}
@@ -151,15 +150,6 @@ $("#lyric-converter-form").on("submit", function (e) {
 	else $("#save-converted").prop("disabled", true);
 });
 $("#save-converted").on("click", function () {
-	let ext;
 	const lrcContent = $("#converted-lyric").text();
-	if (
-		lrcContent.match(
-			/(\d+)\n(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})/
-		)
-	)
-		ext = "srt";
-	else if (lrcContent.match(/\[(\d+):(\d+).(\d+)\]/)) ext = "lrc";
-	else ext = "txt";
-	blobDL(lrcContent, `converted.${ext}`);
+	blobDL(lrcContent, `converted.lrc`);
 });

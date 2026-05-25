@@ -74,6 +74,7 @@ Route::prefix('local')->name('local.')->group(function () {
 	Route::view('advanced', 'local.advanced.index')->name('advanced');
 	Route::controller(LocalController::class)->group(function () {
 		Route::get('latest', 'latest')->name('latest');
+		Route::middleware(backpack_middleware())->post('upload', 'upload')->name('upload');
 		Route::name('search')->group(function () {
 			Route::get('results', 'standard');
 			Route::get('advanced/results', 'advanced')->name('.advanced');

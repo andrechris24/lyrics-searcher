@@ -5,6 +5,7 @@
 		<h3>Advanced Local Search Results</h3>
 		<x-advanced provider="local" require="0" />
 	</div>
+	<x-upload-lyric />
 	@include('local.list')
 @endsection
 @section('js')

@@ -1,5 +1,5 @@
-<form class="row g-3 mb-3" 
-	action="{{ route($provider . ($type==='advanced'?'.search.advanced':'.search')) }}">
+<form class="row g-3 mb-3"
+	action="{{ route($provider . ($type === 'advanced' ? '.search.advanced' : '.search')) }}">
 	<div class="col-sm-6">
 		<label for="track-name" class="form-label">
 			Song Title <span class="text-danger"><b>*</b></span>
@@ -9,7 +9,7 @@
 			<input type="text" class="form-control @error('title') is-invalid @enderror "
 				id="track-name" placeholder="Song title" name="title"
 				value="{{ request('title') ?? old('title') }}" required
-				@if(request()->routeIs('*.index')) autofocus @endif >
+				@if (request()->routeIs('*.index')) autofocus @endif>
 		</div>
 	</div>
 	<div class="col-sm-6">
@@ -25,10 +25,15 @@
 	</div>
 	<button type="submit" class="btn btn-primary">Search</button>
 	<small class="form-text">
-		@if($type==='advanced')
-		<a href="{{ route($provider . '.index') }}">Basic search</a>
+		@if ($type === 'advanced')
+			<a href="{{ route($provider . '.index') }}">Basic search</a>
 		@else
-		<a href="{{ route($provider . '.advanced') }}">Advanced search</a>
+			<a href="{{ route($provider . '.advanced') }}">Advanced search</a>
+		@endif
+		@if ($provider === 'local')
+			@auth(backpack_guard_name())
+				<a href="#modalUploadLyric" data-bs-toggle="modal">Upload lyric</a>
+			@endauth
 		@endif
 	</small>
 </form>

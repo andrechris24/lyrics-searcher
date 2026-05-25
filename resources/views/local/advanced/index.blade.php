@@ -8,4 +8,8 @@
 		@endif
 		<x-advanced provider="local" require="0" />
 	</div>
+	<x-upload-lyric />
+@endsection
+@section('js')
+	<script type="text/javascript" src="{{ asset('js/local.js') }}"></script>
 @endsection

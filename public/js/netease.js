@@ -55,7 +55,7 @@ if (lyricsModal) {
 					lyricContents = `${fileName}\n\n${data.lrc.lyric}`;
 					ext = "txt";
 				} else {
-					lyricContents = `${metaLyric}[ve: ${data.lrc.version}]\n${data.lrc.lyric}`;
+					lyricContents = `${metaLyric}[ve: ${data.lrc.version??1.0}]\n${data.lrc.lyric}`;
 					ext = "lrc";
 				}
 				$("#lyrics-content").html(data.lrc.lyric.replace(/\n/g, "<br/>"));
@@ -81,14 +81,14 @@ klyricDL.onclick = function () {
 function parseKLyric(lyricText) {
 	let enhancedlyricText = "";
 	let matches;
-	let metaRegex = /^\[(\S+):(\S+)\]$/;
-	let timestampsRegex = /^\[(\d+),(\d+)\]/;
-	let timestamps2Regex = /\((\d+),(\d+)\)([^(]*)/g;
-	let lines = lyricText.split(/[\r\n]/);
+	let metaRegex = /^\[(\S+):(\S+)\]$/,
+		timestampsRegex = /^\[(\d+),(\d+)\]/,
+		timestamps2Regex = /\((\d+),(\d+)\)([^(]*)/g,
+		lines = lyricText.split(/[\n]/);
 	for (const line of lines) {
 		if ((matches = metaRegex.exec(line))) {
 			// meta info
-			enhancedlyricText += `${matches[0]}\r\n`;
+			enhancedlyricText += `${matches[0]}\n`;
 		} else if ((matches = timestampsRegex.exec(line))) {
 			let startTime = parseInt(matches[1]);
 			let duration = parseInt(matches[2]);
@@ -102,7 +102,7 @@ function parseKLyric(lyricText) {
 				lyricLine += `<${formatTime(subStartTime)}>${subWord}`;
 				subStartTime += subDuration;
 			}
-			enhancedlyricText += `${lyricLine}<${formatTime(startTime + duration)}> \r\n`;
+			enhancedlyricText += `${lyricLine}<${formatTime(startTime + duration)}> \n`;
 		}
 	}
 	return enhancedlyricText;

@@ -5,6 +5,7 @@
 		<h3>Latest uploaded lyrics</h3>
 		<a href="{{ route('local.index') }}">Go to search</a>
 	</div>
+	<x-upload-lyric />
 	@include('local.list')
 @endsection
 @section('js')

@@ -8,4 +8,8 @@
 		@endif
 		<x-two-form provider="local" type="basic" />
 	</div>
+	<x-upload-lyric />
+@endsection
+@section('js')
+	<script type="text/javascript" src="{{ asset('js/local.js') }}"></script>
 @endsection

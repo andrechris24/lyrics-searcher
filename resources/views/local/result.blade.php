@@ -5,6 +5,7 @@
 		<h3>Local Search Results</h3>
 		<x-two-form provider="local" type="basic" />
 	</div>
+	<x-upload-lyric />
 	@include('local.list')
 @endsection
 @section('js')

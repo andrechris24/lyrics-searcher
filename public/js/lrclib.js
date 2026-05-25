@@ -72,46 +72,50 @@ syncedDL.onclick = function () {
 };
 wbwDL.onclick = function (e) {
 	e.preventDefault();
-	swalConfirm.fire({
-		title: "Convert to LRC format?",
-		text: 'LRCLib\'s Word-by-word lyric is in YAML format and only a few players supported. Convert to LRC?',
-		customClass: {
-			confirmButton: "btn btn-primary btn-lg me-2",
-			denyButton: "btn btn-danger btn-lg me-2",
-			cancelButton: "btn btn-warning btn-lg"
-		},
-		denyButtonText: "No",
-		showDenyButton: true,
-		preConfirm: async function () {
-			try {
-				const response = await $.ajax({
-					headers: {
-						"X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
-					},
-					type: "POST",
-					url: "/lrclib/convert",
-					data: { content: wbwContents },
-					success: function (data) {
-						return JSON.stringify(data);
-					},
-					error: function (xhr, st, err) {
-						throw new Error(xhr.responseJSON?.message ?? err ?? st);
-					}
-				});
-				return response;
-			} catch (e) {
-				console.warn(e);
-				Swal.showValidationMessage(
-					`Failed to convert: ${e.responseJSON?.message ?? "Server connection was lost"}`
-				);
+	swalConfirm
+		.fire({
+			title: "Convert to LRC format?",
+			text: "LRCLib's Word-by-word lyric is in YAML format and only a few players supported. Convert to LRC?",
+			customClass: {
+				confirmButton: "btn btn-primary btn-lg me-2",
+				denyButton: "btn btn-danger btn-lg me-2",
+				cancelButton: "btn btn-warning btn-lg"
+			},
+			denyButtonText: "No",
+			showDenyButton: true,
+			preConfirm: async function () {
+				try {
+					const response = await $.ajax({
+						headers: {
+							"X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+						},
+						type: "POST",
+						url: "/lrclib/convert",
+						data: { content: wbwContents },
+						success: function (data) {
+							return JSON.stringify(data);
+						},
+						error: function (xhr, st, err) {
+							throw new Error(xhr.responseJSON?.message ?? err ?? st);
+						}
+					});
+					return response;
+				} catch (e) {
+					console.warn(e);
+					Swal.showValidationMessage(
+						`Failed to convert: ${e.responseJSON?.message ?? "Server connection was lost"}`
+					);
+				}
 			}
-		}
-	}).then((result) => {
-		if (result.isConfirmed) {
-			if(result.value.instrumental===true)
-				toast.fire({icon: 'warning',text:'Conversion aborted, song is Instrumental'});
-			else blobDL(result.value.lrc, `${fileName}.lrc`);
-		}
-		else if (result.isDenied) blobDL(wbwContents, `${fileName}.yaml`);
-	});
+		})
+		.then((result) => {
+			if (result.isConfirmed) {
+				if (result.value.instrumental === true)
+					toast.fire({
+						icon: "warning",
+						text: "Conversion aborted, song is Instrumental"
+					});
+				else blobDL(result.value.lrc, `${fileName}.lrc`);
+			} else if (result.isDenied) blobDL(wbwContents, `${fileName}.yaml`);
+		});
 };

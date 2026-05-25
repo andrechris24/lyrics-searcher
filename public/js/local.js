@@ -1,4 +1,4 @@
-/* global blobDL, Swal */
+/* global blobDL, Swal, toast */
 let ext;
 $(".list-group-item-action").on("click", function (e) {
 	e.preventDefault();
@@ -37,4 +37,31 @@ $(".list-group-item-action").on("click", function (e) {
 			});
 		} else blobDL(meta + content, fileName + ext);
 	}
+});
+$("#uploadLyricForm").on("submit", function (e) {
+	e.preventDefault();
+	$.ajax({
+		headers: { "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content") },
+		method: "POST",
+		data: new FormData(this),
+		url: `/local/upload`,
+		processData: false,
+		contentType: false,
+		beforeSend: function () {
+			$.LoadingOverlay("show");
+		},
+		complete: function () {
+			$.LoadingOverlay("hide");
+		},
+		success: function (data) {
+			toast.fire({ icon: data.status, text: data.message });
+			$("#uploadLyricForm")[0].reset();
+		},
+		error: function (xhr, st, err) {
+			toast.fire({
+				icon: "error",
+				text: xhr.responseJSON?.message ?? err ?? st
+			});
+		}
+	});
 });

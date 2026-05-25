@@ -11,7 +11,7 @@
 				id="track-name" placeholder="Song title" name="title"
 				value="{{ request('title') ?? old('title') }}"
 				@if ($require === 1) required @endif
-				@if(request()->routeIs('*.index')) autofocus @endif >
+				@if (request()->routeIs('*.index')) autofocus @endif>
 		</div>
 	</div>
 	<div class="col-sm-6">
@@ -37,5 +37,10 @@
 	<button type="submit" class="btn btn-primary">Search</button>
 	<small class="form-text">
 		<a href="{{ route($provider . '.index') }}">Basic search</a>
+		@if ($provider === 'local')
+			@auth(backpack_guard_name())
+				<a href="#modalUploadLyric" data-bs-toggle="modal">Upload lyrics</a>
+			@endauth
+		@endif
 	</small>
 </form>

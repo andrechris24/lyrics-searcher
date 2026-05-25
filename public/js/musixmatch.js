@@ -1,4 +1,7 @@
-/* global blobDL, toast */
+/* global blobDL, toast, bootstrap */
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
 $(".download-btn").on("click", function (e) {
 	e.preventDefault();
 	const id = $(this).data("id"),

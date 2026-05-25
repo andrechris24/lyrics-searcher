@@ -72,7 +72,7 @@
 										<a @class([
 											'dropdown-item',
 											'download-btn',
-											'disabled' => !$track['has_lyrics'],
+											'disabled' => !$track['has_lyrics']
 										]) href="#"
 											data-id="{{ $track['commontrack_id'] }}" data-type="lyrics"
 											data-album="{{ $track['album_name'] }}"
@@ -85,7 +85,7 @@
 										<a @class([
 											'dropdown-item',
 											'download-btn',
-											'disabled' => !$track['has_subtitles'],
+											'disabled' => !$track['has_subtitles']
 										]) href="#"
 											data-id="{{ $track['commontrack_id'] }}" data-type="subtitle"
 											data-album="{{ $track['album_name'] }}"
@@ -98,12 +98,13 @@
 										<a @class([
 											'dropdown-item',
 											'download-btn',
-											'disabled' => !$track['has_richsync'],
+											'disabled' => !$track['has_richsync']
 										]) href="#"
+											title="Not all players support Richsync, use with compatible players like MiniLyrics or ESLyric"
 											data-id="{{ $track['commontrack_id'] }}" data-type="richsync"
 											data-album="{{ $track['album_name'] }}"
 											data-artist="{{ $track['artist_name'] }}"
-											data-title="{{ $track['track_name'] }}">
+											data-title="{{ $track['track_name'] }}" data-bs-toggle="tooltip">
 											Richsync
 										</a>
 									</li>
@@ -117,7 +118,7 @@
 								@class([
 									'btn',
 									'btn-success',
-									'disabled' => empty($track['track_spotify_id']),
+									'disabled' => empty($track['track_spotify_id'])
 								])
 								@empty($track['track_spotify_id']) aria-disabled="true" @endempty target="_blank">
 								<i class="fa-brands fa-spotify"></i>
@@ -131,9 +132,9 @@
 	@if (!request()->routeIs('musixmatch.chart'))
 		@php
 			$curRoute = request()->route()->getName();
-			$queries=[
-				'prev'=>['page' => request('page') === null ? 1 : request('page') - 1],
-				'next'=>['page' => (request('page') ?? 1) + 1]
+			$queries = [
+				'prev' => ['page' => request('page') === null ? 1 : request('page') - 1],
+				'next' => ['page' => (request('page') ?? 1) + 1]
 			];
 			if (request('query')) {
 				$queries['prev']['query'] = request('query');
@@ -141,10 +142,10 @@
 			} else {
 				$queries['prev']['title'] = request('title') ?? '';
 				$queries['prev']['artist'] = request('artist') ?? '';
-				$queries['prev']['album']= request('album') ?? '';
+				$queries['prev']['album'] = request('album') ?? '';
 				$queries['next']['title'] = request('title') ?? '';
 				$queries['next']['artist'] = request('artist') ?? '';
-				$queries['next']['album']= request('album') ?? '';
+				$queries['next']['album'] = request('album') ?? '';
 			}
 		@endphp
 		<div class="mx-5 px-5 mb-5 pb-5">

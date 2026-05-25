@@ -18,7 +18,7 @@ return new class extends Migration
 			$table->string('artist');
 			$table->string('album')->nullable();
 			$table->integer('duration')->nullable()->default(0);
-			$table->foreignIdFor(User::class)->after('by')->nullable()->constrained()
+			$table->foreignIdFor(User::class)->nullable()->constrained()
 				->default(null)->nullOnDelete()->comment('Lyric author by User ID');
 			$table->integer('offset')->nullable()->default(0);
 			$table->longText('content');
