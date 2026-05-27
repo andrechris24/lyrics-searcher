@@ -19,7 +19,8 @@
 							accept=".lrc, .elrc, .txt" name="lrc[]" multiple required>
 					</div>
 					<div class="form-text">This form expects the file to contain artist, title, album,
-						and duration info. Otherwise, file name will be used in format Artist - Title. Uploaded lyrics can be edited in admin panel.</div>
+						and duration info. Otherwise, file name will be used in format Artist - Title.
+						Uploaded lyrics can be edited in admin panel.</div>
 				</form>
 			</div>
 			<div class="modal-footer">

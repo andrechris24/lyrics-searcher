@@ -10,7 +10,7 @@ use Illuminate\Validation\ValidationException;
 class SodaMusicController extends Controller
 {
 	public const array SODAMUSIC_HEADERS = [
-		"Referer" => "https://api.qishui.com/",
+		'Referer' => 'https://api.qishui.com/',
 		'User-Agent' => 'LunaPC/2.6.5(197449790)'
 	];
 	public static string $url = 'https://api.qishui.com/luna/pc/';
@@ -46,7 +46,7 @@ class SodaMusicController extends Controller
 	{
 		try {
 			$response = Http::connectTimeout(30)->withHeaders(self::SODAMUSIC_HEADERS)
-				->get(self::$url . 'track_v2', ["track_id" => $id, "media_type" => "track"]);
+				->get(self::$url . 'track_v2', ['track_id' => $id, 'media_type' => 'track']);
 			$r = self::decodeJson($response->body());
 			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 			abort_if(

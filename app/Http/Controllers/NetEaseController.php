@@ -10,7 +10,7 @@ use Illuminate\Validation\ValidationException;
 class NetEaseController extends Controller
 {
 	public const array NETEASE_HEADERS =
-	["Referer" => "https://music.163.com", 'X-Real-IP' => '202.96.0.0'];
+	['Referer' => 'https://music.163.com', 'X-Real-IP' => '202.96.0.0'];
 	public static string $url = 'https://music.163.com/api/';
 	public function search(Request $req)
 	{

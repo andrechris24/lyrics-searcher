@@ -69,21 +69,18 @@ class LocalController extends Controller
 	}
 	public function upload(Request $req)
 	{
-		// Validate that a file is uploaded and is a text file
-		$req->validate([
-			'lrc.*' => 'required|file|extensions:lrc,elrc,txt|max:2048|encoding:UTF-8'
-		]);
+		$req->validate(
+			['lrc.*' => 'required|file|extensions:lrc,elrc,txt|max:2048|encoding:UTF-8']
+		);
 		$failed = 0;
 		$total = count($req->file('lrc'));
-		// $file=[];
-
-		// if ($req->hasFile('lrc')) {
+		$files = [];
 		foreach ($req->file('lrc') as $file) {
 			try {
 				$path = $file->store('files');
 				$absolutePath = storage_path('app/private/' . $path);
 				$lines = File::lines($absolutePath);
-				$metaRegex = "/^\[(ti|ar|al|offset|au|by|length|ve|re|id):([^\]]+)\]$/i";
+				$metaRegex = "/^\[(ti|ar|al|offset|au|by|length|ve|re|id|lr|tool):([^\]]+)\]$/i";
 				$fileRegex = "/^(.+?)\s*-\s*(.+)$/u";
 				$lrcLines = '';
 				$queries = [];
@@ -100,12 +97,12 @@ class LocalController extends Controller
 								$queries['album'] = Str::trim($matches[2]);
 								break;
 							case 'offset':
-								$queries['offset'] = Str::trim($matches[2]);
+								$queries['offset'] = (int)Str::trim($matches[2]);
 								break;
 							case 'length':
 								$duration = explode(':', Str::trim($matches[2]));
-								$queries['duration']['minutes'] = $duration[0];
-								$queries['duration']['seconds'] = $duration[1];
+								$queries['duration'] =
+									['minutes' => $duration[0], 'seconds' => $duration[1]];
 								break;
 							default:
 								break;
@@ -120,6 +117,8 @@ class LocalController extends Controller
 					if (preg_match($fileRegex, $filename, $fileMatch)) {
 						$queries['title'] = $fileMatch[2];
 						$queries['artist'] = $fileMatch[1];
+						if (!array_key_exists('album', $queries))
+							$queries['album'] = $fileMatch[2]; //Match album name as Title if empty
 					} else {
 						$queries['title'] = $filename;
 						$queries['artist'] = 'Unknown artist';
@@ -129,28 +128,39 @@ class LocalController extends Controller
 						preg_match($fileRegex, $filename, $fileMatch)
 						? $fileMatch[1] : 'Unknown artist';
 				}
+				if (array_key_exists('title', $queries) && !array_key_exists('album', $queries))
+					$queries['album'] = $queries['title'];
 				File::delete($absolutePath);
 				$queries['user_id'] = backpack_user()->id;
 				$queries['content'] = $lrcLines;
 				Lyric::create($queries);
 			} catch (QueryException $e) {
+				if ($file->getClientOriginalName()) 
+					$files[] = $file->getClientOriginalName();
 				Log::error($e);
 				$failed++;
 			} catch (\Exception $e) {
+				if ($file->getClientOriginalName()) 
+					$files[] = $file->getClientOriginalName();
 				Log::error($e);
 				$failed++;
 			}
 		}
-		if ($failed > 0) {
+		if ($failed >= $total){
+			Log::warning('Failed to upload lyrics: ', $files);
+			return response()->json(['message' => 'All ' . $total . ' files failed to upload'], 500);
+		}
+		else if ($failed > 0) {
+			Log::warning('Failed to upload lyrics: ', $files);
 			return response()->json([
 				'status' => 'warning',
-				'message' => ($total - $failed) . ' out of ' . $total . ' files uploaded successfully'
+				'message' => $failed . ' out of ' . $total . ' files failed to upload',
+				'files' => $files
 			]);
-		} else if ($failed >= $total)
-			return response()->json(['message' => 'All files failed to upload'], 500);
+		}
 		return response()->json([
 			'status' => 'success',
-			'message' => 'All files uploaded successfully'
+			'message' => 'All ' . $total . ' files uploaded successfully'
 		]);
 	}
 }

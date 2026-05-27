@@ -26,9 +26,9 @@ class QQMusicController extends Controller
 				->post(self::$url, [
 					'comm' => ['ct' => 19, 'cv' => 1859, 'uin' => 0],
 					'req' => [
-						'method' => "DoSearchForQQMusicDesktop",
-						"module" => "music.search.SearchCgiService",
-						"param" => [
+						'method' => 'DoSearchForQQMusicDesktop',
+						'module' => 'music.search.SearchCgiService',
+						'param' => [
 							'grp' => 1,
 							'num_per_page' => 20,
 							'page_num' => (int)$req['page'] ?? 1,
@@ -64,7 +64,7 @@ class QQMusicController extends Controller
 	{
 		try {
 			$response = Http::connectTimeout(30)
-				->withHeaders(["Referer" => "https://y.qq.com/portal/player.html"])
+				->withHeaders(['Referer' => 'https://y.qq.com/portal/player.html'])
 				->get('https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg', [
 					'g_tk' => 5381,
 					'format' => 'json',

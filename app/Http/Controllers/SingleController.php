@@ -47,8 +47,8 @@ class SingleController extends Controller
 					abort_if(empty(env('MUSIXMATCH_TOKEN')), 500, 'Musixmatch token was not found');
 					Sleep::for(5)->seconds();
 					$response = Http::connectTimeout(30)->withHeaders([
-						"authority" => "apic-desktop.musixmatch.com",
-						"cookie" => "x-mxm-token-guid="
+						'authority' => 'apic-desktop.musixmatch.com',
+						'cookie' => 'x-mxm-token-guid='
 					])->get(MusixmatchController::$url . 'macro.subtitles.get', [
 						'format' => 'json',
 						'namespace' => 'lyrics_richsynched',

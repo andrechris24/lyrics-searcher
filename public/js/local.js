@@ -54,7 +54,11 @@ $("#uploadLyricForm").on("submit", function (e) {
 			$.LoadingOverlay("hide");
 		},
 		success: function (data) {
-			toast.fire({ icon: data.status, text: data.message });
+			toast.fire({
+				icon: data.status, 
+				text: data.message, 
+				footer: typeof data.files !== 'undefined' ? data.files.toString() : ''
+			});
 			$("#uploadLyricForm")[0].reset();
 		},
 		error: function (xhr, st, err) {

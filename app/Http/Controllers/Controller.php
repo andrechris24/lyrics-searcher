@@ -43,7 +43,7 @@ abstract class Controller
 	{
 		if (!is_numeric($seconds) || $seconds < 0) {
 			Log::warning("Invalid time value: " . $seconds);
-			return;
+			return '00:00.00';
 		}
 
 		// Extract whole minutes

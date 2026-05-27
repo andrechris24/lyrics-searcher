@@ -58,7 +58,6 @@ Route::prefix('kugou')->name('kugou.')->group(function () {
 			Route::get('advanced/results', 'advanced')->name('.advanced');
 			Route::get('get', 'get')->name('.get');
 		});
-		Route::get('aimp', 'aimp')->name('aimp');
 		Route::get('{hash}', 'lyrics')->name('lyrics');
 	});
 });

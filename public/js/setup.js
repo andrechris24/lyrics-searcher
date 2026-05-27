@@ -17,7 +17,7 @@ const toast = Swal.mixin({
 	toast: true,
 	position: "top-end",
 	showConfirmButton: false,
-	timer: 5000,
+	timer: 7000,
 	timerProgressBar: true,
 	theme: "bootstrap-5",
 	didOpen: (toast) => {
