@@ -16,9 +16,10 @@
 
 ## Setup
 
-Make sure `php_openssl` extension is enabled. If you want to self host, enable SSL extension on web server too. This command below are for Windows, and all commands except one are same for Linux.
+> [!IMPORTANT]
+> Make sure `php_openssl` extension is enabled and the `APP_URL` was set properly in .env file, like `http://127.0.0.1:8000` or `http://sample.test`. If you want to self host, enable SSL extension on web server too. This command below are for Windows, and all commands except one are same for Linux.
 
-```
+```sh
 # Clone and install
 git clone git@github.com:andrechris24/lyrics-searcher.git
 cd lyrics-searcher
@@ -42,9 +43,6 @@ php artisan serve
 # Optional
 php artisan backpack:user
 ```
-
-> [!IMPORTANT]
-> Make sure the `APP_URL` was set properly in .env file, like `http://127.0.0.1:8000` or `http://sample.test`.
 
 ## Admin credentials
 
