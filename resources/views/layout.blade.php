@@ -5,7 +5,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="csrf-token" content="{{ csrf_token() }}">
-		<title>@yield('title') | Lyrics Searcher by andrechris24</title>
+		<title>@yield('title') | LRCSearch</title>
 
 		<!-- Bootstrap CSS -->
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
@@ -16,7 +16,6 @@
 
 		<!-- FontAwesome -->
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" integrity="sha256-MVopmdyC2tYTiJ8wlktf0uh0v4NgT+vNdyVFepi7Q0c=" crossorigin="anonymous">
-		{{-- <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/js/all.min.js" integrity="sha256-YbayIEYGVLmyi3xj7wG91wgAa+Iz3qf7HuK6e1N40/w=" crossorigin="anonymous"></script> --}}
 
 		<link href="https://cdn.datatables.net/v/bs5/dt-2.3.7/r-3.0.8/datatables.min.css"
 			rel="stylesheet"
@@ -214,15 +213,19 @@
 										<option value="" selected>Choose</option>
 										<option value="fromSrt">SRT to LRC</option>
 										<option value="fromKrc">KRC to LRC</option>
-										<option value="fromQrc">QRC to LRC</option>
 									</select>
 								</div>
 								<div class="mb-3">
-									<label for="lyrics-content-form" class="form-label">
-										Content
+									<label for="source-file-to-convert" class="form-label">
+										Select file
 									</label>
-									<textarea id="lyrics-content-form" name="content" class="form-control"
-									 placeholder="Paste the contents of lyrics file here and remove SRT subtitle tags." rows="10" required></textarea>
+									<div class="input-group">
+										<span class="input-group-text">
+											<i class="fa-solid fa-file-lines"></i>
+										</span>
+										<input type="file" class="form-control" id="source-file-to-convert"
+											accept=".srt, .krc" name="source-file" required>
+									</div>
 								</div>
 							</form>
 							<div class="mb-3">
@@ -260,6 +263,7 @@
 		<script src="https://cdn.datatables.net/v/bs5/dt-2.3.7/r-3.0.8/datatables.min.js"
 			integrity="sha384-5L6UP+VtXWFTfdyUlr1LWG1lDU276xtuJbHZbCldV4v0FxVOCmuIN4SNnMsTMrGF"
 			crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js" integrity="sha256-7eJpOkpqUSa501ZpBis1jsq2rnubhqHPMC/rRahRSQc=" crossorigin="anonymous"></script>
 		<script type="text/javascript" src="{{ asset('js/convert.js') }}"></script>
 		<script type="text/javascript" src="{{ asset('js/setup.js') }}"></script>
 		@yield('js')

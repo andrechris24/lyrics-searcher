@@ -42,13 +42,13 @@
 				<div class="card">
 					<img src="{{ $art }}" class="card-img-top" alt="{{ $track['track_name'] }}">
 					<div class="card-header">
-						{{ $track['artist_name'] }}
+						{{ $track['album_name'] }}
 					</div>
 					<div class="card-body">
 						<h5 class="card-title">
 							{{ $track['track_name'] . ($track['explicit'] ? ' [E]' : '') }}
 						</h5>
-						<p class="card-text">{{ $track['album_name'] }}</p>
+						<p class="card-text">{{ $track['artist_name'] }}</p>
 						<small class="card-text text-muted">{{ $length }}</small>
 					</div>
 					<ul class="list-group list-group-flush">

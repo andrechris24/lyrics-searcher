@@ -155,7 +155,6 @@ class MusixmatchController extends Controller
 				],
 				'richsync' => [
 					'content' => $this->richsync(json_decode($data['richsync_body'], true)),
-					'raw' => $data['richsync_body'],
 					'id' => $data['richsync_id'],
 					'duration' => gmdate('i:s', $data['richsync_length'])
 				],
@@ -180,6 +179,7 @@ class MusixmatchController extends Controller
 			foreach ($line['l'] as $word) {
 				$richsync .= '<' . $this->formatTime($line['ts'] + $word['o']) . '>' . $word['c'];
 			}
+			//Trailing space added to counter MiniLyrics bug
 			$richsync .= '<' . $this->formatTime($line['te']) . "> \n";
 		}
 		return $richsync;

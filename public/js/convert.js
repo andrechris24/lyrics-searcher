@@ -1,4 +1,29 @@
-/* global blobDL, toast */
+/* global blobDL, toast, pako */
+function xorKRC(rawData) {
+	if (null == rawData) 
+		return;
+
+	let dataView = new Uint8Array(rawData);
+	let magicBytes = [0x6b, 0x72, 0x63, 0x31];// 'k' , 'r' , 'c' ,'1'
+	if (dataView.length < magicBytes.length) 
+		return;
+
+	for (let i = 0; i < magicBytes.length; ++i) {
+		if (dataView[i] != magicBytes[i]) return;
+	}
+
+	let decryptedData = new Uint8Array(dataView.length - magicBytes.length);
+	let encKey = [0x40, 0x47, 0x61, 0x77, 0x5e, 0x32, 0x74, 0x47, 0x51, 0x36, 0x31, 0x2d, 0xce, 0xd2, 0x6e, 0x69];
+	let hdrOffset = magicBytes.length;
+	for (let i = hdrOffset; i < dataView.length; ++i) {
+		let x = dataView[i];
+		let y = encKey[(i - hdrOffset) % encKey.length];
+		decryptedData[i - hdrOffset] = x ^ y;
+	}
+
+	return decryptedData;
+}
+
 function krc2lrc(krcText) {
 	let lyricText = "";
 	let matches;
@@ -27,20 +52,6 @@ function krc2lrc(krcText) {
 		}
 	}
 	return lyricText;
-}
-
-function qrcToLrc(qrcText) {
-	if (qrcText == null) return null;
-
-	return qrcText
-		.replace(
-			/^\[(\d+),(\d+)\]/gm,
-			(_, base) => `[${formatTime(+base)}]<${formatTime(+base)}>`
-		)
-		.replace(
-			/\((\d+),(\d+)\)/g,
-			(_, start, offset) => `<${formatTime(+start + +offset)}>`
-		);
 }
 
 /**
@@ -122,32 +133,52 @@ function timeMilliseconds(val) {
 }
 $("#lyric-converter-form").on("submit", function (e) {
 	e.preventDefault();
-	const lyricContent = $("#lyrics-content-form").val();
-	let lrcText = "";
-	switch ($("#convert-type").val()) {
-		case "fromSrt": {
-			let srtBlocks = fromSrt(lyricContent, false);
+	const fileContent=$("#source-file-to-convert")[0].files[0];
+	const fileReader=new FileReader();
+	fileReader.onerror=function(e){
+		console.warn(e);
+		toast.fire({icon: 'error',text: 'Failed to read file'});
+	}
+	fileReader.onload=function(e){
+		let lrcText='';
+		if(e.target.result instanceof ArrayBuffer){
+			let krcContents=xorKRC(e.target.result);
+			if(!krcContents){
+				toast.fire({icon: 'error', text: 'Failed to decode KRC file'});
+				return;
+			}
+			krcContents=pako.inflate(krcContents.buffer,{to: 'string'});
+			if(!krcContents){
+				toast.fire({icon: 'error', text: 'Failed to unpack KRC file'});
+				return;
+			}
+			lrcText = krc2lrc(krcContents);
+		}else{
+			let srtBlocks = fromSrt(e.target.result, false);
 			for (const block of srtBlocks) {
 				lrcText +=
 					`[${formatTime(block.startTime)}]${block.text.replace(/\n/g, " ")}`;
 				lrcText += `\n[${formatTime(block.endTime)}]\n`;
 			}
+		}
+		$("#converted-lyric").text(lrcText);
+		$("#converted-lyric").focus();
+		if (lrcText !== "") $("#save-converted").prop("disabled", false);
+		else $("#save-converted").prop("disabled", true);
+	}
+	switch ($("#convert-type").val()) {
+		case "fromSrt": {
+			fileReader.readAsText(fileContent);
 			break;
 		}
-		case "fromKrc":
-			lrcText = krc2lrc(lyricContent);
+		case "fromKrc":{
+			fileReader.readAsArrayBuffer(fileContent);
 			break;
-		case "fromQrc":
-			lrcText = qrcToLrc(lyricContent);
-			break;
+		}
 		default:
 			toast.fire({ icon: "error", text: "Unknown parameter" });
 			break;
 	}
-	$("#converted-lyric").text(lrcText);
-	$("#converted-lyric").focus();
-	if (lrcText !== "") $("#save-converted").prop("disabled", false);
-	else $("#save-converted").prop("disabled", true);
 });
 $("#save-converted").on("click", function () {
 	const lrcContent = $("#converted-lyric").text();

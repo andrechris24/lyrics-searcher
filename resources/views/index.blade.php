@@ -2,11 +2,11 @@
 @section('title', 'Home')
 @section('content')
 	<div class="px-5 mx-5 py-5 my-5">
-		<h3 class="text-center">Lyrics Searcher by andrechris24</h3>
-		<p class="text-center">Welcome to andrechris24's Lyrics Searcher! This site provides
-			lyrics search from Kugou, NetEase, QQ Music, Musixmatch (throttled request),
-			LRCLib, Soda Music, plus optionally local server and Lyrics.ovh.
-			This form below is a quick search to 4 providers and might be inaccurate.</p>
+		<h3 class="text-center">LRCSearch</h3>
+		<p class="text-center">Welcome to LRCSearch! This site provides lyrics search from
+			Kugou, NetEase, QQ Music, Musixmatch (throttled request), LRCLib, Soda Music, plus
+			optionally local server and Lyrics.ovh.
+			This form below is a quick search to 4 providers.</p>
 		@if (Session::has('error') || $errors->any())
 			<x-error />
 		@endif

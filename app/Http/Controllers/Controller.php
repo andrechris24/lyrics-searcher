@@ -66,7 +66,7 @@ abstract class Controller
 	{
 		$res = json_decode($response, true);
 		if (json_last_error() !== JSON_ERROR_NONE) {
-			Log::error($response . ' is not a valid JSON response, reason: ' . json_last_error_msg());
+			Log::error('Invalid JSON response: ' . json_last_error_msg(), $response);
 			return false;
 		}
 		return $res;
@@ -108,6 +108,7 @@ abstract class Controller
 						$lyricLine .= "<" . $this->formatTime(($startTime + $offset) / 1000) . ">" . $subWord;
 					}
 				}
+				//Trailing space added to counter MiniLyrics bug
 				$lyricText .= $lyricLine . "<" . $this->formatTime(($startTime + $duration) / 1000) . "> \n";
 			}
 		}
