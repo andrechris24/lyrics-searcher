@@ -4,7 +4,7 @@
 	<x-no-results source="lrclib" />
 @else
 	<p class="text-center">Only first 20 results are returned due to API limitation</p>
-	<div class="list-group mx-5 px-5 mb-5 pb-5">
+	<div class="list-group px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-5 pb-5">
 		@foreach ($data as $result)
 			@php($length = gmdate('i:s', $result['duration']))
 			<a class="list-group-item list-group-item-action"
@@ -12,7 +12,7 @@
 				data-bs-title="{{ $result['trackName'] }}" data-bs-artist="{{ $result['artistName'] }}"
 				data-bs-plain="{{ $result['plainLyrics'] }}" data-bs-id="{{ $result['id'] }}"
 				data-bs-synced="{{ $result['syncedLyrics'] }}" data-bs-wordbyword="{{ $result['lyricsfile'] }}"
-				@else onclick="toast.fire({icon: 'info',text: 'This song is Instrumental'});return;" @endif
+				@else onclick="toast.fire({icon: 'info',text: 'This song is Instrumental'});return false;" @endif
 				href="#modalLRCLib">
 				<div class="d-flex w-100 justify-content-between">
 					<h5 class="mb-1">{{ $result['trackName'] }}</h5>

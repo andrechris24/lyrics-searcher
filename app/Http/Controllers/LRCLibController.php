@@ -60,15 +60,15 @@ class LRCLibController extends Controller
 		try {
 			$yaml = Yaml::parse($req['content']);
 			$lyricsfile = '[ti: ' . $yaml['metadata']['title'] .
-				"]\n[ar: " . $yaml['metadata']['artist'] ."]\n";
-			if(array_key_exists('album', $yaml['metadata']))
-				$lyricsfile.="[al: " . $yaml['metadata']['album']."]\n";
-			if(array_key_exists('duration_ms',$yaml['metadata']))
-				$lyricsfile.="[length: " . gmdate('i:s', floor($yaml['metadata']['duration_ms'] / 1000))."]\n";
-			if(array_key_exists('offset_ms',$yaml['metadata']))
-				$lyricsfile.="[offset: " . $yaml['metadata']['duration_ms']."]\n";
-			if(!array_key_exists('instrumental', $yaml['metadata']) || $yaml['metadata']['instrumental']===false){
-				$lyricsfile.="[by: LRCLib]\n[ve: " . $yaml['version'] . "]\n";
+				"]\n[ar: " . $yaml['metadata']['artist'] . "]\n";
+			if (array_key_exists('album', $yaml['metadata']))
+				$lyricsfile .= "[al: " . $yaml['metadata']['album'] . "]\n";
+			if (array_key_exists('duration_ms', $yaml['metadata']))
+				$lyricsfile .= "[length: " . gmdate('i:s', floor($yaml['metadata']['duration_ms'] / 1000)) . "]\n";
+			if (array_key_exists('offset_ms', $yaml['metadata']))
+				$lyricsfile .= "[offset: " . $yaml['metadata']['duration_ms'] . "]\n";
+			if (!array_key_exists('instrumental', $yaml['metadata']) || $yaml['metadata']['instrumental'] === false) {
+				$lyricsfile .= "[by: LRCLib]\n[ve: " . $yaml['version'] . "]\n";
 				foreach ($yaml['lines'] as $idx => $line) {
 					if ($idx === 0) {
 						if ($line['start_ms'] > 5000)
@@ -82,8 +82,8 @@ class LRCLibController extends Controller
 						$lyricsfile .= '<' . $this->formatTime(floor($line['end_ms'] / 1000)) . "> \n";
 					else $lyricsfile .= "\n";
 				}
-			}else return response()->json(['instrumental'=>true,'contents'=>$yaml]);
-			return response()->json(['instrumental'=>false,'lrc' => $lyricsfile]);
+			} else return response()->json(['instrumental' => true, 'contents' => $yaml]);
+			return response()->json(['instrumental' => false, 'lrc' => $lyricsfile]);
 		} catch (ParseException $e) {
 			Log::error($e);
 			abort(500, $e->getMessage());

@@ -35,7 +35,7 @@
 @if ($data['total'] > 0)
 	<p class="text-center">Page {{ request('page') ?? 1 }} out of {{ $data['total'] }}
 		result(s), showing 20 results per page</p>
-	<div class="list-group mx-5 px-5 mb-5 pb-5">
+	<div class="list-group px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-5 pb-5">
 		@foreach ($data['info'] as $result)
 			<a class="list-group-item list-group-item-action" data-bs-toggle="modal"
 				href="#modalLyrics" data-bs-hash="{{ $result['hash'] }}"

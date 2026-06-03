@@ -1,7 +1,7 @@
 @extends('layout')
 @section('title', 'NetEase Music Search Results for ' . request('query'))
 @section('content')
-	<div class="px-5 mx-5 py-5 my-5 text-center">
+	<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 py-5 my-5 text-center">
 		<h3>NetEase Music Search Results</h3>
 		<x-basic provider="netease" />
 	</div>

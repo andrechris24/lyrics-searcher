@@ -10,28 +10,28 @@
 			</div>
 			<div class="modal-body">
 				<div class="row mb-3">
-					<div class="col-12 col-md-4">
+					<div class="col-12 col-sm-4">
 						<b>Artist</b>
 					</div>
-					<div class="col-12 col-md-8">
+					<div class="col-12 col-sm-8">
 						<span id="song-artist">...</span>
 					</div>
-					<div class="col-12 col-md-4">
+					<div class="col-12 col-sm-4">
 						<b>Title</b>
 					</div>
-					<div class="col-12 col-md-8">
+					<div class="col-12 col-sm-8">
 						<span id="song-title">...</span>
 					</div>
-					<div class="col-12 col-md-4">
+					<div class="col-12 col-sm-4">
 						<b>Album</b>
 					</div>
-					<div class="col-12 col-md-8">
+					<div class="col-12 col-sm-8">
 						<span id="song-album">-</span>
 					</div>
-					<div class="col-12 col-md-4">
+					<div class="col-12 col-sm-4">
 						<b>Duration</b>
 					</div>
-					<div class="col-12 col-md-8">
+					<div class="col-12 col-sm-8">
 						<span id="song-duration">--:--</span>
 					</div>
 				</div>
@@ -54,7 +54,7 @@
 					</button>
 					<ul class="dropdown-menu">
 						<li>
-							<a class="dropdown-item" href="#" id="dl-synced">Synced/Plain</a>
+							<a class="dropdown-item" href="#" id="dl-synced">Standard</a>
 						</li>
 						<li>
 							<a class="dropdown-item" href="#" id="dl-klyric">Word by word</a>
@@ -70,7 +70,7 @@
 	<p class="text-center">Showing {{ (request('offset') ?? 0) + 1 }} to
 		{{ (request('offset') ?? 0) + 20 > $data['songCount'] ? $data['songCount'] : request('offset') + 20 }}
 		of {{ $data['songCount'] }} result(s)</p>
-	<div class="list-group mx-5 px-5 mb-5 pb-5">
+	<div class="list-group px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-5 pb-5">
 		@foreach ($data['songs'] as $result)
 			@php
 				$artists = [];

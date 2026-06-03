@@ -10,28 +10,28 @@
 			</div>
 			<div class="modal-body">
 				<div class="row mb-3">
-					<div class="col-12 col-md-4">
+					<div class="col-12 col-sm-4">
 						<b>Artist</b>
 					</div>
-					<div class="col-12 col-md-8">
+					<div class="col-12 col-sm-8">
 						<span id="lrclib-song-artist">...</span>
 					</div>
-					<div class="col-12 col-md-4">
+					<div class="col-12 col-sm-4">
 						<b>Title</b>
 					</div>
-					<div class="col-12 col-md-8">
+					<div class="col-12 col-sm-8">
 						<span id="lrclib-song-title">...</span>
 					</div>
-					<div class="col-12 col-md-4">
+					<div class="col-12 col-sm-4">
 						<b>Album</b>
 					</div>
-					<div class="col-12 col-md-8">
+					<div class="col-12 col-sm-8">
 						<span id="lrclib-song-album">-</span>
 					</div>
-					<div class="col-12 col-md-4">
+					<div class="col-12 col-sm-4">
 						<b>Duration</b>
 					</div>
-					<div class="col-12 col-md-8">
+					<div class="col-12 col-sm-8">
 						<span id="lrclib-song-duration">--:--</span>
 					</div>
 				</div>

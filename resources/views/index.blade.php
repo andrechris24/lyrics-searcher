@@ -1,7 +1,7 @@
 @extends('layout')
 @section('title', 'Home')
 @section('content')
-	<div class="px-5 mx-5 py-5 my-5">
+	<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 py-5 my-5">
 		<h3 class="text-center">LRCSearch</h3>
 		<p class="text-center">Welcome to LRCSearch! This site provides lyrics search from
 			Kugou, NetEase, QQ Music, Musixmatch (throttled request), LRCLib, Soda Music, plus
@@ -55,6 +55,7 @@
 					<input type="text" class="form-control" id="album-name" placeholder="Album"
 						name="album">
 				</div>
+				<div class="form-text">Not working properly for Musixmatch, useless for Lyrics.ovh.</div>
 			</div>
 			<button type="submit" class="btn btn-primary">Search</button>
 		</form>
@@ -73,7 +74,7 @@
 				</div>
 				<div class="modal-body">
 					<div class="row mb-3">
-						<div class="col-12 col-md-4">
+						<div class="col-12 col-md-4 mb-md-0 mb-2">
 							<img src="" class="img-fluid" id="song-art">
 						</div>
 						<div class="col-12 col-md-8">

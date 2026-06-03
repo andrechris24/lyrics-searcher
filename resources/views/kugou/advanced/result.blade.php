@@ -1,12 +1,12 @@
 @extends('layout')
 @section('title', 'Kugou Music Advanced Search Results for ' . request('query'))
 @section('content')
-	<div class="px-5 mx-5 py-5 my-5 text-center">
+	<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 py-5 my-5 text-center">
 		<h3>Kugou Music Advanced Search Results</h3>
 		<x-advanced-alt provider="kugou" />
 	</div>
 	@if (count($data) > 0)
-		<div class="list-group mx-5 px-5 mb-5 pb-5">
+		<div class="list-group px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-5 pb-5">
 			@foreach ($data as $result)
 				<a class="list-group-item list-group-item-action" href="javascript:void(0)"
 					onclick="fileName='{{ $result['singer'] . ' - ' . $result['song'] }}';dlLRC({{ $result['id'] }},'{{ $result['accesskey'] }}');">

@@ -1,7 +1,7 @@
 @extends('layout')
 @section('title', 'Advanced Local Search')
 @section('content')
-	<div class="px-5 mx-5 py-5 my-5 text-center">
+	<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 py-5 my-5 text-center">
 		<h3>Advanced Local Search</h3>
 		@if (Session::has('error'))
 			<x-error />

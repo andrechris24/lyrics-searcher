@@ -135,22 +135,21 @@ class LocalController extends Controller
 				$queries['content'] = $lrcLines;
 				Lyric::create($queries);
 			} catch (QueryException $e) {
-				if ($file->getClientOriginalName()) 
+				if ($file->getClientOriginalName())
 					$files[] = $file->getClientOriginalName();
 				Log::error($e);
 				$failed++;
 			} catch (\Exception $e) {
-				if ($file->getClientOriginalName()) 
+				if ($file->getClientOriginalName())
 					$files[] = $file->getClientOriginalName();
 				Log::error($e);
 				$failed++;
 			}
 		}
-		if ($failed >= $total){
+		if ($failed >= $total) {
 			Log::warning('Failed to upload lyrics: ', $files);
 			return response()->json(['message' => 'All ' . $total . ' files failed to upload'], 500);
-		}
-		else if ($failed > 0) {
+		} else if ($failed > 0) {
 			Log::warning('Failed to upload lyrics: ', $files);
 			return response()->json([
 				'status' => 'warning',

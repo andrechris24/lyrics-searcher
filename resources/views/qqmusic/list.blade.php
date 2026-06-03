@@ -4,7 +4,7 @@
 @else
 	<p class="text-center">Page {{ request('page') ?? 1 }} of {{ $meta['sum'] }} result(s),
 		showing {{ $meta['perpage'] }} per page.</p>
-	<div class="list-group mx-5 px-5 mb-5 pb-5">
+	<div class="list-group px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-5 pb-5">
 		@foreach ($body['song']['list'] as $result)
 			@php
 				$artists = [];

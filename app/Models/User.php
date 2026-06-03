@@ -50,6 +50,6 @@ class User extends Authenticatable
 
 	public function lyric()
 	{
-		$this->hasOne(Lyric::class);
+		return $this->hasOne(Lyric::class);
 	}
 }

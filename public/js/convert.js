@@ -1,19 +1,20 @@
 /* global blobDL, toast, pako */
 function xorKRC(rawData) {
-	if (null == rawData) 
-		return;
+	if (null == rawData) return;
 
 	let dataView = new Uint8Array(rawData);
-	let magicBytes = [0x6b, 0x72, 0x63, 0x31];// 'k' , 'r' , 'c' ,'1'
-	if (dataView.length < magicBytes.length) 
-		return;
+	let magicBytes = [0x6b, 0x72, 0x63, 0x31]; // 'k' , 'r' , 'c' ,'1'
+	if (dataView.length < magicBytes.length) return;
 
 	for (let i = 0; i < magicBytes.length; ++i) {
 		if (dataView[i] != magicBytes[i]) return;
 	}
 
 	let decryptedData = new Uint8Array(dataView.length - magicBytes.length);
-	let encKey = [0x40, 0x47, 0x61, 0x77, 0x5e, 0x32, 0x74, 0x47, 0x51, 0x36, 0x31, 0x2d, 0xce, 0xd2, 0x6e, 0x69];
+	let encKey = [
+		0x40, 0x47, 0x61, 0x77, 0x5e, 0x32, 0x74, 0x47, 0x51, 0x36, 0x31, 0x2d,
+		0xce, 0xd2, 0x6e, 0x69
+	];
 	let hdrOffset = magicBytes.length;
 	for (let i = hdrOffset; i < dataView.length; ++i) {
 		let x = dataView[i];
@@ -133,31 +134,30 @@ function timeMilliseconds(val) {
 }
 $("#lyric-converter-form").on("submit", function (e) {
 	e.preventDefault();
-	const fileContent=$("#source-file-to-convert")[0].files[0];
-	const fileReader=new FileReader();
-	fileReader.onerror=function(e){
+	const fileContent = $("#source-file-to-convert")[0].files[0];
+	const fileReader = new FileReader();
+	fileReader.onerror = function (e) {
 		console.warn(e);
-		toast.fire({icon: 'error',text: 'Failed to read file'});
-	}
-	fileReader.onload=function(e){
-		let lrcText='';
-		if(e.target.result instanceof ArrayBuffer){
-			let krcContents=xorKRC(e.target.result);
-			if(!krcContents){
-				toast.fire({icon: 'error', text: 'Failed to decode KRC file'});
+		toast.fire({ icon: "error", text: "Failed to read file" });
+	};
+	fileReader.onload = function (e) {
+		let lrcText = "";
+		if (e.target.result instanceof ArrayBuffer) {
+			let krcContents = xorKRC(e.target.result);
+			if (!krcContents) {
+				toast.fire({ icon: "error", text: "Failed to decode KRC file" });
 				return;
 			}
-			krcContents=pako.inflate(krcContents.buffer,{to: 'string'});
-			if(!krcContents){
-				toast.fire({icon: 'error', text: 'Failed to unpack KRC file'});
+			krcContents = pako.inflate(krcContents.buffer, { to: "string" });
+			if (!krcContents) {
+				toast.fire({ icon: "error", text: "Failed to unpack KRC file" });
 				return;
 			}
 			lrcText = krc2lrc(krcContents);
-		}else{
+		} else {
 			let srtBlocks = fromSrt(e.target.result, false);
 			for (const block of srtBlocks) {
-				lrcText +=
-					`[${formatTime(block.startTime)}]${block.text.replace(/\n/g, " ")}`;
+				lrcText += `[${formatTime(block.startTime)}]${block.text.replace(/\n/g, " ")}`;
 				lrcText += `\n[${formatTime(block.endTime)}]\n`;
 			}
 		}
@@ -165,13 +165,13 @@ $("#lyric-converter-form").on("submit", function (e) {
 		$("#converted-lyric").focus();
 		if (lrcText !== "") $("#save-converted").prop("disabled", false);
 		else $("#save-converted").prop("disabled", true);
-	}
+	};
 	switch ($("#convert-type").val()) {
 		case "fromSrt": {
 			fileReader.readAsText(fileContent);
 			break;
 		}
-		case "fromKrc":{
+		case "fromKrc": {
 			fileReader.readAsArrayBuffer(fileContent);
 			break;
 		}

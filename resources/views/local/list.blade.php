@@ -8,7 +8,7 @@
 	@else
 		<p class="text-center">Showing latest 10 uploaded lyrics. Click on a list to download.</p>
 	@endif
-	<div class="list-group mx-5 mb-5 pb-5">
+	<div class="list-group px-lg-5 mx-lg-5 px-md-3 mx-md-3 pb-5">
 		@foreach ($data as $result)
 			@php
 				$length = gmdate('i:s', $result['duration']);

@@ -5,14 +5,14 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="csrf-token" content="{{ csrf_token() }}">
-		<title>@yield('title') | LRCSearch</title>
+		<title>@yield('title') | {{env('APP_NAME')}}</title>
 
 		<!-- Bootstrap CSS -->
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
 			rel="stylesheet"
 			integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
 			crossorigin="anonymous">
-		<link rel="stylesheet" type="text/css" href="{{ asset('css/theme.css') }}">
+		{{-- <link rel="stylesheet" type="text/css" href="{{ asset('css/theme.css') }}"> --}}
 
 		<!-- FontAwesome -->
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" integrity="sha256-MVopmdyC2tYTiJ8wlktf0uh0v4NgT+vNdyVFepi7Q0c=" crossorigin="anonymous">
@@ -22,6 +22,13 @@
 			integrity="sha384-6SydH6I4YnZdQJwxGJm7CTO/99Gi64VIvO2OVodF01nVIomEkil0N5WscsmC9+Dz"
 			crossorigin="anonymous">
 		<script type="text/javascript" src="{{ asset('js/theme.js') }}"></script>
+
+		<style>
+			.bi {
+				vertical-align: -0.125em;
+				fill: currentColor;
+			}
+		</style>
 	</head>
 
 	<body>
@@ -40,45 +47,6 @@
 					d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z" />
 			</symbol>
 		</svg>
-		<div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
-			<button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center"
-				id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown"
-				aria-label="Toggle theme (auto)">
-				<svg class="bi my-1 theme-icon-active" width="1em" height="1em">
-					<use href="#circle-half"></use>
-				</svg>
-				<span class="visually-hidden" id="bd-theme-text">Theme Toggle</span>
-			</button>
-			<ul class="dropdown-menu mt-lg-2" aria-labelledby="bd-theme-text">
-				<li>
-					<a href="#" class="dropdown-item" data-bs-theme-value="light"
-						aria-pressed="false">
-						<svg class="bi me-2" width="1em" height="1em">
-							<use href="#sun-fill"></use>
-						</svg>
-						Light
-					</a>
-				</li>
-				<li>
-					<a href="#" class="dropdown-item" data-bs-theme-value="dark"
-						aria-pressed="false">
-						<svg class="bi me-2" width="1em" height="1em">
-							<use href="#moon-stars-fill"></use>
-						</svg>
-						Dark
-					</a>
-				</li>
-				<li>
-					<a href="#" class="dropdown-item" data-bs-theme-value="auto"
-						aria-pressed="true">
-						<svg class="bi me-2" width="1em" height="1em">
-							<use href="#circle-half"></use>
-						</svg>
-						Auto
-					</a>
-				</li>
-			</ul>
-		</div>
 		<nav class="navbar navbar-expand-lg bg-body-tertiary">
 			<div class="container-fluid">
 				<a class="navbar-brand" href="{{ route('home') }}">
@@ -183,6 +151,45 @@
 						</li>
 					</ul>
 					<div class="d-flex">
+						<div class="dropdown">
+							<button class="btn me-2 dropdown-toggle d-flex align-items-center"
+								id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown"
+								aria-label="Toggle theme (auto)">
+								<svg class="bi my-1 theme-icon-active" width="1em" height="1em">
+									<use href="#circle-half"></use>
+								</svg>
+								<span class="visually-hidden" id="bd-theme-text">Theme Toggle</span>
+							</button>
+							<ul class="dropdown-menu mt-lg-2" aria-labelledby="bd-theme-text">
+								<li>
+									<a href="#" class="dropdown-item" data-bs-theme-value="light"
+										aria-pressed="false">
+										<svg class="bi me-2" width="1em" height="1em">
+											<use href="#sun-fill"></use>
+										</svg>
+										Light
+									</a>
+								</li>
+								<li>
+									<a href="#" class="dropdown-item" data-bs-theme-value="dark"
+										aria-pressed="false">
+										<svg class="bi me-2" width="1em" height="1em">
+											<use href="#moon-stars-fill"></use>
+										</svg>
+										Dark
+									</a>
+								</li>
+								<li>
+									<a href="#" class="dropdown-item" data-bs-theme-value="auto"
+										aria-pressed="true">
+										<svg class="bi me-2" width="1em" height="1em">
+											<use href="#circle-half"></use>
+										</svg>
+										Auto
+									</a>
+								</li>
+							</ul>
+						</div>
 						<button class="btn btn-outline-success" data-bs-toggle="modal"
 							data-bs-target="#modalConvert">Convert</button>
 						@auth(backpack_guard_name())
