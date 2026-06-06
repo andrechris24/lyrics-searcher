@@ -1,11 +1,11 @@
 @extends('layout')
 @section('title', 'Musixmatch Lyrics Search Results for ' . request('query'))
+@section('subpage-title','Musixmatch Lyrics Search Results')
 @section('content')
-	<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 py-5 my-5 text-center">
-		<h3>Musixmatch Lyrics Search Results</h3>
-		<x-limitation />
-		<x-basic provider="musixmatch" />
+	<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 pb-5 mb-5 text-center">
+		<x-musixmatch.basic />
 	</div>
+	<x-limitation />
 	@include('musixmatch.list')
 @endsection
 @section('js')

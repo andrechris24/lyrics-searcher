@@ -23,12 +23,35 @@ class MusixmatchController extends Controller
 		if (empty(env('MUSIXMATCH_TOKEN')))
 			return to_route('index')->withError('Musixmatch token was not found');
 		try {
-			$req->validate(['query' => 'required', 'page' => 'nullable|integer|min:1']);
+			$req->validate([
+				'query' => 'required', 
+				'type' => 'required|in:all,track,artist,lyrics,track_artist,writer', 
+				'page' => 'nullable|integer|min:1'
+			]);
 			Sleep::for(5)->seconds();
 			$query = self::$query;
 			$query['usertoken'] = env('MUSIXMATCH_TOKEN');
-			$query['q'] = $req['query'];
 			$query['page'] = $req['page'] ?? 1;
+			switch($req['type']){
+				case 'track':
+					$query['q_track']=$req['query'];
+					break;
+				case 'artist':
+					$query['q_artist']=$req['query'];
+					break;
+				case 'lyrics':
+					$query['q_lyrics']=$req['query'];
+					break;
+				case 'track_artist':
+					$query['q_track_artist']=$req['query'];
+					break;
+				case 'writer':
+					$query['q_writer']=$req['query'];
+					break;
+				default:
+					$query['q']=$req['query'];
+					break;
+			}
 			$response = Http::connectTimeout(30)->withHeaders(self::MX_HEADER)
 				->get(self::$url . 'track.search', $query);
 			$r = self::decodeJson($response->body());
@@ -57,9 +80,9 @@ class MusixmatchController extends Controller
 			return to_route('index')->withError('Musixmatch token was not found');
 		try {
 			$req->validate([
-				'title' => 'nullable|required_without_all:artist,album|string',
-				'artist' => 'nullable|required_without_all:title,album|string',
-				'album' => 'nullable|required_without_all:title,artist|string',
+				'title' => 'nullable|required_without_all:artist,lyrics|string',
+				'artist' => 'nullable|required_without_all:title,lyrics|string',
+				'lyrics' => 'nullable|required_without_all:title,artist|string',
 				'page' => 'nullable|integer|min:1'
 			]);
 			Sleep::for(5)->seconds();
@@ -67,7 +90,7 @@ class MusixmatchController extends Controller
 			$query['usertoken'] = env('MUSIXMATCH_TOKEN');
 			$query['q_track'] = $req['title'];
 			$query['q_artist'] = $req['artist'];
-			$query['q_album'] = $req['album'];
+			$query['q_lyrics'] = $req['lyrics'];
 			$query['page'] = $req['page'] ?? 1;
 			$response = Http::connectTimeout(30)->withHeaders(self::MX_HEADER)
 				->get(self::$url . 'track.search', $query);

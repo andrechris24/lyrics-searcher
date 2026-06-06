@@ -1,8 +1,8 @@
 @extends('layout')
 @section('title', 'Home')
+@section('subpage-title','LRCSearch')
 @section('content')
-	<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 py-5 my-5">
-		<h3 class="text-center">LRCSearch</h3>
+	<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 pb-5 mb-5">
 		<p class="text-center">Welcome to LRCSearch! This site provides lyrics search from
 			Kugou, NetEase, QQ Music, Musixmatch (throttled request), LRCLib, Soda Music, plus
 			optionally local server and Lyrics.ovh.
@@ -13,49 +13,57 @@
 		<x-no-script />
 		<form class="row g-3 mb-3" action="{{ route('result') }}" id="searchSongLyric">
 			<div class="col-12 col-md-8">
-				<label for="track-name" class="form-label">
-					Song Title <span class="text-danger"><b>*</b></span>
-				</label>
 				<div class="input-group input-group-lg">
 					<span class="input-group-text"><i class="fa-solid fa-music"></i></span>
-					<input type="text" class="form-control" id="track-name" placeholder="Song title"
+					<div class="form-floating">
+						<input type="text" class="form-control" id="track-name" placeholder="Song title"
 						name="title" required autofocus>
+						<label for="track-name" class="form-label">
+							Song Title <span class="text-danger"><b>*</b></span>
+						</label>
+					</div>
 				</div>
 			</div>
 			<div class="col-12 col-md-4">
-				<label for="lyric-source" class="form-label">
-					Source <span class="text-danger"><b>*</b></span>
-				</label>
-				<select class="form-select form-select-lg" name="source" id="lyric-source" required>
-					<option value="" selected>Choose</option>
-					<option value="musixmatch" @empty(env('MUSIXMATCH_TOKEN')) disabled @endempty>
-						Musixmatch
-					</option>
-					<option value="lrclib">LRCLib</option>
-					<option value="plains">Lyrics.ovh</option>
-					<option value="local">Local</option>
-				</select>
-			</div>
-			<div class="col-12 col-sm-6">
-				<label for="artist-name" class="form-label">
-					Artist <span class="text-danger"><b>*</b></span>
-				</label>
-				<div class="input-group input-group-lg">
-					<span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-					<input type="text" class="form-control" id="artist-name" placeholder="Artist"
-						name="artist" required>
+				<div class="form-floating">
+					<select class="form-select form-select-lg" name="source" id="lyric-source" required>
+						<option value="" selected>Choose</option>
+						<option value="musixmatch" @empty(env('MUSIXMATCH_TOKEN')) disabled @endempty>
+							Musixmatch
+						</option>
+						<option value="lrclib">LRCLib</option>
+						<option value="plains">Lyrics.ovh</option>
+						<option value="local">Local</option>
+					</select>
+					<label for="lyric-source" class="form-label">
+						Source <span class="text-danger"><b>*</b></span>
+					</label>
 				</div>
 			</div>
 			<div class="col-12 col-sm-6">
-				<label for="album-name" class="form-label">Album</label>
+				<div class="input-group input-group-lg">
+					<span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+					<div class="form-floating">
+						<input type="text" class="form-control" id="artist-name" placeholder="Artist"
+							name="artist" required>
+						<label for="artist-name" class="form-label">
+							Artist <span class="text-danger"><b>*</b></span>
+						</label>
+					</div>
+				</div>
+			</div>
+			<div class="col-12 col-sm-6">
 				<div class="input-group input-group-lg">
 					<span class="input-group-text">
 						<i class="fa-solid fa-compact-disc"></i>
 					</span>
-					<input type="text" class="form-control" id="album-name" placeholder="Album"
-						name="album">
+					<div class="form-floating">
+						<input type="text" class="form-control" id="album-name" placeholder="Album"
+							name="album">
+						<label for="album-name" class="form-label">Album</label>
+					</div>
 				</div>
-				<div class="form-text">Not working properly for Musixmatch, useless for Lyrics.ovh.</div>
+				<div class="form-text">Unused for Lyrics.ovh and Musixmatch.</div>
 			</div>
 			<button type="submit" class="btn btn-primary">Search</button>
 		</form>

@@ -138,14 +138,16 @@
 			];
 			if (request('query')) {
 				$queries['prev']['query'] = request('query');
+				$queries['prev']['type'] = request('type');
 				$queries['next']['query'] = request('query');
+				$queries['next']['type'] = request('type');
 			} else {
 				$queries['prev']['title'] = request('title') ?? '';
 				$queries['prev']['artist'] = request('artist') ?? '';
-				$queries['prev']['album'] = request('album') ?? '';
+				$queries['prev']['lyrics'] = request('lyrics') ?? '';
 				$queries['next']['title'] = request('title') ?? '';
 				$queries['next']['artist'] = request('artist') ?? '';
-				$queries['next']['album'] = request('album') ?? '';
+				$queries['next']['lyrics'] = request('lyrics') ?? '';
 			}
 		@endphp
 		<div class="mx-5 px-5 mb-5 pb-5">

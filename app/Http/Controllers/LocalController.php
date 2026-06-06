@@ -34,7 +34,7 @@ class LocalController extends Controller
 				'artist' => 'nullable|required_without_all:title,album|string',
 				'album' => 'nullable|required_without_all:title,artist|string'
 			]);
-			$model = new Lyric();
+			$model = Lyric::query();
 			if (!empty($request['title']))
 				$model->whereLike('title', '%' . $request['title'] . '%');
 			if (!empty($request['artist']))
@@ -59,7 +59,7 @@ class LocalController extends Controller
 	public function latest()
 	{
 		try {
-			$data = Lyric::latest()->limit(10)->get();
+			$data = Lyric::latest()->paginate(20);
 			return view('local.latest', compact('data'));
 		} catch (QueryException $e) {
 			Log::error($e);

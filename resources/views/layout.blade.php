@@ -17,12 +17,8 @@
 		<!-- FontAwesome -->
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" integrity="sha256-MVopmdyC2tYTiJ8wlktf0uh0v4NgT+vNdyVFepi7Q0c=" crossorigin="anonymous">
 
-		<link href="https://cdn.datatables.net/v/bs5/dt-2.3.7/r-3.0.8/datatables.min.css"
-			rel="stylesheet"
-			integrity="sha384-6SydH6I4YnZdQJwxGJm7CTO/99Gi64VIvO2OVodF01nVIomEkil0N5WscsmC9+Dz"
-			crossorigin="anonymous">
+		<link href="https://cdn.datatables.net/v/bs5/dt-2.3.8/r-3.0.8/datatables.min.css" rel="stylesheet" integrity="sha384-tNYQLr593NFEx21InOh9Hbxz0c66iRCODxYVibI1MHkEHCTPXTwB/7k4ZqWvtRt9" crossorigin="anonymous">
 		<script type="text/javascript" src="{{ asset('js/theme.js') }}"></script>
-
 		<style>
 			.bi {
 				vertical-align: -0.125em;
@@ -254,6 +250,12 @@
 					</div>
 				</div>
 			</div>
+			<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-3">
+				<h3 class="mt-5 pt-5 text-center">@yield('subpage-title')</h3>
+				@if (Session::has('error') || $errors->any())
+				<x-error />
+				@endif
+			</div>
 			@yield('content')
 		</div>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
@@ -267,9 +269,7 @@
 			integrity="sha256-jLFv9iIrIbqKULHpqp/jmePDqi989pKXOcOht3zgRcw="
 			crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-		<script src="https://cdn.datatables.net/v/bs5/dt-2.3.7/r-3.0.8/datatables.min.js"
-			integrity="sha384-5L6UP+VtXWFTfdyUlr1LWG1lDU276xtuJbHZbCldV4v0FxVOCmuIN4SNnMsTMrGF"
-			crossorigin="anonymous"></script>
+		<script src="https://cdn.datatables.net/v/bs5/dt-2.3.8/r-3.0.8/datatables.min.js" integrity="sha384-4GcaTyTewMDCAbLVgOubCZiRYKyuZ+uHk2sLNSwuCz0Bi8kf2R6cg6P0iNVIH5XE" crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js" integrity="sha256-7eJpOkpqUSa501ZpBis1jsq2rnubhqHPMC/rRahRSQc=" crossorigin="anonymous"></script>
 		<script type="text/javascript" src="{{ asset('js/convert.js') }}"></script>
 		<script type="text/javascript" src="{{ asset('js/setup.js') }}"></script>

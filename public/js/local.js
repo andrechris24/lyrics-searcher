@@ -20,8 +20,8 @@ $(".list-group-item-action").on("click", function (e) {
 		if (content.match(/<(\d+):(\d+).(\d+)>/g)) {
 			Swal.fire({
 				icon: "question",
-				title:
-					"This lyric contains syllable timestamps and only a few players supports this type. Do you want to keep them?",
+				title: "Download in Enhanced LRC format?",
+				text: "This lyric contains syllable timestamps and only a few players supports this type.",
 				theme: "bootstrap-5",
 				showDenyButton: true,
 				showCancelButton: true,

@@ -2,13 +2,9 @@
 @empty($data)
 	<x-no-results source="local" />
 @else
-	@if (!request()->routeIs('local.latest'))
-		<p class="text-center">Page {{ $data->currentPage() }} out of {{ $data->total() }}
-			result(s), showing {{ $data->perPage() }} per page. Click on a list to download.</p>
-	@else
-		<p class="text-center">Showing latest 10 uploaded lyrics. Click on a list to download.</p>
-	@endif
-	<div class="list-group px-lg-5 mx-lg-5 px-md-3 mx-md-3 pb-5">
+	<p class="text-center">Page {{ $data->currentPage() }} out of {{ $data->total() }}
+		result(s), showing {{ $data->perPage() }} per page. Click on a list to download.</p>
+	<div class="list-group px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-3">
 		@foreach ($data as $result)
 			@php
 				$length = gmdate('i:s', $result['duration']);
@@ -41,7 +37,5 @@
 			</a>
 		@endforeach
 	</div>
-	@if (!request()->routeIs('local.latest'))
-		{{ $data->links() }}
-	@endif
+	{{ $data->links() }}
 @endif

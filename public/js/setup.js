@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
-/* global Swal */
-$.ajaxSetup({ timeout: 33000 });
+/* global Swal, bootstrap */
+$.ajaxSetup({ timeout: 60000 });
 $(document).on("keydown", function (e) {
 	// Ignore if user is already typing in an input, textarea, or contenteditable
 	if ($(e.target).is('input, textarea, [contenteditable="true"]')) 
@@ -60,3 +60,5 @@ function blobDL(data, filename) {
 	a.remove();
 	window.URL.revokeObjectURL(url);
 }
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
