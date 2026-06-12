@@ -2,56 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\QrcDecoder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\{Http, Log};
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class QQMusicController extends Controller
 {
-	public const array QQ_HEADER = [
-		"User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0",
-		"Accept" => "application/json, text/plain, */*",
-		"Accept-Language" => "en-US;q=0.3,en;q=0.2",
-		"Sec-Fetch-Dest" => "empty",
-		"Sec-Fetch-Mode" => "cors",
-		"Sec-Fetch-Site" => "same-origin"
-	];
-	public static string $url = 'https://u.y.qq.com/cgi-bin/musicu.fcg';
+	public const array QQ_HEADER = ["Referer" => "https://y.qq.com/"];
+	public static string $url = 'https://c.y.qq.com/';
 	public function search(Request $req)
 	{
 		try {
-			$req->validate(['query' => 'required', 'page' => 'nullable|integer|min:1']);
+			$req->validate([
+				'artist' => 'nullable',
+				'title' => 'required',
+				'offset' => 'nullable|integer|min:0|multiple_of:20'
+			]);
 			$response = Http::connectTimeout(30)->withHeaders(self::QQ_HEADER)
-				->post(self::$url, [
-					'comm' => ['ct' => 19, 'cv' => 1859, 'uin' => 0],
-					'req' => [
-						'method' => 'DoSearchForQQMusicDesktop',
-						'module' => 'music.search.SearchCgiService',
-						'param' => [
-							'grp' => 1,
-							'num_per_page' => 20,
-							'page_num' => (int)$req['page'] ?? 1,
-							'query' => $req['query'],
-							'search_type' => 0
-						]
-					]
+				->get(self::$url . 'lyric/fcgi-bin/fcg_search_pc_lrc.fcg', [
+					'SONGNAME' => $req['title'],
+					'SINGERNAME' => $req['artist'],
+					'TYPE' => 2,
+					'RANGE_MIN' => ($req['offset'] ?? 0) + 1,
+					'RANGE_MAX' => 20 + ($req['offset'] ?? 0)
 				]);
-			$r = self::decodeJson($response->body());
-			if ($r === false) {
+			libxml_use_internal_errors(true);
+			$xmlResponse = simplexml_load_string(
+				$response->body(),
+				'SimpleXMLElement',
+				LIBXML_NOCDATA
+			);
+			if ($xmlResponse === false) {
+				$xmlErrors = libxml_get_errors();
+				Log::error('Invalid XML response: ' . $response->body(), $xmlErrors);
 				return to_route('qqmusic.index')->withInput()
-					->withError('Error parsing response: ' . json_last_error_msg());
-			} else if (!in_array($r['code'], [0, 200])) {
-				return to_route('qqmusic.index')->withInput()
-					->withError('QQ Music error ' . $r['code']);
-			} else if (!in_array($r['req']['code'], [0, 200])) {
-				return to_route('qqmusic.index')->withInput()
-					->withError('QQ Music request error ' . $r['req']['code']);
-			} else if (!in_array($r['req']['data']['code'], [0, 200])) {
-				return to_route('qqmusic.index')->withInput()
-					->withError('QQ Music data error ' . $r['req']['data']['code']);
+					->withError('Error parsing response: ' . libxml_get_last_error());
 			}
-			return view('qqmusic.result', $r['req']['data']);
+			$xml = json_decode(json_encode($xmlResponse), true);
+			// dd($xml);
+			$data = $xml['cmd'];
+			if (!in_array($data['result'], [0, 200])) {
+				Log::error($data);
+				return to_route('qqmusic.index')->withInput()
+					->withError('QQ Music error ' . $data['result'] . ', ' . $data['reason']);
+			}
+			return view('qqmusic.result', $data);
 		} catch (ConnectionException $th) {
 			Log::error($th);
 			return to_route('qqmusic.index')->withInput()
@@ -60,29 +58,55 @@ class QQMusicController extends Controller
 			return to_route('qqmusic.index')->withInput()->withErrors($e->errors());
 		}
 	}
-	public function get(string $id)
+	public function get(int $id)
 	{
 		try {
-			$response = Http::connectTimeout(30)
-				->withHeaders(['Referer' => 'https://y.qq.com/portal/player.html'])
-				->get('https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg', [
-					'g_tk' => 5381,
-					'format' => 'json',
-					'inCharset' => 'utf-8',
-					'outCharset' => 'utf-8',
-					'songmid' => $id
+			$response = Http::connectTimeout(30)->withHeaders(self::QQ_HEADER)
+				->get(self::$url . 'qqmusic/fcgi-bin/lyric_download.fcg', [
+					'version' => 15,
+					'miniversion' => 82,
+					'lrctype' => 4,
+					'musicid' => $id
 				]);
-			$r = self::decodeJson($response->body());
-			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
-			if (!array_key_exists('lyric', $r)) {
-				Log::info(
-					'No lyric available for songmid {id}, codes:',
-					['id' => $id, 'code' => $r]
-				);
-				abort(404, 'No lyric available for this song');
+			$res = Str::of($response->body())->remove('<!--')->remove('-->')
+				->replaceMatches("/<miniversion.*\/>/", '');
+			libxml_use_internal_errors(true);
+			$xmlResponse = simplexml_load_string($res, 'SimpleXMLElement', LIBXML_NOCDATA);
+			if ($xmlResponse === false) {
+				$xmlErrors = libxml_get_errors();
+				Log::error('Invalid XML response: ' . $response->body(), $xmlErrors);
+				abort(500, 'Error parsing response: ' . libxml_get_last_error());
 			}
-			$data = ['lyric' => base64_decode($r['lyric']), 'id' => $id];
-			return response()->json($data);
+			$xml = json_decode(json_encode($xmlResponse), true);
+			$data = $xml['cmd'];
+			if (!in_array($data['result'], [0, 200])) {
+				Log::error($data);
+				abort(500, 'QQ Music error ' . $data['result']);
+			}
+			abort_if(
+				empty($data['lyric']['content']),
+				404,
+				'No lyric available for this song entry'
+			);
+			if (ctype_xdigit($data['lyric']['content'])) {
+				$decoder = new QrcDecoder();
+				$lyricXml = $decoder->decode($data['lyric']['content']);
+				$lyricXml = Str::between($lyricXml, 'LyricContent="', "\"/>\n");
+				abort_if(empty($lyricXml), 404, 'Empty lyric, download aborted');
+				$lyric = $this->qrcToLrc($lyricXml);
+			} else {
+				if (is_array($data['lyric']['content'])) {
+					Log::error('Malformed lyric content: ', $data['lyric']['content']);
+					// Log::notice('Full response: ',$data);
+					abort(500, 'Malformed lyric content. Wait for a while and try again.');
+				}
+				$lyric = $data['lyric']['content'];
+			}
+			return response()->json([
+				'lyric' => $lyric,
+				'encoded' => ctype_xdigit($data['lyric']['content']),
+				'id' => $id
+			]);
 		} catch (ConnectionException $th) {
 			Log::error($th);
 			abort(500, 'QQ Music connection failed: ' . $th->getMessage());

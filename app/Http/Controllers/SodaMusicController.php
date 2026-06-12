@@ -52,7 +52,7 @@ class SodaMusicController extends Controller
 			abort_if(
 				!array_key_exists('lyric', $r),
 				404,
-				'No lyric available for this song'
+				'No lyric available for this song entry'
 			);
 			abort_if(
 				!array_key_exists('content', $r['lyric']),

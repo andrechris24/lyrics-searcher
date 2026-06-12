@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 abstract class Controller
 {
@@ -113,5 +114,16 @@ abstract class Controller
 			}
 		}
 		return $lyricText;
+	}
+	protected function qrcToLrc(string $qrcText)
+	{
+		if (empty($qrcText)) return null;
+		$converted = Str::of($qrcText)
+			->replaceMatches("/^\[(\d+),(\d+)\]/m", function (array $matches) {
+				return '[' . $this->formatTime((int)$matches[1] / 1000) . ']';
+			})->replaceMatches("/\((\d+),(\d+)\)/", function (array $matches) {
+				return '<' . $this->formatTime(((int)$matches[1] + (int)$matches[2]) / 1000) . '>';
+			});
+		return $converted;
 	}
 }

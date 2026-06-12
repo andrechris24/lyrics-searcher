@@ -20,10 +20,8 @@
 			<div class="form-floating">
 				<input type="text" class="form-control @error('artist') is-invalid @enderror "
 					id="artist-name" placeholder="Artist" name="artist"
-					value="{{ request('artist') ?? old('artist') }}" required>
-				<label for="artist-name" class="form-label">
-					Artist <span class="text-danger"><b>*</b></span>
-				</label>
+					value="{{ request('artist') ?? old('artist') }}">
+				<label for="artist-name" class="form-label">Artist</label>
 			</div>
 		</div>
 	</div>
@@ -31,7 +29,7 @@
 	<small class="form-text">
 		@if ($type === 'advanced')
 			<a href="{{ route($provider . '.index') }}">Basic search</a>
-		@else
+		@elseif(Illuminate\Support\Facades\Route::has($provider.'advanced'))
 			<a href="{{ route($provider . '.advanced') }}">Advanced search</a>
 		@endif
 		@if ($provider === 'local')

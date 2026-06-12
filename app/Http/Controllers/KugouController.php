@@ -29,6 +29,7 @@ class KugouController extends Controller
 				return to_route('kugou.index')->withInput()
 					->withError('Error parsing response: ' . json_last_error_msg());
 			} else if (!in_array($r['errcode'], [0, 200])) {
+				Log::error($r);
 				return to_route('kugou.index')->withInput()
 					->withError('Kugou Music error ' . $r['errcode'] . ': ' . $r['error']);
 			}
@@ -50,11 +51,10 @@ class KugouController extends Controller
 			$response = Http::connectTimeout(30)->get(self::$lrcUrl . 'search', $query);
 			$r = self::decodeJson($response->body());
 			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
-			abort_if(
-				$r['errcode'] !== 200,
-				$r['errcode'],
-				'Kugou Music error ' . $r['errcode'] . ': ' . $r['errmsg']
-			);
+			if ($r['errcode'] !== 200) {
+				Log::error($r);
+				abort($r['errcode'], 'Kugou Music error ' . $r['errcode'] . ': ' . $r['errmsg']);
+			}
 			return response()->json($r['candidates']);
 		} catch (ConnectionException $e) {
 			Log::error($e);
@@ -79,6 +79,7 @@ class KugouController extends Controller
 				return to_route('kugou.advanced')->withInput()
 					->withError('Error parsing response: ' . json_last_error_msg());
 			} else if (!in_array($r['errcode'], [0, 200])) {
+				Log::error($r);
 				return to_route('kugou.advanced')->withInput()
 					->withError('Kugou Music error ' . $r['errcode'] . ': ' . $r['error']);
 			}
@@ -103,11 +104,10 @@ class KugouController extends Controller
 			$response = Http::connectTimeout(30)->get(self::$lrcUrl . 'download', $query);
 			$r = self::decodeJson($response->body());
 			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
-			abort_if(
-				$r['status'] !== 200,
-				$r['status'],
-				'Kugou Music error ' . $r['error_code'] . ': ' . $r['info']
-			);
+			if ($r['status'] !== 200) {
+				Log::error($r);
+				abort($r['status'], 'Kugou Music error ' . $r['error_code'] . ': ' . $r['info']);
+			}
 			if ($r['fmt'] !== 'krc') $context = $r['content'];
 			else {
 				$text = KrcDecoder::decode($r['content']);

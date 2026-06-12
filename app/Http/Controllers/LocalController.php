@@ -14,9 +14,11 @@ class LocalController extends Controller
 	public function standard(Request $request)
 	{
 		try {
-			$request->validate(['title' => 'required', 'artist' => 'required']);
-			$data = Lyric::whereLike('title', '%' . $request['title'] . '%')
-				->whereLike('artist', '%' . $request['artist'] . '%')->paginate(20);
+			$request->validate(['title' => 'required', 'artist' => 'nullable']);
+			$query = Lyric::whereLike('title', '%' . $request['title'] . '%');
+			if (!empty($request['artist']))
+				$query->whereLike('artist', '%' . $request['artist'] . '%');
+			$data = $query->paginate(20);
 			return view('local.result', compact('data'));
 		} catch (QueryException $e) {
 			Log::error($e);

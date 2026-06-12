@@ -122,6 +122,11 @@
 								@if (request()->routeIs('sodamusic.*')) aria-current="page" @endif
 								href="{{ route('sodamusic.index') }}">Soda Music</a>
 						</li>
+						<li class="nav-item">
+							<a @class(['nav-link', 'active' => request()->routeIs('deezer.*')])
+								@if (request()->routeIs('deezer.*')) aria-current="page" @endif
+								href="{{ route('deezer.index') }}">Deezer</a>
+						</li>
 						<li class="nav-item dropdown">
 							<a @class([
 								'nav-link',

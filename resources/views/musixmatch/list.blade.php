@@ -12,31 +12,31 @@
 				$track = $result['track'];
 				$length = gmdate('i:s', $track['track_length']);
 				if ($track['instrumental']) {
-					$lyricType = 'Instrumental';
-					$color = 'text-warning';
+				    $lyricType = 'Instrumental';
+				    $color = 'text-warning';
 				} elseif ($track['has_richsync']) {
-					$lyricType = 'Richsync';
-					$color = 'text-success';
+				    $lyricType = 'Richsync';
+				    $color = 'text-success';
 				} elseif ($track['has_subtitles']) {
-					$lyricType = 'Synced';
-					$color = 'text-primary';
+				    $lyricType = 'Synced';
+				    $color = 'text-primary';
 				} elseif ($track['has_lyrics']) {
-					$lyricType = 'Plain';
-					$color = 'text-info';
+				    $lyricType = 'Plain';
+				    $color = 'text-info';
 				} else {
-					$lyricType = 'No Lyrics';
-					$color = 'text-danger';
+				    $lyricType = 'No Lyrics';
+				    $color = 'text-danger';
 				}
 				$art = !empty($track['album_coverart_800x800'])
-					? $track['album_coverart_800x800']
-					: (!empty($track['album_coverart_500x500'])
-						? $track['album_coverart_500x500']
-						: (!empty($track['album_coverart_350x350'])
-							? $track['album_coverart_350x350']
-							: (!empty($track['album_coverart_100x100'])
-								? $track['album_coverart_100x100']
-								: 'https://placehold.co/500?text=' .
-									urlencode($track['album_name']))));
+				    ? $track['album_coverart_800x800']
+				    : (!empty($track['album_coverart_500x500'])
+				        ? $track['album_coverart_500x500']
+				        : (!empty($track['album_coverart_350x350'])
+				            ? $track['album_coverart_350x350']
+				            : (!empty($track['album_coverart_100x100'])
+				                ? $track['album_coverart_100x100']
+				                : 'https://placehold.co/500?text=' .
+				                    urlencode($track['album_name']))));
 			@endphp
 			<div class="col">
 				<div class="card">
@@ -72,7 +72,7 @@
 										<a @class([
 											'dropdown-item',
 											'download-btn',
-											'disabled' => !$track['has_lyrics']
+											'disabled' => !$track['has_lyrics'],
 										]) href="#"
 											data-id="{{ $track['commontrack_id'] }}" data-type="lyrics"
 											data-album="{{ $track['album_name'] }}"
@@ -85,7 +85,7 @@
 										<a @class([
 											'dropdown-item',
 											'download-btn',
-											'disabled' => !$track['has_subtitles']
+											'disabled' => !$track['has_subtitles'],
 										]) href="#"
 											data-id="{{ $track['commontrack_id'] }}" data-type="subtitle"
 											data-album="{{ $track['album_name'] }}"
@@ -98,7 +98,7 @@
 										<a @class([
 											'dropdown-item',
 											'download-btn',
-											'disabled' => !$track['has_richsync']
+											'disabled' => !$track['has_richsync'],
 										]) href="#"
 											title="Not all players support Richsync, use with compatible players like MiniLyrics or ESLyric"
 											data-id="{{ $track['commontrack_id'] }}" data-type="richsync"
@@ -111,16 +111,18 @@
 								</ul>
 							</div>
 							<a href="{{ $track['track_share_url'] }}" @class(['btn', 'btn-info', 'disabled' => !$track['has_lyrics']])
-								@if (!$track['has_lyrics']) aria-disabled="true" @endif target="_blank">
+								@if (!$track['has_lyrics']) aria-disabled="true" @endif target="_blank"
+								data-bs-toggle="tooltip" data-bs-title="View Lyric on Musixmatch">
 								<i class="fa-solid fa-eye"></i>
 							</a>
 							<a href="https://open.spotify.com/track/{{ $track['track_spotify_id'] }}"
 								@class([
 									'btn',
 									'btn-success',
-									'disabled' => empty($track['track_spotify_id'])
+									'disabled' => empty($track['track_spotify_id']),
 								])
-								@empty($track['track_spotify_id']) aria-disabled="true" @endempty target="_blank">
+								@empty($track['track_spotify_id']) aria-disabled="true" @endempty
+								data-bs-toggle="tooltip" data-bs-title="View on Spotify" target="_blank">
 								<i class="fa-brands fa-spotify"></i>
 							</a>
 						</div>
@@ -133,21 +135,21 @@
 		@php
 			$curRoute = request()->route()->getName();
 			$queries = [
-				'prev' => ['page' => request('page') === null ? 1 : request('page') - 1],
-				'next' => ['page' => (request('page') ?? 1) + 1]
+			    'prev' => ['page' => request('page') === null ? 1 : request('page') - 1],
+			    'next' => ['page' => (request('page') ?? 1) + 1],
 			];
 			if (request('query')) {
-				$queries['prev']['query'] = request('query');
-				$queries['prev']['type'] = request('type');
-				$queries['next']['query'] = request('query');
-				$queries['next']['type'] = request('type');
+			    $queries['prev']['query'] = request('query');
+			    $queries['prev']['type'] = request('type');
+			    $queries['next']['query'] = request('query');
+			    $queries['next']['type'] = request('type');
 			} else {
-				$queries['prev']['title'] = request('title') ?? '';
-				$queries['prev']['artist'] = request('artist') ?? '';
-				$queries['prev']['lyrics'] = request('lyrics') ?? '';
-				$queries['next']['title'] = request('title') ?? '';
-				$queries['next']['artist'] = request('artist') ?? '';
-				$queries['next']['lyrics'] = request('lyrics') ?? '';
+			    $queries['prev']['title'] = request('title') ?? '';
+			    $queries['prev']['artist'] = request('artist') ?? '';
+			    $queries['prev']['lyrics'] = request('lyrics') ?? '';
+			    $queries['next']['title'] = request('title') ?? '';
+			    $queries['next']['artist'] = request('artist') ?? '';
+			    $queries['next']['lyrics'] = request('lyrics') ?? '';
 			}
 		@endphp
 		<div class="mx-5 px-5 mb-5 pb-5">
@@ -183,4 +185,4 @@
 			</nav>
 		</div>
 	@endif
-@endif
+	@endif

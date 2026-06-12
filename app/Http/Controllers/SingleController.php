@@ -129,8 +129,12 @@ class SingleController extends Controller
 						'source' => 'musixmatch'
 					]);
 				case 'plains':
-					$response = Http::connectTimeout(30)
-						->get('https://api.lyrics.ovh/v1/' . $req['artist'] . '/' . $req['title']);
+					$ovhuri = sprintf(
+						'https://api.lyrics.ovh/v1/%s/%s',
+						urlencode($req['artist']),
+						urlencode($req['title'])
+					);
+					$response = Http::connectTimeout(30)->get($ovhuri);
 					$r = self::decodeJson($response->body());
 					abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 					if ($response->successful()) {
@@ -170,7 +174,7 @@ class SingleController extends Controller
 			abort(500, 'Connection failed: ' . $e->getMessage());
 		} catch (QueryException $e) {
 			Log::error($e);
-			abort(500, 'Local database error: ' . $e->getMessage());
+			abort(500, 'Local database error: ' . $e->errorInfo[2]);
 		}
 	}
 }

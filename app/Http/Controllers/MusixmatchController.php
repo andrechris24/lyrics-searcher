@@ -24,32 +24,32 @@ class MusixmatchController extends Controller
 			return to_route('index')->withError('Musixmatch token was not found');
 		try {
 			$req->validate([
-				'query' => 'required', 
-				'type' => 'required|in:all,track,artist,lyrics,track_artist,writer', 
+				'query' => 'required',
+				'type' => 'required|in:all,track,artist,lyrics,track_artist,writer',
 				'page' => 'nullable|integer|min:1'
 			]);
 			Sleep::for(5)->seconds();
 			$query = self::$query;
 			$query['usertoken'] = env('MUSIXMATCH_TOKEN');
 			$query['page'] = $req['page'] ?? 1;
-			switch($req['type']){
+			switch ($req['type']) {
 				case 'track':
-					$query['q_track']=$req['query'];
+					$query['q_track'] = $req['query'];
 					break;
 				case 'artist':
-					$query['q_artist']=$req['query'];
+					$query['q_artist'] = $req['query'];
 					break;
 				case 'lyrics':
-					$query['q_lyrics']=$req['query'];
+					$query['q_lyrics'] = $req['query'];
 					break;
 				case 'track_artist':
-					$query['q_track_artist']=$req['query'];
+					$query['q_track_artist'] = $req['query'];
 					break;
 				case 'writer':
-					$query['q_writer']=$req['query'];
+					$query['q_writer'] = $req['query'];
 					break;
 				default:
-					$query['q']=$req['query'];
+					$query['q'] = $req['query'];
 					break;
 			}
 			$response = Http::connectTimeout(30)->withHeaders(self::MX_HEADER)
