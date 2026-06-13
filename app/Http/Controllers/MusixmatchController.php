@@ -193,17 +193,26 @@ class MusixmatchController extends Controller
 	{
 		if (empty($lrc)) return null;
 		$richsync = '';
+		$prevtime = 0;
 		foreach ($lrc as $idx => $line) {
 			if ($idx === 0) {
-				if ($line['ts'] > 5)
-					$richsync .= "[" . $this->formatTime($line['ts'] - 5) . ']';
+				if ($line['ts'] > 3)
+					$richsync .= "[" . $this->formatTime($line['ts'] - 3) . ']';
 				else $richsync .= "[00:00.00]";
-			} else $richsync .= "[" . $this->formatTime($line['ts']) . ']';
+			} else {
+				if (($line['ts'] - $prevtime) > 9) {
+					$richsync .= "[" . $this->formatTime($prevtime + 3) . "]\n";
+					$richsync .= "[" . $this->formatTime($line['ts'] - 3) . ']';
+				} else
+					$richsync .= "[" . $this->formatTime($line['ts']) . ']';
+			}
 			foreach ($line['l'] as $word) {
 				$richsync .= '<' . $this->formatTime($line['ts'] + $word['o']) . '>' . $word['c'];
 			}
-			//Trailing space added to counter MiniLyrics bug
 			$richsync .= '<' . $this->formatTime($line['te']) . "> \n";
+			$prevtime = $line['te'];
+			if ($idx === count($lrc) - 1)
+				$richsync .= '[' . $this->formatTime($line['te'] + 5) . "]\n";
 		}
 		return $richsync;
 	}

@@ -41,27 +41,25 @@ class DeezerController extends Controller
 				->get('https://lyrics.paxsenix.org/deezer/lyrics', ['id' => $id]);
 			$r = self::decodeJson($response->body());
 			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
+			$prevtime = 0;
 			if ($r['isError']) {
 				Log::error($r);
 				abort(404, $r['error']);
 			} else if (empty($r['lyrics'])) $synced = null;
 			else {
 				$synced = '';
-				$linenum = 0;
-				foreach ($r['lyrics'] as $line) {
-					$linenum++;
-					if ($linenum === 1 && count($line['text']) > 1) {
-						if ($line['timestamp'] <= 5000)
-							$synced .= '[00:00.00]';
-						else
-							$synced .= '[' . $this->formatTime($line['timestamp'] / 1000 - 5) . ']';
-					} else
-						$synced .= '[' . $this->formatTime($line['timestamp'] / 1000) . ']';
+				foreach ($r['lyrics'] as $idx => $line) {
 					if (count($line['text']) > 1) {
-						$sylnum = 0;
+						if ($idx === 0) {
+							if ($line['timestamp'] <= 3000) $synced .= '[00:00.00]';
+							else
+								$synced .= '[' . $this->formatTime($line['timestamp'] / 1000 - 3) . ']';
+						} elseif (($line['timestamp'] - $prevtime) > 9000) {
+							$synced .= "[" . $this->formatTime($prevtime / 1000 + 3) . "]\n";
+							$synced .= "[" . $this->formatTime($line['timestamp'] / 1000 - 3) . ']';
+						} else
+							$synced .= "[" . $this->formatTime($line['timestamp'] / 1000) . ']';
 						foreach ($line['text'] as $syl) {
-							$sylnum++;
-							// if($line['timestamp']===$syl['timestamp'])
 							$synced .=
 								'<' . $this->formatTime($syl['timestamp'] / 1000) . '>' .
 								$syl['text'] .
@@ -69,16 +67,22 @@ class DeezerController extends Controller
 								($syl['part'] === false ? '> ' : '>');
 						}
 						$synced .= "\n";
-					} else $synced .= $line['text'][0]['text'] . "\n";
-					if ($linenum === count($r['lyrics']))
+					} else {
+						if (($line['timestamp'] - $prevtime) > 5000 && $idx !== 0)
+							$synced .= '[' . $this->formatTime($line['endtime'] / 1000) . "]\n";
+						$synced .= '[' . $this->formatTime($line['timestamp'] / 1000) . ']';
+						$synced .= $line['text'][0]['text'] . "\n";
+					}
+					if ($idx === count($r['lyrics']) - 1)
 						$synced .= '[' . $this->formatTime($line['endtime'] / 1000) . "]\n";
+					$prevtime = $line['endtime'];
 				}
 			}
 			$data = [
 				'plain' => $r['plain_lyrics'],
 				'synced' => $synced,
 				'id' => $r['id'],
-				'writer' => $r['writers'],
+				'writer' => $r['writers']
 			];
 			return response()->json($data);
 		} catch (ConnectionException $th) {

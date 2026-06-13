@@ -17,7 +17,11 @@ Artisan::command('usertoken', function () {
 		abort(500, 'Error parsing response: ' . json_last_error_msg());
 	}
 	$header = $r['message']['header'];
-	abort_if($header['status_code'] !== 200, $header['status_code'], $header['hint']);
+	abort_if(
+		$header['status_code'] !== 200,
+		$header['status_code'],
+		array_key_exists('hint', $header) ? $header['hint'] : 'Musixmatch HTTP Error ' . $header['status_code']
+	);
 	$body = $r['message']['body'];
 	if (array_key_exists('user_token', $body)) {
 		if ($body['user_token'] === 'UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly') {
@@ -26,6 +30,6 @@ Artisan::command('usertoken', function () {
 				previous: new Exception($body['user_token'])
 			);
 		}
-		echo $body['user_token'];
+		echo "Open env file, then set MUSIXMATCH_TOKEN value to:\n" . $body['user_token'];
 	} else abort(404, 'No user token provided from Musixmatch');
 })->purpose('Generates Musixmatch token');

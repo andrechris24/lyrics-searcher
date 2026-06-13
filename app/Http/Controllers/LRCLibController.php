@@ -57,6 +57,7 @@ class LRCLibController extends Controller
 	public function convert(Request $req)
 	{
 		$req->validate(['content' => 'required']);
+		$prevtime = 0;
 		try {
 			$yaml = Yaml::parse($req['content']);
 			$lyricsfile = '[ti: ' . $yaml['metadata']['title'] .
@@ -71,16 +72,21 @@ class LRCLibController extends Controller
 				$lyricsfile .= "[by: LRCLib]\n[ve: " . $yaml['version'] . "]\n";
 				foreach ($yaml['lines'] as $idx => $line) {
 					if ($idx === 0) {
-						if ($line['start_ms'] > 5000)
-							$lyricsfile .= "[" . $this->formatTime(floor($line['start_ms'] / 1000) - 5) . ']';
+						if ($line['start_ms'] > 3000)
+							$lyricsfile .= "[" . $this->formatTime($line['start_ms'] / 1000 - 3) . ']';
 						else $lyricsfile .= "[00:00.00]";
-					} else $lyricsfile .= "[" . $this->formatTime(floor($line['start_ms'] / 1000)) . ']';
+					} else if (($line['start_ms'] - $prevtime) > 9000) {
+						$lyricsfile .= "[" . $this->formatTime($prevtime / 1000 + 3) . "]\n";
+						$lyricsfile .= "[" . $this->formatTime($line['start_ms'] / 1000 - 3) . ']';
+					} else
+						$lyricsfile .= "[" . $this->formatTime($line['start_ms'] / 1000) . ']';
 					foreach ($line['words'] as $word) {
-						$lyricsfile .= '<' . $this->formatTime(floor($word['start_ms'] / 1000)) . '>' . $word['text'];
+						$lyricsfile .= '<' . $this->formatTime($word['start_ms'] / 1000) . '>' . $word['text'];
 					}
-					if (!empty($line['text']))
+					if (array_key_exists('end_ms', $line)) {
+						$prevtime = $line['end_ms'];
 						$lyricsfile .= '<' . $this->formatTime(floor($line['end_ms'] / 1000)) . "> \n";
-					else $lyricsfile .= "\n";
+					} else $lyricsfile .= "\n";
 				}
 			} else return response()->json(['instrumental' => true, 'contents' => $yaml]);
 			return response()->json(['instrumental' => false, 'lrc' => $lyricsfile]);

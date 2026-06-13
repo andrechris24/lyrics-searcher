@@ -80,6 +80,7 @@ abstract class Controller
 		$timestampsRegex = "/^\[(\d+),(\d+)\]/";
 		$timestamps2Regex = "/<(\d+),(\d+),(\d+)>([^<]*)/";
 		$lines = preg_split("/[\n]/", $krcText);
+		$prevtime = 0;
 		foreach ($lines as $idx => $line) {
 			if (preg_match($metaRegex, $line, $matches)) { // meta info
 				if (
@@ -96,11 +97,14 @@ abstract class Controller
 				$startTime = (int)$matches[1];
 				$duration = (int)$matches[2];
 				if ($idx === 0) {
-					if ($startTime > 5000)
-						$lyricLine = "[" . $this->formatTime($startTime / 1000 - 5) . "]";
+					if ($startTime > 3000)
+						$lyricLine = "[" . $this->formatTime($startTime / 1000 - 3) . "]";
 					else $lyricLine = "[00:00.00]";
-				} else $lyricLine = "[" . $this->formatTime($startTime / 1000) . "]";
-
+				} else if (($startTime - $prevtime) > 9000) {
+					$lyricLine .= "[" . $this->formatTime($prevtime / 1000 + 3) . "]\n";
+					$lyricLine .= "[" . $this->formatTime($startTime / 1000 - 3) . ']';
+				} else
+					$lyricLine .= "[" . $this->formatTime($startTime / 1000) . ']';
 				// parse sub-timestamps
 				if (preg_match_all($timestamps2Regex, $line, $subMatches)) {
 					for ($a = 0; $a < count($subMatches[0]); $a++) {
@@ -109,8 +113,10 @@ abstract class Controller
 						$lyricLine .= "<" . $this->formatTime(($startTime + $offset) / 1000) . ">" . $subWord;
 					}
 				}
-				//Trailing space added to counter MiniLyrics bug
+				$prevtime = $startTime + $duration;
 				$lyricText .= $lyricLine . "<" . $this->formatTime(($startTime + $duration) / 1000) . "> \n";
+				if ($idx === count($lines) - 1)
+					$lyricText .= "[" . $this->formatTime(($startTime + $duration) / 1000 + 5) . "]";
 			}
 		}
 		return $lyricText;

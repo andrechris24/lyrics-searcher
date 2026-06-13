@@ -15,7 +15,7 @@ if (lyricsModal) {
 			songID = button.getAttribute("data-bs-id"),
 			duration = button.getAttribute("data-bs-duration");
 		const metaLyric =
-			`[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n` +
+			`\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n` +
 			`[by: Deezer]\n[length: ${duration}]\n`;
 		// If necessary, you could initiate an Ajax request here
 		// and then do the updating in a callback
@@ -44,14 +44,17 @@ if (lyricsModal) {
 					if (data.synced.match(/<(\d+):(\d+).(\d+)>/g)) {
 						$("#dl-syllyric").removeClass("disabled");
 						sylLyricContent = `[id: ${data.id}]${metaLyric}[lr: ${data.writer}]\n${data.synced}`;
-						syncedLyricContents = "";
+						syncedLyricContents = `[id: ${data.id}]${metaLyric}[lr: ${data.writer}]\n${data.synced.replace(/<(\d+):(\d+).(\d+)>/g,'')}`;
 					} else {
 						$("#dl-syllyric").addClass("disabled");
 						sylLyricContent = "";
+						syncedLyricContents = `[id: ${data.id}]${metaLyric}[lr: ${data.writer}]\n${data.synced}`;
 					}
 				} else {
 					$("#dl-syllyric").addClass("disabled");
+					$("#dl-synced").addClass("disabled");
 					sylLyricContent = "";
+					syncedLyricContents = "";
 				}
 				plainLyricContent = `${fileName}\n\n${data.plain}`;
 				$("#lyrics-content").html(data.plain);
