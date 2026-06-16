@@ -31,7 +31,7 @@ if (lyricsModal) {
 			url: `/netease/${songID}`,
 			beforeSend: function () {
 				$(".placeholder-glow").removeClass("d-none");
-				$("#lyrics-content").html("");
+				$("#lyrics-content").text("");
 				$.LoadingOverlay("show");
 			},
 			complete: function () {
@@ -58,7 +58,7 @@ if (lyricsModal) {
 					lyricContents = `${metaLyric}[ve: ${data.lrc.version??1.0}]\n${data.lrc.lyric}`;
 					ext = "lrc";
 				}
-				$("#lyrics-content").html(data.lrc.lyric.replace(/\n/g, "<br/>"));
+				$("#lyrics-content").text(data.lrc.lyric);
 			},
 			error: function (xhr, st, err) {
 				console.warn(err);

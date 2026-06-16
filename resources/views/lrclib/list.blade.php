@@ -3,7 +3,13 @@
 @empty($data)
 	<x-no-results source="lrclib" />
 @else
-	<p class="text-center">Only first 20 results are returned due to API limitation</p>
+	@if(count($data)===20)
+	<div class="alert alert-warning">
+		<p class="text-center">Due to API limitation, only first 20 results are returned.</p>
+	</div>
+	@else
+	<p class="text-center">Found {{count($data)}} result(s)</p>
+	@endif
 	<div class="list-group px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-5 pb-5">
 		@foreach ($data as $result)
 			@php($length = gmdate('i:s', $result['duration']))

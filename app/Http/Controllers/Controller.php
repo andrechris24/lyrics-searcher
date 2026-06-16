@@ -67,7 +67,7 @@ abstract class Controller
 	{
 		$res = json_decode($response, true);
 		if (json_last_error() !== JSON_ERROR_NONE) {
-			Log::error('Invalid JSON response: ' . json_last_error_msg(), $response);
+			Log::error('Invalid JSON response for ' . $response . ': ' . json_last_error_msg());
 			return false;
 		}
 		return $res;

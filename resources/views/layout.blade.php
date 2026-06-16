@@ -5,14 +5,13 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="csrf-token" content="{{ csrf_token() }}">
-		<title>@yield('title') | {{env('APP_NAME')}}</title>
+		<title>@yield('title') | {{ env('APP_NAME') }}</title>
 
 		<!-- Bootstrap CSS -->
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
 			rel="stylesheet"
 			integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
 			crossorigin="anonymous">
-		{{-- <link rel="stylesheet" type="text/css" href="{{ asset('css/theme.css') }}"> --}}
 
 		<!-- FontAwesome -->
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" integrity="sha256-MVopmdyC2tYTiJ8wlktf0uh0v4NgT+vNdyVFepi7Q0c=" crossorigin="anonymous">
@@ -54,40 +53,40 @@
 					<span class="navbar-toggler-icon"></span>
 				</button>
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
-					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-						<li class="nav-item">
+					<ul class="navbar-nav flex-row flex-wrap">
+						<li class="nav-item col-sm-6 col-md-4 col-lg-auto col-12">
 							<a @class(['nav-link', 'active' => request()->routeIs('home')])
 								@if (request()->routeIs('home')) aria-current="page" @endif
 								href="{{ route('home') }}">
 								Home
 							</a>
 						</li>
-						<li class="nav-item">
+						<li class="nav-item col-sm-6 col-md-4 col-lg-auto col-12">
 							<a @class(['nav-link', 'active' => request()->routeIs('lrclib.*')])
 								@if (request()->routeIs('lrclib.*')) aria-current="page" @endif
 								href="{{ route('lrclib.index') }}">LRCLib</a>
 						</li>
-						<li class="nav-item">
+						<li class="nav-item col-sm-6 col-md-4 col-lg-auto col-12">
 							<a @class(['nav-link', 'active' => request()->routeIs('qqmusic.*')])
 								@if (request()->routeIs('qqmusic.*')) aria-current="page" @endif
-								href="{{ route('qqmusic.index') }}">QQ Music</a>
+								href="{{ route('qqmusic.index') }}">QQ</a>
 						</li>
-						<li class="nav-item">
+						<li class="nav-item col-sm-6 col-md-4 col-lg-auto col-12">
 							<a @class(['nav-link', 'active' => request()->routeIs('netease.*')])
 								@if (request()->routeIs('netease.*')) aria-current="page" @endif
 								href="{{ route('netease.index') }}">NetEase</a>
 						</li>
-						<li class="nav-item">
+						<li class="nav-item col-sm-6 col-md-4 col-lg-auto col-12">
 							<a @class(['nav-link', 'active' => request()->routeIs('kugou.*')])
 								@if (request()->routeIs('kugou.*')) aria-current="page" @endif
 								href="{{ route('kugou.index') }}">Kugou</a>
 						</li>
-						<li class="nav-item dropdown">
+						<li class="nav-item dropdown col-sm-6 col-md-4 col-lg-auto col-12">
 							<a @class([
 								'nav-link',
 								'dropdown-toggle',
 								'active' => request()->routeIs('musixmatch.*'),
-								'disabled' => empty(env('MUSIXMATCH_TOKEN')),
+								'disabled' => empty(env('MUSIXMATCH_TOKEN'))
 							]) href="#"
 								@if (request()->routeIs('musixmatch.*')) aria-current="page" @endif role="button"
 								data-bs-toggle="dropdown" aria-expanded="false"
@@ -96,7 +95,11 @@
 							</a>
 							<ul class="dropdown-menu">
 								<li>
-									<a class="dropdown-item" href="{{ route('musixmatch.index') }}">
+									<a @class([
+										"dropdown-item",
+										'active' => request()->routeIs('musixmatch.index')||request()->routeIs('musixmatch.search*')||request()->routeIs('musixmatch.advanced')
+										])
+										@if (request()->routeIs('musixmatch.index')||request()->routeIs('musixmatch.search*')||request()->routeIs('musixmatch.advanced')) aria-current="page" @endif href="{{ route('musixmatch.index') }}">
 										Search
 									</a>
 								</li>
@@ -104,34 +107,31 @@
 									<hr class="dropdown-divider">
 								</li>
 								<li>
-									<a class="dropdown-item"
+									<a @class(["dropdown-item",'active' => request()->is('musixmatch/charts/top')])
+										@if(request()->is('musixmatch/charts/top')) aria-current="page" @endif
 										href="{{ route('musixmatch.chart', ['type' => 'top']) }}">
 										Top chart
 									</a>
 								</li>
 								<li>
-									<a class="dropdown-item"
+									<a @class(["dropdown-item",'active' => request()->is('musixmatch/charts/hot')])
+										@if(request()->is('musixmatch/charts/hot')) aria-current="page" @endif
 										href="{{ route('musixmatch.chart', ['type' => 'hot']) }}">
 										Popular lyrics
 									</a>
 								</li>
 							</ul>
 						</li>
-						<li class="nav-item">
+						<li class="nav-item col-sm-6 col-md-4 col-lg-auto col-12">
 							<a @class(['nav-link', 'active' => request()->routeIs('sodamusic.*')])
 								@if (request()->routeIs('sodamusic.*')) aria-current="page" @endif
 								href="{{ route('sodamusic.index') }}">Soda Music</a>
 						</li>
-						<li class="nav-item">
-							<a @class(['nav-link', 'active' => request()->routeIs('deezer.*')])
-								@if (request()->routeIs('deezer.*')) aria-current="page" @endif
-								href="{{ route('deezer.index') }}">Deezer</a>
-						</li>
-						<li class="nav-item dropdown">
+						<li class="nav-item dropdown col-sm-6 col-md-4 col-lg-auto col-12">
 							<a @class([
 								'nav-link',
 								'dropdown-toggle',
-								'active' => request()->routeIs('local.*'),
+								'active' => request()->routeIs('local.*')
 							])
 								@if (request()->routeIs('local.*')) aria-current="page" @endif href="#"
 								role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -139,20 +139,70 @@
 							</a>
 							<ul class="dropdown-menu">
 								<li>
-									<a class="dropdown-item" href="{{ route('local.index') }}">
+									<a @class([
+										"dropdown-item",
+										'active' => request()->routeIs('local.index')||request()->routeIs('local.search')
+										])
+										@if (request()->routeIs('local.index')||request()->routeIs('local.search')) aria-current="page" @endif href="{{ route('local.index') }}">
 										Search
 									</a>
 								</li>
 								<li>
-									<a class="dropdown-item" href="{{ route('local.latest') }}">
+									<a @class(["dropdown-item",'active' => request()->routeIs('local.latest')])
+										@if (request()->routeIs('local.latest')) aria-current="page" @endif href="{{ route('local.latest') }}">
 										Latest upload
 									</a>
 								</li>
 							</ul>
 						</li>
+						<li class="nav-item dropdown col-sm-6 col-md-4 col-lg-auto col-12">
+							<a @class([
+								'nav-link',
+								'dropdown-toggle',
+								'active' => request()->routeIs('deezer.*')||request()->routeIs('spotify.*')||request()->routeIs('youtube.*')
+							])
+								@if (request()->routeIs('deezer.*')||request()->routeIs('spotify.*')||request()->routeIs('youtube.*')) aria-current="page" @endif href="#"
+								role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								More
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a @class(["dropdown-item",'active'=>request()->routeIs('deezer.*')]) href="{{ route('deezer.index') }}"
+										@if(request()->routeIs('deezer.*')) aria-current="page" @endif >
+										Deezer
+									</a>
+								</li>
+								<li>
+									<a @class(["dropdown-item",'active'=>request()->routeIs('spotify.*')]) href="{{ route('spotify.index') }}"
+										@if(request()->routeIs('spotify.*')) aria-current="page" @endif >
+										Spotify
+									</a>
+								</li>
+								<li>
+									<a @class(["dropdown-item",'active'=>request()->routeIs('youtube.*')]) href="{{ route('youtube.index') }}"
+										@if(request()->routeIs('youtube.*')) aria-current="page" @endif >
+										YouTube
+									</a>
+								</li>
+							</ul>
+						</li>
 					</ul>
-					<div class="d-flex">
-						<div class="dropdown">
+					<hr class="d-lg-none text-white-50">
+					<ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+						<li class="nav-item">
+							<button class="btn btn-link nav-link px-0 px-lg-1" data-bs-toggle="modal"
+							data-bs-target="#modalConvert">Convert</button>
+						</li>
+						@auth(backpack_guard_name())
+						<li class="nav-item active">
+							<a href="{{ route('backpack') }}" class="nav-link">Admin</a>
+						</li>
+						@endauth
+						<li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
+							<div class="vr d-none d-lg-flex h-100 mx-lg-1 text-white"></div>
+							<hr class="d-lg-none my-2 text-white-50">
+						</li>
+						<li class="nav-item dropdown">
 							<button class="btn me-2 dropdown-toggle d-flex align-items-center"
 								id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown"
 								aria-label="Toggle theme (auto)">
@@ -190,17 +240,11 @@
 									</a>
 								</li>
 							</ul>
-						</div>
-						<button class="btn btn-outline-success" data-bs-toggle="modal"
-							data-bs-target="#modalConvert">Convert</button>
-						@auth(backpack_guard_name())
-							<a href="{{route('backpack')}}" class="btn btn-secondary ms-2">Admin</a>
-						@endauth
-					</div>
+						</li>
+					</ul>
 				</div>
 			</div>
 		</nav>
-		<div class="container">
 			<div class="modal fade" tabindex="-1" id="modalConvert"
 				aria-labelledby="modalConvertLabel" role="dialog" aria-hidden="true">
 				<div role="document"
@@ -255,10 +299,11 @@
 					</div>
 				</div>
 			</div>
+		<div class="container">
 			<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-3">
 				<h3 class="mt-5 pt-5 text-center">@yield('subpage-title')</h3>
 				@if (Session::has('error') || $errors->any())
-				<x-error />
+					<x-error />
 				@endif
 			</div>
 			@yield('content')
@@ -274,8 +319,12 @@
 			integrity="sha256-jLFv9iIrIbqKULHpqp/jmePDqi989pKXOcOht3zgRcw="
 			crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-		<script src="https://cdn.datatables.net/v/bs5/dt-2.3.8/r-3.0.8/datatables.min.js" integrity="sha384-4GcaTyTewMDCAbLVgOubCZiRYKyuZ+uHk2sLNSwuCz0Bi8kf2R6cg6P0iNVIH5XE" crossorigin="anonymous"></script>
-		<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js" integrity="sha256-7eJpOkpqUSa501ZpBis1jsq2rnubhqHPMC/rRahRSQc=" crossorigin="anonymous"></script>
+		<script src="https://cdn.datatables.net/v/bs5/dt-2.3.8/r-3.0.8/datatables.min.js"
+			integrity="sha384-4GcaTyTewMDCAbLVgOubCZiRYKyuZ+uHk2sLNSwuCz0Bi8kf2R6cg6P0iNVIH5XE"
+			crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"
+			integrity="sha256-7eJpOkpqUSa501ZpBis1jsq2rnubhqHPMC/rRahRSQc="
+			crossorigin="anonymous"></script>
 		<script type="text/javascript" src="{{ asset('js/convert.js') }}"></script>
 		<script type="text/javascript" src="{{ asset('js/setup.js') }}"></script>
 		@yield('js')

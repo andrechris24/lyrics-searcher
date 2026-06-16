@@ -118,6 +118,10 @@ class MusixmatchController extends Controller
 	{
 		if (empty(env('MUSIXMATCH_TOKEN')))
 			return to_route('index')->withError('Musixmatch token was not found');
+		else if(!in_array($type, ['top','hot'])){
+			// Log::warning('message');
+			return to_route('index')->withError('Unrecognized parameter for Musixmatch Chart');
+		}
 		Sleep::for(5)->seconds();
 		$query = self::$query;
 		$query['usertoken'] = env('MUSIXMATCH_TOKEN');

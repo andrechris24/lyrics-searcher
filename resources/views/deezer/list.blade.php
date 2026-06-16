@@ -9,6 +9,9 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
+				<div class="alert alert-info mb-2">
+					Lyric preview and download provided by Lyrically API
+				</div>
 				<div class="row mb-3">
 					<div class="col-12 col-sm-4">
 						<b>Artist</b>
@@ -33,6 +36,24 @@
 					</div>
 					<div class="col-12 col-sm-8">
 						<span id="song-duration">--:--</span>
+					</div>
+					<div class="col-12 col-sm-4">
+						<b>Writers</b>
+					</div>
+					<div class="col-12 col-sm-8">
+						<span id="song-writers">...</span>
+					</div>
+					<div class="col-12 col-sm-4">
+						<b>Copyright</b>
+					</div>
+					<div class="col-12 col-sm-8">
+						<span id="song-copyright">...</span>
+					</div>
+					<div class="col-12 col-sm-4">
+						<b>License</b>
+					</div>
+					<div class="col-12 col-sm-8">
+						<span id="song-license">...</span>
 					</div>
 				</div>
 				<p class="placeholder-glow d-none">

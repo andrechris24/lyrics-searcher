@@ -10,10 +10,12 @@ Artisan::command('usertoken', function () {
 	$musixmatch = Http::get('https://apic-desktop.musixmatch.com/ws/1.1/token.get', [
 		'user_language' => 'en',
 		'app_id' => 'web-desktop-app-v1.0'
-	]);
+	])->throw();
 	$r = json_decode($musixmatch->body(), true);
 	if (json_last_error() !== JSON_ERROR_NONE) {
-		Log::error($musixmatch->body() . ' is not a valid JSON response, reason: ' . json_last_error_msg());
+		Log::error(
+			'Invalid JSON response for ' . $musixmatch->body() . ': ' . json_last_error_msg()
+		);
 		abort(500, 'Error parsing response: ' . json_last_error_msg());
 	}
 	$header = $r['message']['header'];

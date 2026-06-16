@@ -1,15 +1,12 @@
 @extends('layout')
 @section('title', 'Home')
-@section('subpage-title','LRCSearch')
+@section('subpage-title', 'LRCSearch')
 @section('content')
 	<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 pb-5 mb-5">
 		<p class="text-center">Welcome to LRCSearch! This site provides lyrics search from
-			Kugou, NetEase, QQ Music, Musixmatch (throttled request), LRCLib, Soda Music, plus
-			optionally local server and Lyrics.ovh.
+			Kugou, NetEase, QQ Music, Musixmatch (throttled request), LRCLib, Soda Music,
+			Deezer, Spotify, YouTube, plus optionally local server and Lyrics.ovh.
 			This form below is a quick search to 4 providers.</p>
-		@if (Session::has('error') || $errors->any())
-			<x-error />
-		@endif
 		<x-no-script />
 		<form class="row g-3 mb-3" action="{{ route('result') }}" id="searchSongLyric">
 			<div class="col-12 col-md-8">

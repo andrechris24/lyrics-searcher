@@ -15,7 +15,7 @@ $(".list-group-item-action").on("click", function (e) {
 			$.LoadingOverlay("hide");
 		},
 		success: function (data) {
-			if(data.encoded===true){
+			if (data.encoded === true) {
 				Swal.fire({
 					title: "Word-by-word lyric detected",
 					text: "Select lyric type to download, then click OK. Please note that only a few players support word-by-word lyrics.",
@@ -65,10 +65,10 @@ $(".list-group-item-action").on("click", function (e) {
 						else blobDL(lyricContent, fileName + ext);
 					}
 				});
-			}else  if(data.lyric.match(/\[(\d+):(\d+).(\d+)\]/))
+			} else if (data.lyric.match(/\[(\d+):(\d+).(\d+)\]/))
 				blobDL(`[id: ${data.id}]\n${data.lyric}`, `${fileName}.lrc`);
-			else{
-				toast.fire({icon: 'warning',text: 'Plain lyric detected'});
+			else {
+				toast.fire({ icon: "warning", text: "Plain lyric detected" });
 				blobDL(`${fileName}\n\n${data.lyric}`, `${fileName}.txt`);
 			}
 		},
@@ -77,6 +77,6 @@ $(".list-group-item-action").on("click", function (e) {
 			if (st === "timeout") message = "Connection timed out";
 			else message = xhr.responseJSON?.message ?? err ?? st;
 			toast.fire({ icon: "error", text: message });
-		},
+		}
 	});
 });

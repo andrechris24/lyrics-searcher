@@ -38,7 +38,7 @@ class DeezerController extends Controller
 	{
 		try {
 			$response = Http::connectTimeout(30)
-				->get('https://lyrics.paxsenix.org/deezer/lyrics', ['id' => $id]);
+				->get('https://lyrics.paxsenix.org/deezer/lyrics', ['id' => $id])->throw();
 			$r = self::decodeJson($response->body());
 			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 			$prevtime = 0;
@@ -78,13 +78,14 @@ class DeezerController extends Controller
 					$prevtime = $line['endtime'];
 				}
 			}
-			$data = [
+			return response()->json([
 				'plain' => $r['plain_lyrics'],
 				'synced' => $synced,
 				'id' => $r['id'],
-				'writer' => $r['writers']
-			];
-			return response()->json($data);
+				'writer' => $r['writers'],
+				'copyright' => $r['copyright'],
+				'license' => $r['licence']
+			]);
 		} catch (ConnectionException $th) {
 			Log::error($th);
 			abort(500, 'Deezer connection failed: ' . $th->getMessage());

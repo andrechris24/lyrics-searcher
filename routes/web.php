@@ -10,6 +10,8 @@ use App\Http\Controllers\SodaMusicController;
 use App\Http\Controllers\SingleController;
 use App\Http\Controllers\LocalController;
 use App\Http\Controllers\DeezerController;
+use App\Http\Controllers\SpotifyController;
+use App\Http\Controllers\YoutubeController;
 
 Route::view('/', 'index')->name('home');
 Route::get('result', [SingleController::class, 'search'])->name('result');
@@ -85,6 +87,20 @@ Route::prefix('local')->name('local.')->group(function () {
 Route::prefix('deezer')->name('deezer.')->group(function () {
 	Route::view('/', 'deezer.index')->name('index');
 	Route::controller(DeezerController::class)->name('search')->group(function () {
+		Route::get('results', 'search');
+		Route::get('{id}', 'get')->name('.get');
+	});
+});
+Route::prefix('spotify')->name('spotify.')->group(function () {
+	Route::view('/', 'spotify.index')->name('index');
+	Route::controller(SpotifyController::class)->name('search')->group(function () {
+		Route::get('results', 'search');
+		Route::get('{id}', 'get')->name('.get');
+	});
+});
+Route::prefix('youtube')->name('youtube.')->group(function () {
+	Route::view('/', 'youtube.index')->name('index');
+	Route::controller(YoutubeController::class)->name('search')->group(function () {
 		Route::get('results', 'search');
 		Route::get('{id}', 'get')->name('.get');
 	});

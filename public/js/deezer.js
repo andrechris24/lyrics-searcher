@@ -32,7 +32,10 @@ if (lyricsModal) {
 			url: `/deezer/${songID}`,
 			beforeSend: function () {
 				$(".placeholder-glow").removeClass("d-none");
-				$("#lyrics-content").html("");
+				$("#lyrics-content").text("");
+				$("#song-writers").text('');
+				$("#song-copyright").text('');
+				$("#song-license").text('');
 				$.LoadingOverlay("show");
 			},
 			complete: function () {
@@ -57,7 +60,10 @@ if (lyricsModal) {
 					syncedLyricContents = "";
 				}
 				plainLyricContent = `${fileName}\n\n${data.plain}`;
-				$("#lyrics-content").html(data.plain);
+				$("#song-writers").text(data.writer);
+				$("#song-copyright").text(data.copyright);
+				$("#song-license").text(data.license);
+				$("#lyrics-content").text(data.plain);
 			},
 			error: function (xhr, st, err) {
 				console.warn(err);
