@@ -16,7 +16,7 @@ class DeezerController extends Controller
 				'query' => 'required',
 				'offset' => 'nullable|integer|min:0|multiple_of:20'
 			]);
-			$response = Http::connectTimeout(30)->get(
+			$response = Http::retry(3, 100)->get(
 				'https://api.deezer.com/search/track',
 				['limit' => 20, 'q' => $req['query'], 'index' => $req['offset'] ?? 0]
 			);
@@ -37,7 +37,7 @@ class DeezerController extends Controller
 	public function get(int $id)
 	{
 		try {
-			$response = Http::connectTimeout(30)
+			$response = Http::retry(3, 100)
 				->get('https://lyrics.paxsenix.org/deezer/lyrics', ['id' => $id])->throw();
 			$r = self::decodeJson($response->body());
 			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
@@ -53,10 +53,10 @@ class DeezerController extends Controller
 						if ($idx === 0) {
 							if ($line['timestamp'] <= 3000) $synced .= '[00:00.00]';
 							else
-								$synced .= '[' . $this->formatTime($line['timestamp'] / 1000 - 3) . ']';
+								$synced .= '[' . $this->formatTime(($line['timestamp'] - rand(2500, 3000)) / 1000) . ']';
 						} elseif (($line['timestamp'] - $prevtime) > 9000) {
-							$synced .= "[" . $this->formatTime($prevtime / 1000 + 3) . "]\n";
-							$synced .= "[" . $this->formatTime($line['timestamp'] / 1000 - 3) . ']';
+							$synced .= "[" . $this->formatTime(($prevtime + rand(2500, 3500)) / 1000) . "]\n";
+							$synced .= "[" . $this->formatTime(($line['timestamp'] - rand(2500, 3500)) / 1000) . ']';
 						} else
 							$synced .= "[" . $this->formatTime($line['timestamp'] / 1000) . ']';
 						foreach ($line['text'] as $syl) {

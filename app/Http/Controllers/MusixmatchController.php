@@ -52,7 +52,7 @@ class MusixmatchController extends Controller
 					$query['q'] = $req['query'];
 					break;
 			}
-			$response = Http::connectTimeout(30)->withHeaders(self::MX_HEADER)
+			$response = Http::retry(3, 5000)->withHeaders(self::MX_HEADER)
 				->get(self::$url . 'track.search', $query);
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
@@ -92,7 +92,7 @@ class MusixmatchController extends Controller
 			$query['q_artist'] = $req['artist'];
 			$query['q_lyrics'] = $req['lyrics'];
 			$query['page'] = $req['page'] ?? 1;
-			$response = Http::connectTimeout(30)->withHeaders(self::MX_HEADER)
+			$response = Http::retry(3, 5000)->withHeaders(self::MX_HEADER)
 				->get(self::$url . 'track.search', $query);
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
@@ -118,17 +118,15 @@ class MusixmatchController extends Controller
 	{
 		if (empty(env('MUSIXMATCH_TOKEN')))
 			return to_route('index')->withError('Musixmatch token was not found');
-		else if(!in_array($type, ['top','hot'])){
-			// Log::warning('message');
+		else if (!in_array($type, ['top', 'hot']))
 			return to_route('index')->withError('Unrecognized parameter for Musixmatch Chart');
-		}
 		Sleep::for(5)->seconds();
 		$query = self::$query;
 		$query['usertoken'] = env('MUSIXMATCH_TOKEN');
 		$query['chart_name'] = $type;
 		$query['country'] = 'id';
 		try {
-			$response = Http::connectTimeout(30)->withHeaders(self::MX_HEADER)
+			$response = Http::retry(3, 5000)->withHeaders(self::MX_HEADER)
 				->get(self::$url . 'chart.tracks.get', $query);
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
@@ -162,7 +160,7 @@ class MusixmatchController extends Controller
 		$query['commontrack_id'] = $id;
 		unset($query['f_has_lyrics'], $query['page_size']);
 		try {
-			$response = Http::connectTimeout(30)->withHeaders(self::MX_HEADER)
+			$response = Http::retry(3, 5000)->withHeaders(self::MX_HEADER)
 				->get(self::$url . 'track.' . $type . '.get', $query);
 			$r = self::decodeJson($response->body());
 			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());

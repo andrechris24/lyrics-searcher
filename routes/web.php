@@ -61,6 +61,7 @@ Route::prefix('kugou')->name('kugou.')->group(function () {
 			Route::get('advanced/results', 'advanced')->name('.advanced');
 			Route::get('get', 'get')->name('.get');
 		});
+		Route::get('aimp/{hash}', 'aimp')->name('aimp');
 		Route::get('{hash}', 'lyrics')->name('lyrics');
 	});
 });
@@ -72,15 +73,13 @@ Route::prefix('sodamusic')->name('sodamusic.')->group(function () {
 	});
 });
 Route::prefix('local')->name('local.')->group(function () {
-	Route::view('/', 'local.index')->name('index');
-	Route::view('advanced', 'local.advanced.index')->name('advanced');
+	Route::view('/', 'local')->name('index');
 	Route::controller(LocalController::class)->group(function () {
-		Route::get('latest', 'latest')->name('latest');
+		Route::get('data', 'list')->name('data');
 		Route::middleware(backpack_middleware())->post('upload', 'upload')->name('upload');
-		Route::name('search')->group(function () {
-			Route::get('results', 'standard');
-			Route::get('advanced/results', 'advanced')->name('.advanced');
-			Route::get('{id}', 'aimp')->name('.get');
+		Route::name('aimp')->prefix('aimp')->group(function () {
+			Route::get('/', 'aimp');
+			Route::get('{id}', 'get')->name('.get');
 		});
 	});
 });

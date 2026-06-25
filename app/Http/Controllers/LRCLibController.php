@@ -16,7 +16,7 @@ class LRCLibController extends Controller
 	{
 		try {
 			$request->validate(['query' => 'required']);
-			$response = Http::connectTimeout(30)->get(self::$url, ['q' => $request['query']]);
+			$response = Http::retry(3, 100)->get(self::$url, ['q' => $request['query']]);
 			$data = self::decodeJson($response->body());
 			if ($data === false) {
 				return to_route('lrclib.index')->withInput()
@@ -35,7 +35,7 @@ class LRCLibController extends Controller
 	{
 		try {
 			$request->validate(['title' => 'required']);
-			$response = Http::connectTimeout(30)->get(self::$url, [
+			$response = Http::retry(3, 100)->get(self::$url, [
 				'track_name' => $request['title'],
 				'artist_name' => $request['artist'],
 				'album_name' => $request['album']
@@ -73,11 +73,11 @@ class LRCLibController extends Controller
 				foreach ($yaml['lines'] as $idx => $line) {
 					if ($idx === 0) {
 						if ($line['start_ms'] > 3000)
-							$lyricsfile .= "[" . $this->formatTime($line['start_ms'] / 1000 - 3) . ']';
+							$lyricsfile .= "[" . $this->formatTime(($line['start_ms'] - rand(2500, 3000)) / 1000) . ']';
 						else $lyricsfile .= "[00:00.00]";
 					} else if (($line['start_ms'] - $prevtime) > 9000) {
-						$lyricsfile .= "[" . $this->formatTime($prevtime / 1000 + 3) . "]\n";
-						$lyricsfile .= "[" . $this->formatTime($line['start_ms'] / 1000 - 3) . ']';
+						$lyricsfile .= "[" . $this->formatTime(($prevtime + rand(2500, 3500)) / 1000) . "]\n";
+						$lyricsfile .= "[" . $this->formatTime(($line['start_ms'] - rand(2500, 3500)) / 1000) . ']';
 					} else
 						$lyricsfile .= "[" . $this->formatTime($line['start_ms'] / 1000) . ']';
 					foreach ($line['words'] as $word) {

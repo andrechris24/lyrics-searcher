@@ -13,7 +13,7 @@ class SpotifyController extends Controller
 	{
 		try {
 			$req->validate(['query' => 'required']);
-			$response = Http::connectTimeout(30)->get(
+			$response = Http::retry(3, 100)->get(
 				'https://lyrics.paxsenix.org/spotify/search',
 				['q' => $req['query']]
 			)->throw();
@@ -34,12 +34,11 @@ class SpotifyController extends Controller
 	public function get(string $id)
 	{
 		try {
-			$response = Http::connectTimeout(30)
+			$response = Http::retry(3, 100)
 				->get('https://lyrics.paxsenix.org/spotify/lyrics', ['id' => $id])->throw();
 			$r = self::decodeJson($response->body());
-			if ($r === false)
-				abort(500, 'Error parsing response: ' . json_last_error_msg());
-			else if (is_array($r)) {
+			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
+			if (is_array($r)) {
 				if (array_key_exists('isError', $r) && $r['isError'] === true) {
 					Log::error($r);
 					abort(404, $r['error']);

@@ -20,7 +20,7 @@ class SodaMusicController extends Controller
 			$req->validate(
 				['query' => 'required', 'offset' => 'nullable|integer|min:0|multiple_of:20']
 			);
-			$response = Http::connectTimeout(30)->withHeaders(self::SODAMUSIC_HEADERS)
+			$response = Http::retry(3, 100)->withHeaders(self::SODAMUSIC_HEADERS)
 				->get(self::$url . 'search/track', [
 					'aid' => 386088,
 					'q' => $req['query'],
@@ -45,7 +45,7 @@ class SodaMusicController extends Controller
 	public function get(int $id)
 	{
 		try {
-			$response = Http::connectTimeout(30)->withHeaders(self::SODAMUSIC_HEADERS)
+			$response = Http::retry(3, 100)->withHeaders(self::SODAMUSIC_HEADERS)
 				->get(self::$url . 'track_v2', ['track_id' => $id, 'media_type' => 'track']);
 			$r = self::decodeJson($response->body());
 			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());

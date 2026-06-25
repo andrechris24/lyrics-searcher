@@ -3,8 +3,7 @@
 $.ajaxSetup({ timeout: 60000 });
 $(document).on("keydown", function (e) {
 	// Ignore if user is already typing in an input, textarea, or contenteditable
-	if ($(e.target).is('input, textarea, [contenteditable="true"]')) 
-		return;
+	if ($(e.target).is('input, textarea, [contenteditable="true"]')) return;
 
 	// Check if the pressed key is forward slash "/"
 	if (e.key === "/" || e.keyCode === 191) {
@@ -25,8 +24,7 @@ const toast = Swal.mixin({
 		toast.onmouseleave = Swal.resumeTimer;
 		toast.onclick = Swal.close;
 	}
-});
-const swalConfirm = Swal.mixin({
+}), swalConfirm = Swal.mixin({
 	icon: "question",
 	theme: "bootstrap-5",
 	buttonsStyling: false,
@@ -60,5 +58,27 @@ function blobDL(data, filename) {
 	a.remove();
 	window.URL.revokeObjectURL(url);
 }
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+const tooltipTriggerList = document.querySelectorAll(
+	'[data-bs-toggle="tooltip"]'
+);
+const tooltipList = [...tooltipTriggerList].map(
+	(tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
+);
+function zpad(n) {
+	const s = n.toString();
+	return s.length < 2 ? `0${s}` : s;
+}
+function formatSeconds(s) {
+	// Validate input
+	if (typeof s !== "number" || isNaN(s) || s < 0) return "00:00"; // Default for invalid input
+
+	// Calculate minutes and seconds
+	const minutes = Math.floor(s / 60),
+		seconds = s % 60;
+
+	// Pad with leading zeros if needed
+	const formattedMinutes = zpad(minutes),
+		formattedSeconds = zpad(seconds);
+
+	return `${formattedMinutes}:${formattedSeconds}`;
+}

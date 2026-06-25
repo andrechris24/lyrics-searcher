@@ -41,18 +41,27 @@
 						<b>Writers</b>
 					</div>
 					<div class="col-12 col-sm-8">
+						<p class="placeholder-glow d-none">
+							<span class="placeholder col-12"></span>
+						</p>
 						<span id="song-writers">...</span>
 					</div>
 					<div class="col-12 col-sm-4">
 						<b>Copyright</b>
 					</div>
 					<div class="col-12 col-sm-8">
+						<p class="placeholder-glow d-none">
+							<span class="placeholder col-12"></span>
+						</p>
 						<span id="song-copyright">...</span>
 					</div>
 					<div class="col-12 col-sm-4">
 						<b>License</b>
 					</div>
 					<div class="col-12 col-sm-8">
+						<p class="placeholder-glow d-none">
+							<span class="placeholder col-12"></span>
+						</p>
 						<span id="song-license">...</span>
 					</div>
 				</div>
@@ -85,6 +94,55 @@
 						</li>
 					</ul>
 				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" tabindex="-1" id="modalPreviewSong" aria-labelledby="modalPreviewSongLabel" role="dialog" aria-hidden="true">
+	<div role="document"
+		class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 id="modalPreviewSongLabel" class="modal-title">Preview Song</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"
+					aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="row mb-3">
+					<div class="col-12 col-sm-4">
+						<b>Artist</b>
+					</div>
+					<div class="col-12 col-sm-8">
+						<span id="preview-artist">...</span>
+					</div>
+					<div class="col-12 col-sm-4">
+						<b>Title</b>
+					</div>
+					<div class="col-12 col-sm-8">
+						<span id="preview-title">...</span>
+					</div>
+					<div class="col-12 col-sm-4">
+						<b>Album</b>
+					</div>
+					<div class="col-12 col-sm-8">
+						<span id="preview-album">-</span>
+					</div>
+					<div class="col-12 col-sm-4">
+						<b>Duration</b>
+					</div>
+					<div class="col-12 col-sm-8">
+						<span id="preview-duration">--:--</span>
+					</div>
+				</div>
+				<audio controls id="preview-player">
+					<source id="preview-song" src="">
+					Your browser does not support the audio element.
+				</audio>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+					Close
+				</button>
 			</div>
 		</div>
 	</div>
@@ -124,7 +182,7 @@
 					</div>
 					<div class="card-footer">
 						<div class="btn-group" role="group">
-							<button class="btn btn-primary" data-bs-toggle="modal"
+							<button type="button" class="btn btn-primary" data-bs-toggle="modal"
 								data-bs-target="#modalLyrics" data-bs-id="{{ $result['id'] }}"
 								data-bs-artist="{{ $result['artist']['name'] }}"
 								data-bs-title="{{ $result['title'] }}"
@@ -132,11 +190,16 @@
 								data-bs-duration="{{ $length }}">
 								<i class="fa-solid fa-eye"></i>
 							</button>
-							<a href="{{ $result['preview'] }}" @class(['btn', 'btn-info', 'disabled' => empty($result['preview'])])
+							<button type="button" @class(['btn', 'btn-info', 'disabled' => empty($result['preview'])])
 								@if (empty($result['preview'])) aria-disabled="true" @endif
-								data-bs-toggle="tooltip" data-bs-title="Preview song" target="_blank">
+								data-bs-link="{{ $result['preview'] }}"
+								data-bs-artist="{{ $result['artist']['name'] }}"
+								data-bs-title="{{ $result['title'] }}"
+								data-bs-album="{{ $result['album']['title'] }}"
+								data-bs-duration="{{ $length }}"
+								data-bs-toggle="modal" data-bs-target="#modalPreviewSong">
 								<i class="fa-solid fa-play"></i>
-							</a>
+							</button>
 							<a href="{{ $result['link'] }}" @class(['btn', 'btn-success', 'disabled' => empty($result['link'])])
 								@empty($result['link']) aria-disabled="true" @endempty
 								data-bs-toggle="tooltip" data-bs-title="View on Deezer" target="_blank">

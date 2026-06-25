@@ -21,7 +21,7 @@ class QQMusicController extends Controller
 				'title' => 'required',
 				'offset' => 'nullable|integer|min:0|multiple_of:20'
 			]);
-			$response = Http::connectTimeout(30)->withHeaders(self::QQ_HEADER)
+			$response = Http::retry(3, 100)->withHeaders(self::QQ_HEADER)
 				->get(self::$url . 'lyric/fcgi-bin/fcg_search_pc_lrc.fcg', [
 					'SONGNAME' => $req['title'],
 					'SINGERNAME' => $req['artist'],
@@ -41,8 +41,11 @@ class QQMusicController extends Controller
 				return to_route('qqmusic.index')->withInput()
 					->withError('Error parsing response: ' . libxml_get_last_error());
 			}
-			$xml = json_decode(json_encode($xmlResponse), true);
-			// dd($xml);
+			$xml = self::decodeJson(json_encode($xmlResponse));
+			if ($xml === false) {
+				return to_route('qqmusic.index')->withInput()
+					->withError('Error reading response: ' . json_last_error());
+			}
 			$data = $xml['cmd'];
 			if (!in_array($data['result'], [0, 200])) {
 				Log::error($data);
@@ -61,7 +64,7 @@ class QQMusicController extends Controller
 	public function get(int $id)
 	{
 		try {
-			$response = Http::connectTimeout(30)->withHeaders(self::QQ_HEADER)
+			$response = Http::retry(3, 100)->withHeaders(self::QQ_HEADER)
 				->get(self::$url . 'qqmusic/fcgi-bin/lyric_download.fcg', [
 					'version' => 15,
 					'miniversion' => 82,
@@ -77,7 +80,8 @@ class QQMusicController extends Controller
 				Log::error('Invalid XML response: ' . $response->body(), $xmlErrors);
 				abort(500, 'Error parsing response: ' . libxml_get_last_error());
 			}
-			$xml = json_decode(json_encode($xmlResponse), true);
+			$xml = self::decodeJson(json_encode($xmlResponse));
+			abort_if($xml === false, 500, 'Error reading response: ' . json_last_error());
 			$data = $xml['cmd'];
 			if (!in_array($data['result'], [0, 200])) {
 				Log::error($data);

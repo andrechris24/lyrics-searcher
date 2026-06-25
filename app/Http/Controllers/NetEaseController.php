@@ -18,7 +18,7 @@ class NetEaseController extends Controller
 			$req->validate(
 				['query' => 'required', 'offset' => 'nullable|integer|min:0|multiple_of:20']
 			);
-			$response = Http::connectTimeout(30)->withHeaders(self::NETEASE_HEADERS)
+			$response = Http::retry(3, 100)->withHeaders(self::NETEASE_HEADERS)
 				->get(self::$url . 'search/get', [
 					's' => $req['query'],
 					'type' => 1,
@@ -47,7 +47,7 @@ class NetEaseController extends Controller
 	public function get(int $id)
 	{
 		try {
-			$response = Http::connectTimeout(30)->withHeaders(self::NETEASE_HEADERS)->get(
+			$response = Http::retry(3, 100)->withHeaders(self::NETEASE_HEADERS)->get(
 				self::$url . 'song/lyric',
 				['kv' => -1, 'lv' => -1, 'os' => 'pc', 'id' => $id]
 			);

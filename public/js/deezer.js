@@ -3,7 +3,9 @@ let syncedLyricContents, sylLyricContent, plainLyricContent, fileName, message;
 const lyricsModal = document.getElementById("modalLyrics"),
 	plainLyricDL = document.getElementById("dl-plain"),
 	syncedLyricDL = document.getElementById("dl-synced"),
-	sylLyricDL = document.getElementById("dl-syllyric");
+	sylLyricDL = document.getElementById("dl-syllyric"),
+	previewModal = document.getElementById("modalPreviewSong"),
+	player=$("#preview-player");
 if (lyricsModal) {
 	lyricsModal.addEventListener("show.bs.modal", (event) => {
 		const button = event.relatedTarget;
@@ -36,11 +38,9 @@ if (lyricsModal) {
 				$("#song-writers").text('');
 				$("#song-copyright").text('');
 				$("#song-license").text('');
-				$.LoadingOverlay("show");
 			},
 			complete: function () {
 				$(".placeholder-glow").addClass("d-none");
-				$.LoadingOverlay("hide");
 			},
 			success: function (data) {
 				if (data.synced !== null) {
@@ -71,8 +71,46 @@ if (lyricsModal) {
 				else message = xhr.responseJSON?.message ?? err ?? st;
 				toast.fire({ icon: "error", text: message });
 				$("#modalLyrics").modal("hide");
-			},
+			}
 		});
+	});
+}
+if(previewModal){
+	previewModal.addEventListener("show.bs.modal",function(e){
+		const attr=e.relatedTarget;
+		const songName = attr.getAttribute("data-bs-title"),
+			artistName = attr.getAttribute("data-bs-artist"),
+			albumName = attr.getAttribute("data-bs-album"),
+			songLink = attr.getAttribute("data-bs-link"),
+			duration = attr.getAttribute("data-bs-duration");
+		$("#preview-album").text(albumName);
+		$("#preview-duration").text(duration);
+		$("#preview-title").text(songName);
+		$("#preview-artist").text(artistName);
+		// $.ajax({
+    //         url: songLink,
+    //         type: 'HEAD', // Only fetch headers
+    //         success: function(data, status, xhr) {
+    //         	console.log(data);
+    //             let mimeType = xhr.getResponseHeader("Content-Type");
+    //             if (mimeType) {
+    //             	console.info(`MIME Type: ${  mimeType}`);
+    //             } else {
+    //               console.warn("Could not determine MIME type.");
+    //             }
+    //         },
+    //         error: function(xhr, status, error) {
+    //           console.error(`Error: ${  error}`);
+    //         }
+    //     });
+		$("#preview-song").attr('src',songLink);
+		// $("#preview-source").attr('type','audio/mpeg');
+		player[0].pause();
+		player[0].load();
+		player[0].oncanplaythrough=player[0].play();
+	});
+	previewModal.addEventListener("hidden.bs.modal",function(){
+		player[0].pause();
 	});
 }
 syncedLyricDL.onclick = function () {

@@ -6,68 +6,26 @@ use App\Models\Lyric;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\{File, Log};
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
+use Yajra\DataTables\Facades\DataTables;
 
 class LocalController extends Controller
 {
-	public function standard(Request $request)
+	public function list()
 	{
-		try {
-			$request->validate(['title' => 'required', 'artist' => 'nullable']);
-			$query = Lyric::whereLike('title', '%' . $request['title'] . '%');
-			if (!empty($request['artist']))
-				$query->whereLike('artist', '%' . $request['artist'] . '%');
-			$data = $query->paginate(20);
-			return view('local.result', compact('data'));
-		} catch (QueryException $e) {
-			Log::error($e);
-			return to_route('local.index')->withInput()
-				->withError('Error retrieving search result: ' . $e->getMessage());
-		} catch (ValidationException $e) {
-			return to_route('local.index')->withInput()->withErrors($e->errors());
-		}
+		return DataTables::eloquent(Lyric::with('user'))->toJson();
 	}
-	public function advanced(Request $request)
+	public function aimp(Request $req)
 	{
-		try {
-			$request->validate([
-				'title' => 'nullable|required_without_all:artist,album|string',
-				'artist' => 'nullable|required_without_all:title,album|string',
-				'album' => 'nullable|required_without_all:title,artist|string'
-			]);
-			$model = Lyric::query();
-			if (!empty($request['title']))
-				$model->whereLike('title', '%' . $request['title'] . '%');
-			if (!empty($request['artist']))
-				$model->whereLike('artist', '%' . $request['artist'] . '%');
-			if (!empty($request['album']))
-				$model->whereLike('album', '%' . $request['album'] . '%');
-			$data = $model->paginate(20);
-			return view('local.advanced.result', compact('data'));
-		} catch (QueryException $e) {
-			Log::error($e);
-			return to_route('local.advanced')->withInput()
-				->withError('Error retrieving search result: ' . $e->getMessage());
-		} catch (ValidationException $e) {
-			return to_route('local.advanced')->withInput()->withErrors($e->errors());
-		}
+		// $req->validate(['title'=>'required','artist'=>'required']);
+		$data = Lyric::whereLike('title','%'.$req['title'].'%')
+			->whereLike('artist','%'.$req['artist'].'%')->get();
+		return response()->json($data);
 	}
-	public function aimp(int $id)
+	public function get(int $id)
 	{
 		$data = Lyric::find($id);
 		return response()->json($data);
-	}
-	public function latest()
-	{
-		try {
-			$data = Lyric::latest()->paginate(20);
-			return view('local.latest', compact('data'));
-		} catch (QueryException $e) {
-			Log::error($e);
-			return to_route('local.index')
-				->withError('Error retrieving latest uploads: ' . $e->getMessage());
-		}
 	}
 	public function upload(Request $req)
 	{
@@ -150,7 +108,10 @@ class LocalController extends Controller
 		}
 		if ($failed >= $total) {
 			Log::warning('Failed to upload lyrics: ', $files);
-			return response()->json(['message' => 'All ' . $total . ' files failed to upload'], 500);
+			$message = $total === 1 ?
+				'File failed to upload' :
+				'All ' . $total . ' files failed to upload';
+			return response()->json(['message' => $message], 500);
 		} else if ($failed > 0) {
 			Log::warning('Failed to upload lyrics: ', $files);
 			return response()->json([
@@ -159,9 +120,9 @@ class LocalController extends Controller
 				'files' => $files
 			]);
 		}
-		return response()->json([
-			'status' => 'success',
-			'message' => 'All ' . $total . ' files uploaded successfully'
-		]);
+		$message = $total === 1 ?
+			'File uploaded successfully' :
+			'All ' . $total . ' files uploaded successfully';
+		return response()->json(['status' => 'success', 'message' => $message]);
 	}
 }

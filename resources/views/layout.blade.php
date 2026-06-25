@@ -96,10 +96,16 @@
 							<ul class="dropdown-menu">
 								<li>
 									<a @class([
-										"dropdown-item",
-										'active' => request()->routeIs('musixmatch.index')||request()->routeIs('musixmatch.search*')||request()->routeIs('musixmatch.advanced')
-										])
-										@if (request()->routeIs('musixmatch.index')||request()->routeIs('musixmatch.search*')||request()->routeIs('musixmatch.advanced')) aria-current="page" @endif href="{{ route('musixmatch.index') }}">
+										'dropdown-item',
+										'active' =>
+											request()->routeIs('musixmatch.index') ||
+											request()->routeIs('musixmatch.search*') ||
+											request()->routeIs('musixmatch.advanced')
+									])
+										@if (request()->routeIs('musixmatch.index') ||
+												request()->routeIs('musixmatch.search*') ||
+												request()->routeIs('musixmatch.advanced')
+										) aria-current="page" @endif href="{{ route('musixmatch.index') }}">
 										Search
 									</a>
 								</li>
@@ -107,15 +113,21 @@
 									<hr class="dropdown-divider">
 								</li>
 								<li>
-									<a @class(["dropdown-item",'active' => request()->is('musixmatch/charts/top')])
-										@if(request()->is('musixmatch/charts/top')) aria-current="page" @endif
+									<a @class([
+										'dropdown-item',
+										'active' => request()->is('musixmatch/charts/top')
+									])
+										@if (request()->is('musixmatch/charts/top')) aria-current="page" @endif
 										href="{{ route('musixmatch.chart', ['type' => 'top']) }}">
 										Top chart
 									</a>
 								</li>
 								<li>
-									<a @class(["dropdown-item",'active' => request()->is('musixmatch/charts/hot')])
-										@if(request()->is('musixmatch/charts/hot')) aria-current="page" @endif
+									<a @class([
+										'dropdown-item',
+										'active' => request()->is('musixmatch/charts/hot')
+									])
+										@if (request()->is('musixmatch/charts/hot')) aria-current="page" @endif
 										href="{{ route('musixmatch.chart', ['type' => 'hot']) }}">
 										Popular lyrics
 									</a>
@@ -127,60 +139,45 @@
 								@if (request()->routeIs('sodamusic.*')) aria-current="page" @endif
 								href="{{ route('sodamusic.index') }}">Soda Music</a>
 						</li>
-						<li class="nav-item dropdown col-sm-6 col-md-4 col-lg-auto col-12">
-							<a @class([
-								'nav-link',
-								'dropdown-toggle',
-								'active' => request()->routeIs('local.*')
-							])
-								@if (request()->routeIs('local.*')) aria-current="page" @endif href="#"
-								role="button" data-bs-toggle="dropdown" aria-expanded="false">
+						<li class="nav-item col-sm-6 col-md-4 col-lg-auto col-12">
+							<a @class(['nav-link', 'active' => request()->routeIs('local.*')])
+								@if (request()->routeIs('local.*')) aria-current="page" @endif
+								href="{{ route('local.index') }}">
 								Local
 							</a>
-							<ul class="dropdown-menu">
-								<li>
-									<a @class([
-										"dropdown-item",
-										'active' => request()->routeIs('local.index')||request()->routeIs('local.search')
-										])
-										@if (request()->routeIs('local.index')||request()->routeIs('local.search')) aria-current="page" @endif href="{{ route('local.index') }}">
-										Search
-									</a>
-								</li>
-								<li>
-									<a @class(["dropdown-item",'active' => request()->routeIs('local.latest')])
-										@if (request()->routeIs('local.latest')) aria-current="page" @endif href="{{ route('local.latest') }}">
-										Latest upload
-									</a>
-								</li>
-							</ul>
 						</li>
 						<li class="nav-item dropdown col-sm-6 col-md-4 col-lg-auto col-12">
 							<a @class([
 								'nav-link',
 								'dropdown-toggle',
-								'active' => request()->routeIs('deezer.*')||request()->routeIs('spotify.*')||request()->routeIs('youtube.*')
+								'active' =>
+									request()->routeIs('deezer.*') ||
+									request()->routeIs('spotify.*') ||
+									request()->routeIs('youtube.*')
 							])
-								@if (request()->routeIs('deezer.*')||request()->routeIs('spotify.*')||request()->routeIs('youtube.*')) aria-current="page" @endif href="#"
+								@if (request()->routeIs('deezer.*') ||
+										request()->routeIs('spotify.*') ||
+										request()->routeIs('youtube.*')
+								) aria-current="page" @endif href="#"
 								role="button" data-bs-toggle="dropdown" aria-expanded="false">
 								More
 							</a>
 							<ul class="dropdown-menu">
 								<li>
-									<a @class(["dropdown-item",'active'=>request()->routeIs('deezer.*')]) href="{{ route('deezer.index') }}"
-										@if(request()->routeIs('deezer.*')) aria-current="page" @endif >
+									<a @class(['dropdown-item', 'active' => request()->routeIs('deezer.*')]) href="{{ route('deezer.index') }}"
+										@if (request()->routeIs('deezer.*')) aria-current="page" @endif >
 										Deezer
 									</a>
 								</li>
 								<li>
-									<a @class(["dropdown-item",'active'=>request()->routeIs('spotify.*')]) href="{{ route('spotify.index') }}"
-										@if(request()->routeIs('spotify.*')) aria-current="page" @endif >
+									<a @class(['dropdown-item', 'active' => request()->routeIs('spotify.*')]) href="{{ route('spotify.index') }}"
+										@if (request()->routeIs('spotify.*')) aria-current="page" @endif >
 										Spotify
 									</a>
 								</li>
 								<li>
-									<a @class(["dropdown-item",'active'=>request()->routeIs('youtube.*')]) href="{{ route('youtube.index') }}"
-										@if(request()->routeIs('youtube.*')) aria-current="page" @endif >
+									<a @class(['dropdown-item', 'active' => request()->routeIs('youtube.*')]) href="{{ route('youtube.index') }}"
+										@if (request()->routeIs('youtube.*')) aria-current="page" @endif >
 										YouTube
 									</a>
 								</li>
@@ -245,66 +242,65 @@
 				</div>
 			</div>
 		</nav>
-			<div class="modal fade" tabindex="-1" id="modalConvert"
-				aria-labelledby="modalConvertLabel" role="dialog" aria-hidden="true">
-				<div role="document"
-					class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down modal-lg">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 id="modalConvertLabel" class="modal-title">Convert lyric</h5>
-							<button type="button" class="btn-close" data-bs-dismiss="modal"
-								aria-label="Close"></button>
-						</div>
-						<div class="modal-body">
-							<form class="mb-5" id="lyric-converter-form">
-								<div class="mb-3">
-									<label for="convert-type" class="form-label">
-										Conversion type
-									</label>
-									<select class="form-select" name="type" id="convert-type" required>
-										<option value="" selected>Choose</option>
-										<option value="fromSrt">SRT to LRC</option>
-										<option value="fromKrc">KRC to LRC</option>
-									</select>
-								</div>
-								<div class="mb-3">
-									<label for="source-file-to-convert" class="form-label">
-										Select file
-									</label>
-									<div class="input-group">
-										<span class="input-group-text">
-											<i class="fa-solid fa-file-lines"></i>
-										</span>
-										<input type="file" class="form-control" id="source-file-to-convert"
-											accept=".srt, .krc" name="source-file" required>
-									</div>
-								</div>
-							</form>
+		<div class="modal fade" tabindex="-1" id="modalConvert"
+			aria-labelledby="modalConvertLabel" role="dialog" aria-hidden="true">
+			<div role="document"
+				class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 id="modalConvertLabel" class="modal-title">Convert lyric</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"
+							aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form class="mb-5" id="lyric-converter-form">
 							<div class="mb-3">
-								<b>Conversion result:</b>
-								<p id="converted-lyric" style="white-space: pre-line">...</p>
+								<label for="convert-type" class="form-label">
+									Conversion type
+								</label>
+								<select class="form-select" name="type" id="convert-type" required>
+									<option value="" selected>Choose</option>
+									<option value="fromSrt">SRT to LRC</option>
+									<option value="fromKrc">KRC to LRC</option>
+								</select>
 							</div>
+							<div class="mb-3">
+								<label for="source-file-to-convert" class="form-label">
+									Select file
+								</label>
+								<div class="input-group">
+									<span class="input-group-text">
+										<i class="fa-solid fa-file-lines"></i>
+									</span>
+									<input type="file" class="form-control" id="source-file-to-convert"
+										accept=".srt, .krc" name="source-file" required>
+								</div>
+							</div>
+						</form>
+						<div class="mb-3">
+							<b>Conversion result:</b>
+							<p id="converted-lyric" style="white-space: pre-line">...</p>
 						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-								Close
-							</button>
-							<button type="button" class="btn btn-success" id="save-converted" disabled>
-								Save
-							</button>
-							<button type="submit" class="btn btn-primary" form="lyric-converter-form">
-								Convert
-							</button>
-						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+							Close
+						</button>
+						<button type="button" class="btn btn-success" id="save-converted" disabled>
+							Save
+						</button>
+						<button type="submit" class="btn btn-primary" form="lyric-converter-form">
+							Convert
+						</button>
 					</div>
 				</div>
 			</div>
+		</div>
 		<div class="container">
 			<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-3">
 				<h3 class="mt-5 pt-5 text-center">@yield('subpage-title')</h3>
 				@if (Session::has('error') || $errors->any())
-					<x-error />
-				@endif
+					<x-error /> @endif
 			</div>
 			@yield('content')
 		</div>
@@ -324,6 +320,9 @@
 			crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"
 			integrity="sha256-7eJpOkpqUSa501ZpBis1jsq2rnubhqHPMC/rRahRSQc="
+			crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/luxon@3.7.2/build/global/luxon.min.js"
+			integrity="sha256-UWxf6lyCvfH7XEcrmq/cqc2m3IBrLBLOnWLC4Pw0gQQ="
 			crossorigin="anonymous"></script>
 		<script type="text/javascript" src="{{ asset('js/convert.js') }}"></script>
 		<script type="text/javascript" src="{{ asset('js/setup.js') }}"></script>

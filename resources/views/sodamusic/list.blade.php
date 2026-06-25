@@ -4,7 +4,6 @@
 @else
 	<p class="text-center">Showing {{ (request('offset') ?? 0) + 1 }} to
 		{{ $data['next_cursor'] }} result(s). Click on a list to save.</p>
-	{{-- <x-enhanced-only /> --}}
 	<div class="list-group px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-5 pb-5">
 		@foreach ($data['data'] as $result)
 			@php

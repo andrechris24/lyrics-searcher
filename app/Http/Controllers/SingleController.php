@@ -24,7 +24,7 @@ class SingleController extends Controller
 				case 'lrclib':
 					$param = ['artist_name' => $req['artist'], 'track_name' => $req['title']];
 					if (!empty($req['album'])) $param['album_name'] = $req['album'];
-					$response = Http::connectTimeout(30)->get('https://lrclib.net/api/get', $param);
+					$response = Http::retry(3, 100)->get('https://lrclib.net/api/get', $param);
 					$r = self::decodeJson($response->body());
 					abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 					if ($response->successful()) {
@@ -46,7 +46,7 @@ class SingleController extends Controller
 				case 'musixmatch':
 					abort_if(empty(env('MUSIXMATCH_TOKEN')), 500, 'Musixmatch token was not found');
 					Sleep::for(5)->seconds();
-					$response = Http::connectTimeout(30)->withHeaders([
+					$response = Http::retry(3, 5000)->withHeaders([
 						'authority' => 'apic-desktop.musixmatch.com',
 						'cookie' => 'x-mxm-token-guid='
 					])->get(MusixmatchController::$url . 'macro.subtitles.get', [
@@ -134,7 +134,7 @@ class SingleController extends Controller
 						urlencode($req['artist']),
 						urlencode($req['title'])
 					);
-					$response = Http::connectTimeout(30)->get($ovhuri);
+					$response = Http::retry(3, 100)->get($ovhuri);
 					$r = self::decodeJson($response->body());
 					abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 					if ($response->successful()) {

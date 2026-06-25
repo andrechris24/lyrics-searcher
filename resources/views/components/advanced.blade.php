@@ -43,10 +43,5 @@
 	<button type="submit" class="btn btn-primary">Search</button>
 	<small class="form-text">
 		<a href="{{ route($provider . '.index') }}">Basic search</a>
-		@if ($provider === 'local')
-			@auth(backpack_guard_name())
-				<a href="#modalUploadLyric" data-bs-toggle="modal">Upload lyrics</a>
-			@endauth
-		@endif
 	</small>
 </form>

@@ -1,4 +1,4 @@
-/* global blobDL, toast, pako */
+/* global blobDL, toast, pako, zpad */
 function xorKRC(rawData) {
 	if (null == rawData) return;
 
@@ -9,7 +9,6 @@ function xorKRC(rawData) {
 	for (let i = 0; i < magicBytes.length; ++i) {
 		if (dataView[i] != magicBytes[i]) return;
 	}
-
 	let decryptedData = new Uint8Array(dataView.length - magicBytes.length);
 	let encKey = [
 		0x40, 0x47, 0x61, 0x77, 0x5e, 0x32, 0x74, 0x47, 0x51, 0x36, 0x31, 0x2d,
@@ -21,13 +20,11 @@ function xorKRC(rawData) {
 		let y = encKey[(i - hdrOffset) % encKey.length];
 		decryptedData[i - hdrOffset] = x ^ y;
 	}
-
 	return decryptedData;
 }
 
 function krc2lrc(krcText) {
-	let lyricText = "";
-	let matches;
+	let lyricText = "", matches;
 	const metaRegex = /^\[(\S+):(\S+)\]$/,
 		timestampsRegex = /^\[(\d+),(\d+)\]/,
 		timestamps2Regex = /<(\d+),(\d+),(\d+)>([^<]*)/g,
@@ -89,11 +86,6 @@ function fromSrt(data, ms) {
 		});
 	}
 	return items;
-}
-
-function zpad(n) {
-	const s = n.toString();
-	return s.length < 2 ? `0${s}` : s;
 }
 
 function formatTime(time) {

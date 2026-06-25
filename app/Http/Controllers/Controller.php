@@ -26,8 +26,6 @@ abstract class Controller
 				401 => "Musixmatch rate limit exceeded. Please try again in a few minutes.",
 				404 => "Musixmatch query returned no result",
 				400 => "Bad request sent to Musixmatch. Please report this issue.",
-				500 => "Musixmatch server error. Please try again later.",
-				503 => "Musixmatch service unavailable. Please try again later.",
 				default => "Musixmatch HTTP Error " . $header['status_code']
 			};
 		}
@@ -98,11 +96,11 @@ abstract class Controller
 				$duration = (int)$matches[2];
 				if ($idx === 0) {
 					if ($startTime > 3000)
-						$lyricLine = "[" . $this->formatTime($startTime / 1000 - 3) . "]";
+						$lyricLine = "[" . $this->formatTime(($startTime - rand(2500, 3000)) / 1000) . "]";
 					else $lyricLine = "[00:00.00]";
 				} else if (($startTime - $prevtime) > 9000) {
-					$lyricLine .= "[" . $this->formatTime($prevtime / 1000 + 3) . "]\n";
-					$lyricLine .= "[" . $this->formatTime($startTime / 1000 - 3) . ']';
+					$lyricLine .= "[" . $this->formatTime(($prevtime + rand(2500, 3500)) / 1000) . "]\n";
+					$lyricLine .= "[" . $this->formatTime(($startTime - rand(2500, 3500)) / 1000) . ']';
 				} else
 					$lyricLine .= "[" . $this->formatTime($startTime / 1000) . ']';
 				// parse sub-timestamps

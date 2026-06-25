@@ -11,7 +11,6 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				{{-- <x-enhanced-only /> --}}
 				<table id="lyrics-table" class="table table-striped">
 					<thead>
 						<tr>
@@ -52,14 +51,14 @@
 	@php
 		$curRoute = request()->route()->getName();
 		$queries = [
-		    'prev' => [
-		        'query' => request('query'),
-		        'page' => request('page') === null ? 1 : request('page') - 1,
-		    ],
-		    'next' => [
-		        'query' => request('query'),
-		        'page' => (request('page') ?? 1) + 1,
-		    ],
+			'prev' => [
+				'query' => request('query'),
+				'page' => request('page') === null ? 1 : request('page') - 1
+			],
+			'next' => [
+				'query' => request('query'),
+				'page' => (request('page') ?? 1) + 1
+			]
 		];
 	@endphp
 	<div class="mx-5 px-5 mb-5 pb-5">

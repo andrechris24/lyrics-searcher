@@ -13,10 +13,9 @@ class YoutubeController extends Controller
 	{
 		try {
 			$req->validate(['query' => 'required']);
-			$response = Http::connectTimeout(30)->get(
-				'https://lyrics.paxsenix.org/youtube/search',
-				['q' => $req['query']]
-			)->throw();
+			$response = Http::retry(3, 100)
+				->get('https://lyrics.paxsenix.org/youtube/search', ['q' => $req['query']])
+				->throw();
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
 				return to_route('youtube.index')->withInput()
@@ -34,10 +33,10 @@ class YoutubeController extends Controller
 	public function get(string $id)
 	{
 		try {
-			$response = Http::connectTimeout(30)
+			$response = Http::retry(3, 100)
 				->get('https://lyrics.paxsenix.org/youtube/lyrics', ['id' => $id])->throw();
-			if (empty($response->body())) abort(404, 'No lyric available for this song');
-			else if (json_validate($response->body())) {
+			abort_if(empty($response->body()), 404, 'No lyric available for this song');
+			if (json_validate($response->body())) {
 				$r = json_decode($response->body(), true);
 				if (is_array($r)) {
 					if (array_key_exists('isError', $r) && $r['isError'] === true) {

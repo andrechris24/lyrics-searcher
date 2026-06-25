@@ -32,10 +32,5 @@
 		@elseif(Illuminate\Support\Facades\Route::has($provider.'advanced'))
 			<a href="{{ route($provider . '.advanced') }}">Advanced search</a>
 		@endif
-		@if ($provider === 'local')
-			@auth(backpack_guard_name())
-				<a href="#modalUploadLyric" data-bs-toggle="modal">Upload lyric</a>
-			@endauth
-		@endif
 	</small>
 </form>

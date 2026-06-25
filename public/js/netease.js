@@ -1,4 +1,4 @@
-/* global toast */
+/* global toast, zpad */
 let lyricContents, klyricContent, fileName, message, ext;
 const lyricsModal = document.getElementById("modalLyrics"),
 	lyricDL = document.getElementById("dl-synced"),
@@ -32,11 +32,9 @@ if (lyricsModal) {
 			beforeSend: function () {
 				$(".placeholder-glow").removeClass("d-none");
 				$("#lyrics-content").text("");
-				$.LoadingOverlay("show");
 			},
 			complete: function () {
 				$(".placeholder-glow").addClass("d-none");
-				$.LoadingOverlay("hide");
 			},
 			success: function (data) {
 				if (typeof data.klyric !== "undefined") {
@@ -108,20 +106,16 @@ function parseKLyric(lyricText) {
 	return enhancedlyricText;
 }
 function formatTime(time) {
-	const zpad = (n) => {
-		const s = n.toString();
-		return s.length < 2 ? `0${s}` : s;
-	};
-
+	// const zpad = (n) => {
+	// 	const s = n.toString();
+	// 	return s.length < 2 ? `0${s}` : s;
+	// };
 	let t = Math.abs(time / 1000);
 	const h = Math.floor(t / 3600);
 	t -= h * 3600;
-
 	const m = Math.floor(t / 60);
 	t -= m * 60;
-
 	const s = Math.floor(t);
 	const ms = t - s;
-
 	return `${(h ? `${zpad(h)}:` : "") + zpad(m)}:${zpad(s)}.${zpad(Math.floor(ms * 100))}`;
 }
