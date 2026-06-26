@@ -30,7 +30,14 @@ $(document).ready(function () {
 			responsive: true,
 			serverSide: true,
 			stateSave: true,
-			ajax: "/local/data",
+			ajax: {
+				url: "/local/data",
+				method: "GET",
+				headers: null,
+				error: function(xhr, st, err){
+					toast.fire({icon: "error", text: xhr.responseJSON?.message??err??st});
+				}
+			},
 			columns: [
 				{ data: "title" },
 				{ data: "artist" },
@@ -93,7 +100,7 @@ $(document).ready(function () {
 			]
 		})
 		.on("dt-error", function (e, settings, tn, message) {
-			toast.fire({ icon: "warning", text: message });
+			console.warn(message);
 		});
 }).on("click", ".dl-button", function () {
 	let ext;
@@ -151,7 +158,7 @@ $("#uploadLyricForm").on("submit", function (e) {
 			toast.fire({
 				icon: data.status,
 				text: data.message,
-				footer: typeof data.files !== "undefined" ? data.files.toString() : "",
+				footer: typeof data.files !== "undefined" ? data.files.toString() : ""
 			});
 			dt_local.ajax.reload(null, true);
 			$("#uploadLyricForm")[0].reset();
@@ -159,7 +166,7 @@ $("#uploadLyricForm").on("submit", function (e) {
 		error: function (xhr, st, err) {
 			toast.fire({
 				icon: "error",
-				text: xhr.responseJSON?.message ?? err ?? st,
+				text: xhr.responseJSON?.message ?? err ?? st
 			});
 		}
 	});

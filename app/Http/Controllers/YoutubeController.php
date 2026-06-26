@@ -37,14 +37,15 @@ class YoutubeController extends Controller
 				->get('https://lyrics.paxsenix.org/youtube/lyrics', ['id' => $id])->throw();
 			abort_if(empty($response->body()), 404, 'No lyric available for this song');
 			if (json_validate($response->body())) {
-				$r = json_decode($response->body(), true);
+				$r = self::decodeJson($response->body());
 				if (is_array($r)) {
 					if (array_key_exists('isError', $r) && $r['isError'] === true) {
+						abort_if($r['error']==='No lyrics found',404,'No lyric available for this song');
 						Log::error($r);
-						abort(404, $r['error']);
+						abort(500, $r['error']);
 					} else {
 						Log::error('Malformed lyric content: ', $r);
-						abort(500, 'Malformed lyric content, please report to developer.');
+						abort(500, 'Malformed lyric content, please contact site owner.');
 					}
 				}
 			} else $r = $response->body();

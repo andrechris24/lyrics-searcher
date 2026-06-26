@@ -40,11 +40,12 @@ class SpotifyController extends Controller
 			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 			if (is_array($r)) {
 				if (array_key_exists('isError', $r) && $r['isError'] === true) {
+					abort_if($r['error']==='No lyrics found',404,'No lyric available for this song');
 					Log::error($r);
-					abort(404, $r['error']);
+					abort(500, $r['error']);
 				} else {
 					Log::error('Malformed lyric content: ', $r);
-					abort(500, 'Malformed lyric content, please report to developer.');
+					abort(500, 'Malformed lyric content, please contact site owner.');
 				}
 			} else if (empty($r)) abort(404, 'No lyric available for this song');
 			return response()->json(['lyric' => $r, 'id' => $id]);

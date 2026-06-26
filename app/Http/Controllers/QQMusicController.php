@@ -101,8 +101,7 @@ class QQMusicController extends Controller
 			} else {
 				if (is_array($data['lyric']['content'])) {
 					Log::error('Malformed lyric content: ', $data['lyric']['content']);
-					// Log::notice('Full response: ',$data);
-					abort(500, 'Malformed lyric content. Wait for a while and try again.');
+					abort(500, 'Malformed lyric content. Wait for a while and try again. Contact site owner if issue persist.');
 				}
 				$lyric = $data['lyric']['content'];
 			}

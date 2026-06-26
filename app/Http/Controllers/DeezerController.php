@@ -43,8 +43,9 @@ class DeezerController extends Controller
 			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
 			$prevtime = 0;
 			if ($r['isError']) {
+				abort_if($r['error']==='No lyrics found',404,'No lyric available for this song');
 				Log::error($r);
-				abort(404, $r['error']);
+				abort(500, $r['error']);
 			} else if (empty($r['lyrics'])) $synced = null;
 			else {
 				$synced = '';
