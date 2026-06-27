@@ -35,7 +35,10 @@ $(document).ready(function () {
 				method: "GET",
 				headers: null,
 				error: function(xhr, st, err){
-					toast.fire({icon: "error", text: xhr.responseJSON?.message??err??st});
+					toast.fire({
+						icon: "error",
+						text: st==='timeout'?'Connection timed out': xhr.responseJSON?.message??err??st
+					});
 				}
 			},
 			columns: [

@@ -65,7 +65,7 @@ class LRCLibController extends Controller
 			if (array_key_exists('album', $yaml['metadata']))
 				$lyricsfile .= "[al: " . $yaml['metadata']['album'] . "]\n";
 			if (array_key_exists('duration_ms', $yaml['metadata']))
-				$lyricsfile .= "[length: " . gmdate('i:s', floor($yaml['metadata']['duration_ms'] / 1000)) . "]\n";
+				$lyricsfile .= "[length: " . gmdate('i:s', round($yaml['metadata']['duration_ms'] / 1000, 0, PHP_ROUND_HALF_UP)) . "]\n";
 			if (array_key_exists('offset_ms', $yaml['metadata']))
 				$lyricsfile .= "[offset: " . $yaml['metadata']['duration_ms'] . "]\n";
 			if (!array_key_exists('instrumental', $yaml['metadata']) || $yaml['metadata']['instrumental'] === false) {

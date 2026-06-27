@@ -40,35 +40,6 @@
 			</div>
 		@endforeach
 	</div>
-	{{-- <div class="mx-5 px-5 mb-5 pb-5">
-		<nav role="navigation" aria-label="{!! __('Pagination Navigation') !!}">
-			<ul class="pagination justify-content-center">
-				@if (empty($prev))
-					<li class="page-item disabled" aria-disabled="true">
-						<span class="page-link">{!! __('pagination.previous') !!}</span>
-					</li>
-				@else
-					<li class="page-item">
-						<a class="page-link" rel="prev"
-							href="{{ route('deezer.search', ['query' => request('query'), 'offset' => request('offset') - 20]) }}">
-							{!! __('pagination.previous') !!}
-						</a>
-					</li>
-				@endif
-
-				@if (!empty($next))
-					<li class="page-item">
-						<a class="page-link" rel="next"
-							href="{{ route('netease.search', ['query' => request('query'), 'offset' => (request('offset') ?? 0) + 20]) }}">{!! __('pagination.next') !!}</a>
-					</li>
-				@else
-					<li class="page-item disabled" aria-disabled="true">
-						<span class="page-link">{!! __('pagination.next') !!}</span>
-					</li>
-				@endif
-			</ul>
-		</nav>
-	</div> --}}
 @else
-	<x-no-results source="spotify" />
+	<x-no-results source="youtube" />
 @endif

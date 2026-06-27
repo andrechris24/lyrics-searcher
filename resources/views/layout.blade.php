@@ -181,6 +181,12 @@
 										YouTube
 									</a>
 								</li>
+								<li>
+									<a @class(['dropdown-item', 'active' => request()->routeIs('apple.*')]) href="{{ route('apple.index') }}"
+										@if (request()->routeIs('apple.*')) aria-current="page" @endif >
+										Apple Music
+									</a>
+								</li>
 							</ul>
 						</li>
 					</ul>

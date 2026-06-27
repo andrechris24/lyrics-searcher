@@ -1,9 +1,10 @@
 /* global toast */
-let syncedLyricContents, sylLyricContent, plainLyricContent, fileName;
+let syncedLyricContents, sylLyricContent, plainLyricContent, ttmlContent, fileName;
 const lyricsModal = document.getElementById("modalLyrics"),
 	plainLyricDL = document.getElementById("dl-plain"),
 	syncedLyricDL = document.getElementById("dl-synced"),
 	sylLyricDL = document.getElementById("dl-syllyric"),
+	ttmlDL = document.getElementById("dl-ttml"),
 	previewModal = document.getElementById("modalPreviewSong"),
 	player=$("#preview-player");
 if (lyricsModal) {
@@ -18,7 +19,7 @@ if (lyricsModal) {
 			duration = button.getAttribute("data-bs-duration");
 		const metaLyric =
 			`\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n` +
-			`[by: Deezer]\n[length: ${duration}]\n`;
+			`[by: Apple Music]\n[length: ${duration}]\n`;
 		// If necessary, you could initiate an Ajax request here
 		// and then do the updating in a callback
 
@@ -31,38 +32,41 @@ if (lyricsModal) {
 		// Set file name and contents on save
 		fileName = `${artistName} - ${songName}`;
 		$.ajax({
-			url: `/deezer/${songID}`,
+			url: `/apple/${songID}`,
 			beforeSend: function () {
 				$(".placeholder-glow").removeClass("d-none");
 				$("#lyrics-content").text("");
 				$("#song-writers").text('');
-				$("#song-copyright").text('');
-				$("#song-license").text('');
+				$("#song-lyric-type").text('');
 			},
 			complete: function () {
 				$(".placeholder-glow").addClass("d-none");
 			},
 			success: function (data) {
 				if (data.synced !== null) {
-					if (data.synced.match(/<(\d+):(\d+).(\d+)>/g)) {
-						$("#dl-syllyric").removeClass("disabled");
-						sylLyricContent = `[id: ${data.id}]${metaLyric}[lr: ${data.writer}]\n${data.synced}`;
-						syncedLyricContents = `[id: ${data.id}]${metaLyric}[lr: ${data.writer}]\n${data.synced.replace(/<(\d+):(\d+).(\d+)>/g,'')}`;
-					} else {
-						$("#dl-syllyric").addClass("disabled");
-						sylLyricContent = "";
-						syncedLyricContents = `[id: ${data.id}]${metaLyric}[lr: ${data.writer}]\n${data.synced}`;
-					}
+					$("#dl-synced").removeClass("disabled");
+					syncedLyricContents = `[id: ${data.id}]${metaLyric}[lr: ${data.writers}]\n${data.synced}`;
 				} else {
-					$("#dl-syllyric").addClass("disabled");
 					$("#dl-synced").addClass("disabled");
-					sylLyricContent = "";
 					syncedLyricContents = "";
 				}
+				if(data.syllable!==null){
+					$("#dl-syllyric").removeClass("disabled");
+					sylLyricContent = `[id: ${data.id}]${metaLyric}[lr: ${data.writers}]\n${data.syllable}`;
+				}else{
+					sylLyricContent = "";
+					$("#dl-syllyric").addClass("disabled");
+				}
+				if(data.ttml!==null){
+					$("#dl-ttml").removeClass("disabled");
+					ttmlContent=data.ttml;
+				}else{
+					$("#dl-ttml").addClass("disabled");
+					ttmlContent='';
+				}
 				plainLyricContent = `${fileName}\n\n${data.plain}`;
-				$("#song-writers").text(data.writer);
-				$("#song-copyright").text(data.copyright);
-				$("#song-license").text(data.license);
+				$("#song-writers").text(data.writers);
+				$("#song-lyric-type").text(data.type);
 				$("#lyrics-content").text(data.plain);
 			},
 			error: function (xhr, st, err) {
@@ -109,3 +113,7 @@ plainLyricDL.onclick = function () {
 	plainLyricDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(plainLyricContent)}`;
 	plainLyricDL.download = `${fileName}.txt`;
 };
+ttmlDL.onclick=function(){
+	ttmlDL.href = `data:application/ttml+xml;charset=utf-8,${encodeURIComponent(ttmlContent)}`;
+	ttmlDL.download = `${fileName}.ttml`;
+}

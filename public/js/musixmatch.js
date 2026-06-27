@@ -7,7 +7,7 @@ $(".download-btn").on("click", function (e) {
 		title = $(this).data("title"),
 		album = $(this).data("album");
 	const fileName = `${artist} - ${title}`;
-	let contents, ext, message;
+	let contents, ext;
 	$.ajax({
 		url: `/musixmatch/${id}/${type}`,
 		beforeSend: function () {
@@ -30,9 +30,10 @@ $(".download-btn").on("click", function (e) {
 		},
 		error: function (xhr, st, err) {
 			console.warn(err);
-			if (st === "timeout") message = "Connection timed out";
-			else message = xhr.responseJSON?.message ?? err ?? st;
-			toast.fire({ icon: "error", text: message });
+			toast.fire({
+				icon: "error",
+				text: st==='timeout'?'Connection timed out': xhr.responseJSON?.message??err??st
+			});
 		}
 	});
 });

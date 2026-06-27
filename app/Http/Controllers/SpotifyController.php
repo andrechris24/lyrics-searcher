@@ -13,14 +13,17 @@ class SpotifyController extends Controller
 	{
 		try {
 			$req->validate(['query' => 'required']);
-			$response = Http::retry(3, 100)->get(
-				'https://lyrics.paxsenix.org/spotify/search',
-				['q' => $req['query']]
-			)->throw();
+			$response = Http::retry(3, 100)
+				->get('https://lyrics.paxsenix.org/spotify/search',	['q' => $req['query']])
+				->throw();
 			$r = self::decodeJson($response->body());
 			if ($r === false) {
 				return to_route('spotify.index')->withInput()
 					->withError('Error parsing response: ' . json_last_error_msg());
+			}else if(array_key_exists('error', $r)){
+				Log::error($r);
+				return to_route('spotify.index')->withInput()
+					->withError('Oops, something went wrong with Spotify API. Please try again later.');
 			}
 			return view('spotify.result', ['data' => $r]);
 		} catch (ConnectionException $th) {

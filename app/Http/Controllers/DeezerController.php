@@ -70,7 +70,7 @@ class DeezerController extends Controller
 						$synced .= "\n";
 					} else {
 						if (($line['timestamp'] - $prevtime) > 5000 && $idx !== 0)
-							$synced .= '[' . $this->formatTime($line['endtime'] / 1000) . "]\n";
+							$synced .= '[' . $this->formatTime($prevtime / 1000) . "]\n";
 						$synced .= '[' . $this->formatTime($line['timestamp'] / 1000) . ']';
 						$synced .= $line['text'][0]['text'] . "\n";
 					}

@@ -1,5 +1,5 @@
 /* global toast, zpad */
-let lyricContents, klyricContent, fileName, message, ext;
+let lyricContents, klyricContent, fileName, ext;
 const lyricsModal = document.getElementById("modalLyrics"),
 	lyricDL = document.getElementById("dl-synced"),
 	klyricDL = document.getElementById("dl-klyric");
@@ -60,9 +60,10 @@ if (lyricsModal) {
 			},
 			error: function (xhr, st, err) {
 				console.warn(err);
-				if (st === "timeout") message = "Connection timed out";
-				else message = xhr.responseJSON?.message ?? err ?? st;
-				toast.fire({ icon: "error", text: message });
+				toast.fire({
+					icon: "error",
+					text: st==='timeout'?'Connection timed out': xhr.responseJSON?.message??err??st
+				});
 				$("#modalLyrics").modal("hide");
 			}
 		});

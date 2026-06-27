@@ -20,6 +20,10 @@ class YoutubeController extends Controller
 			if ($r === false) {
 				return to_route('youtube.index')->withInput()
 					->withError('Error parsing response: ' . json_last_error_msg());
+			}else if(array_key_exists('error', $r)){
+				Log::error($r);
+				return to_route('youtube.index')->withInput()
+					->withError('Oops, something went wrong with YouTube API. Please try again later.');
 			}
 			return view('youtube.result', ['data' => $r]);
 		} catch (ConnectionException $th) {

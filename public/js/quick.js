@@ -3,7 +3,6 @@ let plainContents,
 	syncedContents,
 	fileName,
 	formData,
-	message,
 	track_id,
 	meta,
 	localContents,
@@ -169,15 +168,13 @@ $("#searchSongLyric").on("submit", function (e) {
 				if (typeof xhr.responseJSON.errors.source !== "undefined")
 					$("#lyric-source").addClass("is-invalid");
 			}
-			if (st === "timeout") message = "Connection timed out";
-			else message = xhr.responseJSON?.message ?? err ?? st;
 			toast.fire({
 				icon: "error",
 				titleText:
 					typeof xhr.responseJSON.source !== "undefined"
 						? xhr.responseJSON.source
 						: "",
-				text: message
+				text: st==='timeout'?'Connection timed out': xhr.responseJSON?.message??err??st
 			});
 		}
 	});

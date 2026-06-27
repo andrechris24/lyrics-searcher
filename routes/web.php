@@ -12,6 +12,7 @@ use App\Http\Controllers\LocalController;
 use App\Http\Controllers\DeezerController;
 use App\Http\Controllers\SpotifyController;
 use App\Http\Controllers\YoutubeController;
+use App\Http\Controllers\AppleController;
 
 Route::view('/', 'index')->name('home');
 Route::get('result', [SingleController::class, 'search'])->name('result');
@@ -100,6 +101,13 @@ Route::prefix('spotify')->name('spotify.')->group(function () {
 Route::prefix('youtube')->name('youtube.')->group(function () {
 	Route::view('/', 'youtube.index')->name('index');
 	Route::controller(YoutubeController::class)->name('search')->group(function () {
+		Route::get('results', 'search');
+		Route::get('{id}', 'get')->name('.get');
+	});
+});
+Route::prefix('apple')->name('apple.')->group(function () {
+	Route::view('/', 'apple.index')->name('index');
+	Route::controller(AppleController::class)->name('search')->group(function () {
 		Route::get('results', 'search');
 		Route::get('{id}', 'get')->name('.get');
 	});

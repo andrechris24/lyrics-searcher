@@ -18,7 +18,16 @@ if (lyricsModal) {
 				processing: true,
 				responsive: true,
 				searching: false,
-				ajax: { url: `/kugou/${songID}`, dataSrc: "" },
+				ajax: { 
+					url: `/kugou/${songID}`, 
+					dataSrc: "",
+					error: function(xhr, st, err){
+						toast.fire({
+							icon: "error",
+							text: st==='timeout'?'Connection timed out': xhr.responseJSON?.message??err??st
+						});
+					}
+				},
 				columns: [
 					{ data: "singer" },
 					{ data: "song" },
@@ -51,9 +60,6 @@ if (lyricsModal) {
 						}
 					}
 				]
-			})
-			.on("dt-error", function (e, settings, tn, message) {
-				toast.fire({ icon: "warning", text: message });
 			});
 	});
 }
@@ -63,7 +69,7 @@ document.addEventListener("focusin", (e) => {
 });
 
 function dlLRC(id, key) {
-	let message, ext;
+	let ext;
 	$.ajax({
 		url: `/kugou/get`,
 		data: { id: id, key: key },
@@ -134,9 +140,10 @@ function dlLRC(id, key) {
 		},
 		error: function (xhr, st, err) {
 			console.warn(err);
-			if (st === "timeout") message = "Connection timed out";
-			else message = xhr.responseJSON?.message ?? err ?? st;
-			toast.fire({ icon: "error", text: message });
+			toast.fire({
+				icon: "error",
+				text: st==='timeout'?'Connection timed out': xhr.responseJSON?.message??err??st
+			});
 		}
 	});
 }
