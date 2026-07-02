@@ -7,6 +7,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\{Http, Log};
 use Illuminate\Support\Sleep; //Required as Musixmatch has strict rate limit
 use Illuminate\Validation\ValidationException;
+use JsonException;
 
 class MusixmatchController extends Controller
 {
@@ -52,13 +53,9 @@ class MusixmatchController extends Controller
 					$query['q'] = $req['query'];
 					break;
 			}
-			$response = Http::retry(3, 5000)->withHeaders(self::MX_HEADER)
-				->get(self::$url . 'track.search', $query);
-			$r = self::decodeJson($response->body());
-			if ($r === false) {
-				return to_route('musixmatch.index')->withInput()
-					->withError('Error parsing response: ' . json_last_error_msg());
-			}
+			$response = Http::retry(3, 5000, throw: false)->timeout(25000)
+				->withHeaders(self::MX_HEADER)->get(self::$url . 'track.search', $query);
+			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
 			$header = $r['message']['header'];
 			if ($header['status_code'] !== 200) {
 				return to_route('musixmatch.index')->withInput()
@@ -69,9 +66,13 @@ class MusixmatchController extends Controller
 		} catch (ConnectionException $th) {
 			Log::error($th);
 			return to_route('musixmatch.index')->withInput()
-				->withError('Musixmatch connection failed: ' . $th->getMessage());
+				->withError('Musixmatch connection error ' . $th->getCode() . ': ' . $th->getMessage());
 		} catch (ValidationException $e) {
 			return to_route('musixmatch.index')->withInput()->withErrors($e->errors());
+		} catch (JsonException $e) {
+			Log::error($e);
+			return to_route('musixmatch.index')->withInput()
+				->withError('Error parsing response: ' . $e->getMessage());
 		}
 	}
 	public function advanced(Request $req)
@@ -92,13 +93,11 @@ class MusixmatchController extends Controller
 			$query['q_artist'] = $req['artist'];
 			$query['q_lyrics'] = $req['lyrics'];
 			$query['page'] = $req['page'] ?? 1;
-			$response = Http::retry(3, 5000)->withHeaders(self::MX_HEADER)
-				->get(self::$url . 'track.search', $query);
-			$r = self::decodeJson($response->body());
-			if ($r === false) {
-				return to_route('musixmatch.advanced')->withInput()
-					->withError('Error parsing response: ' . json_last_error_msg());
-			}
+			$query['f_has_subtitle']=1;
+			unset($query['f_has_lyrics']);
+			$response = Http::retry(3, 5000, throw: false)->timeout(25000)
+				->withHeaders(self::MX_HEADER)->get(self::$url . 'track.search', $query);
+			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
 			$header = $r['message']['header'];
 			if ($header['status_code'] !== 200) {
 				return to_route('musixmatch.advanced')->withInput()
@@ -109,9 +108,13 @@ class MusixmatchController extends Controller
 		} catch (ConnectionException $th) {
 			Log::error($th);
 			return to_route('musixmatch.advanced')->withInput()
-				->withError('Musixmatch connection failed: ' . $th->getMessage());
+				->withError('Musixmatch connection error ' . $th->getCode() . ': ' . $th->getMessage());
 		} catch (ValidationException $e) {
 			return to_route('musixmatch.advanced')->withInput()->withErrors($e->errors());
+		} catch (JsonException $e) {
+			Log::error($e);
+			return to_route('musixmatch.advanced')->withInput()
+				->withError('Error parsing response: ' . $e->getMessage());
 		}
 	}
 	public function charts(string $type)
@@ -126,13 +129,9 @@ class MusixmatchController extends Controller
 		$query['chart_name'] = $type;
 		$query['country'] = 'id';
 		try {
-			$response = Http::retry(3, 5000)->withHeaders(self::MX_HEADER)
-				->get(self::$url . 'chart.tracks.get', $query);
-			$r = self::decodeJson($response->body());
-			if ($r === false) {
-				return to_route('musixmatch.index')
-					->withError('Error parsing response: ' . json_last_error_msg());
-			}
+			$response = Http::retry(3, 5000, throw: false)->timeout(25000)
+				->withHeaders(self::MX_HEADER)->get(self::$url . 'chart.tracks.get', $query);
+			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
 			$header = $r['message']['header'];
 			if ($header['status_code'] !== 200)
 				return to_route('musixmatch.index')->withError($this->getMXerror($header));
@@ -141,9 +140,13 @@ class MusixmatchController extends Controller
 		} catch (ConnectionException $th) {
 			Log::error($th);
 			return to_route('musixmatch.index')
-				->withError('Musixmatch connection failed: ' . $th->getMessage());
+				->withError('Musixmatch connection error ' . $th->getCode() . ': ' . $th->getMessage());
 		} catch (ValidationException $e) {
 			return to_route('musixmatch.index')->withErrors($e->errors());
+		} catch (JsonException $e) {
+			Log::error($e);
+			return to_route('musixmatch.index')
+				->withError('Error parsing response: ' . $e->getMessage());
 		}
 	}
 	public function get(int $id, string $type)
@@ -160,10 +163,10 @@ class MusixmatchController extends Controller
 		$query['commontrack_id'] = $id;
 		unset($query['f_has_lyrics'], $query['page_size']);
 		try {
-			$response = Http::retry(3, 5000)->withHeaders(self::MX_HEADER)
+			$response = Http::retry(3, 5000, throw: false)->timeout(25000)
+				->withHeaders(self::MX_HEADER)
 				->get(self::$url . 'track.' . $type . '.get', $query);
-			$r = self::decodeJson($response->body());
-			abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
+			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
 			$header = $r['message']['header'];
 			abort_if(
 				$header['status_code'] !== 200,
@@ -179,7 +182,7 @@ class MusixmatchController extends Controller
 					'duration' => gmdate('i:s', $data['subtitle_length'])
 				],
 				'richsync' => [
-					'content' => $this->richsync(json_decode($data['richsync_body'], true)),
+					'content' => $this->richsync(parent::decodeJson($data['richsync_body'])),
 					'id' => $data['richsync_id'],
 					'duration' => gmdate('i:s', $data['richsync_length'])
 				],
@@ -188,7 +191,10 @@ class MusixmatchController extends Controller
 			return response()->json($lyrics);
 		} catch (ConnectionException $th) {
 			Log::error($th);
-			abort(500, 'Musixmatch connection failed: ' . $th->getMessage());
+			abort(500, 'Musixmatch connection error ' . $th->getCode() . ': ' . $th->getMessage());
+		} catch (JsonException $e) {
+			Log::error($e);
+			abort(500, 'Error parsing response: ' . $e->getMessage());
 		}
 	}
 	private function richsync(array $lrc)

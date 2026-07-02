@@ -17,9 +17,9 @@ class LocalController extends Controller
 	}
 	public function aimp(Request $req)
 	{
-		// $req->validate(['title'=>'required','artist'=>'required']);
-		$data = Lyric::whereLike('title','%'.$req['title'].'%')
-			->whereLike('artist','%'.$req['artist'].'%')->get();
+		$req->validate(['title' => 'required', 'artist' => 'required']);
+		$data = Lyric::whereLike('title', '%' . $req['title'] . '%')
+			->whereLike('artist', '%' . $req['artist'] . '%')->limit(5)->get();
 		return response()->json($data);
 	}
 	public function get(int $id)

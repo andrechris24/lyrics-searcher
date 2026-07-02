@@ -14,7 +14,7 @@
 			crossorigin="anonymous">
 
 		<!-- FontAwesome -->
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" integrity="sha256-MVopmdyC2tYTiJ8wlktf0uh0v4NgT+vNdyVFepi7Q0c=" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.0/css/all.min.css" integrity="sha256-O2p11mherUYPja5rjeK2afvVekcdkigTHg/bG+cj8qk=" crossorigin="anonymous">
 
 		<link href="https://cdn.datatables.net/v/bs5/dt-2.3.8/r-3.0.8/datatables.min.css" rel="stylesheet" integrity="sha384-tNYQLr593NFEx21InOh9Hbxz0c66iRCODxYVibI1MHkEHCTPXTwB/7k4ZqWvtRt9" crossorigin="anonymous">
 		<script type="text/javascript" src="{{ asset('js/theme.js') }}"></script>
@@ -313,9 +313,8 @@
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
 			integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
 			crossorigin="anonymous"></script>
-		<script src="https://code.jquery.com/jquery-3.7.1.min.js"
-			integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-			crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/jquery-4.0.0.min.js" integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao=" crossorigin="anonymous"></script>
+		{{-- <script src="https://code.jquery.com/jquery-migrate-4.0.2.js" integrity="sha256-4jeVh9jfwyyopEc4//vH8BKuFP0q9ElJZLsJrTEcZjI=" crossorigin="anonymous"></script> --}}
 		<script
 			src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"
 			integrity="sha256-jLFv9iIrIbqKULHpqp/jmePDqi989pKXOcOht3zgRcw="

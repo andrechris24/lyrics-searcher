@@ -1,12 +1,16 @@
 /* global toast */
-let syncedLyricContents, sylLyricContent, plainLyricContent, ttmlContent, fileName;
+let syncedLyricContents,
+	sylLyricContent,
+	plainLyricContent,
+	ttmlContent,
+	fileName;
 const lyricsModal = document.getElementById("modalLyrics"),
 	plainLyricDL = document.getElementById("dl-plain"),
 	syncedLyricDL = document.getElementById("dl-synced"),
 	sylLyricDL = document.getElementById("dl-syllyric"),
 	ttmlDL = document.getElementById("dl-ttml"),
 	previewModal = document.getElementById("modalPreviewSong"),
-	player=$("#preview-player");
+	player = $("#preview-player");
 if (lyricsModal) {
 	lyricsModal.addEventListener("show.bs.modal", (event) => {
 		const button = event.relatedTarget;
@@ -20,8 +24,6 @@ if (lyricsModal) {
 		const metaLyric =
 			`\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n` +
 			`[by: Apple Music]\n[length: ${duration}]\n`;
-		// If necessary, you could initiate an Ajax request here
-		// and then do the updating in a callback
 
 		// Update the modal's content
 		$("#song-album").text(albumName);
@@ -36,8 +38,8 @@ if (lyricsModal) {
 			beforeSend: function () {
 				$(".placeholder-glow").removeClass("d-none");
 				$("#lyrics-content").text("");
-				$("#song-writers").text('');
-				$("#song-lyric-type").text('');
+				$("#song-writers").text("");
+				$("#song-lyric-type").text("");
 			},
 			complete: function () {
 				$(".placeholder-glow").addClass("d-none");
@@ -50,19 +52,19 @@ if (lyricsModal) {
 					$("#dl-synced").addClass("disabled");
 					syncedLyricContents = "";
 				}
-				if(data.syllable!==null){
+				if (data.syllable !== null) {
 					$("#dl-syllyric").removeClass("disabled");
 					sylLyricContent = `[id: ${data.id}]${metaLyric}[lr: ${data.writers}]\n${data.syllable}`;
-				}else{
+				} else {
 					sylLyricContent = "";
 					$("#dl-syllyric").addClass("disabled");
 				}
-				if(data.ttml!==null){
+				if (data.ttml !== null) {
 					$("#dl-ttml").removeClass("disabled");
-					ttmlContent=data.ttml;
-				}else{
+					ttmlContent = data.ttml;
+				} else {
 					$("#dl-ttml").addClass("disabled");
-					ttmlContent='';
+					ttmlContent = "";
 				}
 				plainLyricContent = `${fileName}\n\n${data.plain}`;
 				$("#song-writers").text(data.writers);
@@ -73,16 +75,19 @@ if (lyricsModal) {
 				console.warn(err);
 				toast.fire({
 					icon: "error",
-					text: st==='timeout'?'Connection timed out': xhr.responseJSON?.message??err??st
+					text:
+						st === "timeout"
+							? "Connection timed out"
+							: (xhr.responseJSON?.message ?? err ?? st)
 				});
 				$("#modalLyrics").modal("hide");
 			}
 		});
 	});
 }
-if(previewModal){
-	previewModal.addEventListener("show.bs.modal",function(e){
-		const attr=e.relatedTarget;
+if (previewModal) {
+	previewModal.addEventListener("show.bs.modal", function (e) {
+		const attr = e.relatedTarget;
 		const songName = attr.getAttribute("data-bs-title"),
 			artistName = attr.getAttribute("data-bs-artist"),
 			albumName = attr.getAttribute("data-bs-album"),
@@ -92,12 +97,12 @@ if(previewModal){
 		$("#preview-duration").text(duration);
 		$("#preview-title").text(songName);
 		$("#preview-artist").text(artistName);
-		$("#preview-song").attr('src',songLink);
+		$("#preview-song").attr("src", songLink);
 		player[0].pause();
 		player[0].load();
-		player[0].oncanplaythrough=player[0].play();
+		player[0].oncanplaythrough = player[0].play();
 	});
-	previewModal.addEventListener("hidden.bs.modal",function(){
+	previewModal.addEventListener("hidden.bs.modal", function () {
 		player[0].pause();
 	});
 }
@@ -113,7 +118,7 @@ plainLyricDL.onclick = function () {
 	plainLyricDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(plainLyricContent)}`;
 	plainLyricDL.download = `${fileName}.txt`;
 };
-ttmlDL.onclick=function(){
+ttmlDL.onclick = function () {
 	ttmlDL.href = `data:application/ttml+xml;charset=utf-8,${encodeURIComponent(ttmlContent)}`;
 	ttmlDL.download = `${fileName}.ttml`;
-}
+};

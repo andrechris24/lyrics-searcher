@@ -5,10 +5,8 @@
 		@foreach ($data as $result)
 			<div class="col">
 				<div class="card">
-					<div class="card-header">
-						<img src="{{ $result['thumbnail'] }}" class="card-img-top"
-						alt="{{ $result['title'] }}">
-					</div>
+					<img src="{{ $result['thumbnail'] }}" class="card-img-top"
+					alt="{{ $result['title'] }}">
 					<div class="card-body">
 						<h5 class="card-title">
 							{{ $result['title'] . ($result['isExplicit'] ? ' [E]' : '') }}

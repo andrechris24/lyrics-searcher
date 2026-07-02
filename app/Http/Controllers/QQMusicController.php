@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\QrcDecoder;
 use Illuminate\Http\Request;
-use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Http, Log};
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -21,7 +21,7 @@ class QQMusicController extends Controller
 				'title' => 'required',
 				'offset' => 'nullable|integer|min:0|multiple_of:20'
 			]);
-			$response = Http::retry(3, 100)->withHeaders(self::QQ_HEADER)
+			$response = Http::retry(3, 100)->timeout(25000)->withHeaders(self::QQ_HEADER)
 				->get(self::$url . 'lyric/fcgi-bin/fcg_search_pc_lrc.fcg', [
 					'SONGNAME' => $req['title'],
 					'SINGERNAME' => $req['artist'],
@@ -56,15 +56,19 @@ class QQMusicController extends Controller
 		} catch (ConnectionException $th) {
 			Log::error($th);
 			return to_route('qqmusic.index')->withInput()
-				->withError('QQ Music connection failed: ' . $th->getMessage());
+				->withError('QQ Music connection error ' . $th->getCode() . ': ' . $th->getMessage());
 		} catch (ValidationException $e) {
 			return to_route('qqmusic.index')->withInput()->withErrors($e->errors());
+		} catch (RequestException $e) {
+			Log::error($e);
+			return to_route('qqmusic.index')->withInput()
+				->withError('QQ Music HTTP Error ' . $e->response->status());
 		}
 	}
 	public function get(int $id)
 	{
 		try {
-			$response = Http::retry(3, 100)->withHeaders(self::QQ_HEADER)
+			$response = Http::retry(3, 100)->timeout(25000)->withHeaders(self::QQ_HEADER)
 				->get(self::$url . 'qqmusic/fcgi-bin/lyric_download.fcg', [
 					'version' => 15,
 					'miniversion' => 82,
@@ -81,7 +85,7 @@ class QQMusicController extends Controller
 				abort(500, 'Error parsing response: ' . libxml_get_last_error());
 			}
 			$xml = self::decodeJson(json_encode($xmlResponse));
-			abort_if($xml === false, 500, 'Error reading response: ' . json_last_error());
+			abort_if($xml === false, 500, 'Error reading response: ' . json_last_error_msg());
 			$data = $xml['cmd'];
 			if (!in_array($data['result'], [0, 200])) {
 				Log::error($data);
@@ -101,7 +105,10 @@ class QQMusicController extends Controller
 			} else {
 				if (is_array($data['lyric']['content'])) {
 					Log::error('Malformed lyric content: ', $data['lyric']['content']);
-					abort(500, 'Malformed lyric content. Wait for a while and try again. Contact site owner if issue persist.');
+					abort(
+						500,
+						'Malformed lyric content. Wait for a while and try again. Contact site owner if issue persist.'
+					);
 				}
 				$lyric = $data['lyric']['content'];
 			}
@@ -112,7 +119,13 @@ class QQMusicController extends Controller
 			]);
 		} catch (ConnectionException $th) {
 			Log::error($th);
-			abort(500, 'QQ Music connection failed: ' . $th->getMessage());
+			abort(500, 'QQ Music connection error ' . $th->getCode() . ': ' . $th->getMessage());
+		} catch (RequestException $e) {
+			Log::error($e);
+			abort(
+				$e->response->status(),
+				$e->response->status() === 404 ? 'No lyric available for this song' : 'QQ Music HTTP error ' . $e->response->status()
+			);
 		}
 	}
 }

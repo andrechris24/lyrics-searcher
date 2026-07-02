@@ -38,7 +38,7 @@ $("#searchSongLyric").on("submit", function (e) {
 			if (data.instrumental === true || data.instrumental === 1) {
 				toast.fire({
 					icon: "info",
-					text: `Found song ${data.artist} - ${data.title} but it's marked as Instrumental`,
+					text: `Found song ${data.artist} - ${data.title} but it's marked as Instrumental`
 				});
 			} else {
 				if (data.source !== "lyrics.ovh") {
@@ -148,10 +148,7 @@ $("#searchSongLyric").on("submit", function (e) {
 						$("#modalLocal").modal("show");
 						break;
 					default:
-						toast.fire({
-							icon: "error",
-							text: "Unsupported source"
-						});
+						toast.fire({icon: "error", text: "Unsupported source"});
 						break;
 				}
 			}
@@ -174,7 +171,10 @@ $("#searchSongLyric").on("submit", function (e) {
 					typeof xhr.responseJSON.source !== "undefined"
 						? xhr.responseJSON.source
 						: "",
-				text: st==='timeout'?'Connection timed out': xhr.responseJSON?.message??err??st
+				text:
+					st === "timeout"
+						? "Connection timed out"
+						: (xhr.responseJSON?.message ?? err ?? st)
 			});
 		}
 	});
@@ -256,9 +256,7 @@ wbwDL.onclick = function (e) {
 						},
 						type: "POST",
 						url: "/lrclib/convert",
-						data: {
-							content: wbwContents
-						},
+						data: {content: wbwContents},
 						success: function (data) {
 							return JSON.stringify(data);
 						},
@@ -276,14 +274,10 @@ wbwDL.onclick = function (e) {
 			}
 		})
 		.then((result) => {
-			if (result.isConfirmed) {
-				if (result.value.instrumental === true)
-					toast.fire({
-						icon: "warning",
-						text: "Conversion aborted, song is Instrumental"
-					});
-				else blobDL(result.value.lrc, `${fileName}.lrc`);
-			} else if (result.isDenied) blobDL(wbwContents, `${fileName}.yaml`);
+			if (result.isConfirmed)
+				blobDL(result.value.lrc, `${fileName}.lrc`);
+			else if (result.isDenied) blobDL(wbwContents, `${fileName}.yaml`);
+			else console.warn("Download aborted");
 		});
 };
 localDL.onclick = function () {
@@ -295,8 +289,8 @@ localDL.onclick = function () {
 		if (localContents.match(/<(\d+):(\d+).(\d+)>/g)) {
 			Swal.fire({
 				icon: "question",
-				title:
-					"This lyric contains syllable timestamps and only a few players supports this type. Do you want to keep them?",
+				title: "Download in Enhanced LRC?",
+				text: "This lyric contains syllable timestamps and only a few players supports this type. Do you want to keep them?",
 				theme: "bootstrap-5",
 				showDenyButton: true,
 				showCancelButton: true,

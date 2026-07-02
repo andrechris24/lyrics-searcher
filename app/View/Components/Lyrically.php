@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class EnhancedOnly extends Component
+class Lyrically extends Component
 {
     /**
      * Create a new component instance.
@@ -21,6 +21,6 @@ class EnhancedOnly extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.enhanced-only');
+        return view('components.lyrically');
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\{Http, Log};
 use Illuminate\Support\Sleep;
+use JsonException;
 
 class SingleController extends Controller
 {
@@ -24,29 +25,30 @@ class SingleController extends Controller
 				case 'lrclib':
 					$param = ['artist_name' => $req['artist'], 'track_name' => $req['title']];
 					if (!empty($req['album'])) $param['album_name'] = $req['album'];
-					$response = Http::retry(3, 100)->get('https://lrclib.net/api/get', $param);
-					$r = self::decodeJson($response->body());
-					abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
-					if ($response->successful()) {
-						return response()->json([
-							'title' => $r['trackName'],
-							'artist' => $r['artistName'],
-							'album' => $r['albumName'],
-							'duration' => gmdate('i:s', $r['duration']),
-							'plain' => $r['plainLyrics'],
-							'synced' => $r['syncedLyrics'],
-							'wbw' => $r['lyricsfile'],
-							'instrumental' => $r['instrumental'],
-							'id' => $r['id'],
-							'source' => 'lrclib'
-						]);
-					}
-					abort($r['statusCode'], $r['message']);
-					break;
+					$response = Http::retry(3, 100, throw: false)->timeout(25000)
+						->get('https://lrclib.net/api/get', $param);
+					$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+					abort_if(
+						$response->failed(),
+						$response->status(),
+						array_key_exists('message', $r) ? $r['message'] : 'LRCLib HTTP Error ' . $response->status()
+					);
+					return response()->json([
+						'title' => $r['trackName'],
+						'artist' => $r['artistName'],
+						'album' => $r['albumName'],
+						'duration' => gmdate('i:s', $r['duration']),
+						'plain' => $r['plainLyrics'],
+						'synced' => $r['syncedLyrics'],
+						'wbw' => $r['lyricsfile'],
+						'instrumental' => $r['instrumental'],
+						'id' => $r['id'],
+						'source' => 'lrclib'
+					]);
 				case 'musixmatch':
 					abort_if(empty(env('MUSIXMATCH_TOKEN')), 500, 'Musixmatch token was not found');
 					Sleep::for(5)->seconds();
-					$response = Http::retry(3, 5000)->withHeaders([
+					$response = Http::retry(3, 5000, throw: false)->timeout(25000)->withHeaders([
 						'authority' => 'apic-desktop.musixmatch.com',
 						'cookie' => 'x-mxm-token-guid='
 					])->get(MusixmatchController::$url . 'macro.subtitles.get', [
@@ -58,8 +60,7 @@ class SingleController extends Controller
 						'q_track' => $req['title'],
 						'usertoken' => env('MUSIXMATCH_TOKEN')
 					]);
-					$r = self::decodeJson($response->body());
-					abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
+					$r = $response->json(null, null, JSON_THROW_ON_ERROR);
 					$header = $r['message']['header'];
 					abort_if(
 						$header['status_code'] !== 200,
@@ -134,9 +135,8 @@ class SingleController extends Controller
 						urlencode($req['artist']),
 						urlencode($req['title'])
 					);
-					$response = Http::retry(3, 100)->get($ovhuri);
-					$r = self::decodeJson($response->body());
-					abort_if($r === false, 500, 'Error parsing response: ' . json_last_error_msg());
+					$response = Http::retry(3, 100, throw: false)->timeout(25000)->get($ovhuri);
+					$r = $response->json(null, null, JSON_THROW_ON_ERROR);
 					if ($response->successful()) {
 						return response()->json([
 							'title' => $req['title'],
@@ -147,11 +147,9 @@ class SingleController extends Controller
 						]);
 					} else if (array_key_exists('error', $r)) {
 						Log::warning($r);
-						abort_if($response->badRequest(), 400, $r['error']);
-						abort_if($response->notFound(), 404, $r['error']);
-						abort(500, $r['error']);
+						abort($response->status(), $r['error']);
 					} else {
-						Log::error('Unknown Lyrics.ovh response', $r);
+						Log::error('Unknown Lyrics.ovh response: ', $r);
 						abort(500, 'Unknown response: ' . json_encode($r));
 					}
 					break;
@@ -171,10 +169,13 @@ class SingleController extends Controller
 			}
 		} catch (ConnectionException $e) {
 			Log::error($e);
-			abort(500, 'Connection failed: ' . $e->getMessage());
+			abort(500, 'Connection error ' . $e->getCode() . ': ' . $e->getMessage());
 		} catch (QueryException $e) {
 			Log::error($e);
 			abort(500, 'Local database error: ' . $e->errorInfo[2]);
+		} catch (JsonException $e) {
+			Log::error($e);
+			abort(500, 'Error parsing response: ' . $e->getMessage());
 		}
 	}
 }

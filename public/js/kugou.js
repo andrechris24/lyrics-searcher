@@ -1,4 +1,4 @@
-/* global blobDL, toast, Swal */
+/* global blobDL, toast, Swal, zpad */
 let songID, fileName, dt_lyrics, lyricContent;
 const lyricsModal = document.getElementById("modalLyrics");
 if (lyricsModal) {
@@ -11,56 +11,58 @@ if (lyricsModal) {
 		if ($.fn.dataTable.isDataTable("#lyrics-table")) dt_lyrics.destroy();
 
 		// Update the modal's content
-		dt_lyrics = $("#lyrics-table")
-			.DataTable({
-				language: { emptyTable: "No lyrics available for this song" },
-				lengthChange: false,
-				processing: true,
-				responsive: true,
-				searching: false,
-				ajax: { 
-					url: `/kugou/${songID}`, 
-					dataSrc: "",
-					error: function(xhr, st, err){
-						toast.fire({
-							icon: "error",
-							text: st==='timeout'?'Connection timed out': xhr.responseJSON?.message??err??st
-						});
+		dt_lyrics = $("#lyrics-table").DataTable({
+			language: { emptyTable: "No lyrics available for this song" },
+			lengthChange: false,
+			processing: true,
+			responsive: true,
+			searching: false,
+			ajax: {
+				url: `/kugou/${songID}`,
+				dataSrc: "",
+				error: function (xhr, st, err) {
+					toast.fire({
+						icon: "error",
+						text:
+							st === "timeout"
+								? "Connection timed out"
+								: (xhr.responseJSON?.message ?? err ?? st)
+					});
+				}
+			},
+			columns: [
+				{ data: "singer" },
+				{ data: "song" },
+				{ data: "duration" },
+				{ data: "id" }
+			],
+			columnDefs: [
+				{
+					target: 0,
+					render: function (data) {
+						return data.replaceAll("\u{3001}", ", ");
 					}
 				},
-				columns: [
-					{ data: "singer" },
-					{ data: "song" },
-					{ data: "duration" },
-					{ data: "id" }
-				],
-				columnDefs: [
-					{
-						target: 0,
-						render: function (data) {
-							return data.replaceAll("\u{3001}", ", ");
-						}
-					},
-					{
-						target: 2,
-						render: function (data) {
-							return formatMilliseconds(data);
-						}
-					},
-					{
-						orderable: false,
-						target: 3,
-						render: function (data, type, full) {
-							const access = full["accesskey"];
-							return (
-								`<button type="button" class="btn btn-primary btn-sm dl-btn" onclick="dlLRC(${data},'${access}')">` +
-								'<i class="fa-solid fa-download"></i>' +
-								"</button>"
-							);
-						}
+				{
+					target: 2,
+					render: function (data) {
+						return formatMilliseconds(data);
 					}
-				]
-			});
+				},
+				{
+					orderable: false,
+					target: 3,
+					render: function (data, type, full) {
+						const access = full["accesskey"];
+						return (
+							`<button type="button" class="btn btn-primary btn-sm dl-btn" onclick="dlLRC(${data},'${access}')">` +
+							'<i class="fa-solid fa-download"></i>' +
+							"</button>"
+						);
+					}
+				}
+			]
+		});
 	});
 }
 document.addEventListener("focusin", (e) => {
@@ -142,7 +144,10 @@ function dlLRC(id, key) {
 			console.warn(err);
 			toast.fire({
 				icon: "error",
-				text: st==='timeout'?'Connection timed out': xhr.responseJSON?.message??err??st
+				text:
+					st === "timeout"
+						? "Connection timed out"
+						: (xhr.responseJSON?.message ?? err ?? st)
 			});
 		}
 	});
@@ -159,8 +164,8 @@ function formatMilliseconds(ms) {
 	const seconds = totalSeconds % 60;
 
 	// Pad with leading zeros if needed
-	const formattedMinutes = String(minutes).padStart(2, "0");
-	const formattedSeconds = String(seconds).padStart(2, "0");
+	const formattedMinutes = zpad(minutes);
+	const formattedSeconds = zpad(seconds);
 
 	return `${formattedMinutes}:${formattedSeconds}`;
 }

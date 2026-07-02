@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use JsonException;
 
 abstract class Controller
 {
@@ -56,19 +57,27 @@ abstract class Controller
 	}
 
 	/**
-	 * Decode JSON response from remote source
+	 * Decodes JSON string
 	 *
-	 * @param  string $response
-	 * @return array|false	Return decoded response in array, false on failure
+	 * @param  string $json
+	 * @return array|false	Return decoded json in array, false on failure
 	 */
-	protected function decodeJson(string $response)
+	protected function decodeJson(string $json)
 	{
-		$res = json_decode($response, true);
-		if (json_last_error() !== JSON_ERROR_NONE) {
-			Log::error('Invalid JSON response for ' . $response . ': ' . json_last_error_msg());
+		try {
+			$res = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+			return $res;
+		} catch (JsonException $e) {
+			Log::error($e);
 			return false;
 		}
-		return $res;
+	}
+
+	protected function checkJson(string $response)
+	{
+		if (json_last_error() !== JSON_ERROR_NONE)
+			Log::error('Invalid JSON response for ' . $response . ': ' . json_last_error_msg());
+		return json_last_error() === JSON_ERROR_NONE;
 	}
 	protected function krc2lrc(string $krcText)
 	{
@@ -96,11 +105,11 @@ abstract class Controller
 				$duration = (int)$matches[2];
 				if ($idx === 0) {
 					if ($startTime > 3000)
-						$lyricLine = "[" . $this->formatTime(($startTime - rand(2500, 3000)) / 1000) . "]";
+						$lyricLine = "[" . $this->formatTime(($startTime - mt_rand(2500, 3000)) / 1000) . "]";
 					else $lyricLine = "[00:00.00]";
 				} else if (($startTime - $prevtime) > 9000) {
-					$lyricLine .= "[" . $this->formatTime(($prevtime + rand(2500, 3500)) / 1000) . "]\n";
-					$lyricLine .= "[" . $this->formatTime(($startTime - rand(2500, 3500)) / 1000) . ']';
+					$lyricLine .= "[" . $this->formatTime(($prevtime + mt_rand(2500, 3500)) / 1000) . "]\n";
+					$lyricLine .= "[" . $this->formatTime(($startTime - mt_rand(2500, 3500)) / 1000) . ']';
 				} else
 					$lyricLine .= "[" . $this->formatTime($startTime / 1000) . ']';
 				// parse sub-timestamps

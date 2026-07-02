@@ -16,8 +16,6 @@ if (lyricsModal) {
 		const metaLyric =
 			`[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n` +
 			`[by: NetEase]\n[length: ${duration}]\n`;
-		// If necessary, you could initiate an Ajax request here
-		// and then do the updating in a callback
 
 		// Update the modal's content
 		$("#song-album").text(albumName);
@@ -53,7 +51,7 @@ if (lyricsModal) {
 					lyricContents = `${fileName}\n\n${data.lrc.lyric}`;
 					ext = "txt";
 				} else {
-					lyricContents = `${metaLyric}[ve: ${data.lrc.version??1.0}]\n${data.lrc.lyric}`;
+					lyricContents = `${metaLyric}[ve: ${data.lrc.version ?? 1.0}]\n${data.lrc.lyric}`;
 					ext = "lrc";
 				}
 				$("#lyrics-content").text(data.lrc.lyric);
@@ -62,7 +60,10 @@ if (lyricsModal) {
 				console.warn(err);
 				toast.fire({
 					icon: "error",
-					text: st==='timeout'?'Connection timed out': xhr.responseJSON?.message??err??st
+					text:
+						st === "timeout"
+							? "Connection timed out"
+							: (xhr.responseJSON?.message ?? err ?? st)
 				});
 				$("#modalLyrics").modal("hide");
 			}
@@ -107,10 +108,6 @@ function parseKLyric(lyricText) {
 	return enhancedlyricText;
 }
 function formatTime(time) {
-	// const zpad = (n) => {
-	// 	const s = n.toString();
-	// 	return s.length < 2 ? `0${s}` : s;
-	// };
 	let t = Math.abs(time / 1000);
 	const h = Math.floor(t / 3600);
 	t -= h * 3600;

@@ -23,13 +23,13 @@ $(".list-group-item-action").on("click", function (e) {
 					buttonsStyling: false,
 					customClass: {
 						confirmButton: "btn btn-primary btn-lg me-2",
-						cancelButton: "btn btn-danger btn-lg",
+						cancelButton: "btn btn-danger btn-lg"
 					},
 					topLayer: true,
 					inputOptions: {
 						synced: "Synced",
 						wordbyword: "Word-by-Word",
-						plain: "Plain",
+						plain: "Plain"
 					},
 					input: "select",
 					inputPlaceholder: "Select lyric type",
@@ -76,7 +76,10 @@ $(".list-group-item-action").on("click", function (e) {
 			console.warn(err);
 			toast.fire({
 				icon: "error",
-				text: st==='timeout'?'Connection timed out': xhr.responseJSON?.message??err??st
+				text:
+					st === "timeout"
+						? "Connection timed out"
+						: (xhr.responseJSON?.message ?? err ?? st)
 			});
 		}
 	});

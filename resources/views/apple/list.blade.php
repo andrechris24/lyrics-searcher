@@ -9,9 +9,7 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<div class="alert alert-info mb-2">
-					Lyric preview and download provided by Lyrically API
-				</div>
+				<x-lyrically/>
 				<div class="row mb-3">
 					<div class="col-12 col-sm-4">
 						<b>Artist</b>

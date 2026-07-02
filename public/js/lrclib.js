@@ -1,4 +1,4 @@
-/* global Swal, blobDL, toast, swalConfirm */
+/* global Swal, blobDL, swalConfirm */
 let plainContents, syncedContents, wbwContents, fileName;
 const lyricsModal = document.getElementById("modalLRCLib"),
 	plainDL = document.getElementById("download-link-lrclib-plain"),
@@ -17,8 +17,6 @@ if (lyricsModal) {
 			wbwLyrics = button.getAttribute("data-bs-wordbyword"),
 			duration = button.getAttribute("data-bs-duration"),
 			lyricID = button.getAttribute("data-bs-id");
-		// If necessary, you could initiate an Ajax request here
-		// and then do the updating in a callback
 
 		// Update the modal's content
 		const songArtist = document.getElementById("lrclib-song-artist"),
@@ -109,13 +107,8 @@ wbwDL.onclick = function (e) {
 			}
 		})
 		.then((result) => {
-			if (result.isConfirmed) {
-				if (result.value.instrumental === true)
-					toast.fire({
-						icon: "warning",
-						text: "Conversion aborted, song is Instrumental"
-					});
-				else blobDL(result.value.lrc, `${fileName}.lrc`);
-			} else if (result.isDenied) blobDL(wbwContents, `${fileName}.yaml`);
+			if (result.isConfirmed) blobDL(result.value.lrc, `${fileName}.lrc`);
+			else if (result.isDenied) blobDL(wbwContents, `${fileName}.yaml`);
+			else console.warn("Download aborted");
 		});
 };

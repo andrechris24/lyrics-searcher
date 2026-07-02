@@ -23,125 +23,130 @@ if (lyricsModal) {
 		$("#local-content").text(content);
 	});
 }
-$(document).ready(function () {
-	dt_local = $("#local-lyrics")
-		.DataTable({
-			processing: true,
-			responsive: true,
-			serverSide: true,
-			stateSave: true,
-			ajax: {
-				url: "/local/data",
-				method: "GET",
-				headers: null,
-				error: function(xhr, st, err){
-					toast.fire({
-						icon: "error",
-						text: st==='timeout'?'Connection timed out': xhr.responseJSON?.message??err??st
-					});
-				}
-			},
-			columns: [
-				{ data: "title" },
-				{ data: "artist" },
-				{ data: "album" },
-				{ data: "duration" },
-				{ data: "user.name" },
-				{ data: "created_at" },
-				{ data: "content" }
-			],
-			order: [[5, 'desc']],
-			columnDefs: [
-				{
-					target: 3,
-					searchable: false,
-					render: function (data, type, full) {
-						if (full["offset"] === 0) return formatSeconds(data);
-						return `${formatSeconds(data)} (${full["offset"] > 0 ? "+" : ""}${full["offset"] / 1000})`;
+$(document)
+	.ready(function () {
+		dt_local = $("#local-lyrics")
+			.DataTable({
+				processing: true,
+				responsive: true,
+				serverSide: true,
+				stateSave: true,
+				ajax: {
+					url: "/local/data",
+					method: "GET",
+					headers: null,
+					error: function (xhr, st, err) {
+						toast.fire({
+							icon: "error",
+							text:
+								st === "timeout"
+									? "Connection timed out"
+									: (xhr.responseJSON?.message ?? err ?? st)
+						});
 					}
 				},
-				{
-					target: 5,
-					searchable: false,
-					render: function (data) {
-						return luxon.DateTime.fromISO(data).toFormat("dd LLL yyyy HH:mm");
+				columns: [
+					{ data: "title" },
+					{ data: "artist" },
+					{ data: "album" },
+					{ data: "duration" },
+					{ data: "user.name" },
+					{ data: "created_at" },
+					{ data: "content" }
+				],
+				order: [[5, "desc"]],
+				columnDefs: [
+					{
+						target: 3,
+						searchable: false,
+						render: function (data, type, full) {
+							if (full["offset"] === 0) return formatSeconds(data);
+							return `${formatSeconds(data)} (${full["offset"] > 0 ? "+" : ""}${full["offset"] / 1000})`;
+						}
+					},
+					{
+						target: 5,
+						searchable: false,
+						render: function (data) {
+							return luxon.DateTime.fromISO(data).toFormat("dd LLL yyyy HH:mm");
+						}
+					},
+					{
+						orderable: false,
+						searchable: false,
+						target: 6,
+						render: function (data, type, full) {
+							const create = luxon.DateTime.fromISO(
+									full["created_at"],
+								).toFormat("dd LLL yyyy HH:mm"),
+								update = luxon.DateTime.fromISO(full["updated_at"]).toFormat(
+									"dd LLL yyyy HH:mm",
+								),
+								length = formatSeconds(full["duration"]);
+							return (
+								'<div class="btn-group btn-group-sm">' +
+								'<button type="button" class="btn btn-info" data-bs-toggle="modal"' +
+								`data-bs-target="#modalLocalFile" data-bs-album="${full["album"]}"` +
+								`data-bs-duration="${length}" data-bs-title="${full["title"]}"` +
+								`data-bs-artist="${full["artist"]}"` +
+								`data-bs-content="${data}"` +
+								`data-bs-upload="${create}"` +
+								`data-bs-user="${full["user"]["name"] ?? "Guest"}"` +
+								`data-bs-offset="${full["offset"]}" data-bs-update="${update}">` +
+								'<i class="fa-solid fa-eye"></i></button>' +
+								'<button type="button" class="btn btn-primary btn-sm dl-button"' +
+								`data-album="${full["album"]}" data-title="${full["title"]}"` +
+								`data-artist="${full["artist"]}" data-id="${full["id"]}"` +
+								`data-duration="${length}" data-content="${data}"` +
+								`data-user="${full["user"]["name"] ?? "Guest"}" data-offset="${full["offset"]}">` +
+								'<i class="fa-solid fa-download"></i>' +
+								"</button></div>"
+							);
+						}
 					}
-				},
-				{
-					orderable: false,
-					searchable: false,
-					target: 6,
-					render: function (data, type, full) {
-						const create = luxon.DateTime.fromISO(full["created_at"]).toFormat(
-								"dd LLL yyyy HH:mm"
-							),
-							update = luxon.DateTime.fromISO(full["updated_at"]).toFormat(
-								"dd LLL yyyy HH:mm"
-							),
-							length = formatSeconds(full["duration"]);
-						return (
-							'<div class="btn-group btn-group-sm">' +
-							'<button type="button" class="btn btn-info" data-bs-toggle="modal"' +
-							`data-bs-target="#modalLocalFile" data-bs-album="${full["album"]}"` +
-							`data-bs-duration="${length}" data-bs-title="${full["title"]}"` +
-							`data-bs-artist="${full["artist"]}"` +
-							`data-bs-content="${data}"` +
-							`data-bs-upload="${create}"` +
-							`data-bs-user="${full["user"]["name"] ?? "Guest"}"` +
-							`data-bs-offset="${full["offset"]}" data-bs-update="${update}">` +
-							'<i class="fa-solid fa-eye"></i></button>' +
-							'<button type="button" class="btn btn-primary btn-sm dl-button"' +
-							`data-album="${full["album"]}" data-title="${full["title"]}"` +
-							`data-artist="${full["artist"]}" data-id="${full["id"]}"` +
-							`data-duration="${length}" data-content="${data}"` +
-							`data-user="${full["user"]["name"] ?? "Guest"}" data-offset="${full["offset"]}">` +
-							'<i class="fa-solid fa-download"></i>' +
-							"</button></div>"
-						);
-					}
-				}
-			]
-		})
-		.on("dt-error", function (e, settings, tn, message) {
-			console.warn(message);
-		});
-}).on("click", ".dl-button", function () {
-	let ext;
-	const songName = $(this).data("title"),
-		artistName = $(this).data("artist"),
-		albumName = $(this).data("album"),
-		duration = $(this).data("duration"),
-		content = $(this).data("content"),
-		user = $(this).data("user"),
-		offset = $(this).data("offset"),
-		songID = $(this).data("id");
-	const fileName = `${artistName} - ${songName}`;
-	if (!content.match(/\[(\d+):(\d+).(\d+)\]/)) {
-		ext = ".txt";
-		blobDL(`${fileName}\n\n${content}`, fileName + ext);
-	} else {
-		const meta = `[id: ${songID}]\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n[by: ${user}]\n[length: ${duration}]\n[offset: ${offset}]\n`;
-		ext = ".lrc";
-		if (content.match(/<(\d+):(\d+).(\d+)>/g)) {
-			Swal.fire({
-				icon: "question",
-				title: "Download in Enhanced LRC format?",
-				text: "This lyric contains syllable timestamps and only a few players supports this type.",
-				theme: "bootstrap-5",
-				showDenyButton: true,
-				showCancelButton: true,
-				confirmButtonText: "Yes",
-				denyButtonText: "No"
-			}).then((result) => {
-				if (result.isConfirmed) blobDL(meta + content, fileName + ext);
-				else if (result.isDenied) {
-					const plainContent = content.replace(/<(\d+):(\d+).(\d+)>/g, "");
-					blobDL(meta + plainContent, fileName + ext);
-				} else console.warn("Download cancelled");
+				]
+			})
+			.on("dt-error", function (e, settings, tn, message) {
+				console.warn(message);
 			});
-		} else blobDL(meta + content, fileName + ext);
-	}
-});
+	})
+	.on("click", ".dl-button", function () {
+		let ext;
+		const songName = $(this).data("title"),
+			artistName = $(this).data("artist"),
+			albumName = $(this).data("album"),
+			duration = $(this).data("duration"),
+			content = $(this).data("content"),
+			user = $(this).data("user"),
+			offset = $(this).data("offset"),
+			songID = $(this).data("id");
+		const fileName = `${artistName} - ${songName}`;
+		if (!content.match(/\[(\d+):(\d+).(\d+)\]/)) {
+			ext = ".txt";
+			blobDL(`${fileName}\n\n${content}`, fileName + ext);
+		} else {
+			const meta = `[id: ${songID}]\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n[by: ${user}]\n[length: ${duration}]\n[offset: ${offset}]\n`;
+			ext = ".lrc";
+			if (content.match(/<(\d+):(\d+).(\d+)>/g)) {
+				Swal.fire({
+					icon: "question",
+					title: "Download in Enhanced LRC format?",
+					text: "This lyric contains syllable timestamps and only a few players supports this type.",
+					theme: "bootstrap-5",
+					showDenyButton: true,
+					showCancelButton: true,
+					confirmButtonText: "Yes",
+					denyButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) blobDL(meta + content, fileName + ext);
+					else if (result.isDenied) {
+						const plainContent = content.replace(/<(\d+):(\d+).(\d+)>/g, "");
+						blobDL(meta + plainContent, fileName + ext);
+					} else console.warn("Download cancelled");
+				});
+			} else blobDL(meta + content, fileName + ext);
+		}
+	});
 $("#uploadLyricForm").on("submit", function (e) {
 	e.preventDefault();
 	$.ajax({

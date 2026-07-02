@@ -80,7 +80,10 @@ $(".list-group-item-action").on("click", function (e) {
 			console.warn(err);
 			toast.fire({
 				icon: "error",
-				text: st==='timeout'?'Connection timed out': xhr.responseJSON?.message??err??st
+				text:
+					st === "timeout"
+						? "Connection timed out"
+						: (xhr.responseJSON?.message ?? err ?? st)
 			});
 		}
 	});
