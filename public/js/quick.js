@@ -55,14 +55,22 @@ $("#searchSongLyric").on("submit", function (e) {
 					} else {
 						plainContents = `${fileName}\n\n${data.plain}`;
 						if (data.synced === "" || data.synced === null) {
-							if (data.source === "lrclib")
+							if (data.source === "lrclib"){
 								llSyncedDL.classList.add("disabled");
-							else mxSyncedDL.classList.add("disabled");
+								$("#lrclib-lyric-type").text("Plain");
+							}else {
+								mxSyncedDL.classList.add("disabled");
+								$("#mx-lyric-type").text('Plain');
+							}
 							syncedContents = null;
 						} else {
-							if (data.source === "lrclib")
+							if (data.source === "lrclib"){
 								llSyncedDL.classList.remove("disabled");
-							else mxSyncedDL.classList.remove("disabled");
+								$("#lrclib-lyric-type").text("Synced");
+							}else {
+								mxSyncedDL.classList.remove("disabled");
+								$("#mx-lyric-type").text("Synced");
+							}
 							syncedContents = `[id: ${data.id}]${meta}[length: ${data.duration}]\n[by: ${data.source}]\n${data.synced}`;
 						}
 					}
@@ -80,10 +88,11 @@ $("#searchSongLyric").on("submit", function (e) {
 						$("#lrclib-song-album").text(data.album);
 						$("#lrclib-song-duration").text(data.duration);
 						if (data.wbw === null || data.wbw === "") {
-							$("#lrclib-wbw").addClass("d-none");
+							wbwDL.classList.add("disabled");
 							wbwContents = null;
 						} else {
-							$("#lrclib-wbw").removeClass("d-none");
+							wbwDL.classList.remove("disabled");
+							$("#lrclib-lyric-type").text("Word-by-word");
 							wbwContents = data.wbw;
 						}
 						$("#modalLRCLib").modal("show");
@@ -115,6 +124,7 @@ $("#searchSongLyric").on("submit", function (e) {
 						if (data.richsync === true || data.richsync === 1) {
 							track_id = data.track_id;
 							mxRichsyncDL.classList.remove("disabled");
+							$("#mx-lyric-type").text("Richsync");
 						} else {
 							track_id = null;
 							mxRichsyncDL.classList.add("disabled");

@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\{Artisan, Http, Log};
+use Illuminate\Support\Facades\{Artisan, Http};
 
 Artisan::command('inspire', function () {
 	$this->comment(Inspiring::quote());
@@ -11,13 +11,7 @@ Artisan::command('usertoken', function () {
 		'user_language' => 'en',
 		'app_id' => 'web-desktop-app-v1.0'
 	])->throw();
-	$r = json_decode($musixmatch->body(), true);
-	if (json_last_error() !== JSON_ERROR_NONE) {
-		Log::error(
-			'Invalid JSON response for ' . $musixmatch->body() . ': ' . json_last_error_msg()
-		);
-		abort(500, 'Error parsing response: ' . json_last_error_msg());
-	}
+	$r = $musixmatch->json(null, null, JSON_THROW_ON_ERROR);
 	$header = $r['message']['header'];
 	abort_if(
 		$header['status_code'] !== 200,
@@ -32,6 +26,9 @@ Artisan::command('usertoken', function () {
 				previous: new Exception($body['user_token'])
 			);
 		}
-		echo "Open env file, then set MUSIXMATCH_TOKEN value to:\n" . $body['user_token'];
+		$this->comment("<options=bold>Open env file, then set MUSIXMATCH_TOKEN value to:</>");
+		$this->info($body['user_token']);
+		$this->question("\nIf you use AIMP, replace <MX_TOKEN_X> placeholders inside aimp_webLyrics.ini with above value before replacing original file.");
+		$this->warn("Don't use same token for all placeholders including env due to strict rate limit.");
 	} else abort(404, 'No user token provided from Musixmatch');
 })->purpose('Generates Musixmatch token');

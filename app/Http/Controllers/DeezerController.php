@@ -23,20 +23,17 @@ class DeezerController extends Controller
 			);
 			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
 			return view('deezer.result', $r);
-		} catch (ConnectionException $th) {
-			Log::error($th);
-			return to_route('deezer.index')->withInput()
-				->withError('Deezer connection error ' . $th->getCode() . ': ' . $th->getMessage());
 		} catch (ValidationException $e) {
 			return to_route('deezer.index')->withInput()->withErrors($e->errors());
-		} catch (RequestException $e) {
-			Log::error($e);
-			return to_route('deezer.index')->withInput()
-				->withError('Deezer HTTP Error ' . $e->response->status());
-		}catch(JsonException $e){
-			Log::error($e);
-			return to_route('deezer.index')->withInput()
-					->withError('Error parsing response: ' . $e->getMessage());
+		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
+			Log::error($th);
+			$message = match (get_class($th)) {
+				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
+				ConnectionException::class => 'Deezer connection error ' . $th->getCode() . ': ' . $th->getMessage(),
+				RequestException::class => 'Deezer HTTP Error ' . $th->response->status(),
+				default => 'Deezer unexpected error : ' . $th->getMessage()
+			};
+			return to_route('deezer.index')->withInput()->withError($message);
 		}
 	}
 	public function get(int $id)
@@ -56,9 +53,9 @@ class DeezerController extends Controller
 				foreach ($r['lyrics'] as $idx => $line) {
 					if (count($line['text']) > 1) {
 						if ($idx === 0) {
-							if ($line['timestamp'] <= 3000) $synced .= '[00:00.00]';
-							else
-								$synced .= '[' . $this->formatTime(($line['timestamp'] - mt_rand(2500, 3000)) / 1000) . ']';
+							$synced .= ($line['timestamp'] <= 3000)
+								? '[00:00.00]'
+								: '[' . $this->formatTime(($line['timestamp'] - mt_rand(2500, 3000)) / 1000) . ']';
 						} elseif (($line['timestamp'] - $prevtime) > 9000) {
 							$synced .= "[" . $this->formatTime(($prevtime + mt_rand(2500, 3500)) / 1000) . "]\n";
 							$synced .= "[" . $this->formatTime(($line['timestamp'] - mt_rand(2500, 3500)) / 1000) . ']';
@@ -91,18 +88,18 @@ class DeezerController extends Controller
 				'copyright' => $r['copyright'],
 				'license' => $r['licence']
 			]);
-		} catch (ConnectionException $th) {
+		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
 			Log::error($th);
-			abort(500, 'Deezer connection error ' . $th->getCode() . ': ' . $th->getMessage());
-		} catch (RequestException $e) {
-			Log::error($e);
+			$message = match (get_class($th)) {
+				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
+				ConnectionException::class => 'Deezer API connection error ' . $th->getCode() . ': ' . $th->getMessage(),
+				RequestException::class => $th->response->status() === 404 ? 'No lyric available for this song' : 'Deezer API error ' . $th->response->status(),
+				default => 'Deezer API unexpected error : ' . $th->getMessage()
+			};
 			abort(
-				$e->response->status(),
-				$e->response->status() === 404 ? 'No lyric available for this song' : 'Deezer API error ' . $e->response->status()
+				(get_class($th) === RequestException::class) ?$th->response->status():500, 
+				$message
 			);
-		}catch(JsonException $e){
-			Log::error($e);
-			abort(500, 'Error parsing response: ' . $e->getMessage());
 		}
 	}
 }

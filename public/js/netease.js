@@ -36,7 +36,7 @@ if (lyricsModal) {
 			},
 			success: function (data) {
 				if (typeof data.klyric !== "undefined") {
-					if (data.klyric.lyric !== "") {
+					if (data.klyric.lyric !== "" && data.klyric.lyric!==null) {
 						$("#dl-klyric").removeClass("disabled");
 						klyricContent = `${metaLyric}[ve: ${data.klyric.version}]\n${parseKLyric(data.klyric.lyric)}`;
 					} else {

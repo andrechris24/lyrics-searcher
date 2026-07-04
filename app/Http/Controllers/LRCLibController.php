@@ -21,20 +21,17 @@ class LRCLibController extends Controller
 				->get(self::$url, ['q' => $request['query']]);
 			$data = $response->json(null, null, JSON_THROW_ON_ERROR);
 			return view('lrclib.result', compact('data'));
-		} catch (ConnectionException $e) {
-			Log::error($e);
-			return to_route('lrclib.index')->withInput()
-				->withError('LRCLib connection error ' . $e->getCode() . ': ' . $e->getMessage());
 		} catch (ValidationException $e) {
 			return to_route('lrclib.index')->withInput()->withErrors($e->errors());
-		} catch (RequestException $e) {
-			Log::error($e);
-			return to_route('lrclib.index')->withInput()
-				->withError('lrclib HTTP Error ' . $e->response->status());
-		} catch (JsonException $e) {
-			Log::error($e);
-			return to_route('lrclib.index')->withInput()
-				->withError('Error parsing response: ' . $e->getMessage());
+		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
+			Log::error($th);
+			$message = match (get_class($th)) {
+				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
+				ConnectionException::class => 'LRCLib connection error ' . $th->getCode() . ': ' . $th->getMessage(),
+				RequestException::class => 'LRCLib HTTP Error ' . $th->response->status(),
+				default => 'LRCLib unexpected error : ' . $th->getMessage()
+			};
+			return to_route('lrclib.index')->withInput()->withError($message);
 		}
 	}
 	public function advanced(Request $request)
@@ -48,20 +45,17 @@ class LRCLibController extends Controller
 			]);
 			$data = $response->json(null, null, JSON_THROW_ON_ERROR);
 			return view('lrclib.advanced.result', compact('data'));
-		} catch (ConnectionException $e) {
-			Log::error($e);
-			return to_route('lrclib.advanced')->withInput()
-				->withError('LRCLib connection error ' . $e->getCode() . ': ' . $e->getMessage());
 		} catch (ValidationException $e) {
 			return to_route('lrclib.advanced')->withInput()->withErrors($e->errors());
-		} catch (RequestException $e) {
-			Log::error($e);
-			return to_route('lrclib.index')->withInput()
-				->withError('lrclib HTTP Error ' . $e->response->status());
-		} catch (JsonException $e) {
-			Log::error($e);
-			return to_route('lrclib.advanced')->withInput()
-				->withError('Error parsing response: ' . $e->getMessage());
+		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
+			Log::error($th);
+			$message = match (get_class($th)) {
+				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
+				ConnectionException::class => 'LRCLib connection error ' . $th->getCode() . ': ' . $th->getMessage(),
+				RequestException::class => 'LRCLib HTTP Error ' . $th->response->status(),
+				default => 'LRCLib unexpected error : ' . $th->getMessage()
+			};
+			return to_route('lrclib.advanced')->withInput()->withError($message);
 		}
 	}
 	public function convert(Request $req)

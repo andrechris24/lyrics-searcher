@@ -34,6 +34,12 @@
 					<div class="col-12 col-sm-8">
 						<span id="lrclib-song-duration">--:--</span>
 					</div>
+					<div class="col-12 col-sm-4">
+						<b>Lyric Type</b>
+					</div>
+					<div class="col-12 col-sm-8">
+						<span id="lrclib-lyric-type">?</span>
+					</div>
 				</div>
 				<p id="lrclib-content" style="white-space: pre-line"></p>
 			</div>

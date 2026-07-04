@@ -23,20 +23,17 @@ class SpotifyController extends Controller
 					->withError('Oops, something went wrong with Spotify API. Please try again later.');
 			}
 			return view('spotify.result', ['data' => $r]);
-		} catch (ConnectionException $th) {
-			Log::error($th);
-			return to_route('spotify.index')->withInput()
-				->withError('Spotify connection error ' . $th->getCode() . ': ' . $th->getMessage());
 		} catch (ValidationException $e) {
 			return to_route('spotify.index')->withInput()->withErrors($e->errors());
-		} catch (RequestException $e) {
-			Log::error($e);
-			return to_route('spotify.index')->withInput()
-				->withError('Spotify HTTP Error ' . $e->response->status());
-		} catch (JsonException $e) {
-			Log::error($e);
-			return to_route('spotify.index')->withInput()
-				->withError('Error parsing response: ' . $e->getMessage());
+		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
+			Log::error($th);
+			$message = match (get_class($th)) {
+				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
+				ConnectionException::class => 'Spotify API connection error ' . $th->getCode() . ': ' . $th->getMessage(),
+				RequestException::class => 'Spotify API HTTP Error ' . $th->response->status(),
+				default => 'Spotify API unexpected error : ' . $th->getMessage()
+			};
+			return to_route('spotify.index')->withInput()->withError($message);
 		}
 	}
 	public function get(string $id)
@@ -56,18 +53,18 @@ class SpotifyController extends Controller
 				}
 			} else if (empty($r)) abort(404, 'No lyric available for this song');
 			return response()->json(['lyric' => $r, 'id' => $id]);
-		} catch (ConnectionException $th) {
+		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
 			Log::error($th);
-			abort(500, 'Spotify connection error ' . $th->getCode() . ': ' . $th->getMessage());
-		} catch (RequestException $e) {
-			Log::error($e);
+			$message = match (get_class($th)) {
+				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
+				ConnectionException::class => 'Spotify API connection error ' . $th->getCode() . ': ' . $th->getMessage(),
+				RequestException::class => 'Spotify API HTTP Error ' . $th->response->status(),
+				default => 'Spotify API unexpected error : ' . $th->getMessage()
+			};
 			abort(
-				$e->response->status(),
-				$e->response->status() === 404 ? 'No lyric available for this song' : 'Spotify API error ' . $e->response->status()
+				(get_class($th) === RequestException::class) ?$th->response->status():500,
+				$message
 			);
-		} catch (JsonException $e) {
-			Log::error($e);
-			abort(500, 'Error parsing response: ' . $e->getMessage());
 		}
 	}
 }

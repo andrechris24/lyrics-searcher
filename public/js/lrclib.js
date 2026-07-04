@@ -30,22 +30,20 @@ if (lyricsModal) {
 		songAlbum.textContent = albumName;
 		songDuration.textContent = duration;
 
-		if (wbwLyrics === null || wbwLyrics === "")
-			$("#lrclib-wbw").addClass("d-none");
-		else $("#lrclib-wbw").removeClass("d-none");
-
 		// Set file name and contents on save
 		fileName = `${songArtist.textContent} - ${songTitle.textContent}`;
 		plainContents = `${fileName}\n\n${plainLyrics}`;
-		if (syncedLyrics === "") {
+		if (syncedLyrics === "" || syncedLyrics===null) {
 			syncedDL.classList.add("disabled");
 			syncedContents = null;
+			$("#lrclib-lyric-type").text("Plain");
 		} else {
 			syncedDL.classList.remove("disabled");
 			syncedContents =
 				`[id: ${lyricID}]\n[ar: ${artistName}]\n[ti: ${songName}]\n` +
 				`[al: ${albumName}]\n[by: LRCLib]\n` +
 				`[length: ${songDuration.textContent}]\n${syncedLyrics}`;
+			$("#lrclib-lyric-type").text("Synced");
 		}
 		if (wbwLyrics === null || wbwLyrics === "") {
 			wbwDL.classList.add("disabled");
@@ -53,6 +51,7 @@ if (lyricsModal) {
 		} else {
 			wbwDL.classList.remove("disabled");
 			wbwContents = wbwLyrics;
+			$("#lrclib-lyric-type").text("Word-by-word");
 		}
 	});
 }

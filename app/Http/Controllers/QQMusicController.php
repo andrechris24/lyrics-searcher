@@ -41,10 +41,10 @@ class QQMusicController extends Controller
 				return to_route('qqmusic.index')->withInput()
 					->withError('Error parsing response: ' . libxml_get_last_error());
 			}
-			$xml = self::decodeJson(json_encode($xmlResponse));
+			$xml = self::decodeJson(json_encode($xmlResponse));//Convert XML Objects to Array
 			if ($xml === false) {
 				return to_route('qqmusic.index')->withInput()
-					->withError('Error reading response: ' . json_last_error());
+					->withError('Oops, an error occurred while reading QQ Music response.');
 			}
 			$data = $xml['cmd'];
 			if (!in_array($data['result'], [0, 200])) {
@@ -53,16 +53,16 @@ class QQMusicController extends Controller
 					->withError('QQ Music error ' . $data['result'] . ', ' . $data['reason']);
 			}
 			return view('qqmusic.result', $data);
-		} catch (ConnectionException $th) {
-			Log::error($th);
-			return to_route('qqmusic.index')->withInput()
-				->withError('QQ Music connection error ' . $th->getCode() . ': ' . $th->getMessage());
 		} catch (ValidationException $e) {
 			return to_route('qqmusic.index')->withInput()->withErrors($e->errors());
-		} catch (RequestException $e) {
-			Log::error($e);
-			return to_route('qqmusic.index')->withInput()
-				->withError('QQ Music HTTP Error ' . $e->response->status());
+		} catch (ConnectionException  | RequestException | \Exception $th) {
+			Log::error($th);
+			$message=match(get_class($th)){
+				ConnectionException::class => 'QQ Music connection error ' . $th->getCode() . ': ' . $th->getMessage(),
+				RequestException::class => 'QQ Music HTTP Error ' . $th->response->status(),
+				default => 'QQ Music unexpected error : ' . $th->getMessage()
+			};
+			return to_route('qqmusic.index')->withInput()->withError($message);
 		}
 	}
 	public function get(int $id)
@@ -85,7 +85,7 @@ class QQMusicController extends Controller
 				abort(500, 'Error parsing response: ' . libxml_get_last_error());
 			}
 			$xml = self::decodeJson(json_encode($xmlResponse));
-			abort_if($xml === false, 500, 'Error reading response: ' . json_last_error_msg());
+			abort_if($xml === false, 500, 'Error reading QQ Music response');
 			$data = $xml['cmd'];
 			if (!in_array($data['result'], [0, 200])) {
 				Log::error($data);
@@ -101,7 +101,7 @@ class QQMusicController extends Controller
 				$lyricXml = $decoder->decode($data['lyric']['content']);
 				$lyricXml = Str::between($lyricXml, 'LyricContent="', "\"/>\n");
 				abort_if(empty($lyricXml), 404, 'Empty lyric, download aborted');
-				$lyric = $this->qrcToLrc($lyricXml);
+				$lyric = Str::replace(">\n", "> \n", $this->qrcToLrc($lyricXml), false);
 			} else {
 				if (is_array($data['lyric']['content'])) {
 					Log::error('Malformed lyric content: ', $data['lyric']['content']);
@@ -117,14 +117,16 @@ class QQMusicController extends Controller
 				'encoded' => ctype_xdigit($data['lyric']['content']),
 				'id' => $id
 			]);
-		} catch (ConnectionException $th) {
+		} catch (ConnectionException | RequestException | \Exception $th) {
 			Log::error($th);
-			abort(500, 'QQ Music connection error ' . $th->getCode() . ': ' . $th->getMessage());
-		} catch (RequestException $e) {
-			Log::error($e);
+			$message = match (get_class($th)) {
+				ConnectionException::class => 'QQ Music connection error ' . $th->getCode() . ': ' . $th->getMessage(),
+				RequestException::class => 'QQ Music HTTP Error ' . $th->response->status(),
+				default => 'QQ Music unexpected error : ' . $th->getMessage()
+			};
 			abort(
-				$e->response->status(),
-				$e->response->status() === 404 ? 'No lyric available for this song' : 'QQ Music HTTP error ' . $e->response->status()
+				(get_class($th) === RequestException::class) ?$th->response->status():500, 
+				$message
 			);
 		}
 	}

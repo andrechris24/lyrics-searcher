@@ -73,12 +73,11 @@ abstract class Controller
 		}
 	}
 
-	protected function checkJson(string $response)
-	{
-		if (json_last_error() !== JSON_ERROR_NONE)
-			Log::error('Invalid JSON response for ' . $response . ': ' . json_last_error_msg());
-		return json_last_error() === JSON_ERROR_NONE;
-	}
+	/**
+	 * Converts KRC lyrics to Enhanced LRC
+	 * @param  string $krcText 
+	 * @return string
+	 */
 	protected function krc2lrc(string $krcText)
 	{
 		if (empty($krcText)) return null;
@@ -104,9 +103,9 @@ abstract class Controller
 				$startTime = (int)$matches[1];
 				$duration = (int)$matches[2];
 				if ($idx === 0) {
-					if ($startTime > 3000)
-						$lyricLine = "[" . $this->formatTime(($startTime - mt_rand(2500, 3000)) / 1000) . "]";
-					else $lyricLine = "[00:00.00]";
+					$lyricLine.= ($startTime > 3000)
+						?"[" . $this->formatTime(($startTime - mt_rand(2500, 3000)) / 1000) . "]"
+						:"[00:00.00]";
 				} else if (($startTime - $prevtime) > 9000) {
 					$lyricLine .= "[" . $this->formatTime(($prevtime + mt_rand(2500, 3500)) / 1000) . "]\n";
 					$lyricLine .= "[" . $this->formatTime(($startTime - mt_rand(2500, 3500)) / 1000) . ']';
@@ -128,6 +127,12 @@ abstract class Controller
 		}
 		return $lyricText;
 	}
+
+	/**
+	 * Converts decoded QRC lyrics to Enhanced LRC format
+	 * @param  string $qrcText
+	 * @return string
+	 */
 	protected function qrcToLrc(string $qrcText)
 	{
 		if (empty($qrcText)) return null;

@@ -41,7 +41,7 @@ if (lyricsModal) {
 				$(".placeholder-glow").addClass("d-none");
 			},
 			success: function (data) {
-				if (data.synced !== null) {
+				if (data.synced !== null && data.synced!=='') {
 					if (data.synced.match(/<(\d+):(\d+).(\d+)>/g)) {
 						$("#dl-syllyric").removeClass("disabled");
 						sylLyricContent = `[id: ${data.id}]${metaLyric}[lr: ${data.writer}]\n${data.synced}`;

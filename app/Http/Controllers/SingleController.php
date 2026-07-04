@@ -7,7 +7,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\{Http, Log};
-use Illuminate\Support\Sleep;
+// use Illuminate\Support\Sleep;
 use JsonException;
 
 class SingleController extends Controller
@@ -47,7 +47,7 @@ class SingleController extends Controller
 					]);
 				case 'musixmatch':
 					abort_if(empty(env('MUSIXMATCH_TOKEN')), 500, 'Musixmatch token was not found');
-					Sleep::for(5)->seconds();
+					// Sleep::for(5)->seconds();
 					$response = Http::retry(3, 5000, throw: false)->timeout(25000)->withHeaders([
 						'authority' => 'apic-desktop.musixmatch.com',
 						'cookie' => 'x-mxm-token-guid='
@@ -58,7 +58,7 @@ class SingleController extends Controller
 						'q_album' => $req['album'],
 						'q_artist' => $req['artist'],
 						'q_track' => $req['title'],
-						'usertoken' => env('MUSIXMATCH_TOKEN')
+						'usertoken' => MusixmatchController::validateToken()
 					]);
 					$r = $response->json(null, null, JSON_THROW_ON_ERROR);
 					$header = $r['message']['header'];
@@ -167,15 +167,15 @@ class SingleController extends Controller
 					abort(422, 'Unsupported source');
 					break;
 			}
-		} catch (ConnectionException $e) {
-			Log::error($e);
-			abort(500, 'Connection error ' . $e->getCode() . ': ' . $e->getMessage());
-		} catch (QueryException $e) {
-			Log::error($e);
-			abort(500, 'Local database error: ' . $e->errorInfo[2]);
-		} catch (JsonException $e) {
-			Log::error($e);
-			abort(500, 'Error parsing response: ' . $e->getMessage());
+		} catch (ConnectionException | JsonException | QueryException | \Exception $th) {
+			Log::error($th);
+			$message = match (get_class($th)) {
+				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
+				ConnectionException::class => 'Connection error ' . $th->getCode() . ': ' . $th->getMessage(),
+				QueryException::class => 'Local database Error ' . $th->errorInfo[2],
+				default => 'Unexpected error : ' . $th->getMessage()
+			};
+			abort(500, $message);
 		}
 	}
 }

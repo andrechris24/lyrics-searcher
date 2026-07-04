@@ -4,8 +4,8 @@
 @section('content')
 	<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 pb-5 mb-5">
 		<p class="text-center">Welcome to LRCSearch! This site provides lyrics search from
-			Kugou, NetEase, QQ Music, Musixmatch (throttled request), LRCLib, Soda Music,
-			Deezer, Spotify, YouTube, plus optionally local server and Lyrics.ovh.
+			Kugou, NetEase, QQ Music, Musixmatch, LRCLib, Soda Music,
+			Deezer, Spotify, YouTube, Apple Music, plus optionally local server and Lyrics.ovh.
 			This form below is a quick search to 4 providers.</p>
 		<x-no-script />
 		<form class="row g-3 mb-3" action="{{ route('result') }}" id="searchSongLyric">
@@ -96,6 +96,8 @@
 								<div class="col-8"><span id="song-release-date"></span></div>
 								<div class="col-4"><b>Last Update</b></div>
 								<div class="col-8"><span id="song-last-update"></span></div>
+								<div class="col-4"><b>Lyric Type</b></div>
+								<div class="col-8"><span id="mx-lyric-type"></span></div>
 							</div>
 							<p id="song-copyright"></p>
 							<div class="btn-group" role="group">

@@ -94,12 +94,7 @@ class LocalController extends Controller
 				$queries['user_id'] = backpack_user()->id;
 				$queries['content'] = $lrcLines;
 				Lyric::create($queries);
-			} catch (QueryException $e) {
-				if ($file->getClientOriginalName())
-					$files[] = $file->getClientOriginalName();
-				Log::error($e);
-				$failed++;
-			} catch (\Exception $e) {
+			} catch (QueryException | \Exception $e) {
 				if ($file->getClientOriginalName())
 					$files[] = $file->getClientOriginalName();
 				Log::error($e);

@@ -45,21 +45,21 @@ if (lyricsModal) {
 				$(".placeholder-glow").addClass("d-none");
 			},
 			success: function (data) {
-				if (data.synced !== null) {
+				if (data.synced !== null && data.synced!=='') {
 					$("#dl-synced").removeClass("disabled");
 					syncedLyricContents = `[id: ${data.id}]${metaLyric}[lr: ${data.writers}]\n${data.synced}`;
 				} else {
 					$("#dl-synced").addClass("disabled");
 					syncedLyricContents = "";
 				}
-				if (data.syllable !== null) {
+				if (data.syllable !== null && data.syllable!=='') {
 					$("#dl-syllyric").removeClass("disabled");
 					sylLyricContent = `[id: ${data.id}]${metaLyric}[lr: ${data.writers}]\n${data.syllable}`;
 				} else {
 					sylLyricContent = "";
 					$("#dl-syllyric").addClass("disabled");
 				}
-				if (data.ttml !== null) {
+				if (data.ttml !== null && data.ttml!=='') {
 					$("#dl-ttml").removeClass("disabled");
 					ttmlContent = data.ttml;
 				} else {
