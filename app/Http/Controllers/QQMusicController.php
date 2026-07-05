@@ -41,7 +41,7 @@ class QQMusicController extends Controller
 				return to_route('qqmusic.index')->withInput()
 					->withError('Error parsing response: ' . libxml_get_last_error());
 			}
-			$xml = self::decodeJson(json_encode($xmlResponse));//Convert XML Objects to Array
+			$xml = self::decodeJson(json_encode($xmlResponse)); //Convert XML Objects to Array
 			if ($xml === false) {
 				return to_route('qqmusic.index')->withInput()
 					->withError('Oops, an error occurred while reading QQ Music response.');
@@ -57,10 +57,10 @@ class QQMusicController extends Controller
 			return to_route('qqmusic.index')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException  | RequestException | \Exception $th) {
 			Log::error($th);
-			$message=match(get_class($th)){
+			$message = match (get_class($th)) {
 				ConnectionException::class => 'QQ Music connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				RequestException::class => 'QQ Music HTTP Error ' . $th->response->status(),
-				default => 'QQ Music unexpected error : ' . $th->getMessage()
+				default => 'QQ Music unexpected error: ' . $th->getMessage()
 			};
 			return to_route('qqmusic.index')->withInput()->withError($message);
 		}
@@ -117,15 +117,15 @@ class QQMusicController extends Controller
 				'encoded' => ctype_xdigit($data['lyric']['content']),
 				'id' => $id
 			]);
-		} catch (ConnectionException | RequestException | \Exception $th) {
+		} catch (ConnectionException | RequestException $th) {
 			Log::error($th);
 			$message = match (get_class($th)) {
 				ConnectionException::class => 'QQ Music connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				RequestException::class => 'QQ Music HTTP Error ' . $th->response->status(),
-				default => 'QQ Music unexpected error : ' . $th->getMessage()
+				default => 'QQ Music unexpected error: ' . $th->getMessage()
 			};
 			abort(
-				(get_class($th) === RequestException::class) ?$th->response->status():500, 
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
 				$message
 			);
 		}

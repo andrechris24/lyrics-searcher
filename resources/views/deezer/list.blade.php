@@ -62,6 +62,15 @@
 						</p>
 						<span id="song-license">...</span>
 					</div>
+					<div class="col-12 col-sm-4">
+						<b>Lyric Type</b>
+					</div>
+					<div class="col-12 col-sm-8">
+						<p class="placeholder-glow d-none">
+							<span class="placeholder col-12"></span>
+						</p>
+						<span id="song-lyric-type">?</span>
+					</div>
 				</div>
 				<p class="placeholder-glow d-none">
 					<span class="placeholder col-12"></span>

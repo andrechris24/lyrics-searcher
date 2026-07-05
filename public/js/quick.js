@@ -189,13 +189,13 @@ $("#searchSongLyric").on("submit", function (e) {
 		}
 	});
 });
-mxPlainDL.onclick = function () {
-	mxPlainDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(plainContents)}`;
-	mxPlainDL.download = `${fileName}.txt`;
+mxPlainDL.onclick = function (e) {
+	e.preventDefault();
+	blobDL(plainContents,`${fileName}.txt`);
 };
-mxSyncedDL.onclick = function () {
-	mxSyncedDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(syncedContents)}`;
-	mxSyncedDL.download = `${fileName}.lrc`;
+mxSyncedDL.onclick = function (e) {
+	e.preventDefault();
+	blobDL(syncedContents,`${fileName}.lrc`);
 };
 mxRichsyncDL.onclick = function (e) {
 	e.preventDefault();
@@ -237,13 +237,13 @@ mxRichsyncDL.onclick = function (e) {
 			}
 		});
 };
-llPlainDL.onclick = function () {
-	llPlainDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(plainContents)}`;
-	llPlainDL.download = `${fileName}.txt`;
+llPlainDL.onclick = function (e) {
+	e.preventDefault();
+	blobDL(plainContents,`${fileName}.txt`);
 };
-llSyncedDL.onclick = function () {
-	llSyncedDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(syncedContents)}`;
-	llSyncedDL.download = `${fileName}.lrc`;
+llSyncedDL.onclick = function (e) {
+	e.preventDefault();
+	blobDL(syncedContents,`${fileName}.lrc`);
 };
 wbwDL.onclick = function (e) {
 	e.preventDefault();

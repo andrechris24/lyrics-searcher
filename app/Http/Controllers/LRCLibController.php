@@ -29,7 +29,7 @@ class LRCLibController extends Controller
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
 				ConnectionException::class => 'LRCLib connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				RequestException::class => 'LRCLib HTTP Error ' . $th->response->status(),
-				default => 'LRCLib unexpected error : ' . $th->getMessage()
+				default => 'LRCLib unexpected error: ' . $th->getMessage()
 			};
 			return to_route('lrclib.index')->withInput()->withError($message);
 		}
@@ -53,7 +53,7 @@ class LRCLibController extends Controller
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
 				ConnectionException::class => 'LRCLib connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				RequestException::class => 'LRCLib HTTP Error ' . $th->response->status(),
-				default => 'LRCLib unexpected error : ' . $th->getMessage()
+				default => 'LRCLib unexpected error: ' . $th->getMessage()
 			};
 			return to_route('lrclib.advanced')->withInput()->withError($message);
 		}

@@ -41,7 +41,7 @@ class KugouController extends Controller
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
 				ConnectionException::class => 'Kugou Music connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				RequestException::class => 'Kugou Music HTTP Error ' . $th->response->status(),
-				default => 'Kugou Music unexpected error : ' . $th->getMessage()
+				default => 'Kugou Music unexpected error: ' . $th->getMessage()
 			};
 			return to_route('kugou.index')->withInput()->withError($message);
 		}
@@ -59,16 +59,16 @@ class KugouController extends Controller
 				abort($r['errcode'], 'Kugou Music error ' . $r['errcode'] . ': ' . $r['errmsg']);
 			}
 			return response()->json($r['candidates']);
-		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
+		} catch (ConnectionException | JsonException | RequestException $th) {
 			Log::error($th);
 			$message = match (get_class($th)) {
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
 				ConnectionException::class => 'Kugou Music connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				RequestException::class => $th->response->status() === 404 ? 'No lyric available for this song' : 'Kugou HTTP error ' . $th->response->status(),
-				default => 'Kugou Music unexpected error : ' . $th->getMessage()
+				default => 'Kugou Music unexpected error: ' . $th->getMessage()
 			};
 			abort(
-				(get_class($th) === RequestException::class) ?$th->response->status():500, 
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
 				$message
 			);
 		}
@@ -103,7 +103,7 @@ class KugouController extends Controller
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
 				ConnectionException::class => 'Kugou Music connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				RequestException::class => 'Kugou Music HTTP Error ' . $th->response->status(),
-				default => 'Kugou Music unexpected error : ' . $th->getMessage()
+				default => 'Kugou Music unexpected error: ' . $th->getMessage()
 			};
 			return to_route('kugou.advanced')->withInput()->withError($message);
 		}
@@ -133,16 +133,16 @@ class KugouController extends Controller
 				'content' => '[id: ' . $req['id'] . "]\n" . $context,
 				'raw' => $r['content']
 			]);
-		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
+		} catch (ConnectionException | JsonException | RequestException $th) {
 			Log::error($th);
 			$message = match (get_class($th)) {
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
 				ConnectionException::class => 'Kugou Music connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				RequestException::class => $th->response->status() === 404 ? 'No lyric available for this song' : 'Kugou Music HTTP error ' . $th->response->status(),
-				default => 'Kugou Music unexpected error : ' . $th->getMessage()
+				default => 'Kugou Music unexpected error: ' . $th->getMessage()
 			};
 			abort(
-				(get_class($th) === RequestException::class) ?$th->response->status():500, 
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
 				$message
 			);
 		}
@@ -161,16 +161,16 @@ class KugouController extends Controller
 				$lyric = $this->krc2lrc($r['lyrics_text']);
 			else $lyric = $r['lyrics_text'];
 			return response()->json(['hash' => $hash, 'lyric' => $lyric]);
-		} catch (RequestException | ConnectionException | JsonException $th) {
+		} catch (JsonException | RequestException | ConnectionException $th) {
 			Log::error($th);
 			$message = match (get_class($th)) {
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'Kugou Music connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				RequestException::class => $th->response->status() === 404 ? 'No lyric available for this song' : 'Kugou Music HTTP error ' . $th->response->status(),
-				default => 'Kugou Music unexpected error : ' . $th->getMessage()
+				ConnectionException::class => 'Kugou Music API connection error ' . $th->getCode() . ': ' . $th->getMessage(),
+				RequestException::class => $th->response->status() === 404 ? 'No lyric available for this song' : 'Kugou Music API error ' . $th->response->status(),
+				default => 'Kugou Music API unexpected error: ' . $th->getMessage()
 			};
 			abort(
-				(get_class($th) === RequestException::class) ?$th->response->status():500, 
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
 				$message
 			);
 		}

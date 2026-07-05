@@ -1,4 +1,4 @@
-/* global toast, zpad */
+/* global blobDL, toast, zpad */
 let lyricContents, klyricContent, fileName, ext;
 const lyricsModal = document.getElementById("modalLyrics"),
 	lyricDL = document.getElementById("dl-synced"),
@@ -70,13 +70,13 @@ if (lyricsModal) {
 		});
 	});
 }
-lyricDL.onclick = function () {
-	lyricDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(lyricContents)}`;
-	lyricDL.download = `${fileName}.${ext}`;
+lyricDL.onclick = function (e) {
+	e.preventDefault();
+	blobDL(lyricContents,`${fileName}.${ext}`);
 };
-klyricDL.onclick = function () {
-	klyricDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(klyricContent)}`;
-	klyricDL.download = `${fileName}.lrc`;
+klyricDL.onclick = function (e) {
+	e.preventDefault();
+	blobDL(klyricContent,`${fileName}.lrc`);
 };
 function parseKLyric(lyricText) {
 	let enhancedlyricText = "";

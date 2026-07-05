@@ -31,7 +31,7 @@ class SpotifyController extends Controller
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
 				ConnectionException::class => 'Spotify API connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				RequestException::class => 'Spotify API HTTP Error ' . $th->response->status(),
-				default => 'Spotify API unexpected error : ' . $th->getMessage()
+				default => 'Spotify API unexpected error: ' . $th->getMessage()
 			};
 			return to_route('spotify.index')->withInput()->withError($message);
 		}
@@ -53,16 +53,16 @@ class SpotifyController extends Controller
 				}
 			} else if (empty($r)) abort(404, 'No lyric available for this song');
 			return response()->json(['lyric' => $r, 'id' => $id]);
-		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
+		} catch (ConnectionException | JsonException | RequestException $th) {
 			Log::error($th);
 			$message = match (get_class($th)) {
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
 				ConnectionException::class => 'Spotify API connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				RequestException::class => 'Spotify API HTTP Error ' . $th->response->status(),
-				default => 'Spotify API unexpected error : ' . $th->getMessage()
+				default => 'Spotify API unexpected error: ' . $th->getMessage()
 			};
 			abort(
-				(get_class($th) === RequestException::class) ?$th->response->status():500,
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
 				$message
 			);
 		}

@@ -31,7 +31,7 @@ class YoutubeController extends Controller
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
 				ConnectionException::class => 'YouTube API connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				RequestException::class => 'YouTube API HTTP Error ' . $th->response->status(),
-				default => 'YouTube API unexpected error : ' . $th->getMessage()
+				default => 'YouTube API unexpected error: ' . $th->getMessage()
 			};
 			return to_route('youtube.index')->withInput()->withError($message);
 		}
@@ -42,8 +42,8 @@ class YoutubeController extends Controller
 			$response = Http::retry(3, 100)->timeout(25000)
 				->get('https://lyrics.paxsenix.org/youtube/lyrics', ['id' => $id]);
 			abort_if(
-				empty($response->body()) || $response->body()==='""',
-				404, 
+				empty($response->body()) || $response->body() === '""',
+				404,
 				'No lyric available for this song'
 			);
 			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
@@ -58,16 +58,16 @@ class YoutubeController extends Controller
 				}
 			} else if (empty($r)) $r = $response->body();
 			return response()->json(['lyric' => $r, 'id' => $id]);
-		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
+		} catch (ConnectionException | JsonException | RequestException $th) {
 			Log::error($th);
 			$message = match (get_class($th)) {
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
 				ConnectionException::class => 'YouTube API connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				RequestException::class => 'YouTube API HTTP Error ' . $th->response->status(),
-				default => 'YouTube API unexpected error : ' . $th->getMessage()
+				default => 'YouTube API unexpected error: ' . $th->getMessage()
 			};
 			abort(
-				(get_class($th) === RequestException::class) ?$th->response->status():500,
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
 				$message
 			);
 		}

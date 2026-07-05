@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "backpack/basset",
-            "version": "2.0.6",
+            "version": "2.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Laravel-Backpack/basset.git",
-                "reference": "b8257fdfa7ec8d8ac40d10e64d93dce072d2d0f3"
+                "reference": "dd440daf90b7003c1e4238f84bacca8bceadb711"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Laravel-Backpack/basset/zipball/b8257fdfa7ec8d8ac40d10e64d93dce072d2d0f3",
-                "reference": "b8257fdfa7ec8d8ac40d10e64d93dce072d2d0f3",
+                "url": "https://api.github.com/repos/Laravel-Backpack/basset/zipball/dd440daf90b7003c1e4238f84bacca8bceadb711",
+                "reference": "dd440daf90b7003c1e4238f84bacca8bceadb711",
                 "shasum": ""
             },
             "require": {
@@ -76,22 +76,22 @@
             ],
             "support": {
                 "issues": "https://github.com/Laravel-Backpack/basset/issues",
-                "source": "https://github.com/Laravel-Backpack/basset/tree/2.0.6"
+                "source": "https://github.com/Laravel-Backpack/basset/tree/2.0.8"
             },
-            "time": "2026-05-13T11:30:47+00:00"
+            "time": "2026-07-01T15:12:31+00:00"
         },
         {
             "name": "backpack/crud",
-            "version": "7.0.50",
+            "version": "7.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Laravel-Backpack/CRUD.git",
-                "reference": "153cb13f055aab63d302b9c191ad88d53507e9cd"
+                "reference": "eef2e814a4d3ac1c03cf9a6c1ecb7b78ca96a06e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Laravel-Backpack/CRUD/zipball/153cb13f055aab63d302b9c191ad88d53507e9cd",
-                "reference": "153cb13f055aab63d302b9c191ad88d53507e9cd",
+                "url": "https://api.github.com/repos/Laravel-Backpack/CRUD/zipball/eef2e814a4d3ac1c03cf9a6c1ecb7b78ca96a06e",
+                "reference": "eef2e814a4d3ac1c03cf9a6c1ecb7b78ca96a06e",
                 "shasum": ""
             },
             "require": {
@@ -167,9 +167,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Laravel-Backpack/CRUD/issues",
-                "source": "https://github.com/Laravel-Backpack/CRUD/tree/7.0.50"
+                "source": "https://github.com/Laravel-Backpack/CRUD/tree/7.1.2"
             },
-            "time": "2026-06-26T13:46:06+00:00"
+            "time": "2026-07-03T13:49:07+00:00"
         },
         {
             "name": "backpack/logmanager",
@@ -1224,16 +1224,16 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "7.13.0",
+            "version": "7.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "a4decaa9745dc567467970e43f183e260cfa51fd"
+                "reference": "55901a76dfd2006a0cc012b9e3c5b487f796478d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/a4decaa9745dc567467970e43f183e260cfa51fd",
-                "reference": "a4decaa9745dc567467970e43f183e260cfa51fd",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/55901a76dfd2006a0cc012b9e3c5b487f796478d",
+                "reference": "55901a76dfd2006a0cc012b9e3c5b487f796478d",
                 "shasum": ""
             },
             "require": {
@@ -1332,7 +1332,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/guzzle/issues",
-                "source": "https://github.com/guzzle/guzzle/tree/7.13.0"
+                "source": "https://github.com/guzzle/guzzle/tree/7.13.1"
             },
             "funding": [
                 {
@@ -1348,7 +1348,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-29T13:31:06+00:00"
+            "time": "2026-06-29T20:14:18+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -1641,16 +1641,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v13.17.0",
+            "version": "v13.18.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "0802b7a81f3252d78200b8037ac183a686a529f0"
+                "reference": "7d66044819e269f05924793a6800022dc181d850"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/0802b7a81f3252d78200b8037ac183a686a529f0",
-                "reference": "0802b7a81f3252d78200b8037ac183a686a529f0",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/7d66044819e269f05924793a6800022dc181d850",
+                "reference": "7d66044819e269f05924793a6800022dc181d850",
                 "shasum": ""
             },
             "require": {
@@ -1861,7 +1861,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2026-06-23T19:42:45+00:00"
+            "time": "2026-07-02T18:35:20+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -2979,20 +2979,19 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v5.7.0",
+            "version": "v5.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "dca41cd15c2ac9d055ad70dbfd011130757d1f82"
+                "reference": "044a6a392ff8ad0d61f14370a5fbbd0a0107152f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/dca41cd15c2ac9d055ad70dbfd011130757d1f82",
-                "reference": "dca41cd15c2ac9d055ad70dbfd011130757d1f82",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/044a6a392ff8ad0d61f14370a5fbbd0a0107152f",
+                "reference": "044a6a392ff8ad0d61f14370a5fbbd0a0107152f",
                 "shasum": ""
             },
             "require": {
-                "ext-ctype": "*",
                 "ext-json": "*",
                 "ext-tokenizer": "*",
                 "php": ">=7.4"
@@ -3031,9 +3030,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v5.7.0"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v5.8.0"
             },
-            "time": "2025-12-06T11:56:16+00:00"
+            "time": "2026-07-04T14:30:18+00:00"
         },
         {
             "name": "nunomaduro/termwind",
@@ -3729,16 +3728,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.12.23",
+            "version": "v0.12.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "4dcc0f08047d52bbde475eda481146fd8e27e1a4"
+                "reference": "ca0fdcf8a7617afa3adfdf1b5fef573dffb69ca1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/4dcc0f08047d52bbde475eda481146fd8e27e1a4",
-                "reference": "4dcc0f08047d52bbde475eda481146fd8e27e1a4",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/ca0fdcf8a7617afa3adfdf1b5fef573dffb69ca1",
+                "reference": "ca0fdcf8a7617afa3adfdf1b5fef573dffb69ca1",
                 "shasum": ""
             },
             "require": {
@@ -3802,9 +3801,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bobthecow/psysh/issues",
-                "source": "https://github.com/bobthecow/psysh/tree/v0.12.23"
+                "source": "https://github.com/bobthecow/psysh/tree/v0.12.24"
             },
-            "time": "2026-05-23T13:41:31+00:00"
+            "time": "2026-06-29T15:41:09+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -6858,16 +6857,16 @@
         },
         {
             "name": "yajra/laravel-datatables-oracle",
-            "version": "v13.1.2",
+            "version": "v13.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yajra/laravel-datatables.git",
-                "reference": "ded9345b7c00c85ce0fe0cea40e24e61c8489e10"
+                "reference": "299c07a7dae380e565bd328104965b6e02286c2f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yajra/laravel-datatables/zipball/ded9345b7c00c85ce0fe0cea40e24e61c8489e10",
-                "reference": "ded9345b7c00c85ce0fe0cea40e24e61c8489e10",
+                "url": "https://api.github.com/repos/yajra/laravel-datatables/zipball/299c07a7dae380e565bd328104965b6e02286c2f",
+                "reference": "299c07a7dae380e565bd328104965b6e02286c2f",
                 "shasum": ""
             },
             "require": {
@@ -6935,7 +6934,7 @@
             ],
             "support": {
                 "issues": "https://github.com/yajra/laravel-datatables/issues",
-                "source": "https://github.com/yajra/laravel-datatables/tree/v13.1.2"
+                "source": "https://github.com/yajra/laravel-datatables/tree/v13.1.5"
             },
             "funding": [
                 {
@@ -6943,7 +6942,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-05-19T03:34:29+00:00"
+            "time": "2026-07-03T01:53:46+00:00"
         }
     ],
     "packages-dev": [

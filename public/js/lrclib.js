@@ -59,13 +59,13 @@ document.addEventListener("focusin", (e) => {
 	if (e.target.closest('[class*="swal2-"]') !== null)
 		e.stopImmediatePropagation(); //Prevent modal from stealing focus
 });
-plainDL.onclick = function () {
-	plainDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(plainContents)}`;
-	plainDL.download = `${fileName}.txt`;
+plainDL.onclick = function (e) {
+	e.preventDefault();
+	blobDL(plainContents,`${fileName}.txt`);
 };
-syncedDL.onclick = function () {
-	syncedDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(syncedContents)}`;
-	syncedDL.download = `${fileName}.lrc`;
+syncedDL.onclick = function (e) {
+	e.preventDefault();
+	blobDL(syncedContents,`${fileName}.lrc`);
 };
 wbwDL.onclick = function (e) {
 	e.preventDefault();

@@ -167,13 +167,13 @@ class SingleController extends Controller
 					abort(422, 'Unsupported source');
 					break;
 			}
-		} catch (ConnectionException | JsonException | QueryException | \Exception $th) {
+		} catch (ConnectionException | JsonException | QueryException $th) {
 			Log::error($th);
 			$message = match (get_class($th)) {
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
 				ConnectionException::class => 'Connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				QueryException::class => 'Local database Error ' . $th->errorInfo[2],
-				default => 'Unexpected error : ' . $th->getMessage()
+				default => 'Unexpected error: ' . $th->getMessage()
 			};
 			abort(500, $message);
 		}

@@ -66,14 +66,14 @@ Solution:
 	- Example: `"C:\wamp64\bin\php\php8.4.21\extras\ssl\cacert.pem"`
 3. Restart php and web server if applicable.
 
-<!-- ## Why aimp_webLyrics.ini file exist?
+## Why aimp_webLyrics.ini file exist?
 
-That was my version of `aimp_webLyrics.ini` file containing remote source from providers above, and some of them handled by LRCSearch. Some remote sources are taken from AIMP WebLyrics forum. If you want, do setup first, then run `php artisan usertoken` to generate token and replace all `<MX_TOKEN_X>` inside INI file, and the token should be different. After entering Musixmatch token, replace original INI file inside `\path\to\AIMP\Plugins\aimp_webLyrics` folder.
+That was my version of `aimp_webLyrics.ini` file containing remote source from providers above and some codes are taken from AIMP WebLyrics forum. If you want, do setup first, then run `php artisan usertoken` to generate token and replace all `<MX_TOKEN_X>` inside INI file, and the token should be different. After entering Musixmatch token, replace original INI file inside `\path\to\AIMP\Plugins\aimp_webLyrics` folder.
 
 - Example path (Windows): `C:\Program Files\AIMP\Plugins\aimp_webLyrics`
 
 > [!WARNING]
-> Every AIMP updates resets aimp_webLyrics.ini file, so you should replace again. Please note that AIMP does not support Enhanced LRC, instead it strips Enhanced LRC timestamps. -->
+> Every AIMP updates resets aimp_webLyrics.ini file, so you should replace again. Also, AIMP does not support Enhanced LRC. If remote sources contains Enhanced LRC timestamps, it will be removed.
 
 ## References
 

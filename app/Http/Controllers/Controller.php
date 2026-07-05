@@ -103,9 +103,9 @@ abstract class Controller
 				$startTime = (int)$matches[1];
 				$duration = (int)$matches[2];
 				if ($idx === 0) {
-					$lyricLine.= ($startTime > 3000)
-						?"[" . $this->formatTime(($startTime - mt_rand(2500, 3000)) / 1000) . "]"
-						:"[00:00.00]";
+					$lyricLine .= ($startTime > 3000)
+						? "[" . $this->formatTime(($startTime - mt_rand(2500, 3000)) / 1000) . "]"
+						: "[00:00.00]";
 				} else if (($startTime - $prevtime) > 9000) {
 					$lyricLine .= "[" . $this->formatTime(($prevtime + mt_rand(2500, 3500)) / 1000) . "]\n";
 					$lyricLine .= "[" . $this->formatTime(($startTime - mt_rand(2500, 3500)) / 1000) . ']';

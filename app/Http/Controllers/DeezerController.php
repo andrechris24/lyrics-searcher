@@ -31,7 +31,7 @@ class DeezerController extends Controller
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
 				ConnectionException::class => 'Deezer connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				RequestException::class => 'Deezer HTTP Error ' . $th->response->status(),
-				default => 'Deezer unexpected error : ' . $th->getMessage()
+				default => 'Deezer unexpected error: ' . $th->getMessage()
 			};
 			return to_route('deezer.index')->withInput()->withError($message);
 		}
@@ -88,7 +88,7 @@ class DeezerController extends Controller
 				'copyright' => $r['copyright'],
 				'license' => $r['licence']
 			]);
-		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
+		} catch (ConnectionException | JsonException | RequestException $th) {
 			Log::error($th);
 			$message = match (get_class($th)) {
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
@@ -97,7 +97,7 @@ class DeezerController extends Controller
 				default => 'Deezer API unexpected error : ' . $th->getMessage()
 			};
 			abort(
-				(get_class($th) === RequestException::class) ?$th->response->status():500, 
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
 				$message
 			);
 		}

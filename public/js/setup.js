@@ -39,14 +39,14 @@ $.LoadingOverlaySetup({
 	background: "rgba(0, 0, 0, 0.5)",
 	image: "",
 	fontawesome: "fas fa-circle-notch fa-spin",
-	fontawesomeColor: "#0d6efd",
+	fontawesomeColor: "#0dcaf0",
 	text: "Loading...",
-	textColor: "#0d6efd",
+	textColor: "#0dcaf0",
 	textResizeFactor: 0.2
 });
 
-function blobDL(data, filename) {
-	const blob = new Blob([data], {type: "text/plain", charset: "utf-8"});
+function blobDL(data, filename, type="text/plain") {
+	const blob = new Blob([data], {type: type, charset: "utf-8"});
 	let url = window.URL.createObjectURL(blob),
 		a = document.createElement("a");
 	a.href = url;

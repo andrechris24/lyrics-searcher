@@ -54,7 +54,7 @@
 					</button>
 					<ul class="dropdown-menu">
 						<li>
-							<a class="dropdown-item" href="#" id="dl-synced">Standard</a>
+							<a class="dropdown-item" href="#" id="dl-synced" data-bs-toggle="tooltip" data-bs-title="With format as shown in content">Save</a>
 						</li>
 						<li>
 							<a class="dropdown-item" href="#" id="dl-klyric">Word by word</a>

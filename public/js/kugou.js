@@ -132,7 +132,11 @@ function dlLRC(id, key) {
 								ext = ".txt";
 								break;
 						}
-						blobDL(lyricContent, fileName + ext);
+						blobDL(
+							lyricContent, 
+							fileName + ext, 
+							ext==='.krc'?'application/octet-stream':undefined
+						);
 					}
 				});
 			} else {

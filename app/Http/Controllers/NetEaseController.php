@@ -42,7 +42,7 @@ class NetEaseController extends Controller
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
 				ConnectionException::class => 'NetEase Music connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				RequestException::class => 'NetEase Music HTTP Error ' . $th->response->status(),
-				default => 'NetEase Music unexpected error : ' . $th->getMessage()
+				default => 'NetEase Music unexpected error: ' . $th->getMessage()
 			};
 			return to_route('netease.index')->withInput()->withError($message);
 		}
@@ -66,16 +66,16 @@ class NetEaseController extends Controller
 				'No lyric available for this song entry'
 			);
 			return response()->json($r);
-		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
+		} catch (ConnectionException | JsonException | RequestException $th) {
 			Log::error($th);
 			$message = match (get_class($th)) {
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
 				ConnectionException::class => 'NetEase Music connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				RequestException::class => 'NetEase Music HTTP Error ' . $th->response->status(),
-				default => 'NetEase Music unexpected error : ' . $th->getMessage()
+				default => 'NetEase Music unexpected error: ' . $th->getMessage()
 			};
 			abort(
-				(get_class($th) === RequestException::class) ?$th->response->status():500, 
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
 				$message
 			);
 		}

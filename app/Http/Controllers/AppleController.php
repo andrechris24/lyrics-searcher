@@ -29,7 +29,7 @@ class AppleController extends Controller
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
 				ConnectionException::class => 'Apple Music connection error ' . $th->getCode() . ': ' . $th->getMessage(),
 				RequestException::class => 'Apple Music HTTP Error ' . $th->response->status(),
-				default => 'Apple Music unexpected error : ' . $th->getMessage()
+				default => 'Apple Music unexpected error: ' . $th->getMessage()
 			};
 			return to_route('apple.index')->withInput()->withError($message);
 		}
@@ -54,13 +54,13 @@ class AppleController extends Controller
 				'writers' => implode(', ', $r['metadata']['songwriters']),
 				'length' => gmdate('i:s', round($r['metadata']['duration'] / 1000, 0, PHP_ROUND_HALF_UP))
 			]);
-		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
+		} catch (ConnectionException | JsonException | RequestException $th) {
 			Log::error($th);
 			$message = match (get_class($th)) {
 				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'Apple Music connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				RequestException::class => $th->response->status() === 404 ? 'No lyric available for this song' : 'Apple Music error ' . $th->response->status(),
-				default => 'Apple Music unexpected error : ' . $th->getMessage()
+				ConnectionException::class => 'Apple Music API connection error ' . $th->getCode() . ': ' . $th->getMessage(),
+				RequestException::class => $th->response->status() === 404 ? 'No lyric available for this song' : 'Apple Music API error ' . $th->response->status(),
+				default => 'Apple Music API unexpected error: ' . $th->getMessage()
 			};
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,

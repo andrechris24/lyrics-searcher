@@ -1,4 +1,4 @@
-/* global toast */
+/* global toast, blobDL */
 let syncedLyricContents, sylLyricContent, plainLyricContent, fileName;
 const lyricsModal = document.getElementById("modalLyrics"),
 	plainLyricDL = document.getElementById("dl-plain"),
@@ -44,18 +44,20 @@ if (lyricsModal) {
 				if (data.synced !== null && data.synced!=='') {
 					if (data.synced.match(/<(\d+):(\d+).(\d+)>/g)) {
 						$("#dl-syllyric").removeClass("disabled");
+						$('#song-lyric-type').text("Syllable");
 						sylLyricContent = `[id: ${data.id}]${metaLyric}[lr: ${data.writer}]\n${data.synced}`;
 						syncedLyricContents = `[id: ${data.id}]${metaLyric}[lr: ${data.writer}]\n${data.synced.replace(/<(\d+):(\d+).(\d+)>/g, "")}`;
 					} else {
 						$("#dl-syllyric").addClass("disabled");
+						$('#song-lyric-type').text("Synced");
 						sylLyricContent = "";
 						syncedLyricContents = `[id: ${data.id}]${metaLyric}[lr: ${data.writer}]\n${data.synced}`;
 					}
 				} else {
 					$("#dl-syllyric").addClass("disabled");
 					$("#dl-synced").addClass("disabled");
-					sylLyricContent = "";
-					syncedLyricContents = "";
+					$('#song-lyric-type').text("Plain");
+					sylLyricContent = syncedLyricContents="";
 				}
 				plainLyricContent = `${fileName}\n\n${data.plain}`;
 				$("#song-writers").text(data.writer);
@@ -98,15 +100,15 @@ if (previewModal) {
 		player[0].pause();
 	});
 }
-syncedLyricDL.onclick = function () {
-	syncedLyricDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(syncedLyricContents)}`;
-	syncedLyricDL.download = `${fileName}.lrc`;
+syncedLyricDL.onclick = function (e) {
+	e.preventDefault();
+	blobDL(syncedLyricContents,`${fileName}.lrc`);
 };
-sylLyricDL.onclick = function () {
-	sylLyricDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(sylLyricContent)}`;
-	sylLyricDL.download = `${fileName}.lrc`;
+sylLyricDL.onclick = function (e) {
+	e.preventDefault();
+	blobDL(sylLyricContent,`${fileName}.lrc`);
 };
-plainLyricDL.onclick = function () {
-	plainLyricDL.href = `data:text/plain;charset=utf-8,${encodeURIComponent(plainLyricContent)}`;
-	plainLyricDL.download = `${fileName}.txt`;
+plainLyricDL.onclick = function (e) {
+	e.preventDefault();
+	blobDL(plainLyricContent,`${fileName}.txt`);
 };
