@@ -18,8 +18,8 @@ class LocalController extends Controller
 	public function aimp(Request $req)
 	{
 		$req->validate(['title' => 'required', 'artist' => 'required']);
-		$data = Lyric::whereLike('title', '%' . $req['title'] . '%')
-			->whereLike('artist', '%' . $req['artist'] . '%')->limit(5)->get();
+		$data = Lyric::whereLike('title', "%{$req['title']}%")
+			->whereLike('artist', "%{$req['artist']}%")->limit(5)->get();
 		return response()->json($data);
 	}
 	public function get(int $id)
@@ -105,19 +105,19 @@ class LocalController extends Controller
 			Log::warning('Failed to upload lyrics: ', $files);
 			$message = $total === 1 ?
 				'File failed to upload' :
-				'All ' . $total . ' files failed to upload';
+				"All $total files failed to upload";
 			return response()->json(['message' => $message], 500);
 		} else if ($failed > 0) {
 			Log::warning('Failed to upload lyrics: ', $files);
 			return response()->json([
 				'status' => 'warning',
-				'message' => $failed . ' out of ' . $total . ' files failed to upload',
+				'message' => "$failed out of $total files failed to upload",
 				'files' => $files
 			]);
 		}
 		$message = $total === 1 ?
 			'File uploaded successfully' :
-			'All ' . $total . ' files uploaded successfully';
+			"All $total files uploaded successfully";
 		return response()->json(['status' => 'success', 'message' => $message]);
 	}
 }

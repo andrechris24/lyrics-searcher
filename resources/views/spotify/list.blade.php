@@ -30,7 +30,7 @@
 								@class([
 									'btn',
 									'btn-success',
-									'disabled' => empty($result['trackId']),
+									'disabled' => empty($result['trackId'])
 								])
 								@empty($result['trackId']) aria-disabled="true" @endempty
 								data-bs-toggle="tooltip" data-bs-title="View on Spotify" target="_blank">

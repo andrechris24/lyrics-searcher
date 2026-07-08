@@ -8,8 +8,8 @@ $(document).on("keydown", function (e) {
 	// Check if the pressed key is forward slash "/"
 	if (e.key === "/" || e.keyCode === 191) {
 		e.preventDefault(); // Prevent browser's quick find (especially in Firefox)
-		if ($("#track-name").length) $("#track-name").trigger('focus');
-		else $('input[type="search"]').trigger('focus');
+		if ($("#track-name").length) $("#track-name").trigger("focus");
+		else $('input[type="search"]').trigger("focus");
 	}
 });
 const toast = Swal.mixin({
@@ -45,8 +45,8 @@ $.LoadingOverlaySetup({
 	textResizeFactor: 0.2
 });
 
-function blobDL(data, filename, type="text/plain") {
-	const blob = new Blob([data], {type: type, charset: "utf-8"});
+function blobDL(data, filename, type = "text/plain") {
+	const blob = new Blob([data], { type: type, charset: "utf-8" });
 	let url = window.URL.createObjectURL(blob),
 		a = document.createElement("a");
 	a.href = url;

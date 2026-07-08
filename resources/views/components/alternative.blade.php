@@ -16,10 +16,10 @@
 	<div class="col-md-5">
 		<div class="input-group input-group-lg">
 			<span class="input-group-text">Duration</span>
-			<input type="number" name="minutes" min="0" max="199" title="Minutes" 
+			<input type="number" name="minutes" min="0" max="199" title="Minutes"
 				class="form-control @error('minutes') is-invalid @enderror " data-bs-toggle="tooltip"
 				value="{{ request('minutes') ?? (old('minutes') ?? 0) }}" required>
-			<input type="number" name="seconds" min="0" max="59" title="Seconds" 
+			<input type="number" name="seconds" min="0" max="59" title="Seconds"
 				class="form-control @error('seconds') is-invalid @enderror " data-bs-toggle="tooltip"
 				value="{{ request('seconds') ?? (old('seconds') ?? 0) }}" required>
 		</div>

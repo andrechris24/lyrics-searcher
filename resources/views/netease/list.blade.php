@@ -54,7 +54,8 @@
 					</button>
 					<ul class="dropdown-menu">
 						<li>
-							<a class="dropdown-item" href="#" id="dl-synced" data-bs-toggle="tooltip" data-bs-title="With format as shown in content">Save</a>
+							<a class="dropdown-item" href="#" id="dl-synced" data-bs-toggle="tooltip"
+								data-bs-title="With format as shown in content">Save</a>
 						</li>
 						<li>
 							<a class="dropdown-item" href="#" id="dl-klyric">Word by word</a>
@@ -75,9 +76,7 @@
 			@php
 				$artists = [];
 				$length = gmdate('i:s', round($result['duration'] / 1000, 0, PHP_ROUND_HALF_UP));
-				foreach ($result['artists'] as $ar) {
-					$artists[] = $ar['name'];
-				}
+				foreach ($result['artists'] as $ar) $artists[] = $ar['name'];
 			@endphp
 			<a class="list-group-item list-group-item-action" data-bs-toggle="modal"
 				data-bs-album="{{ $result['album']['name'] }}" data-bs-duration="{{ $length }}"

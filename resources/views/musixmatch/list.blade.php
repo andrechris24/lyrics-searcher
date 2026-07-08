@@ -12,20 +12,20 @@
 				$track = $result['track'];
 				$length = gmdate('i:s', $track['track_length']);
 				if ($track['instrumental']) {
-						$lyricType = 'Instrumental';
-						$color = 'text-warning';
+					$lyricType = 'Instrumental';
+					$color = 'text-warning';
 				} elseif ($track['has_richsync']) {
-						$lyricType = 'Richsync';
-						$color = 'text-success';
+					$lyricType = 'Richsync';
+					$color = 'text-success';
 				} elseif ($track['has_subtitles']) {
-						$lyricType = 'Synced';
-						$color = 'text-primary';
+					$lyricType = 'Synced';
+					$color = 'text-primary';
 				} elseif ($track['has_lyrics']) {
-						$lyricType = 'Plain';
-						$color = 'text-info';
+					$lyricType = 'Plain';
+					$color = 'text-info';
 				} else {
-						$lyricType = 'No Lyrics';
-						$color = 'text-danger';
+					$lyricType = 'No Lyrics';
+					$color = 'text-danger';
 				}
 				$art = !empty($track['album_coverart_800x800'])
 					? $track['album_coverart_800x800']
@@ -72,7 +72,7 @@
 										<a @class([
 											'dropdown-item',
 											'download-btn',
-											'disabled' => !$track['has_lyrics'],
+											'disabled' => !$track['has_lyrics']
 										]) href="#"
 											data-id="{{ $track['commontrack_id'] }}" data-type="lyrics"
 											data-album="{{ $track['album_name'] }}"
@@ -85,7 +85,7 @@
 										<a @class([
 											'dropdown-item',
 											'download-btn',
-											'disabled' => !$track['has_subtitles'],
+											'disabled' => !$track['has_subtitles']
 										]) href="#"
 											data-id="{{ $track['commontrack_id'] }}" data-type="subtitle"
 											data-album="{{ $track['album_name'] }}"
@@ -98,7 +98,7 @@
 										<a @class([
 											'dropdown-item',
 											'download-btn',
-											'disabled' => !$track['has_richsync'],
+											'disabled' => !$track['has_richsync']
 										]) href="#"
 											title="Not all players support Richsync, use with compatible players like MiniLyrics or ESLyric"
 											data-id="{{ $track['commontrack_id'] }}" data-type="richsync"
@@ -119,7 +119,7 @@
 								@class([
 									'btn',
 									'btn-success',
-									'disabled' => empty($track['track_spotify_id']),
+									'disabled' => empty($track['track_spotify_id'])
 								])
 								@empty($track['track_spotify_id']) aria-disabled="true" @endempty
 								data-bs-toggle="tooltip" data-bs-title="View on Spotify" target="_blank">

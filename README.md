@@ -1,6 +1,6 @@
 # LRCSearch
 
-<p align="center">A Laravel based lyrics searcher to Kugou, Musixmatch, NetEase, QQ Music, Soda Music, LRCLib, Deezer, Spotify, YouTube, and Apple Music, plus optionally Local database and Lyrics.ovh. This lyrics searcher contains quick search and per-provider lyrics search. LRCSearch also provides LRC converter from SRT and KRC.</p>
+<p align="center">A Laravel based lyrics searcher to Kugou, Musixmatch, NetEase, QQ Music, Soda Music, LRCLib, Deezer, Spotify, YouTube (temporarily disabled), and Apple Music, plus optionally Local database and Lyrics.ovh. This lyrics searcher contains quick search and per-provider lyrics search. LRCSearch also provides LRC converter from SRT and KRC.</p>
 
 **This repository is the source code of [hosted application](https://andrechris24.serv00.net).**
 

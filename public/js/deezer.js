@@ -41,23 +41,23 @@ if (lyricsModal) {
 				$(".placeholder-glow").addClass("d-none");
 			},
 			success: function (data) {
-				if (data.synced !== null && data.synced!=='') {
+				if (data.synced !== null && data.synced !== "") {
 					if (data.synced.match(/<(\d+):(\d+).(\d+)>/g)) {
 						$("#dl-syllyric").removeClass("disabled");
-						$('#song-lyric-type').text("Syllable");
+						$("#song-lyric-type").text("Syllable");
 						sylLyricContent = `[id: ${data.id}]${metaLyric}[lr: ${data.writer}]\n${data.synced}`;
 						syncedLyricContents = `[id: ${data.id}]${metaLyric}[lr: ${data.writer}]\n${data.synced.replace(/<(\d+):(\d+).(\d+)>/g, "")}`;
 					} else {
 						$("#dl-syllyric").addClass("disabled");
-						$('#song-lyric-type').text("Synced");
+						$("#song-lyric-type").text("Synced");
 						sylLyricContent = "";
 						syncedLyricContents = `[id: ${data.id}]${metaLyric}[lr: ${data.writer}]\n${data.synced}`;
 					}
 				} else {
 					$("#dl-syllyric").addClass("disabled");
 					$("#dl-synced").addClass("disabled");
-					$('#song-lyric-type').text("Plain");
-					sylLyricContent = syncedLyricContents="";
+					$("#song-lyric-type").text("Plain");
+					sylLyricContent = syncedLyricContents = "";
 				}
 				plainLyricContent = `${fileName}\n\n${data.plain}`;
 				$("#song-writers").text(data.writer);
@@ -102,13 +102,13 @@ if (previewModal) {
 }
 syncedLyricDL.onclick = function (e) {
 	e.preventDefault();
-	blobDL(syncedLyricContents,`${fileName}.lrc`);
+	blobDL(syncedLyricContents, `${fileName}.lrc`);
 };
 sylLyricDL.onclick = function (e) {
 	e.preventDefault();
-	blobDL(sylLyricContent,`${fileName}.lrc`);
+	blobDL(sylLyricContent, `${fileName}.lrc`);
 };
 plainLyricDL.onclick = function (e) {
 	e.preventDefault();
-	blobDL(plainLyricContent,`${fileName}.txt`);
+	blobDL(plainLyricContent, `${fileName}.txt`);
 };

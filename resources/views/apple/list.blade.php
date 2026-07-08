@@ -9,7 +9,7 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<x-lyrically/>
+				<x-lyrically />
 				<div class="row mb-3">
 					<div class="col-12 col-sm-4">
 						<b>Artist</b>
@@ -90,7 +90,8 @@
 		</div>
 	</div>
 </div>
-<div class="modal fade" tabindex="-1" id="modalPreviewSong" aria-labelledby="modalPreviewSongLabel" role="dialog" aria-hidden="true">
+<div class="modal fade" tabindex="-1" id="modalPreviewSong"
+	aria-labelledby="modalPreviewSongLabel" role="dialog" aria-hidden="true">
 	<div role="document"
 		class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
 		<div class="modal-content">
@@ -146,7 +147,7 @@
 		@foreach ($results as $result)
 			@php
 				$length = gmdate(
-					'i:s', 
+					'i:s',
 					round($result['trackTimeMillis'] / 1000, 0, PHP_ROUND_HALF_UP)
 				);
 				$art = !empty($result['artworkUrl100'])
@@ -156,17 +157,18 @@
 						: (!empty($result['artworkUrl30'])
 							? $result['artworkUrl30']
 							: 'https://placehold.co/500?text=' .
-									urlencode($result['album']['name'])));
+								urlencode($result['album']['name'])));
 			@endphp
 			<div class="col">
 				<div class="card">
-					<img src="{{ $art }}" class="card-img-top" alt="{{ $result['trackName'] }}">
+					<img src="{{ $art }}" class="card-img-top"
+						alt="{{ $result['trackName'] }}">
 					<div class="card-header">
 						{{ $result['collectionName'] }}
 					</div>
 					<div class="card-body">
 						<h5 class="card-title">
-							{{ $result['trackName'] . ($result['trackExplicitness']==='Explicit' ? ' [E]' : '') }}
+							{{ $result['trackName'] . ($result['trackExplicitness'] === 'Explicit' ? ' [E]' : '') }}
 						</h5>
 						<p class="card-text">{{ $result['artistName'] }}</p>
 						<small class="card-text text-muted">{{ $length }}</small>
@@ -181,17 +183,25 @@
 								data-bs-duration="{{ $length }}">
 								<i class="fa-solid fa-eye"></i>
 							</button>
-							<button type="button" @class(['btn', 'btn-info', 'disabled' => empty($result['previewUrl'])])
+							<button type="button" @class([
+								'btn',
+								'btn-info',
+								'disabled' => empty($result['previewUrl'])
+							])
 								@if (empty($result['previewUrl'])) aria-disabled="true" @endif
 								data-bs-link="{{ $result['previewUrl'] }}"
 								data-bs-artist="{{ $result['artistName'] }}"
 								data-bs-title="{{ $result['trackName'] }}"
 								data-bs-album="{{ $result['collectionName'] }}"
-								data-bs-duration="{{ $length }}"
-								data-bs-toggle="modal" data-bs-target="#modalPreviewSong">
+								data-bs-duration="{{ $length }}" data-bs-toggle="modal"
+								data-bs-target="#modalPreviewSong">
 								<i class="fa-solid fa-play"></i>
 							</button>
-							<a href="{{ $result['trackViewUrl'] }}" @class(['btn', 'btn-success', 'disabled' => empty($result['trackViewUrl'])])
+							<a href="{{ $result['trackViewUrl'] }}" @class([
+								'btn',
+								'btn-success',
+								'disabled' => empty($result['trackViewUrl'])
+							])
 								@empty($result['trackViewUrl']) aria-disabled="true" @endempty
 								data-bs-toggle="tooltip" data-bs-title="View on Apple Music" target="_blank">
 								<i class="fa-brands fa-itunes-note"></i>

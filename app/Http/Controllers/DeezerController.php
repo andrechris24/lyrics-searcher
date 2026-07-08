@@ -27,12 +27,7 @@ class DeezerController extends Controller
 			return to_route('deezer.index')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
 			Log::error($th);
-			$message = match (get_class($th)) {
-				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'Deezer connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				RequestException::class => 'Deezer HTTP Error ' . $th->response->status(),
-				default => 'Deezer unexpected error: ' . $th->getMessage()
-			};
+			$message = self::matchError($th);
 			return to_route('deezer.index')->withInput()->withError($message);
 		}
 	}
@@ -55,28 +50,36 @@ class DeezerController extends Controller
 						if ($idx === 0) {
 							$synced .= ($line['timestamp'] <= 3000)
 								? '[00:00.00]'
-								: '[' . $this->formatTime(($line['timestamp'] - mt_rand(2500, 3000)) / 1000) . ']';
+								: "[{$this->formatTime(($line['timestamp'] - mt_rand(2500, 3000)) / 1000)}]";
 						} elseif (($line['timestamp'] - $prevtime) > 9000) {
-							$synced .= "[" . $this->formatTime(($prevtime + mt_rand(2500, 3500)) / 1000) . "]\n";
-							$synced .= "[" . $this->formatTime(($line['timestamp'] - mt_rand(2500, 3500)) / 1000) . ']';
+							$synced .= sprintf(
+								"[%s]\n[%s]",
+								$this->formatTime(($prevtime + mt_rand(2500, 3500)) / 1000),
+								$this->formatTime(($line['timestamp'] - mt_rand(2500, 3500)) / 1000)
+							);
 						} else
-							$synced .= "[" . $this->formatTime($line['timestamp'] / 1000) . ']';
+							$synced .= "[{$this->formatTime($line['timestamp'] / 1000)}]";
 						foreach ($line['text'] as $syl) {
-							$synced .=
-								'<' . $this->formatTime($syl['timestamp'] / 1000) . '>' .
-								$syl['text'] .
-								'<' . $this->formatTime($syl['endtime'] / 1000) .
-								($syl['part'] === false ? '> ' : '>');
+							$synced .= sprintf(
+								"<%s>%s<%s%s",
+								$this->formatTime($syl['timestamp'] / 1000),
+								$syl['text'],
+								$this->formatTime($syl['endtime'] / 1000),
+								$syl['part'] === false ? '> ' : '>'
+							);
 						}
 						$synced .= "\n";
 					} else {
 						if (($line['timestamp'] - $prevtime) > 5000 && $idx !== 0)
-							$synced .= '[' . $this->formatTime($prevtime / 1000) . "]\n";
-						$synced .= '[' . $this->formatTime($line['timestamp'] / 1000) . ']';
-						$synced .= $line['text'][0]['text'] . "\n";
+							$synced .= "[{$this->formatTime($prevtime / 1000)}]\n";
+						$synced .= sprintf(
+							"[%s]%s\n",
+							$this->formatTime($line['timestamp'] / 1000),
+							$line['text'][0]['text']
+						);
 					}
 					if ($idx === count($r['lyrics']) - 1)
-						$synced .= '[' . $this->formatTime($line['endtime'] / 1000) . "]\n";
+						$synced .= "[{$this->formatTime($line['endtime'] / 1000)}]\n";
 					$prevtime = $line['endtime'];
 				}
 			}
@@ -90,16 +93,20 @@ class DeezerController extends Controller
 			]);
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			Log::error($th);
-			$message = match (get_class($th)) {
-				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'Deezer API connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				RequestException::class => $th->response->status() === 404 ? 'No lyric available for this song' : 'Deezer API error ' . $th->response->status(),
-				default => 'Deezer API unexpected error : ' . $th->getMessage()
-			};
+			$message = self::matchError($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
 				$message
 			);
 		}
+	}
+	private static function matchError(mixed $ex): string
+	{
+		return match (get_class($ex)) {
+			JsonException::class => "Error parsing response: {$ex->getMessage()}",
+			ConnectionException::class => "Deezer API connection error {$ex->getCode()}: {$ex->getMessage()}",
+			RequestException::class => $ex->response->status() === 404 ? 'No lyric available for this song' : "Deezer API error {$ex->response->status()}",
+			default => "Deezer API unexpected error: {$ex->getMessage()}"
+		};
 	}
 }

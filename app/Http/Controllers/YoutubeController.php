@@ -27,12 +27,7 @@ class YoutubeController extends Controller
 			return to_route('youtube.index')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
 			Log::error($th);
-			$message = match (get_class($th)) {
-				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'YouTube API connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				RequestException::class => 'YouTube API HTTP Error ' . $th->response->status(),
-				default => 'YouTube API unexpected error: ' . $th->getMessage()
-			};
+			$message = self::matchError($th);
 			return to_route('youtube.index')->withInput()->withError($message);
 		}
 	}
@@ -60,16 +55,20 @@ class YoutubeController extends Controller
 			return response()->json(['lyric' => $r, 'id' => $id]);
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			Log::error($th);
-			$message = match (get_class($th)) {
-				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'YouTube API connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				RequestException::class => 'YouTube API HTTP Error ' . $th->response->status(),
-				default => 'YouTube API unexpected error: ' . $th->getMessage()
-			};
+			$message = self::matchError($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
 				$message
 			);
 		}
+	}
+	private static function matchError(mixed $exception): string
+	{
+		return match (get_class($exception)) {
+			JsonException::class => "Error parsing response: {$exception->getMessage()}",
+			ConnectionException::class => "YouTube API connection error {$exception->getCode()}: {$exception->getMessage()}",
+			RequestException::class => "YouTube API HTTP Error {$exception->response->status()}",
+			default => "YouTube API unexpected error: {$exception->getMessage()}"
+		};
 	}
 }

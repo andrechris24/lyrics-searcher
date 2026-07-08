@@ -33,7 +33,7 @@ if (lyricsModal) {
 		// Set file name and contents on save
 		fileName = `${songArtist.textContent} - ${songTitle.textContent}`;
 		plainContents = `${fileName}\n\n${plainLyrics}`;
-		if (syncedLyrics === "" || syncedLyrics===null) {
+		if (syncedLyrics === "" || syncedLyrics === null) {
 			syncedDL.classList.add("disabled");
 			syncedContents = null;
 			$("#lrclib-lyric-type").text("Plain");
@@ -61,11 +61,11 @@ document.addEventListener("focusin", (e) => {
 });
 plainDL.onclick = function (e) {
 	e.preventDefault();
-	blobDL(plainContents,`${fileName}.txt`);
+	blobDL(plainContents, `${fileName}.txt`);
 };
 syncedDL.onclick = function (e) {
 	e.preventDefault();
-	blobDL(syncedContents,`${fileName}.lrc`);
+	blobDL(syncedContents, `${fileName}.lrc`);
 };
 wbwDL.onclick = function (e) {
 	e.preventDefault();

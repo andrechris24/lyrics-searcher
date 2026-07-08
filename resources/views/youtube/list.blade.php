@@ -5,8 +5,7 @@
 		@foreach ($data as $result)
 			<div class="col">
 				<div class="card">
-					<img src="{{ $result['thumbnail'] }}" class="card-img-top"
-					alt="{{ $result['title'] }}">
+					<img src="{{ $result['thumbnail'] }}" class="card-img-top" alt="{{ $result['title'] }}">
 					<div class="card-body">
 						<h5 class="card-title">
 							{{ $result['title'] . ($result['isExplicit'] ? ' [E]' : '') }}
@@ -26,7 +25,7 @@
 								@class([
 									'btn',
 									'btn-success',
-									'disabled' => empty($result['videoId']),
+									'disabled' => empty($result['videoId'])
 								])
 								@empty($result['videoId']) aria-disabled="true" @endempty
 								data-bs-toggle="tooltip" data-bs-title="View on YouTube" target="_blank">

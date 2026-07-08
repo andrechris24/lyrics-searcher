@@ -27,12 +27,7 @@ class SpotifyController extends Controller
 			return to_route('spotify.index')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
 			Log::error($th);
-			$message = match (get_class($th)) {
-				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'Spotify API connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				RequestException::class => 'Spotify API HTTP Error ' . $th->response->status(),
-				default => 'Spotify API unexpected error: ' . $th->getMessage()
-			};
+			$message = self::matchError($th);
 			return to_route('spotify.index')->withInput()->withError($message);
 		}
 	}
@@ -55,16 +50,20 @@ class SpotifyController extends Controller
 			return response()->json(['lyric' => $r, 'id' => $id]);
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			Log::error($th);
-			$message = match (get_class($th)) {
-				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'Spotify API connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				RequestException::class => 'Spotify API HTTP Error ' . $th->response->status(),
-				default => 'Spotify API unexpected error: ' . $th->getMessage()
-			};
+			$message = self::matchError($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
 				$message
 			);
 		}
+	}
+	private static function matchError(mixed $ex): string
+	{
+		return match (get_class($ex)) {
+			JsonException::class => "Error parsing response: {$ex->getMessage()}",
+			ConnectionException::class => "Spotify API connection error {$ex->getCode()}: {$ex->getMessage()}",
+			RequestException::class => "Spotify API HTTP Error {$ex->response->status()}",
+			default => "Spotify API unexpected error: {$ex->getMessage()}"
+		};
 	}
 }

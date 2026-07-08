@@ -9,7 +9,7 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<x-lyrically/>
+				<x-lyrically />
 				<div class="row mb-3">
 					<div class="col-12 col-sm-4">
 						<b>Artist</b>
@@ -105,7 +105,8 @@
 		</div>
 	</div>
 </div>
-<div class="modal fade" tabindex="-1" id="modalPreviewSong" aria-labelledby="modalPreviewSongLabel" role="dialog" aria-hidden="true">
+<div class="modal fade" tabindex="-1" id="modalPreviewSong"
+	aria-labelledby="modalPreviewSongLabel" role="dialog" aria-hidden="true">
 	<div role="document"
 		class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
 		<div class="modal-content">
@@ -203,8 +204,8 @@
 								data-bs-artist="{{ $result['artist']['name'] }}"
 								data-bs-title="{{ $result['title'] }}"
 								data-bs-album="{{ $result['album']['title'] }}"
-								data-bs-duration="{{ $length }}"
-								data-bs-toggle="modal" data-bs-target="#modalPreviewSong">
+								data-bs-duration="{{ $length }}" data-bs-toggle="modal"
+								data-bs-target="#modalPreviewSong">
 								<i class="fa-solid fa-play"></i>
 							</button>
 							<a href="{{ $result['link'] }}" @class(['btn', 'btn-success', 'disabled' => empty($result['link'])])

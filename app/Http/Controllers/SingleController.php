@@ -31,7 +31,9 @@ class SingleController extends Controller
 					abort_if(
 						$response->failed(),
 						$response->status(),
-						array_key_exists('message', $r) ? $r['message'] : 'LRCLib HTTP Error ' . $response->status()
+						array_key_exists('message', $r)
+							? $r['message']
+							: "LRCLib HTTP Error {$response->status()}"
 					);
 					return response()->json([
 						'title' => $r['trackName'],
@@ -46,7 +48,6 @@ class SingleController extends Controller
 						'source' => 'lrclib'
 					]);
 				case 'musixmatch':
-					abort_if(empty(env('MUSIXMATCH_TOKEN')), 500, 'Musixmatch token was not found');
 					// Sleep::for(5)->seconds();
 					$response = Http::retry(3, 5000, throw: false)->timeout(25000)->withHeaders([
 						'authority' => 'apic-desktop.musixmatch.com',
@@ -74,9 +75,7 @@ class SingleController extends Controller
 							404 => "Song does not exist on database",
 							401 => "Too many requests. Wait for a few minutes, then try again.",
 							400 => "Invalid input, please make sure all * fields is filled.",
-							500 => "Database server error. Please try again later.",
-							503 => "Database service unavailable. Please try again later.",
-							default => "Database HTTP Error " . $tmHeader['status_code']
+							default => "Musixmatch database HTTP Error " . $tmHeader['status_code']
 						};
 						abort($tmHeader['status_code'], $msg);
 					}
@@ -88,7 +87,7 @@ class SingleController extends Controller
 					} else if ($tmBody['has_lyrics'] === 0 && $tmBody['has_subtitles'] === 0) {
 						abort(
 							404,
-							"Found song " . $tmBody['artist_name'] . ' - ' . $tmBody['track_name'] . " but no lyric available"
+							"Found song {$tmBody['artist_name']} - {$tmBody['track_name']} but no lyric available"
 						);
 					} else if ($tmBody['has_subtitles'] === 0) $syncedText = "";
 					else {
@@ -103,7 +102,7 @@ class SingleController extends Controller
 					abort_if(
 						$plainBody['restricted'] === 1,
 						403,
-						"Lyric for song " . $tmBody['artist_name'] . ' - ' . $tmBody['track_name'] . " is restricted"
+						"Lyric for song {$tmBody['artist_name']} - {$tmBody['track_name']} is restricted"
 					);
 					if ($tmBody['instrumental'] === 0) $plainText = $plainBody['lyrics_body'];
 					return response()->json([
@@ -150,14 +149,14 @@ class SingleController extends Controller
 						abort($response->status(), $r['error']);
 					} else {
 						Log::error('Unknown Lyrics.ovh response: ', $r);
-						abort(500, 'Unknown response: ' . json_encode($r));
+						abort(500, 'Unknown response received');
 					}
 					break;
 				case 'local':
-					$model = Lyric::whereLike('title', '%' . $req['title'] . '%')
-						->whereLike('artist', '%' . $req['artist'] . '%');
+					$model = Lyric::whereLike('title', "%{$req['title']}%")
+						->whereLike('artist', "%{$req['artist']}%");
 					if (!empty($req['album']))
-						$model->whereLike('album', '%' . $req['album'] . '%');
+						$model->whereLike('album', "%{$req['album']}%");
 					$data = $model->firstOrFail();
 					$data['user'] = $data->user;
 					$data['source'] = 'local';
@@ -170,10 +169,10 @@ class SingleController extends Controller
 		} catch (ConnectionException | JsonException | QueryException $th) {
 			Log::error($th);
 			$message = match (get_class($th)) {
-				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'Connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				QueryException::class => 'Local database Error ' . $th->errorInfo[2],
-				default => 'Unexpected error: ' . $th->getMessage()
+				JsonException::class => "Error parsing response: {$th->getMessage()}",
+				ConnectionException::class => "Connection error {$th->getCode()}: {$th->getMessage()}",
+				QueryException::class => "Local database Error: {$th->errorInfo[2]}",
+				default => "Unexpected error: {$th->getMessage()}"
 			};
 			abort(500, $message);
 		}

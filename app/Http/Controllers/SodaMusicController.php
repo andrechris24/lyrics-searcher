@@ -35,12 +35,7 @@ class SodaMusicController extends Controller
 			return to_route('sodamusic.index')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
 			Log::error($th);
-			$message = match (get_class($th)) {
-				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'Soda Music connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				RequestException::class => 'Soda Music HTTP Error ' . $th->response->status(),
-				default => 'Soda Music unexpected error: ' . $th->getMessage()
-			};
+			$message = self::matchError($th);
 			return to_route('sodamusic.index')->withInput()->withError($message);
 		}
 	}
@@ -65,16 +60,20 @@ class SodaMusicController extends Controller
 			return response()->json($r['lyric']);
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			Log::error($th);
-			$message = match (get_class($th)) {
-				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'Soda Music connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				RequestException::class => 'Soda Music HTTP Error ' . $th->response->status(),
-				default => 'Soda Music unexpected error: ' . $th->getMessage()
-			};
+			$message = self::matchError($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
 				$message
 			);
 		}
+	}
+	private static function matchError(mixed $ex): string
+	{
+		return match (get_class($ex)) {
+			JsonException::class => "Error parsing response: {$ex->getMessage()}",
+			ConnectionException::class => "Soda Music connection error {$ex->getCode()}: {$ex->getMessage()}",
+			RequestException::class => "Soda Music HTTP Error {$ex->response->status()}",
+			default => "Soda Music unexpected error: {$ex->getMessage()}"
+		};
 	}
 }

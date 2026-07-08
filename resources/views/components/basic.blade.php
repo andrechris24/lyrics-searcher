@@ -8,7 +8,7 @@
 				class="form-control form-control-lg @error('query') is-invalid @enderror "
 				value="{{ request('query') ?? old('query') }}" id="basic-search-query" required
 				@if (empty(request('query'))) autofocus @endif>
-			<label  for="basic-search-query">Search query</label>
+			<label for="basic-search-query">Search query</label>
 		</div>
 		<button type="submit" class="btn btn-primary">Search</button>
 	</div>

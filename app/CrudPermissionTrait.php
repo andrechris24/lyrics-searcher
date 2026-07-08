@@ -24,9 +24,7 @@ trait CrudPermissionTrait
 		$user = backpack_user();
 
 		// double check if no authenticated user
-		if (!$user) {
-			return; // allow nothing
-		}
+		if (!$user) return; // allow nothing
 
 		// enable operations depending on permission
 		foreach (

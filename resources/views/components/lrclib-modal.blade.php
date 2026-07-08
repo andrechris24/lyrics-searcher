@@ -4,7 +4,8 @@
 		class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 id="modalLRCLibLabel" class="modal-title">{{$text}}<span class="search-term"></span></h5>
+				<h5 id="modalLRCLibLabel" class="modal-title">{{ $text }}<span
+						class="search-term"></span></h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal"
 					aria-label="Close"></button>
 			</div>
@@ -60,7 +61,8 @@
 							<a class="dropdown-item" href="#" id="download-link-lrclib-synced">Synced</a>
 						</li>
 						<li>
-							<a class="dropdown-item" href="#" id="download-link-lrclib-wbw">Word-by-word</a>
+							<a class="dropdown-item" href="#"
+								id="download-link-lrclib-wbw">Word-by-word</a>
 						</li>
 					</ul>
 				</div>

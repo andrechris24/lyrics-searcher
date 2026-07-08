@@ -96,10 +96,10 @@ function dlLRC(id, key) {
 					},
 					topLayer: true,
 					inputOptions: {
-						synced: "Synced",
 						wordbyword: "Word-by-Word",
-						raw: "KRC Raw",
-						plain: "Plain"
+						synced: "Synced",
+						plain: "Plain",
+						raw: "KRC Raw"
 					},
 					input: "select",
 					inputPlaceholder: "Select lyric type",
@@ -133,9 +133,9 @@ function dlLRC(id, key) {
 								break;
 						}
 						blobDL(
-							lyricContent, 
-							fileName + ext, 
-							ext==='.krc'?'application/octet-stream':undefined
+							lyricContent,
+							fileName + ext,
+							ext === '.krc' ? 'application/octet-stream' : undefined
 						);
 					}
 				});

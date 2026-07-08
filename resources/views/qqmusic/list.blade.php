@@ -6,7 +6,7 @@
 		Showing {{ $rangemin }} to {{ $rangemax <= $songcount ? $rangemax : $songcount }}
 		of {{ $songcount }} result(s)</p>
 	<div class="list-group px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-5 pb-5">
-		@if(!array_key_exists('@attributes',$songinfo))
+		@if (!array_key_exists('@attributes', $songinfo))
 			@foreach ($songinfo as $result)
 				<a class="list-group-item list-group-item-action" href="#"
 					data-title="{{ urldecode($result['name']) }}"
@@ -39,8 +39,7 @@
 				'title' => request('title'),
 				'artist' => request('artist'),
 				'offset' => $rangemin - 1
-			],
-			'next' => [
+			],'next' => [
 				'title' => request('title'),
 				'artist' => request('artist'),
 				'offset' => $rangemax

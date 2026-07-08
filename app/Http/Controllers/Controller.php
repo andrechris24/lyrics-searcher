@@ -8,26 +8,28 @@ use JsonException;
 
 abstract class Controller
 {
+	protected const PAXSENIX_HEADER=['User-Agent' => 'LRCSearch/1.0'];
+
 	/**
 	 * Get error messages from Musixmatch
 	 *
 	 * @param array $header
 	 * @return string
 	 */
-	protected function getMXerror(array $header)
+	protected function getMXerror(array $header): string
 	{
 		if (array_key_exists('hint', $header)) {
 			$msg = match ($header['hint']) {
 				'renew' => "Invalid Musixmatch token",
 				'captcha' => "Musixmatch blocked your IP",
-				default => "Musixmatch returned an error with reason: " . $header['hint']
+				default => "Musixmatch returned an error with reason: {$header['hint']}"
 			};
 		} else {
 			$msg = match ($header['status_code']) {
 				401 => "Musixmatch rate limit exceeded. Please try again in a few minutes.",
 				404 => "Musixmatch query returned no result",
 				400 => "Bad request sent to Musixmatch. Please report this issue.",
-				default => "Musixmatch HTTP Error " . $header['status_code']
+				default => "Musixmatch HTTP Error {$header['status_code']}"
 			};
 		}
 		return $msg;
@@ -39,10 +41,10 @@ abstract class Controller
 	 * @param int|float $seconds
 	 * @return string
 	 */
-	protected function formatTime(int|float $seconds)
+	protected function formatTime(int|float $seconds): string
 	{
 		if (!is_numeric($seconds) || $seconds < 0) {
-			Log::warning("Invalid time value: " . $seconds);
+			Log::warning("Invalid time value: $seconds");
 			return '00:00.00';
 		}
 
@@ -62,7 +64,7 @@ abstract class Controller
 	 * @param  string $json
 	 * @return array|false	Return decoded json in array, false on failure
 	 */
-	protected function decodeJson(string $json)
+	protected function decodeJson(string $json): array|false
 	{
 		try {
 			$res = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
@@ -75,17 +77,17 @@ abstract class Controller
 
 	/**
 	 * Converts KRC lyrics to Enhanced LRC
-	 * @param  string $krcText 
-	 * @return string
+	 * @param  string $krcText
+	 * @return string|null
 	 */
-	protected function krc2lrc(string $krcText)
+	protected function krc2lrc(string $krcText): ?string
 	{
 		if (empty($krcText)) return null;
 		$lyricText = "";
 		$metaRegex = "/^\[(\S+):(\S+)\]$/";
 		$timestampsRegex = "/^\[(\d+),(\d+)\]/";
 		$timestamps2Regex = "/<(\d+),(\d+),(\d+)>([^<]*)/";
-		$lines = preg_split("/[\n]/", $krcText);
+		$lines = preg_split("/\r\n|\r|\n/", $krcText);
 		$prevtime = 0;
 		foreach ($lines as $idx => $line) {
 			if (preg_match($metaRegex, $line, $matches)) { // meta info
@@ -94,7 +96,7 @@ abstract class Controller
 					(in_array($matches[1], ['ar', 'ti']) && is_numeric($matches[2]))
 				) continue;
 				else if (in_array($matches[1], ['total'])) {
-					$lyricText .= '[length: ' . gmdate('i:s', floor($matches[2] / 1000)) . "]\n";
+					$lyricText .= sprintf("[length: %s]\n", gmdate('i:s', floor($matches[2] / 1000)));
 					continue;
 				}
 				$lyricText .= $matches[0] . "\n";
@@ -104,25 +106,34 @@ abstract class Controller
 				$duration = (int)$matches[2];
 				if ($idx === 0) {
 					$lyricLine .= ($startTime > 3000)
-						? "[" . $this->formatTime(($startTime - mt_rand(2500, 3000)) / 1000) . "]"
+						? "[{$this->formatTime(($startTime - mt_rand(2500, 3000)) / 1000)}]"
 						: "[00:00.00]";
 				} else if (($startTime - $prevtime) > 9000) {
-					$lyricLine .= "[" . $this->formatTime(($prevtime + mt_rand(2500, 3500)) / 1000) . "]\n";
-					$lyricLine .= "[" . $this->formatTime(($startTime - mt_rand(2500, 3500)) / 1000) . ']';
-				} else
-					$lyricLine .= "[" . $this->formatTime($startTime / 1000) . ']';
+					$lyricLine .= sprintf(
+						"[%s]\n[%s]",
+						$this->formatTime(($prevtime + mt_rand(2500, 3500)) / 1000),
+						$this->formatTime(($startTime - mt_rand(2500, 3500)) / 1000)
+					);
+				} else $lyricLine .= "[{$this->formatTime($startTime / 1000)}]";
 				// parse sub-timestamps
 				if (preg_match_all($timestamps2Regex, $line, $subMatches)) {
 					for ($a = 0; $a < count($subMatches[0]); $a++) {
-						$offset = (int)$subMatches[1][$a];
-						$subWord = $subMatches[4][$a];
-						$lyricLine .= "<" . $this->formatTime(($startTime + $offset) / 1000) . ">" . $subWord;
+						$lyricLine .= sprintf(
+							"<%s>%s",
+							$this->formatTime(($startTime + (int)$subMatches[1][$a]) / 1000),
+							$subMatches[4][$a]
+						);
 					}
 				}
 				$prevtime = $startTime + $duration;
-				$lyricText .= $lyricLine . "<" . $this->formatTime(($startTime + $duration) / 1000) . "> \n";
+				$lyricText .= sprintf(
+					"%s<%s> \n",
+					$lyricLine,
+					$this->formatTime(($startTime + $duration) / 1000)
+				);
+				//^Trailing space to evade MiniLyrics bug^
 				if ($idx === count($lines) - 1)
-					$lyricText .= "[" . $this->formatTime(($startTime + $duration) / 1000 + 5) . "]";
+					$lyricText .= "[{$this->formatTime(($startTime +$duration) / 1000 + 5)}]";
 			}
 		}
 		return $lyricText;
@@ -131,16 +142,16 @@ abstract class Controller
 	/**
 	 * Converts decoded QRC lyrics to Enhanced LRC format
 	 * @param  string $qrcText
-	 * @return string
+	 * @return string|null
 	 */
-	protected function qrcToLrc(string $qrcText)
+	protected function qrcToLrc(string $qrcText): ?string
 	{
 		if (empty($qrcText)) return null;
 		$converted = Str::of($qrcText)
 			->replaceMatches("/^\[(\d+),(\d+)\]/m", function (array $matches) {
-				return '[' . $this->formatTime((int)$matches[1] / 1000) . ']';
+			return "[{$this->formatTime((int)$matches[1] / 1000)}]";
 			})->replaceMatches("/\((\d+),(\d+)\)/", function (array $matches) {
-				return '<' . $this->formatTime(((int)$matches[1] + (int)$matches[2]) / 1000) . '>';
+			return "<{$this->formatTime(((int)$matches[1] + (int)$matches[2]) / 1000)}>";
 			});
 		return $converted;
 	}

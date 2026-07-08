@@ -45,21 +45,21 @@ if (lyricsModal) {
 				$(".placeholder-glow").addClass("d-none");
 			},
 			success: function (data) {
-				if (data.synced !== null && data.synced!=='') {
+				if (data.synced !== null && data.synced !== "") {
 					$("#dl-synced").removeClass("disabled");
 					syncedLyricContents = `[id: ${data.id}]${metaLyric}[lr: ${data.writers}]\n${data.synced}`;
 				} else {
 					$("#dl-synced").addClass("disabled");
 					syncedLyricContents = "";
 				}
-				if (data.syllable !== null && data.syllable!=='') {
+				if (data.syllable !== null && data.syllable !== "") {
 					$("#dl-syllyric").removeClass("disabled");
 					sylLyricContent = `[id: ${data.id}]${metaLyric}[lr: ${data.writers}]\n${data.syllable}\n[${duration}.000]`;
 				} else {
 					sylLyricContent = "";
 					$("#dl-syllyric").addClass("disabled");
 				}
-				if (data.ttml !== null && data.ttml!=='') {
+				if (data.ttml !== null && data.ttml !== "") {
 					$("#dl-ttml").removeClass("disabled");
 					ttmlContent = data.ttml;
 				} else {
@@ -108,17 +108,17 @@ if (previewModal) {
 }
 syncedLyricDL.onclick = function (e) {
 	e.preventDefault();
-	blobDL(syncedLyricContents,`${fileName}.lrc`);
+	blobDL(syncedLyricContents, `${fileName}.lrc`);
 };
 sylLyricDL.onclick = function (e) {
 	e.preventDefault();
-	blobDL(sylLyricContent,`${fileName}.lrc`);
+	blobDL(sylLyricContent, `${fileName}.lrc`);
 };
 plainLyricDL.onclick = function (e) {
 	e.preventDefault();
-	blobDL(plainLyricContent,`${fileName}.txt`);
+	blobDL(plainLyricContent, `${fileName}.txt`);
 };
 ttmlDL.onclick = function (e) {
 	e.preventDefault();
-	blobDL(ttmlContent,`${fileName}.ttml`,'application/ttml+xml');
+	blobDL(ttmlContent, `${fileName}.ttml`, "application/ttml+xml");
 };

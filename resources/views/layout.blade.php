@@ -175,12 +175,12 @@
 										Spotify
 									</a>
 								</li>
-								<li>
+								{{-- <li>
 									<a @class(['dropdown-item', 'active' => request()->routeIs('youtube.*')]) href="{{ route('youtube.index') }}"
 										@if (request()->routeIs('youtube.*')) aria-current="page" @endif >
 										YouTube
 									</a>
-								</li>
+								</li> --}}
 								<li>
 									<a @class(['dropdown-item', 'active' => request()->routeIs('apple.*')]) href="{{ route('apple.index') }}"
 										@if (request()->routeIs('apple.*')) aria-current="page" @endif >
@@ -313,8 +313,9 @@
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
 			integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
 			crossorigin="anonymous"></script>
-		<script src="https://code.jquery.com/jquery-4.0.0.min.js" integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao=" crossorigin="anonymous"></script>
-		{{-- <script src="https://code.jquery.com/jquery-migrate-4.0.2.js" integrity="sha256-4jeVh9jfwyyopEc4//vH8BKuFP0q9ElJZLsJrTEcZjI=" crossorigin="anonymous"></script> --}}
+		<script src="https://code.jquery.com/jquery-4.0.0.min.js"
+			integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao="
+			crossorigin="anonymous"></script>
 		<script
 			src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"
 			integrity="sha256-jLFv9iIrIbqKULHpqp/jmePDqi989pKXOcOht3zgRcw="

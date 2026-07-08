@@ -3,12 +3,12 @@
 @empty($data)
 	<x-no-results source="lrclib" />
 @else
-	@if(count($data)===20)
-	<div class="alert alert-warning">
-		<p class="text-center">Due to API limitation, only first 20 results are returned.</p>
-	</div>
+	@if (count($data) === 20)
+		<div class="alert alert-warning">
+			<span class="text-center">Due to API limitation, only first 20 results are returned.</span>
+		</div>
 	@else
-	<p class="text-center">Found {{count($data)}} result(s)</p>
+		<p class="text-center">Found {{ count($data) }} result(s)</p>
 	@endif
 	<div class="list-group px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-5 pb-5">
 		@foreach ($data as $result)

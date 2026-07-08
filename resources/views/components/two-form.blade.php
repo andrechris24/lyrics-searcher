@@ -29,7 +29,7 @@
 	<small class="form-text">
 		@if ($type === 'advanced')
 			<a href="{{ route($provider . '.index') }}">Basic search</a>
-		@elseif(Illuminate\Support\Facades\Route::has($provider.'advanced'))
+		@elseif(Illuminate\Support\Facades\Route::has($provider . 'advanced'))
 			<a href="{{ route($provider . '.advanced') }}">Advanced search</a>
 		@endif
 	</small>

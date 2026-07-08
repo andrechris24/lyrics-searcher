@@ -21,8 +21,8 @@
 			<span class="input-group-text"><i class="fa-solid fa-user"></i></span>
 			<div class="form-floating">
 				<input type="text" class="form-control @error('artist') is-invalid @enderror "
-				id="artist-name" placeholder="Artist" name="artist"
-				value="{{ request('artist') ?? old('artist') }}">
+					id="artist-name" placeholder="Artist" name="artist"
+					value="{{ request('artist') ?? old('artist') }}">
 				<label for="artist-name" class="form-label">Artist</label>
 			</div>
 		</div>

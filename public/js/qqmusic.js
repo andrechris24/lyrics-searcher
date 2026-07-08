@@ -27,8 +27,8 @@ $(".list-group-item-action").on("click", function (e) {
 					},
 					topLayer: true,
 					inputOptions: {
-						synced: "Synced",
 						wordbyword: "Word-by-Word",
+						synced: "Synced",
 						plain: "Plain"
 					},
 					input: "select",

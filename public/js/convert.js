@@ -155,7 +155,7 @@ $("#lyric-converter-form").on("submit", function (e) {
 			}
 		}
 		$("#converted-lyric").text(lrcText);
-		$("#converted-lyric").trigger('focus');
+		$("#converted-lyric").trigger("focus");
 		if (lrcText !== "") $("#save-converted").prop("disabled", false);
 		else $("#save-converted").prop("disabled", true);
 	};

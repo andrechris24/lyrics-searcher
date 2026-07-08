@@ -25,12 +25,7 @@ class AppleController extends Controller
 			return to_route('apple.index')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
 			Log::error($th);
-			$message = match (get_class($th)) {
-				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'Apple Music connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				RequestException::class => 'Apple Music HTTP Error ' . $th->response->status(),
-				default => 'Apple Music unexpected error: ' . $th->getMessage()
-			};
+			$message = self::matchError($th);
 			return to_route('apple.index')->withInput()->withError($message);
 		}
 	}
@@ -41,14 +36,14 @@ class AppleController extends Controller
 				->get("https://lyrics.paxsenix.org/apple-music/lyrics", ['id' => $id]);
 			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
-				Log::error('Apple Music API error: ' . $r['message'], $r);
+				Log::error("Apple Music API error: {$r['message']}", $r);
 				abort(500, 'Oops, an error occurred with Apple Music API.');
 			}
 			return response()->json([
 				'id' => $id,
 				'plain' => $r['plain'],
 				'synced' => $r['lrc'],
-				'syllable' => Str::replace(">\n", "> \n", $r['elrc'], false), //Counter MiniLyrics bug
+				'syllable' => Str::replace(">\n", "> \n", $r['elrc'], false), //Evade MiniLyrics bug
 				'ttml' => $r['ttmlContent'],
 				'type' => $r['type'],
 				'writers' => implode(', ', $r['metadata']['songwriters']),
@@ -56,16 +51,20 @@ class AppleController extends Controller
 			]);
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			Log::error($th);
-			$message = match (get_class($th)) {
-				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'Apple Music API connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				RequestException::class => $th->response->status() === 404 ? 'No lyric available for this song' : 'Apple Music API error ' . $th->response->status(),
-				default => 'Apple Music API unexpected error: ' . $th->getMessage()
-			};
+			$message = self::matchError($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
 				$message
 			);
 		}
+	}
+	private static function matchError(mixed $ex): string
+	{
+		return match (get_class($ex)) {
+			JsonException::class => "Error parsing response: {$ex->getMessage()}",
+			ConnectionException::class => "Apple Music connection error {$ex->getCode()}: {$ex->getMessage()}",
+			RequestException::class => $ex->response->status() === 404 ? 'No lyric available for this song' : "Apple Music HTTP Error {$ex->response->status()}",
+			default => "Apple Music unexpected error: {$ex->getMessage()}"
+		};
 	}
 }

@@ -55,19 +55,19 @@ $("#searchSongLyric").on("submit", function (e) {
 					} else {
 						plainContents = `${fileName}\n\n${data.plain}`;
 						if (data.synced === "" || data.synced === null) {
-							if (data.source === "lrclib"){
+							if (data.source === "lrclib") {
 								llSyncedDL.classList.add("disabled");
 								$("#lrclib-lyric-type").text("Plain");
-							}else {
+							} else {
 								mxSyncedDL.classList.add("disabled");
-								$("#mx-lyric-type").text('Plain');
+								$("#mx-lyric-type").text("Plain");
 							}
 							syncedContents = null;
 						} else {
-							if (data.source === "lrclib"){
+							if (data.source === "lrclib") {
 								llSyncedDL.classList.remove("disabled");
 								$("#lrclib-lyric-type").text("Synced");
-							}else {
+							} else {
 								mxSyncedDL.classList.remove("disabled");
 								$("#mx-lyric-type").text("Synced");
 							}
@@ -158,7 +158,7 @@ $("#searchSongLyric").on("submit", function (e) {
 						$("#modalLocal").modal("show");
 						break;
 					default:
-						toast.fire({icon: "error", text: "Unsupported source"});
+						toast.fire({ icon: "error", text: "Unsupported source" });
 						break;
 				}
 			}
@@ -191,11 +191,11 @@ $("#searchSongLyric").on("submit", function (e) {
 });
 mxPlainDL.onclick = function (e) {
 	e.preventDefault();
-	blobDL(plainContents,`${fileName}.txt`);
+	blobDL(plainContents, `${fileName}.txt`);
 };
 mxSyncedDL.onclick = function (e) {
 	e.preventDefault();
-	blobDL(syncedContents,`${fileName}.lrc`);
+	blobDL(syncedContents, `${fileName}.lrc`);
 };
 mxRichsyncDL.onclick = function (e) {
 	e.preventDefault();
@@ -239,11 +239,11 @@ mxRichsyncDL.onclick = function (e) {
 };
 llPlainDL.onclick = function (e) {
 	e.preventDefault();
-	blobDL(plainContents,`${fileName}.txt`);
+	blobDL(plainContents, `${fileName}.txt`);
 };
 llSyncedDL.onclick = function (e) {
 	e.preventDefault();
-	blobDL(syncedContents,`${fileName}.lrc`);
+	blobDL(syncedContents, `${fileName}.lrc`);
 };
 wbwDL.onclick = function (e) {
 	e.preventDefault();
@@ -266,7 +266,7 @@ wbwDL.onclick = function (e) {
 						},
 						type: "POST",
 						url: "/lrclib/convert",
-						data: {content: wbwContents},
+						data: { content: wbwContents },
 						success: function (data) {
 							return JSON.stringify(data);
 						},
@@ -284,8 +284,7 @@ wbwDL.onclick = function (e) {
 			}
 		})
 		.then((result) => {
-			if (result.isConfirmed)
-				blobDL(result.value.lrc, `${fileName}.lrc`);
+			if (result.isConfirmed) blobDL(result.value.lrc, `${fileName}.lrc`);
 			else if (result.isDenied) blobDL(wbwContents, `${fileName}.yaml`);
 			else console.warn("Download aborted");
 		});
@@ -310,10 +309,8 @@ localDL.onclick = function () {
 				if (result.isConfirmed) {
 					blobDL(localContents, fileName + ext);
 				} else if (result.isDenied) {
-					const syncedContent = localContents.replace(
-						/<(\d+):(\d+).(\d+)>/g,
-						""
-					);
+					const syncedContent = 
+						localContents.replace(/<(\d+):(\d+).(\d+)>/g, "");
 					blobDL(syncedContent, fileName + ext);
 				} else console.warn("Download cancelled");
 			});

@@ -65,11 +65,7 @@ class MusixmatchController extends Controller
 			return to_route('musixmatch.index')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | \Exception $th) {
 			Log::error($th);
-			$message = match (get_class($th)) {
-				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'Musixmatch connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				default => 'Musixmatch unexpected error: ' . $th->getMessage()
-			};
+			$message = self::matchError($th);
 			return to_route('musixmatch.index')->withInput()->withErrors($message);
 		}
 	}
@@ -103,11 +99,7 @@ class MusixmatchController extends Controller
 			return to_route('musixmatch.advanced')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | \Exception $th) {
 			Log::error($th);
-			$message = match (get_class($th)) {
-				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'Musixmatch connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				default => 'Musixmatch unexpected error: ' . $th->getMessage()
-			};
+			$message = self::matchError($th);
 			return to_route('musixmatch.advanced')->withInput()->withError($message);
 		}
 	}
@@ -133,11 +125,7 @@ class MusixmatchController extends Controller
 			return to_route('musixmatch.index')->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | \Exception $th) {
 			Log::error($th);
-			$message = match (get_class($th)) {
-				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'Musixmatch connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				default => 'Musixmatch unexpected error: ' . $th->getMessage()
-			};
+			$message = self::matchError($th);
 			return to_route('musixmatch.index')->withError($message);
 		}
 	}
@@ -182,36 +170,36 @@ class MusixmatchController extends Controller
 			return response()->json($lyrics);
 		} catch (ConnectionException | JsonException $th) {
 			Log::error($th);
-			$message = match (get_class($th)) {
-				JsonException::class => 'Error parsing response: ' . $th->getMessage(),
-				ConnectionException::class => 'Musixmatch connection error ' . $th->getCode() . ': ' . $th->getMessage(),
-				default => 'Musixmatch unexpected error: ' . $th->getMessage()
-			};
+			$message = self::matchError($th);
 			abort(500, $message);
 		}
 	}
-	private function richsync(array $lrc)
+	private function richsync(array $lrc): ?string
 	{
-		if (empty($lrc) || $lrc === false) return;
+		if (empty($lrc) || $lrc === false) return null;
 		$richsync = '';
 		$prevtime = 0;
 		foreach ($lrc as $idx => $line) {
 			if ($idx === 0) {
 				$richsync .= ($line['ts'] > 3) ?
-					"[" . $this->formatTime($line['ts'] - 3) . ']' :
+					"[{$this->formatTime($line['ts'] - 3)}]" :
 					"[00:00.00]";
 			} else {
-				$richsync .= (($line['ts'] - $prevtime) > 9) ?
-					"[" . $this->formatTime($prevtime + 3) . "]\n[" . $this->formatTime($line['ts'] - 3) . ']' :
-					"[" . $this->formatTime($line['ts']) . ']';
+				$richsync .= (($line['ts'] - $prevtime) > 9)
+					? sprintf(
+						"[%s]\n[%s]",
+						$this->formatTime($prevtime + 3),
+						$this->formatTime($line['ts'] - 3)
+					) : "[{$this->formatTime($line['ts'])}]";
 			}
 			foreach ($line['l'] as $word) {
-				$richsync .= '<' . $this->formatTime($line['ts'] + $word['o']) . '>' . $word['c'];
+				$richsync .= "<{$this->formatTime($line['ts'] +$word['o'])}>{$word['c']}";
 			}
-			$richsync .= '<' . $this->formatTime($line['te']) . "> \n";
+			//Evade MiniLyrics bug
+			$richsync .= "<{$this->formatTime($line['te'])}> \n";
 			$prevtime = $line['te'];
 			if ($idx === count($lrc) - 1)
-				$richsync .= '[' . $this->formatTime($line['te'] + 5) . "]\n";
+				$richsync .= "[{$this->formatTime($line['te'] + 5)}]\n";
 		}
 		return $richsync;
 	}
@@ -220,5 +208,13 @@ class MusixmatchController extends Controller
 		$token = env('MUSIXMATCH_TOKEN');
 		abort_if(empty($token), 500, 'Musixmatch token was not found');
 		return $token;
+	}
+	private static function matchError(mixed $ex): string
+	{
+		return match (get_class($ex)) {
+			JsonException::class => "Error parsing response: {$ex->getMessage()}",
+			ConnectionException::class => "Musixmatch connection error {$ex->getCode()}: {$ex->getMessage()}",
+			default => "Musixmatch unexpected error: {$ex->getMessage()}"
+		};
 	}
 }
