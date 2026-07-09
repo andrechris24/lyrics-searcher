@@ -66,7 +66,7 @@ if (lyricsModal) {
 							: (xhr.responseJSON?.message ?? err ?? st)
 				});
 				$("#modalLyrics").modal("hide");
-			},
+			}
 		});
 	});
 }
@@ -86,10 +86,9 @@ function parseKLyric(lyricText) {
 		timestamps2Regex = /\((\d+),(\d+)\)([^(]*)/g,
 		lines = lyricText.split(/[\n]/);
 	for (const line of lines) {
-		if ((matches = metaRegex.exec(line))) {
-			// meta info
+		if ((matches = metaRegex.exec(line)))// meta info
 			enhancedlyricText += `${matches[0]}\n`;
-		} else if ((matches = timestampsRegex.exec(line))) {
+		else if ((matches = timestampsRegex.exec(line))) {
 			let startTime = parseInt(matches[1]);
 			let duration = parseInt(matches[2]);
 			let lyricLine = `[${formatTime(startTime)}]`;
@@ -103,6 +102,7 @@ function parseKLyric(lyricText) {
 				subStartTime += subDuration;
 			}
 			enhancedlyricText += `${lyricLine}<${formatTime(startTime + duration)}> \n`;
+			//^Trailing space to evade MiniLyrics bug^
 		}
 	}
 	return enhancedlyricText;

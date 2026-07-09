@@ -30,7 +30,7 @@ $(document)
 				processing: true,
 				responsive: true,
 				serverSide: true,
-				stateSave: true,
+				// stateSave: true,
 				ajax: {
 					url: "/local/data",
 					method: "GET",
