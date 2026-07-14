@@ -25,9 +25,7 @@
 				<div class="form-floating">
 					<select class="form-select form-select-lg" name="source" id="lyric-source" required>
 						<option value="" selected>Choose</option>
-						<option value="musixmatch" @empty(env('MUSIXMATCH_TOKEN')) disabled @endempty>
-							Musixmatch
-						</option>
+						<option value="musixmatch">Musixmatch</option>
 						<option value="lrclib">LRCLib</option>
 						<option value="plains">Lyrics.ovh</option>
 						<option value="local">Local</option>

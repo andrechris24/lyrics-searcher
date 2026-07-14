@@ -51,12 +51,6 @@
 						<div class="col-12 col-sm-8">
 							<span id="local-song-upload"></span>
 						</div>
-						<div class="col-12 col-sm-4">
-							<b>Last Update</b>
-						</div>
-						<div class="col-12 col-sm-8">
-							<span id="local-song-update"><span>
-						</div>
 					</div>
 					<p id="local-content" style="white-space: pre-line"></p>
 				</div>

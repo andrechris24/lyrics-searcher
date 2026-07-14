@@ -11,15 +11,13 @@ if (lyricsModal) {
 			duration = btn.getAttribute("data-bs-duration"),
 			content = btn.getAttribute("data-bs-content"),
 			user = btn.getAttribute("data-bs-user"),
-			upload = btn.getAttribute("data-bs-upload"),
-			update = btn.getAttribute("data-bs-update");
+			upload = btn.getAttribute("data-bs-upload");
 		$("#local-song-title").text(songName);
 		$("#local-song-artist").text(artistName);
 		$("#local-song-album").text(albumName);
 		$("#local-song-duration").text(duration);
 		$("#local-uploader").text(user);
 		$("#local-song-upload").text(upload);
-		$("#local-song-update").text(update);
 		$("#local-content").text(content);
 	});
 }
@@ -57,18 +55,31 @@ $(document)
 				order: [[5, "desc"]],
 				columnDefs: [
 					{
+						target: 2,
+						render: function(data){
+							if(data===''||data===null) return '-';
+							return data;
+						}
+					},
+					{
 						target: 3,
 						searchable: false,
 						render: function (data, type, full) {
 							if (full["offset"] === 0) return formatSeconds(data);
 							return `${formatSeconds(data)} (${full["offset"] > 0 ? "+" : ""}${full["offset"] / 1000})`;
 						}
+					},{
+						target: 4,
+						render: function(data){
+							if(data===''||data===null) return 'Guest';
+							return data;
+						}
 					},
 					{
 						target: 5,
 						searchable: false,
 						render: function (data) {
-							return luxon.DateTime.fromISO(data).toFormat("dd LLL yyyy HH:mm");
+							return luxon.DateTime.fromISO(data).toRelative();
 						}
 					},
 					{
@@ -79,23 +90,18 @@ $(document)
 							const create = luxon.DateTime.fromISO(
 									full["created_at"],
 								).toFormat("dd LLL yyyy HH:mm"),
-								update = luxon.DateTime.fromISO(full["updated_at"]).toFormat(
-									"dd LLL yyyy HH:mm",
-								),
 								length = formatSeconds(full["duration"]);
 							return (
 								'<div class="btn-group btn-group-sm">' +
 								'<button type="button" class="btn btn-info" data-bs-toggle="modal"' +
-								`data-bs-target="#modalLocalFile" data-bs-album="${full["album"]}"` +
+								`data-bs-target="#modalLocalFile" data-bs-album="${full["album"]??'-'}"` +
 								`data-bs-duration="${length}" data-bs-title="${full["title"]}"` +
-								`data-bs-artist="${full["artist"]}"` +
-								`data-bs-content="${data}"` +
-								`data-bs-upload="${create}"` +
-								`data-bs-user="${full["user"]["name"] ?? "Guest"}"` +
-								`data-bs-offset="${full["offset"]}" data-bs-update="${update}">` +
+								`data-bs-artist="${full["artist"]}" data-bs-content="${data}"`+
+								`data-bs-upload="${create}" data-bs-offset="${full["offset"]}"` +
+								`data-bs-user="${full["user"]["name"] ?? "Guest"}">` +
 								'<i class="fa-solid fa-eye"></i></button>' +
 								'<button type="button" class="btn btn-primary btn-sm dl-button"' +
-								`data-album="${full["album"]}" data-title="${full["title"]}"` +
+								`data-album="${full["album"]??'-'}" data-title="${full["title"]}"` +
 								`data-artist="${full["artist"]}" data-id="${full["id"]}"` +
 								`data-duration="${length}" data-content="${data}"` +
 								`data-user="${full["user"]["name"] ?? "Guest"}" data-offset="${full["offset"]}">` +

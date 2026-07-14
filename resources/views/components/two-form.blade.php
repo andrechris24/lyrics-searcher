@@ -7,7 +7,8 @@
 				<input type="text" class="form-control @error('title') is-invalid @enderror "
 					id="track-name" placeholder="Song title" name="title"
 					value="{{ request('title') ?? old('title') }}" required
-					@if (request()->routeIs('*.index')) autofocus @endif>
+					@if (request()->routeIs('*.index') || request()->routeIs('*.advanced')) 
+					autofocus @endif>
 				<label for="track-name" class="form-label">
 					Song Title <span class="text-danger"><b>*</b></span>
 				</label>

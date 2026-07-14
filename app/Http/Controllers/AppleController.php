@@ -32,8 +32,8 @@ class AppleController extends Controller
 	public function get(int $id)
 	{
 		try {
-			$response = Http::retry(3, 100)->timeout(25000)
-				->get("https://lyrics.paxsenix.org/apple-music/lyrics", ['id' => $id]);
+			$response = Http::retry(2, 100)->timeout(25000)
+				->get(parent::$paxsenix_url . "apple-music/lyrics", ['id' => $id]);
 			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
 				Log::error("Apple Music API error: {$r['message']}", $r);
@@ -44,6 +44,7 @@ class AppleController extends Controller
 				'plain' => $r['plain'],
 				'synced' => $r['lrc'],
 				'syllable' => Str::replace(">\n", "> \n", $r['elrc'], false), //Evade MiniLyrics bug
+				'multisyl' => Str::replace(">\n", "> \n", $r['elrcMultiPerson'], false),
 				'ttml' => $r['ttmlContent'],
 				'type' => $r['type'],
 				'writers' => implode(', ', $r['metadata']['songwriters']),

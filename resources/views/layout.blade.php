@@ -85,12 +85,10 @@
 							<a @class([
 								'nav-link',
 								'dropdown-toggle',
-								'active' => request()->routeIs('musixmatch.*'),
-								'disabled' => empty(env('MUSIXMATCH_TOKEN'))
+								'active' => request()->routeIs('musixmatch.*')
 							]) href="#"
 								@if (request()->routeIs('musixmatch.*')) aria-current="page" @endif role="button"
-								data-bs-toggle="dropdown" aria-expanded="false"
-								@if (empty(env('MUSIXMATCH_TOKEN'))) aria-disabled="true" @endif>
+								data-bs-toggle="dropdown" aria-expanded="false">
 								Musixmatch
 							</a>
 							<ul class="dropdown-menu">
@@ -103,8 +101,8 @@
 											request()->routeIs('musixmatch.advanced')
 									])
 										@if (request()->routeIs('musixmatch.index') ||
-												request()->routeIs('musixmatch.search*') ||
-												request()->routeIs('musixmatch.advanced')
+											request()->routeIs('musixmatch.search*') ||
+											request()->routeIs('musixmatch.advanced')
 										) aria-current="page" @endif href="{{ route('musixmatch.index') }}">
 										Search
 									</a>
@@ -153,11 +151,13 @@
 								'active' =>
 									request()->routeIs('deezer.*') ||
 									request()->routeIs('spotify.*') ||
-									request()->routeIs('youtube.*')
+									request()->routeIs('youtube.*') ||
+									request()->routeIs('apple.*')
 							])
 								@if (request()->routeIs('deezer.*') ||
-										request()->routeIs('spotify.*') ||
-										request()->routeIs('youtube.*')
+									request()->routeIs('spotify.*') ||
+									request()->routeIs('youtube.*') ||
+									request()->routeIs('apple.*')
 								) aria-current="page" @endif href="#"
 								role="button" data-bs-toggle="dropdown" aria-expanded="false">
 								More

@@ -2,12 +2,14 @@
 let syncedLyricContents,
 	sylLyricContent,
 	plainLyricContent,
+	multisylLyricContent,
 	ttmlContent,
 	fileName;
 const lyricsModal = document.getElementById("modalLyrics"),
 	plainLyricDL = document.getElementById("dl-plain"),
 	syncedLyricDL = document.getElementById("dl-synced"),
 	sylLyricDL = document.getElementById("dl-syllyric"),
+	multiSylLyricDL=document.getElementById("dl-multisyllyric"),
 	ttmlDL = document.getElementById("dl-ttml"),
 	previewModal = document.getElementById("modalPreviewSong"),
 	player = $("#preview-player");
@@ -58,6 +60,13 @@ if (lyricsModal) {
 				} else {
 					sylLyricContent = "";
 					$("#dl-syllyric").addClass("disabled");
+				}
+				if(data.multisyl !== null && data.multisyl !== "") {
+					$("#dl-multisyllyric").removeClass("disabled");
+					multisylLyricContent = `[id: ${data.id}]${metaLyric}[lr: ${data.writers}]\n${data.multisyl}\n[${duration}.000]`;
+				} else {
+					multisylLyricContent = "";
+					$("#dl-multisyllyric").addClass("disabled");
 				}
 				if (data.ttml !== null && data.ttml !== "") {
 					$("#dl-ttml").removeClass("disabled");
@@ -113,6 +122,10 @@ syncedLyricDL.onclick = function (e) {
 sylLyricDL.onclick = function (e) {
 	e.preventDefault();
 	blobDL(sylLyricContent, `${fileName}.lrc`);
+};
+multiSylLyricDL.onclick = function (e) {
+	e.preventDefault();
+	blobDL(multisylLyricContent, `${fileName}.lrc`);
 };
 plainLyricDL.onclick = function (e) {
 	e.preventDefault();

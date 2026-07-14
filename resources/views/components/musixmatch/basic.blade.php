@@ -16,26 +16,27 @@
 		</div>
 		<div class="col-md-4">
 			<div class="form-floating">
-				<select class="form-select @error('type') is-invalid @enderror " id="search-type" name="type" required>
-					<option value="" {{request('type')===null?'selected':''}}>Select</option>
-					<option value="all" {{request('type')==='all'?'selected':''}}>All</option>
-					<option value="track" {{request('type')==='track'?'selected':''}}>
-					Song title
+				<select class="form-select @error('type') is-invalid @enderror " id="search-type"
+					name="type" required>
+					<option value="" {{ request('type') === null ? 'selected' : '' }}>Select</option>
+					<option value="all" {{ request('type') === 'all' ? 'selected' : '' }}>All</option>
+					<option value="track" {{ request('type') === 'track' ? 'selected' : '' }}>
+						Song title
 					</option>
-					<option value="artist" {{request('type')==='artist'?'selected':''}}>Artist</option>
-					<option value="lyrics" {{request('type')==='lyrics'?'selected':''}}>Lyric</option>
-					<option value="track_artist" {{request('type')==='track_artist'?'selected':''}}>
-					Title and Artist
+					<option value="artist" {{ request('type') === 'artist' ? 'selected' : '' }}>Artist</option>
+					<option value="lyrics" {{ request('type') === 'lyrics' ? 'selected' : '' }}>Lyric</option>
+					<option value="track_artist" {{ request('type') === 'track_artist' ? 'selected' : '' }}>
+						Title and Artist
 					</option>
-					<option value="writer" {{request('type')==='writer'?'selected':''}}>
-					Song writer
+					<option value="writer" {{ request('type') === 'writer' ? 'selected' : '' }}>
+						Song writer
 					</option>
 				</select>
 				<label for="search-type">Type</label>
 			</div>
 		</div>
 	</div>
-		<button type="submit" class="btn btn-primary">Search</button>
+	<button type="submit" class="btn btn-primary">Search</button>
 	<small class="form-text">
 		<a href="{{ route('musixmatch.advanced') }}">Advanced search</a>
 	</small>

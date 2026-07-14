@@ -6,9 +6,9 @@
 			</span>
 			<div class="form-floating">
 				<input type="text" class="form-control @error('title') is-invalid @enderror "
-				id="track-name" placeholder="Song title" name="title"
-				value="{{ request('title') ?? old('title') }}"
-				@if (request()->routeIs('*.index')) autofocus @endif>
+					id="track-name" placeholder="Song title" name="title"
+					value="{{ request('title') ?? old('title') }}"
+					@if (request()->routeIs('musixmatch.advanced')) autofocus @endif>
 				<label for="track-name" class="form-label">Song Title</label>
 			</div>
 		</div>
@@ -31,8 +31,8 @@
 			</span>
 			<div class="form-floating">
 				<input type="text" class="form-control @error('lyrics') is-invalid @enderror "
-				id="lyric-keyword" placeholder="Any word in lyric" name="lyrics"
-				value="{{ request('lyrics') ?? old('lyrics') }}">
+					id="lyric-keyword" placeholder="Any word in lyric" name="lyrics"
+					value="{{ request('lyrics') ?? old('lyrics') }}">
 				<label for="lyric-keyword" class="form-label">Lyric Keyword</label>
 			</div>
 		</div>

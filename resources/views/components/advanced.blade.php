@@ -7,7 +7,8 @@
 					id="track-name" placeholder="Song title" name="title"
 					value="{{ request('title') ?? old('title') }}"
 					@if ($require === 1) required @endif
-					@if (request()->routeIs('*.index')) autofocus @endif>
+					@if (!request()->routeIs('*.search.advanced') && request()->routeIs('*.advanced')) 
+					autofocus @endif>
 				<label for="track-name" class="form-label">
 					Song Title @if ($require === 1)
 						<span class="text-danger"><b>*</b></span>

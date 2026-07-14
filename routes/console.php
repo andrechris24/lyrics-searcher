@@ -16,7 +16,7 @@ Artisan::command('usertoken', function () {
 	abort_if(
 		$header['status_code'] !== 200,
 		$header['status_code'],
-		array_key_exists('hint', $header) ? $header['hint'] : 'Musixmatch HTTP Error ' . $header['status_code']
+		array_key_exists('hint', $header) ? $header['hint'] : "Musixmatch HTTP Error {$header['status_code']}"
 	);
 	$body = $r['message']['body'];
 	if (array_key_exists('user_token', $body)) {

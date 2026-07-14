@@ -34,14 +34,14 @@ class DeezerController extends Controller
 	public function get(int $id)
 	{
 		try {
-			$response = Http::retry(3, 100)->timeout(25000)
-				->get('https://lyrics.paxsenix.org/deezer/lyrics', ['id' => $id]);
+			$response = Http::retry(2, 100)->timeout(25000)
+				->get(parent::$paxsenix_url.'deezer/lyrics', ['id' => $id]);
 			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
 			$prevtime = 0;
 			if ($r['isError']) {
 				abort_if($r['error'] === 'No lyrics found', 404, 'No lyric available for this song');
 				Log::error('Deezer API error: ', $r);
-				abort(500, $r['error']);
+				abort(500, 'Oops, something went wrong with Deezer API. Please try again later.');
 			} else if (empty($r['lyrics'])) $synced = null;
 			else {
 				$synced = '';
@@ -50,36 +50,33 @@ class DeezerController extends Controller
 						if ($idx === 0) {
 							$synced .= ($line['timestamp'] <= 3000)
 								? '[00:00.00]'
-								: "[{$this->formatTime(($line['timestamp'] - mt_rand(2500, 3000)) / 1000)}]";
+								: "[" . parent::formatTime(($line['timestamp'] - mt_rand(2500, 3000)) / 1000) . "]";
 						} elseif (($line['timestamp'] - $prevtime) > 9000) {
 							$synced .= sprintf(
 								"[%s]\n[%s]",
-								$this->formatTime(($prevtime + mt_rand(2500, 3500)) / 1000),
-								$this->formatTime(($line['timestamp'] - mt_rand(2500, 3500)) / 1000)
+								parent::formatTime(($prevtime + mt_rand(2500, 3500)) / 1000),
+								parent::formatTime(($line['timestamp'] - mt_rand(2500, 3500)) / 1000)
 							);
-						} else
-							$synced .= "[{$this->formatTime($line['timestamp'] / 1000)}]";
-						foreach ($line['text'] as $syl) {
-							$synced .= sprintf(
-								"<%s>%s<%s%s",
-								$this->formatTime($syl['timestamp'] / 1000),
-								$syl['text'],
-								$this->formatTime($syl['endtime'] / 1000),
-								$syl['part'] === false ? '> ' : '>'
-							);
-						}
+						} else $synced .= sprintf("[%s]", parent::formatTime($line['timestamp'] / 1000));
+						foreach ($line['text'] as $syl) $synced .= self::mergeSyl($syl);
 						$synced .= "\n";
+						if ($line['background'] === true) {
+							$synced .= '[bg: ';
+							foreach ($line['backgroundText'] as $bg)
+								$synced .= self::mergeSyl($bg);
+							$synced .= "]\n";
+						}
 					} else {
 						if (($line['timestamp'] - $prevtime) > 5000 && $idx !== 0)
-							$synced .= "[{$this->formatTime($prevtime / 1000)}]\n";
+							$synced .= sprintf("[%s]\n", parent::formatTime($prevtime / 1000));
 						$synced .= sprintf(
 							"[%s]%s\n",
-							$this->formatTime($line['timestamp'] / 1000),
+							parent::formatTime($line['timestamp'] / 1000),
 							$line['text'][0]['text']
 						);
 					}
 					if ($idx === count($r['lyrics']) - 1)
-						$synced .= "[{$this->formatTime($line['endtime'] / 1000)}]\n";
+						$synced .= parent::formatTime($line['endtime'] / 1000);
 					$prevtime = $line['endtime'];
 				}
 			}
@@ -108,5 +105,16 @@ class DeezerController extends Controller
 			RequestException::class => $ex->response->status() === 404 ? 'No lyric available for this song' : "Deezer API error {$ex->response->status()}",
 			default => "Deezer API unexpected error: {$ex->getMessage()}"
 		};
+	}
+	private static function mergeSyl(array $syl): string
+	{
+		$part = sprintf(
+			"<%s>%s",
+			parent::formatTime($syl['timestamp'] / 1000),
+			$syl['text']
+		);
+		if ($syl['part'])
+			$part .= sprintf("<%s> ", parent::formatTime($syl['endtime'] / 1000));
+		return $part;
 	}
 }

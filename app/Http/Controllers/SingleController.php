@@ -6,8 +6,7 @@ use App\Models\Lyric;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Support\Facades\{Http, Log};
-// use Illuminate\Support\Sleep;
+use Illuminate\Support\Facades\{Http, Log, Session};
 use JsonException;
 
 class SingleController extends Controller
@@ -48,47 +47,39 @@ class SingleController extends Controller
 						'source' => 'lrclib'
 					]);
 				case 'musixmatch':
-					// Sleep::for(5)->seconds();
-					$response = Http::retry(3, 5000, throw: false)->timeout(25000)->withHeaders([
-						'authority' => 'apic-desktop.musixmatch.com',
-						'cookie' => 'x-mxm-token-guid='
-					])->get(MusixmatchController::$url . 'macro.subtitles.get', [
-						'format' => 'json',
-						'namespace' => 'lyrics_richsynched',
-						'app_id' => 'web-desktop-app-v1.0',
-						'q_album' => $req['album'],
-						'q_artist' => $req['artist'],
-						'q_track' => $req['title'],
-						'usertoken' => MusixmatchController::validateToken()
-					]);
+					MusixmatchController::generateToken();
+					$query = MusixmatchController::$macro_query;
+					$query['q_album'] = $req['album'];
+					$query['q_artist'] = $req['artist'];
+					$query['q_track'] = $req['title'];
+					$query['usertoken'] = Session::get("mx_token");
+					$response = Http::retry(2, 5000, throw: false)->timeout(25000)
+						->withHeaders(MusixmatchController::MX_MACRO_HEADER)
+						->get(MusixmatchController::MX_MACRO_URL, $query);
 					$r = $response->json(null, null, JSON_THROW_ON_ERROR);
 					$header = $r['message']['header'];
 					abort_if(
 						$header['status_code'] !== 200,
 						$header['status_code'],
-						$this->getMXerror($header)
+						parent::getMXerror($header)
 					);
 					$data = $r['message']['body']['macro_calls'];
 					$tmHeader = $data['matcher.track.get']['message']['header'];
-					if ($tmHeader['status_code'] !== 200) {
-						$msg = match ($tmHeader['status_code']) {
-							404 => "Song does not exist on database",
-							401 => "Too many requests. Wait for a few minutes, then try again.",
-							400 => "Invalid input, please make sure all * fields is filled.",
-							default => "Musixmatch database HTTP Error " . $tmHeader['status_code']
-						};
-						abort($tmHeader['status_code'], $msg);
-					}
+					abort_if(
+						$tmHeader['status_code'] !== 200,
+						$tmHeader['status_code'],
+						parent::getMXDBerror($tmHeader)
+					);
 					$tmBody = $data['matcher.track.get']['message']['body']['track'];
 					$duration = $tmBody['track_length'];
+					abort_if(
+						$tmBody['has_lyrics'] === 0 && $tmBody['has_subtitles'] === 0,
+						404,
+						"Found song {$tmBody['artist_name']} - {$tmBody['track_name']} but no lyric available"
+					);
 					if ($tmBody['instrumental']) {
 						$syncedText = "[00:00.00]♪ Instrumental ♪";
 						$plainText = "♪ Instrumental ♪";
-					} else if ($tmBody['has_lyrics'] === 0 && $tmBody['has_subtitles'] === 0) {
-						abort(
-							404,
-							"Found song {$tmBody['artist_name']} - {$tmBody['track_name']} but no lyric available"
-						);
 					} else if ($tmBody['has_subtitles'] === 0) $syncedText = "";
 					else {
 						$syncedBody = $data['track.subtitles.get']['message']['body']['subtitle_list'][0]['subtitle'];

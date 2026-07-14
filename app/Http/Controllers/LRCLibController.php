@@ -71,21 +71,25 @@ class LRCLibController extends Controller
 			foreach ($yaml['lines'] as $idx => $line) {
 				if ($idx === 0) {
 					if ($line['start_ms'] > 3000)
-						$lyricsfile .= "[{$this->formatTime(($line['start_ms'] - mt_rand(2500, 3000)) / 1000)}]";
+						$lyricsfile .= "[" . parent::formatTime(($line['start_ms'] - mt_rand(2500, 3000)) / 1000) . "]";
 					else $lyricsfile .= "[00:00.00]";
 				} else if (($line['start_ms'] - $prevtime) > 9000) {
 					$lyricsfile .= sprintf(
 						"[%s]\n[%s]",
-						$this->formatTime(($prevtime + mt_rand(2500, 3500)) / 1000),
-						$this->formatTime(($line['start_ms'] - mt_rand(2500, 3500)) / 1000)
+						parent::formatTime(($prevtime + mt_rand(2500, 3500)) / 1000),
+						parent::formatTime(($line['start_ms'] - mt_rand(2500, 3500)) / 1000)
 					);
-				} else $lyricsfile .= "[{$this->formatTime($line['start_ms'] / 1000)}]";
+				} else $lyricsfile .= "[" . parent::formatTime($line['start_ms'] / 1000) . "]";
 				foreach ($line['words'] as $word) {
-					$lyricsfile .= "<{$this->formatTime($word['start_ms'] / 1000)}>{$word['text']}";
+					$lyricsfile .= sprintf(
+						"<%s>%s",
+						parent::formatTime($word['start_ms'] / 1000),
+						$word['text']
+					);
 				}
 				if (array_key_exists('end_ms', $line)) {
 					$prevtime = $line['end_ms'];
-					$lyricsfile .= "<{$this->formatTime($line['end_ms'] / 1000)}> \n";
+					$lyricsfile .= sprintf("<%s> \n", parent::formatTime($line['end_ms'] / 1000));
 					//^Trailing space to evade MiniLyrics bug^
 				} else $lyricsfile .= "\n";
 			}

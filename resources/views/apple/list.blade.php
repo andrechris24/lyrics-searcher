@@ -42,7 +42,7 @@
 						<p class="placeholder-glow d-none">
 							<span class="placeholder col-12"></span>
 						</p>
-						<span id="song-writers">...</span>
+						<span id="song-writers"></span>
 					</div>
 					<div class="col-12 col-sm-4">
 						<b>Lyric Type</b>
@@ -51,7 +51,7 @@
 						<p class="placeholder-glow d-none">
 							<span class="placeholder col-12"></span>
 						</p>
-						<span id="song-lyric-type">...</span>
+						<span id="song-lyric-type"></span>
 					</div>
 				</div>
 				<p class="placeholder-glow d-none">
@@ -79,7 +79,12 @@
 							<a class="dropdown-item" href="#" id="dl-synced">Synced</a>
 						</li>
 						<li>
-							<a class="dropdown-item" href="#" id="dl-syllyric">Syllable</a>
+							<a class="dropdown-item" href="#" id="dl-syllyric" data-bs-toggle="tooltip" data-bs-title="Not all players supports Syllable lyrics, use with compatible players like Oto Music or BetterLyrics">Syllable</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="#" id="dl-multisyllyric" data-bs-toggle="tooltip" data-bs-title="Not all players supports Syllable lyrics, use with compatible players like Oto Music or BetterLyrics">
+							Multi Person Syllable
+							</a>
 						</li>
 						<li>
 							<a class="dropdown-item" href="#" id="dl-ttml">TTML</a>

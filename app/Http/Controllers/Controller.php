@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\{Log, Session};
 use Illuminate\Support\Str;
 use JsonException;
 
 abstract class Controller
 {
-	protected const PAXSENIX_HEADER=['User-Agent' => 'LRCSearch/1.0'];
+	protected const PAXSENIX_HEADER = ['User-Agent' => 'LRCSearch/1.0'];
+	protected static string $paxsenix_url="https://lyrics.paxsenix.org/";
 
 	/**
 	 * Get error messages from Musixmatch
@@ -16,17 +17,18 @@ abstract class Controller
 	 * @param array $header
 	 * @return string
 	 */
-	protected function getMXerror(array $header): string
+	protected static function getMXerror(array $header): string
 	{
+		if ($header['status_code'] === 401) Session::forget('mx_token');
 		if (array_key_exists('hint', $header)) {
 			$msg = match ($header['hint']) {
-				'renew' => "Invalid Musixmatch token",
+				'renew' => "Musixmatch token expired. Please try again to regenerate token.",
 				'captcha' => "Musixmatch blocked your IP",
 				default => "Musixmatch returned an error with reason: {$header['hint']}"
 			};
 		} else {
 			$msg = match ($header['status_code']) {
-				401 => "Musixmatch rate limit exceeded. Please try again in a few minutes.",
+				401 => "Musixmatch rate limit exceeded. Please try again to regenerate token.",
 				404 => "Musixmatch query returned no result",
 				400 => "Bad request sent to Musixmatch. Please report this issue.",
 				default => "Musixmatch HTTP Error {$header['status_code']}"
@@ -35,13 +37,24 @@ abstract class Controller
 		return $msg;
 	}
 
+	protected static function getMXDBerror(array $tmHeader): string
+	{
+		if ($tmHeader['status_code'] === 401) Session::forget('mx_token');
+		return match ($tmHeader['status_code']) {
+			404 => "Song does not exist on database",
+			401 => "Too many requests. Please try again to regenerate musixmatch token.",
+			400 => "Invalid Musixmatch input, please report this issue.",
+			default => "Musixmatch database HTTP Error {$tmHeader['status_code']}"
+		};
+	}
+
 	/**
 	 * Convert seconds (with decimals) to mm:ss.xx format
 	 *
 	 * @param int|float $seconds
 	 * @return string
 	 */
-	protected function formatTime(int|float $seconds): string
+	protected static function formatTime(int|float $seconds): string
 	{
 		if (!is_numeric($seconds) || $seconds < 0) {
 			Log::warning("Invalid time value: $seconds");
@@ -64,7 +77,7 @@ abstract class Controller
 	 * @param  string $json
 	 * @return array|false	Return decoded json in array, false on failure
 	 */
-	protected function decodeJson(string $json): array|false
+	protected static function decodeJson(string $json): array|false
 	{
 		try {
 			$res = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
@@ -80,7 +93,7 @@ abstract class Controller
 	 * @param  string $krcText
 	 * @return string|null
 	 */
-	protected function krc2lrc(string $krcText): ?string
+	protected static function krc2lrc(string $krcText): ?string
 	{
 		if (empty($krcText)) return null;
 		$lyricText = "";
@@ -106,21 +119,21 @@ abstract class Controller
 				$duration = (int)$matches[2];
 				if ($idx === 0) {
 					$lyricLine .= ($startTime > 3000)
-						? "[{$this->formatTime(($startTime - mt_rand(2500, 3000)) / 1000)}]"
+						? "[" . self::formatTime(($startTime - mt_rand(2500, 3000)) / 1000) . "]"
 						: "[00:00.00]";
 				} else if (($startTime - $prevtime) > 9000) {
 					$lyricLine .= sprintf(
 						"[%s]\n[%s]",
-						$this->formatTime(($prevtime + mt_rand(2500, 3500)) / 1000),
-						$this->formatTime(($startTime - mt_rand(2500, 3500)) / 1000)
+						self::formatTime(($prevtime + mt_rand(2500, 3500)) / 1000),
+						self::formatTime(($startTime - mt_rand(2500, 3500)) / 1000)
 					);
-				} else $lyricLine .= "[{$this->formatTime($startTime / 1000)}]";
+				} else $lyricLine .= sprintf("[%s]", self::formatTime($startTime / 1000));
 				// parse sub-timestamps
 				if (preg_match_all($timestamps2Regex, $line, $subMatches)) {
 					for ($a = 0; $a < count($subMatches[0]); $a++) {
 						$lyricLine .= sprintf(
 							"<%s>%s",
-							$this->formatTime(($startTime + (int)$subMatches[1][$a]) / 1000),
+							self::formatTime(($startTime + (int)$subMatches[1][$a]) / 1000),
 							$subMatches[4][$a]
 						);
 					}
@@ -129,11 +142,11 @@ abstract class Controller
 				$lyricText .= sprintf(
 					"%s<%s> \n",
 					$lyricLine,
-					$this->formatTime(($startTime + $duration) / 1000)
+					self::formatTime(($startTime + $duration) / 1000)
 				);
 				//^Trailing space to evade MiniLyrics bug^
 				if ($idx === count($lines) - 1)
-					$lyricText .= "[{$this->formatTime(($startTime +$duration) / 1000 + 5)}]";
+					$lyricText .= "[" . self::formatTime(($startTime + $duration) / 1000 + 5) . "]";
 			}
 		}
 		return $lyricText;
@@ -144,14 +157,14 @@ abstract class Controller
 	 * @param  string $qrcText
 	 * @return string|null
 	 */
-	protected function qrcToLrc(string $qrcText): ?string
+	protected static function qrcToLrc(string $qrcText): ?string
 	{
 		if (empty($qrcText)) return null;
 		$converted = Str::of($qrcText)
 			->replaceMatches("/^\[(\d+),(\d+)\]/m", function (array $matches) {
-			return "[{$this->formatTime((int)$matches[1] / 1000)}]";
+				return sprintf("[%s]", self::formatTime((int)$matches[1] / 1000));
 			})->replaceMatches("/\((\d+),(\d+)\)/", function (array $matches) {
-			return "<{$this->formatTime(((int)$matches[1] + (int)$matches[2]) / 1000)}>";
+				return sprintf("<%s>", self::formatTime(((int)$matches[1] + (int)$matches[2]) / 1000));
 			});
 		return $converted;
 	}

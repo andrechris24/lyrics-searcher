@@ -5,7 +5,8 @@
 @else
 	@if (count($data) === 20)
 		<div class="alert alert-warning">
-			<span class="text-center">Due to API limitation, only first 20 results are returned.</span>
+			<span class="text-center">Due to API limitation, only first 20 results are
+				returned.</span>
 		</div>
 	@else
 		<p class="text-center">Found {{ count($data) }} result(s)</p>
@@ -39,4 +40,4 @@
 			</a>
 		@endforeach
 	</div>
-@endif
+	@endif

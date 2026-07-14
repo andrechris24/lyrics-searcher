@@ -11,8 +11,8 @@ use JsonException;
 
 class KugouController extends Controller
 {
-	public static string $lrcUrl = 'https://lyrics.kugou.com/';
-	public static array $query = ['ver' => 1, 'man' => 'yes', 'client' => 'pc'];
+	private static string $lrcUrl = 'https://lyrics.kugou.com/';
+	private static array $query = ['ver' => 1, 'man' => 'yes', 'client' => 'pc'];
 	public function search(Request $req)
 	{
 		try {
@@ -111,7 +111,7 @@ class KugouController extends Controller
 			if ($r['fmt'] !== 'krc') $context = $r['content'];
 			else {
 				$text = KrcDecoder::decode($r['content']);
-				$context = $this->krc2lrc($text);
+				$context = parent::krc2lrc($text);
 			}
 			return response()->json([
 				'format' => $r['fmt'],
@@ -130,14 +130,15 @@ class KugouController extends Controller
 	public function aimp(string $hash)
 	{
 		try {
-			$response = Http::retry(3, 100)->timeout(25000)
-				->get('https://lyrics.paxsenix.org/kugou/lyrics', ['id' => $hash]);
+			$response = Http::retry(2, 100)->timeout(25000)->withHeaders([
+				'User-Agent' => Request::userAgent()
+			])->get(parent::$paxsenix_url.'kugou/lyrics', ['id' => $hash]);
 			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['status'] !== 200) {
 				Log::error($r);
 				abort($r['status'], "Kugou Music error {$r['status']}: {$r['info']}");
 			}
-			if ($r['fmt'] === 'krc') $lyric = $this->krc2lrc($r['lyrics_text']);
+			if ($r['fmt'] === 'krc') $lyric = parent::krc2lrc($r['lyrics_text']);
 			else $lyric = $r['lyrics_text'];
 			return response()->json(['hash' => $hash, 'lyric' => $lyric]);
 		} catch (JsonException | RequestException | ConnectionException $th) {

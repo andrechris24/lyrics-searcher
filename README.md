@@ -34,7 +34,7 @@ php artisan storage:link
 # Setup Database
 php artisan migrate --seed
 
-# Generate Musixmatch token, then manually copy paste to MUSIXMATCH_TOKEN in .env file
+# Generate Musixmatch fallback token
 php artisan usertoken
 
 # Run development server
@@ -68,7 +68,7 @@ Solution:
 
 ## Why aimp_webLyrics.ini file exist?
 
-That was my version of `aimp_webLyrics.ini` file containing remote source from providers above and some codes are taken from AIMP WebLyrics forum. If you want, do setup first, then run `php artisan usertoken` to generate token and replace all `<MX_TOKEN_X>` inside INI file, and the token should be different. After entering Musixmatch token, replace original INI file inside `\path\to\AIMP\Plugins\aimp_webLyrics` folder.
+That was my version of `aimp_webLyrics.ini` file containing remote source from providers above (except Soda Music & Spotify) and some codes are taken from AIMP WebLyrics forum. If you want, do setup first, then run `php artisan usertoken` to generate token and replace all `<MX_TOKEN_X>` inside INI file, and the token should be different. After entering Musixmatch token, replace original INI file inside `\path\to\AIMP\Plugins\aimp_webLyrics` folder.
 
 - Example path (Windows): `C:\Program Files\AIMP\Plugins\aimp_webLyrics`
 

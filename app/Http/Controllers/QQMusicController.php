@@ -11,8 +11,8 @@ use Illuminate\Validation\ValidationException;
 
 class QQMusicController extends Controller
 {
-	public const array QQ_HEADER = ["Referer" => "https://y.qq.com/"];
-	public static string $url = 'https://c.y.qq.com/';
+	private const array QQ_HEADER = ["Referer" => "https://y.qq.com/"];
+	private static string $url = 'https://c.y.qq.com/';
 	public function search(Request $req)
 	{
 		try {
@@ -97,7 +97,7 @@ class QQMusicController extends Controller
 				$lyricXml = $decoder->decode($data['lyric']['content']);
 				$lyricXml = Str::between($lyricXml, 'LyricContent="', "\"/>\n");
 				abort_if(empty($lyricXml), 404, 'Empty lyric, download aborted');
-				$lyric = Str::replace(">\n", "> \n", $this->qrcToLrc($lyricXml), false);
+				$lyric = Str::replace(">\n", "> \n", parent::qrcToLrc($lyricXml), false);
 				//^Trailing space to evade MiniLyrics bug^
 			} else {
 				if (is_array($data['lyric']['content'])) {

@@ -10,11 +10,11 @@ use JsonException;
 
 class SodaMusicController extends Controller
 {
-	public const array SODAMUSIC_HEADERS = [
+	private const array SODAMUSIC_HEADERS = [
 		'Referer' => 'https://api.qishui.com/',
 		'User-Agent' => 'LunaPC/2.6.5(197449790)'
 	];
-	public static string $url = 'https://api.qishui.com/luna/pc/';
+	private static string $url = 'https://api.qishui.com/luna/pc/';
 	public function search(Request $req)
 	{
 		try {
@@ -56,7 +56,7 @@ class SodaMusicController extends Controller
 				'Empty lyric, download aborted'
 			);
 			if ($r['lyric']['type'] === 'krc')
-				$r['lyric']['content'] = $this->krc2lrc($r['lyric']['content']);
+				$r['lyric']['content'] = parent::krc2lrc($r['lyric']['content']);
 			return response()->json($r['lyric']);
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			Log::error($th);

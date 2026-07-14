@@ -14,8 +14,8 @@ class YoutubeController extends Controller
 	{
 		try {
 			$req->validate(['query' => 'required']);
-			$response = Http::retry(3, 100)->timeout(25000)
-				->get('https://lyrics.paxsenix.org/youtube/search', ['q' => $req['query']]);
+			$response = Http::retry(2, 100)->timeout(25000)
+				->get(parent::$paxsenix_url.'youtube/search', ['q' => $req['query']]);
 			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
 				Log::error('YouTube API error: ', $r);
@@ -34,8 +34,8 @@ class YoutubeController extends Controller
 	public function get(string $id)
 	{
 		try {
-			$response = Http::retry(3, 100)->timeout(25000)
-				->get('https://lyrics.paxsenix.org/youtube/lyrics', ['id' => $id]);
+			$response = Http::retry(2, 100)->timeout(25000)
+				->get(parent::$paxsenix_url.'youtube/lyrics', ['id' => $id]);
 			abort_if(
 				empty($response->body()) || $response->body() === '""',
 				404,

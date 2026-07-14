@@ -11,6 +11,8 @@ use Yajra\DataTables\Facades\DataTables;
 
 class LocalController extends Controller
 {
+	private const META_REGEX = "/^\[(ti|ar|al|offset|au|by|length|ve|re|id|lr|tool):([^\]]+)\]$/i";
+	private const FILE_REGEX = "/^(.+?)\s*-\s*(.+)$/u";
 	public function list()
 	{
 		return DataTables::eloquent(Lyric::with('user'))->toJson();
@@ -40,12 +42,9 @@ class LocalController extends Controller
 				$path = $file->store('files');
 				$absolutePath = storage_path('app/private/' . $path);
 				$lines = File::lines($absolutePath);
-				$metaRegex = "/^\[(ti|ar|al|offset|au|by|length|ve|re|id|lr|tool):([^\]]+)\]$/i";
-				$fileRegex = "/^(.+?)\s*-\s*(.+)$/u";
-				$lrcLines = '';
-				$queries = [];
+				$lrcLines = $queries = [];
 				foreach ($lines as $line) {
-					if (preg_match($metaRegex, $line, $matches)) { // meta info
+					if (preg_match(self::META_REGEX, $line, $matches)) { // meta info
 						switch ($matches[1]) {
 							case 'ar':
 								$queries['artist'] = Str::trim($matches[2]);
@@ -69,12 +68,12 @@ class LocalController extends Controller
 						}
 						continue;
 					}
-					$lrcLines .= $line . "\n";
+					$lrcLines[] = $line;
 				}
 				$fullname = $file->getClientOriginalName();
 				$filename = File::name($fullname);
 				if (!array_key_exists('title', $queries)) {
-					if (preg_match($fileRegex, $filename, $fileMatch)) {
+					if (preg_match(self::FILE_REGEX, $filename, $fileMatch)) {
 						$queries['title'] = $fileMatch[2];
 						$queries['artist'] = $fileMatch[1];
 						if (!array_key_exists('album', $queries))
@@ -85,14 +84,14 @@ class LocalController extends Controller
 					}
 				} else if (!array_key_exists('artist', $queries)) {
 					$queries['artist'] =
-						preg_match($fileRegex, $filename, $fileMatch)
+						preg_match(self::FILE_REGEX, $filename, $fileMatch)
 						? $fileMatch[1] : 'Unknown artist';
 				}
 				if (array_key_exists('title', $queries) && !array_key_exists('album', $queries))
 					$queries['album'] = $queries['title'];
 				File::delete($absolutePath);
 				$queries['user_id'] = backpack_user()->id;
-				$queries['content'] = $lrcLines;
+				$queries['content'] = implode("\n", $lrcLines);
 				Lyric::create($queries);
 			} catch (QueryException | \Exception $e) {
 				if ($file->getClientOriginalName())
