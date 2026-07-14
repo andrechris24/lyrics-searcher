@@ -52,7 +52,7 @@
 							<p class="placeholder-glow d-none">
 								<span class="placeholder col-12"></span>
 							</p>
-							<span id="song-sopyright"></span>
+							<span id="song-copyright"></span>
 						</div>
 					</div>
 					<p id="lyrics-content" style="white-space: pre-line"></p>
