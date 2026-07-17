@@ -19,14 +19,13 @@ class NetEaseController extends Controller
 			$req->validate(
 				['query' => 'required', 'offset' => 'nullable|integer|min:0|multiple_of:20']
 			);
-			$response = Http::retry(3, 100)->timeout(25000)->withHeaders(self::NETEASE_HEADERS)
+			$r = Http::retry(3, 100)->timeout(25000)->withHeaders(self::NETEASE_HEADERS)
 				->get(self::$url . 'search/get', [
 					's' => $req['query'],
 					'type' => 1,
 					'limit' => 20, //Match result count as LRCLib
 					'offset' => $req['offset'] ?? 0
-				]);
-			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+				])->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['code'] !== 200) {
 				Log::error($r);
 				return to_route('netease.index')->withInput()
@@ -37,20 +36,17 @@ class NetEaseController extends Controller
 		} catch (ValidationException $e) {
 			return to_route('netease.index')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			Log::error($th);
-			$message = self::matchError($th);
-			return to_route('netease.index')->withInput()->withError($message);
+			return to_route('netease.index')->withInput()->withError(self::matchError($th));
 		}
 	}
 	public function get(int $id)
 	{
 		try {
-			$response = Http::retry(3, 100)->timeout(25000)->withHeaders(self::NETEASE_HEADERS)
+			$r = Http::retry(3, 100)->timeout(25000)->withHeaders(self::NETEASE_HEADERS)
 				->get(
 					self::$url . 'song/lyric',
 					['kv' => -1, 'lv' => -1, 'os' => 'pc', 'id' => $id]
-				);
-			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+				)->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['code'] !== 200) {
 				Log::error($r);
 				abort($r['code'], "NetEase Music HTTP Error {$r['code']}");
@@ -62,16 +58,15 @@ class NetEaseController extends Controller
 			);
 			return response()->json($r);
 		} catch (ConnectionException | JsonException | RequestException $th) {
-			Log::error($th);
-			$message = self::matchError($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				$message
+				self::matchError($th)
 			);
 		}
 	}
 	private static function matchError(mixed $ex): string
 	{
+		Log::error($ex);
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "NetEase Music connection error {$ex->getCode()}: {$ex->getMessage()}",

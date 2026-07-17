@@ -11,7 +11,7 @@ use JsonException;
 
 class SingleController extends Controller
 {
-	public function search(Request $req)
+	public function __invoke(Request $req)
 	{
 		$req->validate([
 			'title' => 'required|string',
@@ -53,10 +53,10 @@ class SingleController extends Controller
 					$query['q_artist'] = $req['artist'];
 					$query['q_track'] = $req['title'];
 					$query['usertoken'] = Session::get("mx_token");
-					$response = Http::retry(2, 5000, throw: false)->timeout(25000)
+					$r = Http::retry(2, 5000, throw: false)->timeout(25000)
 						->withHeaders(MusixmatchController::MX_MACRO_HEADER)
-						->get(MusixmatchController::MX_MACRO_URL, $query);
-					$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+						->get(MusixmatchController::MX_MACRO_URL, $query)
+						->json(null, null, JSON_THROW_ON_ERROR);
 					$header = $r['message']['header'];
 					abort_if(
 						$header['status_code'] !== 200,
@@ -120,12 +120,13 @@ class SingleController extends Controller
 						'source' => 'musixmatch'
 					]);
 				case 'plains':
-					$ovhuri = sprintf(
-						'https://api.lyrics.ovh/v1/%s/%s',
-						urlencode($req['artist']),
-						urlencode($req['title'])
+					$response = Http::retry(3, 100, throw: false)->timeout(25000)->get(
+						sprintf(
+							'https://api.lyrics.ovh/v1/%s/%s',
+							urlencode($req['artist']),
+							urlencode($req['title'])
+						)
 					);
-					$response = Http::retry(3, 100, throw: false)->timeout(25000)->get($ovhuri);
 					$r = $response->json(null, null, JSON_THROW_ON_ERROR);
 					if ($response->successful()) {
 						return response()->json([
@@ -159,13 +160,15 @@ class SingleController extends Controller
 			}
 		} catch (ConnectionException | JsonException | QueryException $th) {
 			Log::error($th);
-			$message = match (get_class($th)) {
-				JsonException::class => "Error parsing response: {$th->getMessage()}",
-				ConnectionException::class => "Connection error {$th->getCode()}: {$th->getMessage()}",
-				QueryException::class => "Local database Error: {$th->errorInfo[2]}",
-				default => "Unexpected error: {$th->getMessage()}"
-			};
-			abort(500, $message);
+			abort(
+				500,
+				match (get_class($th)) {
+					JsonException::class => "Error parsing response: {$th->getMessage()}",
+					ConnectionException::class => "Connection error {$th->getCode()}: {$th->getMessage()}",
+					QueryException::class => "Local database Error: {$th->errorInfo[2]}",
+					default => "Unexpected error: {$th->getMessage()}"
+				}
+			);
 		}
 	}
 }

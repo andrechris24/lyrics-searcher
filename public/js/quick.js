@@ -189,11 +189,11 @@ $("#searchSongLyric").on("submit", function (e) {
 		}
 	});
 });
-mxPlainDL.onclick = function (e) {
+mxPlainDL.onclick = llPlainDL.onclick = function (e) {
 	e.preventDefault();
 	blobDL(plainContents, `${fileName}.txt`);
 };
-mxSyncedDL.onclick = function (e) {
+mxSyncedDL.onclick = llSyncedDL.onclick = function (e) {
 	e.preventDefault();
 	blobDL(syncedContents, `${fileName}.lrc`);
 };
@@ -202,7 +202,7 @@ mxRichsyncDL.onclick = function (e) {
 	swalConfirm
 		.fire({
 			title: "Download Richsync lyric?",
-			text: "Musixmatch richsync lyric is an either word-by-word or syllable version of synced lyric and not all players are supported.",
+			text: "Musixmatch richsync lyric is a word-by-word version of synced lyric and not all players are supported.",
 			customClass: {
 				confirmButton: "btn btn-primary btn-lg me-2",
 				cancelButton: "btn btn-danger btn-lg"
@@ -237,14 +237,14 @@ mxRichsyncDL.onclick = function (e) {
 			}
 		});
 };
-llPlainDL.onclick = function (e) {
-	e.preventDefault();
-	blobDL(plainContents, `${fileName}.txt`);
-};
-llSyncedDL.onclick = function (e) {
-	e.preventDefault();
-	blobDL(syncedContents, `${fileName}.lrc`);
-};
+// function (e) {
+// 	e.preventDefault();
+// 	blobDL(plainContents, `${fileName}.txt`);
+// };
+// function (e) {
+// 	e.preventDefault();
+// 	blobDL(syncedContents, `${fileName}.lrc`);
+// };
 wbwDL.onclick = function (e) {
 	e.preventDefault();
 	swalConfirm

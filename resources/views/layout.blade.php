@@ -175,12 +175,12 @@
 										Spotify
 									</a>
 								</li>
-								{{-- <li>
+								<li>
 									<a @class(['dropdown-item', 'active' => request()->routeIs('youtube.*')]) href="{{ route('youtube.index') }}"
 										@if (request()->routeIs('youtube.*')) aria-current="page" @endif >
 										YouTube
 									</a>
-								</li> --}}
+								</li>
 								<li>
 									<a @class(['dropdown-item', 'active' => request()->routeIs('apple.*')]) href="{{ route('apple.index') }}"
 										@if (request()->routeIs('apple.*')) aria-current="page" @endif >

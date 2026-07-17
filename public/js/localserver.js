@@ -147,7 +147,7 @@ $(document)
 					if (result.isConfirmed) blobDL(meta + content, fileName + ext);
 					else if (result.isDenied) {
 						const plainContent = content.replace(/<(\d+):(\d+).(\d+)>/g, "");
-						blobDL(meta + plainContent, fileName + ext);
+						blobDL(`${fileName}\n\n${plainContent}`, fileName + ext);
 					} else console.warn("Download cancelled");
 				});
 			} else blobDL(meta + content, fileName + ext);

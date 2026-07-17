@@ -21,30 +21,27 @@ class SodaMusicController extends Controller
 			$req->validate(
 				['query' => 'required', 'offset' => 'nullable|integer|min:0|multiple_of:20']
 			);
-			$response = Http::retry(3, 100)->timeout(25000)->withHeaders(self::SODAMUSIC_HEADERS)
+			$r = Http::retry(3, 100)->timeout(25000)->withHeaders(self::SODAMUSIC_HEADERS)
 				->get(self::$url . 'search/track', [
 					'aid' => 386088,
 					'q' => $req['query'],
 					'cursor' => $req['offset'] ?? 0,
 					'search_method' => 'input'
-				]);
-			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+				])->json(null, null, JSON_THROW_ON_ERROR);
 			$data = $r['result_groups'][0];
 			return view('sodamusic.result', compact('data'));
 		} catch (ValidationException $e) {
 			return to_route('sodamusic.index')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			Log::error($th);
-			$message = self::matchError($th);
-			return to_route('sodamusic.index')->withInput()->withError($message);
+			return to_route('sodamusic.index')->withInput()->withError(self::matchError($th));
 		}
 	}
 	public function get(int $id)
 	{
 		try {
-			$response = Http::retry(3, 100)->timeout(25000)->withHeaders(self::SODAMUSIC_HEADERS)
-				->get(self::$url . 'track_v2', ['track_id' => $id, 'media_type' => 'track']);
-			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+			$r = Http::retry(3, 100)->timeout(25000)->withHeaders(self::SODAMUSIC_HEADERS)
+				->get(self::$url . 'track_v2', ['track_id' => $id, 'media_type' => 'track'])
+				->json(null, null, JSON_THROW_ON_ERROR);
 			abort_if(
 				!array_key_exists('lyric', $r),
 				404,
@@ -59,16 +56,15 @@ class SodaMusicController extends Controller
 				$r['lyric']['content'] = parent::krc2lrc($r['lyric']['content']);
 			return response()->json($r['lyric']);
 		} catch (ConnectionException | JsonException | RequestException $th) {
-			Log::error($th);
-			$message = self::matchError($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				$message
+				self::matchError($th)
 			);
 		}
 	}
 	private static function matchError(mixed $ex): string
 	{
+		Log::error($ex);
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "Soda Music connection error {$ex->getCode()}: {$ex->getMessage()}",

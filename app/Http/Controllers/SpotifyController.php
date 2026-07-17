@@ -14,9 +14,9 @@ class SpotifyController extends Controller
 	{
 		try {
 			$req->validate(['query' => 'required']);
-			$response = Http::retry(2, 100)->timeout(25000)
-				->get(parent::$paxsenix_url.'spotify/search',	['q' => $req['query']]);
-			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+			$r = Http::retry(2, 100)->timeout(25000)
+				->get(parent::$paxsenix_url . 'spotify/search',	['q' => $req['query']])
+				->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
 				Log::error('Spotify API error: ', $r);
 				return to_route('spotify.index')->withInput()
@@ -26,9 +26,7 @@ class SpotifyController extends Controller
 		} catch (ValidationException $e) {
 			return to_route('spotify.index')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			Log::error($th);
-			$message = self::matchError($th);
-			return to_route('spotify.index')->withInput()->withError($message);
+			return to_route('spotify.index')->withInput()->withError(self::matchError($th));
 		}
 	}
 	public function get(string $id)
@@ -38,10 +36,10 @@ class SpotifyController extends Controller
 			$query = MusixmatchController::$macro_query;
 			$query['track_spotify_id'] = $id;
 			$query['usertoken'] = Session::get("mx_token");
-			$response = Http::retry(2, 5000, throw: false)->timeout(25000)
+			$r = Http::retry(2, 5000, throw: false)->timeout(25000)
 				->withHeaders(MusixmatchController::MX_MACRO_HEADER)
-				->get(MusixmatchController::MX_MACRO_URL, $query);
-			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+				->get(MusixmatchController::MX_MACRO_URL, $query)
+				->json(null, null, JSON_THROW_ON_ERROR);
 			$header = $r['message']['header'];
 			abort_if(
 				$header['status_code'] !== 200,
@@ -90,16 +88,15 @@ class SpotifyController extends Controller
 				'instrumental' => $tmBody['instrumental']
 			]);
 		} catch (ConnectionException | JsonException | RequestException $th) {
-			Log::error($th);
-			$message = self::matchError($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				$message
+				self::matchError($th)
 			);
 		}
 	}
 	private static function matchError(mixed $ex): string
 	{
+		Log::error($ex);
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "Spotify API connection error {$ex->getCode()}: {$ex->getMessage()}",

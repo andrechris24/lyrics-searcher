@@ -17,35 +17,30 @@ class LRCLibController extends Controller
 	{
 		try {
 			$request->validate(['query' => 'required']);
-			$response = Http::retry(3, 100)->timeout(25000)
-				->get(self::$url, ['q' => $request['query']]);
-			$data = $response->json(null, null, JSON_THROW_ON_ERROR);
+			$data = Http::retry(3, 100)->timeout(25000)
+				->get(self::$url, ['q' => $request['query']])
+				->json(null, null, JSON_THROW_ON_ERROR);
 			return view('lrclib.result', compact('data'));
 		} catch (ValidationException $e) {
 			return to_route('lrclib.index')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			Log::error($th);
-			$message = self::matchError($th);
-			return to_route('lrclib.index')->withInput()->withError($message);
+			return to_route('lrclib.index')->withInput()->withError(self::matchError($th));
 		}
 	}
 	public function advanced(Request $request)
 	{
 		try {
 			$request->validate(['title' => 'required']);
-			$response = Http::retry(3, 100)->timeout(25000)->get(self::$url, [
+			$data = Http::retry(3, 100)->timeout(25000)->get(self::$url, [
 				'track_name' => $request['title'],
 				'artist_name' => $request['artist'],
 				'album_name' => $request['album']
-			]);
-			$data = $response->json(null, null, JSON_THROW_ON_ERROR);
+			])->json(null, null, JSON_THROW_ON_ERROR);
 			return view('lrclib.advanced.result', compact('data'));
 		} catch (ValidationException $e) {
 			return to_route('lrclib.advanced')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			Log::error($th);
-			$message = self::matchError($th);
-			return to_route('lrclib.advanced')->withInput()->withError($message);
+			return to_route('lrclib.advanced')->withInput()->withError(self::matchError($th));
 		}
 	}
 	public function convert(Request $req)
@@ -104,6 +99,7 @@ class LRCLibController extends Controller
 	}
 	private static function matchError(mixed $ex): string
 	{
+		Log::error($ex);
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "LRCLib connection error {$ex->getCode()}: {$ex->getMessage()}",

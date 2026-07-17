@@ -17,26 +17,22 @@ class DeezerController extends Controller
 				'query' => 'required',
 				'offset' => 'nullable|integer|min:0|multiple_of:20'
 			]);
-			$response = Http::retry(3, 100)->timeout(25000)->get(
+			$r = Http::retry(3, 100)->timeout(25000)->get(
 				'https://api.deezer.com/search/track',
 				['limit' => 20, 'q' => $req['query'], 'index' => $req['offset'] ?? 0]
-			);
-			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+			)->json(null, null, JSON_THROW_ON_ERROR);
 			return view('deezer.result', $r);
 		} catch (ValidationException $e) {
 			return to_route('deezer.index')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			Log::error($th);
-			$message = self::matchError($th);
-			return to_route('deezer.index')->withInput()->withError($message);
+			return to_route('deezer.index')->withInput()->withError(self::matchError($th));
 		}
 	}
 	public function get(int $id)
 	{
 		try {
-			$response = Http::retry(2, 100)->timeout(25000)
-				->get(parent::$paxsenix_url.'deezer/lyrics', ['id' => $id]);
-			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+			$r = Http::retry(2, 100)->timeout(25000)
+				->get(parent::$paxsenix_url . 'deezer/lyrics', ['id' => $id])->json(null, null, JSON_THROW_ON_ERROR);
 			$prevtime = 0;
 			if ($r['isError']) {
 				abort_if($r['error'] === 'No lyrics found', 404, 'No lyric available for this song');
@@ -76,7 +72,7 @@ class DeezerController extends Controller
 						);
 					}
 					if ($idx === count($r['lyrics']) - 1)
-						$synced .= parent::formatTime($line['endtime'] / 1000);
+						$synced .= '[' . parent::formatTime($line['endtime'] / 1000) . ']';
 					$prevtime = $line['endtime'];
 				}
 			}
@@ -89,16 +85,15 @@ class DeezerController extends Controller
 				'license' => $r['licence']
 			]);
 		} catch (ConnectionException | JsonException | RequestException $th) {
-			Log::error($th);
-			$message = self::matchError($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				$message
+				self::matchError($th)
 			);
 		}
 	}
 	private static function matchError(mixed $ex): string
 	{
+		Log::error($ex);
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "Deezer API connection error {$ex->getCode()}: {$ex->getMessage()}",
@@ -113,7 +108,7 @@ class DeezerController extends Controller
 			parent::formatTime($syl['timestamp'] / 1000),
 			$syl['text']
 		);
-		if ($syl['part'])
+		if ($syl['part'] === false)
 			$part .= sprintf("<%s> ", parent::formatTime($syl['endtime'] / 1000));
 		return $part;
 	}

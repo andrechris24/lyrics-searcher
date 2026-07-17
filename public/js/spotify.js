@@ -68,9 +68,10 @@ if (lyricsModal) {
 					text:
 						st === "timeout"
 							? "Connection timed out"
-							: (xhr.responseJSON?.message ?? err ?? st),
+							: (xhr.responseJSON?.message ?? err ?? st)
 				});
-			},
+				$("#modalMX").modal("hide");
+			}
 		});
 	});
 }
@@ -87,7 +88,7 @@ richsyncDL.onclick = function (e) {
 	swalConfirm
 		.fire({
 			title: "Download Richsync lyric?",
-			text: "Musixmatch richsync lyric is an either word-by-word or syllable version of synced lyric and not all players are supported.",
+			text: "Musixmatch richsync lyric is a word-by-word version of synced lyric and not all players are supported.",
 			customClass: {
 				confirmButton: "btn btn-primary btn-lg me-2",
 				cancelButton: "btn btn-danger btn-lg"

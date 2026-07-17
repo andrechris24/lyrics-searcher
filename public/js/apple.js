@@ -23,9 +23,7 @@ if (lyricsModal) {
 			albumName = button.getAttribute("data-bs-album"),
 			songID = button.getAttribute("data-bs-id"),
 			duration = button.getAttribute("data-bs-duration");
-		const metaLyric =
-			`\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n` +
-			`[by: Apple Music]\n[length: ${duration}]\n`;
+		
 
 		// Update the modal's content
 		$("#song-album").text(albumName);
@@ -47,23 +45,26 @@ if (lyricsModal) {
 				$(".placeholder-glow").addClass("d-none");
 			},
 			success: function (data) {
+				const metaLyric =
+					`[id: ${data.id}]\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n` +
+					`[by: Apple Music]\n[length: ${duration}]\n[lr: ${data.writers}]\n`;
 				if (data.synced !== null && data.synced !== "") {
 					$("#dl-synced").removeClass("disabled");
-					syncedLyricContents = `[id: ${data.id}]${metaLyric}[lr: ${data.writers}]\n${data.synced}`;
+					syncedLyricContents = `${metaLyric}${data.synced}`;
 				} else {
 					$("#dl-synced").addClass("disabled");
 					syncedLyricContents = "";
 				}
 				if (data.syllable !== null && data.syllable !== "") {
 					$("#dl-syllyric").removeClass("disabled");
-					sylLyricContent = `[id: ${data.id}]${metaLyric}[lr: ${data.writers}]\n${data.syllable}\n[${duration}.000]`;
+					sylLyricContent = `${metaLyric}${data.syllable}\n[${duration}.000]`;
 				} else {
 					sylLyricContent = "";
 					$("#dl-syllyric").addClass("disabled");
 				}
 				if(data.multisyl !== null && data.multisyl !== "") {
 					$("#dl-multisyllyric").removeClass("disabled");
-					multisylLyricContent = `[id: ${data.id}]${metaLyric}[lr: ${data.writers}]\n${data.multisyl}\n[${duration}.000]`;
+					multisylLyricContent = `${metaLyric}${data.multisyl}\n[${duration}.000]`;
 				} else {
 					multisylLyricContent = "";
 					$("#dl-multisyllyric").addClass("disabled");

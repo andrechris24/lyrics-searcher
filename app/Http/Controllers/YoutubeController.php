@@ -14,9 +14,8 @@ class YoutubeController extends Controller
 	{
 		try {
 			$req->validate(['query' => 'required']);
-			$response = Http::retry(2, 100)->timeout(25000)
-				->get(parent::$paxsenix_url.'youtube/search', ['q' => $req['query']]);
-			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+			$r = Http::retry(2, 100)->timeout(25000)
+				->get(parent::$paxsenix_url . 'youtube/search', ['q' => $req['query']])->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
 				Log::error('YouTube API error: ', $r);
 				return to_route('youtube.index')->withInput()
@@ -26,16 +25,14 @@ class YoutubeController extends Controller
 		} catch (ValidationException $e) {
 			return to_route('youtube.index')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			Log::error($th);
-			$message = self::matchError($th);
-			return to_route('youtube.index')->withInput()->withError($message);
+			return to_route('youtube.index')->withInput()->withError(self::matchError($th));
 		}
 	}
 	public function get(string $id)
 	{
 		try {
 			$response = Http::retry(2, 100)->timeout(25000)
-				->get(parent::$paxsenix_url.'youtube/lyrics', ['id' => $id]);
+				->get(parent::$paxsenix_url . 'youtube/lyrics', ['id' => $id]);
 			abort_if(
 				empty($response->body()) || $response->body() === '""',
 				404,
@@ -54,16 +51,15 @@ class YoutubeController extends Controller
 			} else if (empty($r)) $r = $response->body();
 			return response()->json(['lyric' => $r, 'id' => $id]);
 		} catch (ConnectionException | JsonException | RequestException $th) {
-			Log::error($th);
-			$message = self::matchError($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				$message
+				self::matchError($th)
 			);
 		}
 	}
 	private static function matchError(mixed $exception): string
 	{
+		Log::error($exception);
 		return match (get_class($exception)) {
 			JsonException::class => "Error parsing response: {$exception->getMessage()}",
 			ConnectionException::class => "YouTube API connection error {$exception->getCode()}: {$exception->getMessage()}",

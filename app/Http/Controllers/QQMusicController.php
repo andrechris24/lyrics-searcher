@@ -56,9 +56,7 @@ class QQMusicController extends Controller
 		} catch (ValidationException $e) {
 			return to_route('qqmusic.index')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException  | RequestException | \Exception $th) {
-			Log::error($th);
-			$message = self::matchError($th);
-			return to_route('qqmusic.index')->withInput()->withError($message);
+			return to_route('qqmusic.index')->withInput()->withError(self::matchError($th));
 		}
 	}
 	public function get(int $id)
@@ -115,16 +113,15 @@ class QQMusicController extends Controller
 				'id' => $id
 			]);
 		} catch (ConnectionException | RequestException $th) {
-			Log::error($th);
-			$message = self::matchError($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				$message
+				self::matchError($th)
 			);
 		}
 	}
 	private static function matchError(mixed $ex): string
 	{
+		Log::error($ex);
 		return match (get_class($ex)) {
 			ConnectionException::class => "QQ Music connection error {$ex->getCode()}: {$ex->getMessage()}",
 			RequestException::class => "QQ Music HTTP Error {$ex->response->status()}",

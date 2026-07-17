@@ -9,7 +9,7 @@ use JsonException;
 abstract class Controller
 {
 	protected const PAXSENIX_HEADER = ['User-Agent' => 'LRCSearch/1.0'];
-	protected static string $paxsenix_url="https://lyrics.paxsenix.org/";
+	protected static string $paxsenix_url = "https://lyrics.paxsenix.org/";
 
 	/**
 	 * Get error messages from Musixmatch
@@ -22,7 +22,7 @@ abstract class Controller
 		if ($header['status_code'] === 401) Session::forget('mx_token');
 		if (array_key_exists('hint', $header)) {
 			$msg = match ($header['hint']) {
-				'renew' => "Musixmatch token expired. Please try again to regenerate token.",
+				'renew' => "Musixmatch token expired or invalid. Please try again to regenerate token.",
 				'captcha' => "Musixmatch blocked your IP",
 				default => "Musixmatch returned an error with reason: {$header['hint']}"
 			};

@@ -58,9 +58,9 @@ class MusixmatchController extends Controller
 					$query['q'] = $req['query'];
 					break;
 			}
-			$response = Http::retry(2, 5000, throw: false)->timeout(25000)
-				->withHeaders(self::MX_HEADER)->get(self::$url . 'track.search', $query);
-			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+			$r = Http::retry(2, 5000, throw: false)->timeout(25000)
+				->withHeaders(self::MX_HEADER)->get(self::$url . 'track.search', $query)
+				->json(null, null, JSON_THROW_ON_ERROR);
 			$header = $r['message']['header'];
 			if ($header['status_code'] !== 200) {
 				return to_route('musixmatch.index')->withInput()
@@ -71,9 +71,7 @@ class MusixmatchController extends Controller
 		} catch (ValidationException $e) {
 			return to_route('musixmatch.index')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | \Exception $th) {
-			Log::error($th);
-			$message = self::matchError($th);
-			return to_route('musixmatch.index')->withInput()->withErrors($message);
+			return to_route('musixmatch.index')->withInput()->withErrors(self::matchError($th));
 		}
 	}
 	public function advanced(Request $req)
@@ -92,9 +90,9 @@ class MusixmatchController extends Controller
 			$query['q_artist'] = $req['artist'];
 			$query['q_lyrics'] = $req['lyrics'];
 			$query['page'] = $req['page'] ?? 1;
-			$response = Http::retry(2, 5000, throw: false)->timeout(25000)
-				->withHeaders(self::MX_HEADER)->get(self::$url . 'track.search', $query);
-			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+			$r = Http::retry(2, 5000, throw: false)->timeout(25000)
+				->withHeaders(self::MX_HEADER)->get(self::$url . 'track.search', $query)
+				->json(null, null, JSON_THROW_ON_ERROR);
 			$header = $r['message']['header'];
 			if ($header['status_code'] !== 200) {
 				return to_route('musixmatch.advanced')->withInput()
@@ -105,9 +103,7 @@ class MusixmatchController extends Controller
 		} catch (ValidationException $e) {
 			return to_route('musixmatch.advanced')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | \Exception $th) {
-			Log::error($th);
-			$message = self::matchError($th);
-			return to_route('musixmatch.advanced')->withInput()->withError($message);
+			return to_route('musixmatch.advanced')->withInput()->withError(self::matchError($th));
 		}
 	}
 	public function charts(string $type)
@@ -120,9 +116,9 @@ class MusixmatchController extends Controller
 		$query['chart_name'] = $type;
 		$query['country'] = 'id'; //Change this to your country code
 		try {
-			$response = Http::retry(2, 5000, throw: false)->timeout(25000)
-				->withHeaders(self::MX_HEADER)->get(self::$url . 'chart.tracks.get', $query);
-			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+			$r = Http::retry(2, 5000, throw: false)->timeout(25000)
+				->withHeaders(self::MX_HEADER)->get(self::$url . 'chart.tracks.get', $query)
+				->json(null, null, JSON_THROW_ON_ERROR);
 			$header = $r['message']['header'];
 			if ($header['status_code'] !== 200)
 				return to_route('musixmatch.index')->withError(parent::getMXerror($header));
@@ -131,9 +127,7 @@ class MusixmatchController extends Controller
 		} catch (ValidationException $e) {
 			return to_route('musixmatch.index')->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | \Exception $th) {
-			Log::error($th);
-			$message = self::matchError($th);
-			return to_route('musixmatch.index')->withError($message);
+			return to_route('musixmatch.index')->withError(self::matchError($th));
 		}
 	}
 	public function get(int $id, string $type)
@@ -149,10 +143,10 @@ class MusixmatchController extends Controller
 		$query['commontrack_id'] = $id;
 		unset($query['f_has_lyrics'], $query['page_size']);
 		try {
-			$response = Http::retry(2, 5000, throw: false)->timeout(25000)
+			$r = Http::retry(2, 5000, throw: false)->timeout(25000)
 				->withHeaders(self::MX_HEADER)
-				->get(self::$url . 'track.' . $type . '.get', $query);
-			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+				->get(self::$url . 'track.' . $type . '.get', $query)
+				->json(null, null, JSON_THROW_ON_ERROR);
 			$header = $r['message']['header'];
 			abort_if(
 				$header['status_code'] !== 200,
@@ -176,9 +170,7 @@ class MusixmatchController extends Controller
 			};
 			return response()->json($lyrics);
 		} catch (ConnectionException | JsonException $th) {
-			Log::error($th);
-			$message = self::matchError($th);
-			abort(500, $message);
+			abort(500, self::matchError($th));
 		}
 	}
 	private static function richsync(array $lrc): ?string
@@ -217,12 +209,11 @@ class MusixmatchController extends Controller
 	public static function generateToken(): void
 	{
 		if (!Session::has('mx_token')) {
-			$musixmatch = Http::retry(2, 5000, throw: false)->timeout(25000)
+			$r = Http::retry(2, 5000, throw: false)->timeout(25000)
 				->get('https://apic-desktop.musixmatch.com/ws/1.1/token.get', [
 					'user_language' => 'en',
 					'app_id' => 'web-desktop-app-v1.0'
-				]);
-			$r = $musixmatch->json(null, null, JSON_THROW_ON_ERROR);
+				])->json(null, null, JSON_THROW_ON_ERROR);
 			$header = $r['message']['header'];
 			abort_if(
 				$header['status_code'] !== 200,
@@ -251,6 +242,7 @@ class MusixmatchController extends Controller
 	}
 	private static function matchError(mixed $ex): string
 	{
+		Log::error($ex);
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "Musixmatch connection error {$ex->getCode()}: {$ex->getMessage()}",

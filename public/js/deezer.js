@@ -16,9 +16,6 @@ if (lyricsModal) {
 			albumName = button.getAttribute("data-bs-album"),
 			songID = button.getAttribute("data-bs-id"),
 			duration = button.getAttribute("data-bs-duration");
-		const metaLyric =
-			`\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n` +
-			`[by: Deezer]\n[length: ${duration}]\n`;
 
 		// Update the modal's content
 		$("#song-album").text(albumName);
@@ -36,22 +33,26 @@ if (lyricsModal) {
 				$("#song-writers").text("");
 				$("#song-copyright").text("");
 				$("#song-license").text("");
+				$("#song-lyric-type").text("");
 			},
 			complete: function () {
 				$(".placeholder-glow").addClass("d-none");
 			},
 			success: function (data) {
 				if (data.synced !== null && data.synced !== "") {
+					const metaLyric =
+						`[id: ${data.id}]\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n` +
+						`[by: Deezer]\n[length: ${duration}]\n[lr: ${data.writer}]\n`;
 					if (data.synced.match(/<(\d+):(\d+).(\d+)>/g)) {
 						$("#dl-syllyric").removeClass("disabled");
 						$("#song-lyric-type").text("Syllable");
-						sylLyricContent = `[id: ${data.id}]${metaLyric}[lr: ${data.writer}]\n${data.synced}`;
-						syncedLyricContents = `[id: ${data.id}]${metaLyric}[lr: ${data.writer}]\n${data.synced.replace(/<(\d+):(\d+).(\d+)>/g, "")}`;
+						sylLyricContent = `${metaLyric}${data.synced}`;
+						syncedLyricContents = `${metaLyric}${data.synced.replace(/<(\d+):(\d+).(\d+)>/g, "")}`;
 					} else {
 						$("#dl-syllyric").addClass("disabled");
 						$("#song-lyric-type").text("Synced");
 						sylLyricContent = "";
-						syncedLyricContents = `[id: ${data.id}]${metaLyric}[lr: ${data.writer}]\n${data.synced}`;
+						syncedLyricContents = `${metaLyric}${data.synced}`;
 					}
 				} else {
 					$("#dl-syllyric").addClass("disabled");

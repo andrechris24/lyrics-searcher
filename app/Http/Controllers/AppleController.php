@@ -15,26 +15,23 @@ class AppleController extends Controller
 	{
 		try {
 			$req->validate(['query' => 'required']);
-			$response = Http::retry(3, 100)->timeout(25000)->get(
+			$r = Http::retry(3, 100)->timeout(25000)->get(
 				"https://itunes.apple.com/search",
 				['term' => $req['query'], 'entity' => 'song']
-			);
-			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+			)->json(null, null, JSON_THROW_ON_ERROR);
 			return view('apple.result', $r);
 		} catch (ValidationException $e) {
 			return to_route('apple.index')->withInput()->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			Log::error($th);
-			$message = self::matchError($th);
-			return to_route('apple.index')->withInput()->withError($message);
+			return to_route('apple.index')->withInput()->withError(self::matchError($th));
 		}
 	}
 	public function get(int $id)
 	{
 		try {
-			$response = Http::retry(2, 100)->timeout(25000)
-				->get(parent::$paxsenix_url . "apple-music/lyrics", ['id' => $id]);
-			$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+			$r = Http::retry(2, 100)->timeout(25000)
+				->get(parent::$paxsenix_url . "apple-music/lyrics", ['id' => $id])
+				->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
 				Log::error("Apple Music API error: {$r['message']}", $r);
 				abort(500, 'Oops, an error occurred with Apple Music API.');
@@ -51,16 +48,15 @@ class AppleController extends Controller
 				'length' => gmdate('i:s', round($r['metadata']['duration'] / 1000, 0, PHP_ROUND_HALF_UP))
 			]);
 		} catch (ConnectionException | JsonException | RequestException $th) {
-			Log::error($th);
-			$message = self::matchError($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				$message
+				self::matchError($th)
 			);
 		}
 	}
 	private static function matchError(mixed $ex): string
 	{
+		Log::error($ex);
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "Apple Music connection error {$ex->getCode()}: {$ex->getMessage()}",
