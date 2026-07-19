@@ -9,7 +9,7 @@
 					<input type="search" name="query" placeholder="Enter search query here..."
 						class="form-control form-control-lg @error('query') is-invalid @enderror "
 						value="{{ request('query') ?? old('query') }}" id="musixmatch-query" required
-						@if (empty(request('query'))) autofocus @endif>
+						@empty(request('query')) autofocus @endempty>
 					<label for="musixmatch-query">Search query</label>
 				</div>
 			</div>
@@ -18,17 +18,25 @@
 			<div class="form-floating">
 				<select class="form-select @error('type') is-invalid @enderror " id="search-type"
 					name="type" required>
-					<option value="" {{ request('type') === null ? 'selected' : '' }}>Select</option>
-					<option value="all" {{ request('type') === 'all' ? 'selected' : '' }}>All</option>
-					<option value="track" {{ request('type') === 'track' ? 'selected' : '' }}>
+					<option value="" @selected(empty(request('type'))&&empty(old('type')))>
+					Select
+					</option>
+					<option value="all" @selected(in_array('all', [request('type'),old('type')]))>
+					All
+					</option>
+					<option value="track" @selected(in_array('track', [request('type'),old('type')]))>
 						Song title
 					</option>
-					<option value="artist" {{ request('type') === 'artist' ? 'selected' : '' }}>Artist</option>
-					<option value="lyrics" {{ request('type') === 'lyrics' ? 'selected' : '' }}>Lyric</option>
-					<option value="track_artist" {{ request('type') === 'track_artist' ? 'selected' : '' }}>
+					<option value="artist" @selected(in_array('artist',[request('type'),old('type')]))>
+					Artist
+					</option>
+					<option value="lyrics" @selected(in_array('lyrics',[request('type'),old('type')]))>
+					Lyric
+					</option>
+					<option value="track_artist" @selected(in_array('track_artist',[request('type'),old('type')]))>
 						Title and Artist
 					</option>
-					<option value="writer" {{ request('type') === 'writer' ? 'selected' : '' }}>
+					<option value="writer" @selected(in_array('writer', [request('type'),old('type')]))>
 						Song writer
 					</option>
 				</select>

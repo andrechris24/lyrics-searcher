@@ -49,30 +49,26 @@
 	<div class="mx-5 px-5 mb-5 pb-5">
 		<nav role="navigation" aria-label="{!! __('Pagination Navigation') !!}">
 			<ul class="pagination justify-content-center">
-				{{-- Previous Page Link --}}
-				@if ($rangemin <= 1)
-					<li class="page-item disabled" aria-disabled="true">
+				<li @class(["page-item", "disabled"=>$rangemin <= 1])
+					aria-disabled="{{$rangemin <= 1}}">
+					@if($rangemin <= 1)
 						<span class="page-link">{!! __('pagination.previous') !!}</span>
-					</li>
-				@else
-					<li class="page-item">
+					@else
 						<a class="page-link" rel="prev" href="{{ route($curRoute, $queries['prev']) }}">
 							{!! __('pagination.previous') !!}
 						</a>
-					</li>
-				@endif
-				{{-- Next Page Link --}}
-				@if ($rangemax < $songcount)
-					<li class="page-item">
+					@endif
+				</li>
+				<li @class(["page-item",'disabled'=> $rangemax >= $songcount])
+					aria-disabled="{{$rangemax >= $songcount}}">
+					@if($rangemax < $songcount)
 						<a class="page-link" rel="next" href="{{ route($curRoute, $queries['next']) }}">
 							{!! __('pagination.next') !!}
 						</a>
-					</li>
-				@else
-					<li class="page-item disabled" aria-disabled="true">
+					@else
 						<span class="page-link">{!! __('pagination.next') !!}</span>
-					</li>
-				@endif
+					@endif
+				</li>
 			</ul>
 		</nav>
 	</div>

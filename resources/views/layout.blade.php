@@ -117,7 +117,7 @@
 									])
 										@if (request()->is('musixmatch/charts/top')) aria-current="page" @endif
 										href="{{ route('musixmatch.chart', ['type' => 'top']) }}">
-										Top chart
+										Top charts
 									</a>
 								</li>
 								<li>
@@ -128,6 +128,26 @@
 										@if (request()->is('musixmatch/charts/hot')) aria-current="page" @endif
 										href="{{ route('musixmatch.chart', ['type' => 'hot']) }}">
 										Popular lyrics
+									</a>
+								</li>
+								<li>
+									<a @class([
+										'dropdown-item',
+										'active' => request()->is('musixmatch/charts/mxmweekly')
+									])
+										@if (request()->is('musixmatch/charts/hot')) aria-current="page" @endif
+										href="{{ route('musixmatch.chart', ['type' => 'mxmweekly']) }}">
+										Weekly charts
+									</a>
+								</li>
+								<li>
+									<a @class([
+										'dropdown-item',
+										'active' => request()->is('musixmatch/charts/mxmweekly_new')
+									])
+										@if (request()->is('musixmatch/charts/hot')) aria-current="page" @endif
+										href="{{ route('musixmatch.chart', ['type' => 'mxmweekly_new']) }}">
+										New Releases
 									</a>
 								</li>
 							</ul>

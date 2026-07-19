@@ -11,11 +11,12 @@ if (lyricsModal) {
 			duration = btn.getAttribute("data-bs-duration"),
 			content = btn.getAttribute("data-bs-content"),
 			user = btn.getAttribute("data-bs-user"),
-			upload = btn.getAttribute("data-bs-upload");
+			upload = btn.getAttribute("data-bs-upload"),
+			offset=btn.getAttribute("data-bs-offset");
 		$("#local-song-title").text(songName);
 		$("#local-song-artist").text(artistName);
 		$("#local-song-album").text(albumName);
-		$("#local-song-duration").text(duration);
+		$("#local-song-duration").text(offset===0?duration:`${duration} (${offset/1000})`);
 		$("#local-uploader").text(user);
 		$("#local-song-upload").text(upload);
 		$("#local-content").text(content);
@@ -98,13 +99,14 @@ $(document)
 								`data-bs-duration="${length}" data-bs-title="${full["title"]}"` +
 								`data-bs-artist="${full["artist"]}" data-bs-content="${data}"`+
 								`data-bs-upload="${create}" data-bs-offset="${full["offset"]}"` +
-								`data-bs-user="${full["user"]["name"] ?? "Guest"}">` +
+								`data-bs-user="${full["user"]?full["user"]["name"] : "Guest"}">` +
 								'<i class="fa-solid fa-eye"></i></button>' +
 								'<button type="button" class="btn btn-primary btn-sm dl-button"' +
 								`data-album="${full["album"]??'-'}" data-title="${full["title"]}"` +
 								`data-artist="${full["artist"]}" data-id="${full["id"]}"` +
 								`data-duration="${length}" data-content="${data}"` +
-								`data-user="${full["user"]["name"] ?? "Guest"}" data-offset="${full["offset"]}">` +
+								`data-user="${full["user"]?full["user"]["name"] : "Guest"}"`+
+								`data-offset="${full["offset"]}">` +
 								'<i class="fa-solid fa-download"></i>' +
 								"</button></div>"
 							);

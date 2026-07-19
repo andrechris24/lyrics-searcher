@@ -64,30 +64,27 @@
 	<div class="mx-5 px-5 mb-5 pb-5">
 		<nav role="navigation" aria-label="{!! __('Pagination Navigation') !!}">
 			<ul class="pagination justify-content-center">
-				{{-- Previous Page Link --}}
-				@if (request('page') === null || request('page') == 1)
-					<li class="page-item disabled" aria-disabled="true">
+				<li @class(["page-item", "disabled"=>in_array(request('page'), [1,null])])
+					aria-disabled="{{in_array(request('page'), [1,null])}}">
+					@if(in_array(request('page'), [1,null]))
 						<span class="page-link">{!! __('pagination.previous') !!}</span>
-					</li>
-				@else
-					<li class="page-item">
+					@else
 						<a class="page-link" rel="prev" href="{{ route($curRoute, $queries['prev']) }}">
 							{!! __('pagination.previous') !!}
 						</a>
-					</li>
-				@endif
-				{{-- Next Page Link --}}
-				@if (20 * (request('page') ?? 1) < $data['total'])
-					<li class="page-item">
+					@endif
+				</li>
+				@php($nextOffset=20 * (request('page') ?? 1))
+				<li @class(["page-item",'disabled'=> $nextOffset >= $data['total']])
+					aria-disabled="{{$nextOffset >= $data['total']}}">
+					@if($nextOffset<$data['total'])
 						<a class="page-link" rel="next" href="{{ route($curRoute, $queries['next']) }}">
 							{!! __('pagination.next') !!}
 						</a>
-					</li>
-				@else
-					<li class="page-item disabled" aria-disabled="true">
+					@else
 						<span class="page-link">{!! __('pagination.next') !!}</span>
-					</li>
-				@endif
+					@endif
+				</li>
 			</ul>
 		</nav>
 	</div>

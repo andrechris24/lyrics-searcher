@@ -16,6 +16,7 @@
         "backpack/theme-tabler": "^2.0",
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0",
+        "stevebauman/location": "^7.6",
         "symfony/yaml": "^8.0",
         "yajra/laravel-datatables-oracle": "^13.1"
     },

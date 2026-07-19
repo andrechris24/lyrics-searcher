@@ -1,4 +1,4 @@
-<form class="row g-3 mb-3"
+<form class="row g-3 mb-3" id="two-form-search" 
 	action="{{ route($provider . ($type === 'advanced' ? '.search.advanced' : '.search')) }}">
 	<div class="col-sm-6">
 		<div class="input-group input-group-lg">

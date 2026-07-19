@@ -37,6 +37,7 @@
 								? $track['album_coverart_100x100']
 								: 'https://placehold.co/500?text=' .
 									urlencode($track['album_name']))));
+				$unavailable=$track['instrumental'] || !$track['has_lyrics'];
 			@endphp
 			<div class="col">
 				<div class="card">
@@ -64,7 +65,7 @@
 							<div class="btn-group" role="group">
 								<button type="button" class="btn btn-primary dropdown-toggle"
 									data-bs-toggle="dropdown" aria-expanded="false"
-									@if ($track['instrumental'] || !$track['has_lyrics']) aria-disabled="true" disabled @endif>
+									aria-disabled="{{$unavailable}}" @disabled($unavailable)>
 									<i class="fa-solid fa-download"></i>
 								</button>
 								<ul class="dropdown-menu">
@@ -155,32 +156,27 @@
 		<div class="mx-5 px-5 mb-5 pb-5">
 			<nav role="navigation" aria-label="{!! __('Pagination Navigation') !!}">
 				<ul class="pagination justify-content-center">
-					{{-- Previous Page Link --}}
-					@if (request('page') === null || request('page') == 1)
-						<li class="page-item disabled" aria-disabled="true">
+					<li @class(["page-item", "disabled"=>in_array(request('page'), [1,null])])
+						aria-disabled="{{in_array(request('page'), [1,null])}}">
+						@if(in_array(request('page'), [1,null]))
 							<span class="page-link">{!! __('pagination.previous') !!}</span>
-						</li>
-					@else
-						<li class="page-item">
-							<a class="page-link" rel="prev"
-								href="{{ route($curRoute, $queries['prev']) }}">
+						@else
+							<a class="page-link" rel="prev" href="{{ route($curRoute, $queries['prev']) }}">
 								{!! __('pagination.previous') !!}
 							</a>
-						</li>
-					@endif
-					{{-- Next Page Link --}}
-					@if (20 * (request('page') ?? 1) < $header['available'])
-						<li class="page-item">
-							<a class="page-link" rel="next"
-								href="{{ route($curRoute, $queries['next']) }}">
+						@endif
+					</li>
+					@php($nextOffset=20 * (request('page') ?? 1))
+					<li @class(["page-item",'disabled'=> $nextOffset >= $header['available']])
+						aria-disabled="{{$nextOffset >= $header['available']}}">
+						@if($nextOffset<$header['available'])
+							<a class="page-link" rel="next" href="{{ route($curRoute, $queries['next']) }}">
 								{!! __('pagination.next') !!}
 							</a>
-						</li>
-					@else
-						<li class="page-item disabled" aria-disabled="true">
+						@else
 							<span class="page-link">{!! __('pagination.next') !!}</span>
-						</li>
-					@endif
+						@endif
+					</li>
 				</ul>
 			</nav>
 		</div>

@@ -1,12 +1,11 @@
-<form class="row g-3 mb-3" action="{{ route($provider . '.search.advanced') }}">
+<form class="row g-3 mb-3" id="advanced-search-form" action="{{ route($provider . '.search.advanced') }}">
 	<div class="col-12">
 		<div class="input-group input-group-lg">
 			<span class="input-group-text"><i class="fa-solid fa-music"></i></span>
 			<div class="form-floating">
 				<input type="text" class="form-control @error('title') is-invalid @enderror "
 					id="track-name" placeholder="Song title" name="title"
-					value="{{ request('title') ?? old('title') }}"
-					@if ($require === 1) required @endif
+					value="{{ request('title') ?? old('title') }}" @required($require === 1)
 					@if (!request()->routeIs('*.search.advanced') && request()->routeIs('*.advanced')) 
 					autofocus @endif>
 				<label for="track-name" class="form-label">

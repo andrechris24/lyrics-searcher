@@ -7,6 +7,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\{Http, Log, Session};
 use Illuminate\Validation\ValidationException;
 use JsonException;
+use Stevebauman\Location\Facades\Location;
 
 class MusixmatchController extends Controller
 {
@@ -64,7 +65,7 @@ class MusixmatchController extends Controller
 			$header = $r['message']['header'];
 			if ($header['status_code'] !== 200) {
 				return to_route('musixmatch.index')->withInput()
-					->withError(parent::getMXerror($header));
+					->withError('Error loading search results: ' . parent::getMXerror($header));
 			}
 			$data = $r['message']['body']['track_list'];
 			return view('musixmatch.result', compact('data', 'header'));
@@ -96,7 +97,7 @@ class MusixmatchController extends Controller
 			$header = $r['message']['header'];
 			if ($header['status_code'] !== 200) {
 				return to_route('musixmatch.advanced')->withInput()
-					->withError(parent::getMXerror($header));
+					->withError('Error loading search results: ' . parent::getMXerror($header));
 			}
 			$data = $r['message']['body']['track_list'];
 			return view('musixmatch.advanced.result', compact('data', 'header'));
@@ -108,22 +109,34 @@ class MusixmatchController extends Controller
 	}
 	public function charts(string $type)
 	{
-		if (!in_array($type, ['top', 'hot']))
-			return to_route('musixmatch.index')->withError('Unrecognized parameter for Musixmatch Chart');
+		if (!in_array($type, ['top', 'hot', 'mxmweekly', 'mxmweekly_new'])) {
+			return to_route('musixmatch.index')
+				->withError('Unrecognized parameter for Musixmatch Chart');
+		}
 		self::generateToken();
 		$query = self::$query;
 		$query['usertoken'] = Session::get('mx_token');
 		$query['chart_name'] = $type;
-		$query['country'] = 'id'; //Change this to your country code
+		$typeName = match ($type) {
+			'top' => 'Top Charts',
+			'hot' => 'Popular Lyrics',
+			'mxmweekly' => 'Weekly Charts',
+			'mxmweekly_new' => 'New Releases',
+			default => null
+		};
+		if ($position = Location::get()) $query['country'] = $position->countryCode;
+		else if ($type !== 'top') $query['country'] = 'xw';
 		try {
 			$r = Http::retry(2, 5000, throw: false)->timeout(25000)
 				->withHeaders(self::MX_HEADER)->get(self::$url . 'chart.tracks.get', $query)
 				->json(null, null, JSON_THROW_ON_ERROR);
 			$header = $r['message']['header'];
-			if ($header['status_code'] !== 200)
-				return to_route('musixmatch.index')->withError(parent::getMXerror($header));
+			if ($header['status_code'] !== 200) {
+				return to_route('musixmatch.index')
+					->withError('Error loading charts: ' . parent::getMXerror($header));
+			}
 			$data = $r['message']['body']['track_list'];
-			return view('musixmatch.chart', compact('data', 'header'));
+			return view('musixmatch.chart', compact('data', 'header', 'position', 'typeName'));
 		} catch (ValidationException $e) {
 			return to_route('musixmatch.index')->withErrors($e->errors());
 		} catch (ConnectionException | JsonException | \Exception $th) {

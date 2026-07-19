@@ -3,7 +3,7 @@
 		Kugou's Advanced search is case sensitive, so please check word casing if no results.
 	</div>
 @endif
-<form class="row g-3 mb-3" action="{{ route($provider . '.search.advanced') }}">
+<form class="row g-3 mb-3" id="advanced-alt-search-form" action="{{ route($provider . '.search.advanced') }}">
 	<div class="col-12">
 		<div class="input-group input-group-lg">
 			<span class="input-group-text"><i class="fa-solid fa-music"></i></span>

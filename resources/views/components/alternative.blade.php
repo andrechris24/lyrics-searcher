@@ -1,4 +1,4 @@
-<form class="row g-3 mb-3" action="{{ route($provider . '.search.advanced') }}">
+<form class="row g-3 mb-3" id="alternative-search-form" action="{{ route($provider . '.search.advanced') }}">
 	<div class="col-md-7">
 		<div class="input-group input-group-lg">
 			<span class="input-group-text">
@@ -8,7 +8,7 @@
 				<input type="search" name="query" placeholder="Enter search query here..."
 					class="form-control form-control-lg @error('query') is-invalid @enderror "
 					value="{{ request('query') ?? old('query') }}" id="query-input" required
-					@if (empty(request('query'))) autofocus @endif>
+					@empty(request('query')) autofocus @endempty>
 				<label for="query-input" class="form-label">Query</label>
 			</div>
 		</div>

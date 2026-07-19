@@ -222,31 +222,25 @@
 	<div class="mx-5 px-5 mb-5 pb-5">
 		<nav role="navigation" aria-label="{!! __('Pagination Navigation') !!}">
 			<ul class="pagination justify-content-center">
-				{{-- Previous Page Link --}}
-				@if (empty($prev))
-					<li class="page-item disabled" aria-disabled="true">
+				<li @class(["page-item",'disabled'=>empty($prev)]) aria-disabled="{{empty($prev)}}">
+					@empty($prev)
 						<span class="page-link">{!! __('pagination.previous') !!}</span>
-					</li>
-				@else
-					<li class="page-item">
+					@else
 						<a class="page-link" rel="prev"
 							href="{{ route('deezer.search', ['query' => request('query'), 'offset' => request('offset') - 20]) }}">
 							{!! __('pagination.previous') !!}
 						</a>
-					</li>
-				@endif
+					@endempty
+				</li>
 
-				{{-- Next Page Link --}}
-				@if (!empty($next))
-					<li class="page-item">
-						<a class="page-link" rel="next"
-							href="{{ route('netease.search', ['query' => request('query'), 'offset' => (request('offset') ?? 0) + 20]) }}">{!! __('pagination.next') !!}</a>
-					</li>
-				@else
-					<li class="page-item disabled" aria-disabled="true">
+				<li @class(["page-item",'disabled'=>empty($next)]) aria-disabled="{{empty($next)}}">
+					@empty($next)
 						<span class="page-link">{!! __('pagination.next') !!}</span>
-					</li>
-				@endif
+					@else
+						<a class="page-link" rel="next"
+							href="{{ route('deezer.search', ['query' => request('query'), 'offset' => (request('offset') ?? 0) + 20]) }}">{!! __('pagination.next') !!}</a>
+					@endempty
+				</li>
 			</ul>
 		</nav>
 	</div>

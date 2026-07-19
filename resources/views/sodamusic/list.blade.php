@@ -29,31 +29,26 @@
 	<div class="mx-5 px-5 mb-5 pb-5">
 		<nav role="navigation" aria-label="{!! __('Pagination Navigation') !!}">
 			<ul class="pagination justify-content-center">
-				{{-- Previous Page Link --}}
-				@if (request('offset') === null || request('offset') == 0)
-					<li class="page-item disabled" aria-disabled="true">
+				<li @class(["page-item", "disabled"=>in_array(request('offset'), [0,null])])
+					aria-disabled="{{in_array(request('offset'), [0,null])}}">
+					@if(in_array(request('offset'), [0,null]))
 						<span class="page-link">{!! __('pagination.previous') !!}</span>
-					</li>
-				@else
-					<li class="page-item">
-						<a class="page-link" rel="prev"
-							href="{{ route('sodamusic.search', ['query' => request('query'), 'offset' => request('offset') - 20]) }}">
+					@else
+						<a class="page-link" rel="prev" href="{{ route('sodamusic.search', ['query' => request('query'), 'offset' => request('offset') - 20]) }}">
 							{!! __('pagination.previous') !!}
 						</a>
-					</li>
-				@endif
-
-				{{-- Next Page Link --}}
-				@if ($data['has_more'] === true)
-					<li class="page-item">
-						<a class="page-link" rel="next"
-							href="{{ route('sodamusic.search', ['query' => request('query'), 'offset' => $data['next_cursor']]) }}">{!! __('pagination.next') !!}</a>
-					</li>
-				@else
-					<li class="page-item disabled" aria-disabled="true">
+					@endif
+				</li>
+				<li @class(["page-item",'disabled'=> !$data['has_more']])
+					aria-disabled="{{!$data['has_more']}}">
+					@if($data['has_more'])
+						<a class="page-link" rel="next" href="{{ route('sodamusic.search', ['query' => request('query'), 'offset' => $data['next_cursor']]) }}">
+							{!! __('pagination.next') !!}
+						</a>
+					@else
 						<span class="page-link">{!! __('pagination.next') !!}</span>
-					</li>
-				@endif
+					@endif
+				</li>
 			</ul>
 		</nav>
 	</div>
