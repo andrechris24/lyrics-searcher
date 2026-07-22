@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Http, Log};
-use Illuminate\Validation\ValidationException;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
 use JsonException;
@@ -20,11 +19,12 @@ class LRCLibController extends Controller
 			$data = Http::retry(3, 100)->timeout(25000)
 				->get(self::$url, ['q' => $request['query']])
 				->json(null, null, JSON_THROW_ON_ERROR);
-			return view('lrclib.result', compact('data'));
-		} catch (ValidationException $e) {
-			return to_route('lrclib.index')->withInput()->withErrors($e->errors());
-		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			return to_route('lrclib.index')->withInput()->withError(self::matchError($th));
+			return response()->json(['html' => view('lrclib.list', compact('data'))->render()]);
+		} catch (ConnectionException | JsonException | RequestException $th) {
+			abort(
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
+				self::matchError($th)
+			);
 		}
 	}
 	public function advanced(Request $request)
@@ -36,11 +36,12 @@ class LRCLibController extends Controller
 				'artist_name' => $request['artist'],
 				'album_name' => $request['album']
 			])->json(null, null, JSON_THROW_ON_ERROR);
-			return view('lrclib.advanced.result', compact('data'));
-		} catch (ValidationException $e) {
-			return to_route('lrclib.advanced')->withInput()->withErrors($e->errors());
-		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			return to_route('lrclib.advanced')->withInput()->withError(self::matchError($th));
+			return response()->json(['html' => view('lrclib.list', compact('data'))->render()]);
+		} catch (ConnectionException | JsonException | RequestException $th) {
+			abort(
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
+				self::matchError($th)
+			);
 		}
 	}
 	public function convert(Request $req)
@@ -49,6 +50,7 @@ class LRCLibController extends Controller
 		$prevtime = 0;
 		try {
 			$yaml = Yaml::parse($req['content']);
+			abort_if(empty($yaml['lines']), 404, 'No lyric lines exist in the content');
 			$meta = [
 				'ti' => $yaml['metadata']['title'],
 				'ar' => $yaml['metadata']['artist'],
@@ -62,8 +64,8 @@ class LRCLibController extends Controller
 			foreach ($meta as $key => $value) {
 				$lyricsfile .= sprintf("[%s: %s]\n", $key, $value);
 			}
-			abort_if(empty($yaml['lines']), 404, 'No word-by-word lyric available');
 			foreach ($yaml['lines'] as $idx => $line) {
+				// abort_if(empty($line['words']), 404, 'No word-by-word lyric available');
 				if ($idx === 0) {
 					if ($line['start_ms'] > 3000)
 						$lyricsfile .= "[" . parent::formatTime(($line['start_ms'] - mt_rand(2500, 3000)) / 1000) . "]";

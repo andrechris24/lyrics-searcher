@@ -10,7 +10,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 id="modalLocalFileLabel" class="modal-title">View Lyric</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"
+					<button type="button" class="btn-close" data-coreui-dismiss="modal"
 						aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
@@ -55,7 +55,7 @@
 					<p id="local-content" style="white-space: pre-line"></p>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+					<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
 						Close
 					</button>
 				</div>
@@ -64,8 +64,8 @@
 	</div>
 	<div class="mb-5">
 		@auth(backpack_guard_name())
-			<button type="button" class="btn btn-success" data-bs-toggle="modal"
-				data-bs-target="#modalUploadLyric">Upload lyric</button>
+			<button type="button" class="btn btn-success" data-coreui-toggle="modal"
+				data-coreui-target="#modalUploadLyric">Upload lyric</button>
 		@endauth
 		<table id="local-lyrics" class="table table-striped">
 			<thead>

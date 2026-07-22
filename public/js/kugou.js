@@ -3,10 +3,10 @@ let songID, fileName, dt_lyrics, lyricContent;
 const lyricsModal = document.getElementById("modalLyrics");
 if (lyricsModal) {
 	$.fn.dataTable.ext.errMode = "none";
-	lyricsModal.addEventListener("show.bs.modal", (event) => {
-		// Extract info from data-bs-* attributes
-		songID = event.relatedTarget.getAttribute("data-bs-hash");
-		fileName = event.relatedTarget.getAttribute("data-bs-query");
+	lyricsModal.addEventListener("show.coreui.modal", (event) => {
+		// Extract info from data-coreui-* attributes
+		songID = event.relatedTarget.getAttribute("data-coreui-hash");
+		fileName = event.relatedTarget.getAttribute("data-coreui-query");
 		$("#lrc-query").text(fileName);
 		if ($.fn.dataTable.isDataTable("#lyrics-table")) dt_lyrics.destroy();
 

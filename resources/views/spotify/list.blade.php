@@ -10,7 +10,7 @@
 					<h5 id="modalMXLabel" class="modal-title">
 						Preview Lyric
 					</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"
+					<button type="button" class="btn-close" data-coreui-dismiss="modal"
 						aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
@@ -58,7 +58,7 @@
 					<p id="lyrics-content" style="white-space: pre-line"></p>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+					<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
 						Close
 					</button>
 					<a href="#" class="btn btn-warning" target="_blank" id="musixmatch-btn">
@@ -66,7 +66,7 @@
 					</a>
 					<div class="dropdown">
 						<button class="btn btn-primary dropdown-toggle" type="button"
-							data-bs-toggle="dropdown" aria-expanded="false">
+							data-coreui-toggle="dropdown" aria-expanded="false">
 							Save to Device
 						</button>
 						<ul class="dropdown-menu">
@@ -104,11 +104,11 @@
 					</div>
 					<div class="card-footer">
 						<div class="btn-group" role="group">
-							<button class="btn btn-primary" data-bs-id="{{ $result['trackId'] }}"
-								data-bs-artist="{{ $result['artistName'] }}" data-bs-title="{{ $result['name'] }}"
-								data-bs-album="{{ $result['albumName'] }}"
-								data-bs-duration="{{ $result['duration'] }}" data-bs-toggle="modal"
-								data-bs-target="#modalMX">
+							<button class="btn btn-primary" data-coreui-id="{{ $result['trackId'] }}"
+								data-coreui-artist="{{ $result['artistName'] }}" data-coreui-title="{{ $result['name'] }}"
+								data-coreui-album="{{ $result['albumName'] }}"
+								data-coreui-duration="{{ $result['duration'] }}" data-coreui-toggle="modal"
+								data-coreui-target="#modalMX">
 								<i class="fa-solid fa-eye"></i>
 							</button>
 							<a href="https://open.spotify.com/track/{{ $result['trackId'] }}"
@@ -118,7 +118,7 @@
 									'disabled' => empty($result['trackId'])
 								])
 								@empty($result['trackId']) aria-disabled="true" @endempty
-								data-bs-toggle="tooltip" data-bs-title="View on Spotify" target="_blank">
+								data-coreui-toggle="tooltip" data-coreui-title="View on Spotify" target="_blank">
 								<i class="fa-brands fa-spotify"></i>
 							</a>
 						</div>

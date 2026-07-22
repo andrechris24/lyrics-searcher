@@ -9,13 +9,13 @@ document.addEventListener("focusin", (e) => {
 		e.stopImmediatePropagation(); //Prevent modal from stealing focus
 });
 if (lyricsModal) {
-	lyricsModal.addEventListener("show.bs.modal", function (e) {
+	lyricsModal.addEventListener("show.coreui.modal", function (e) {
 		const btn = e.relatedTarget;
-		const songName = btn.getAttribute("data-bs-title"),
-			artistName = btn.getAttribute("data-bs-artist"),
-			albumName = btn.getAttribute("data-bs-album"),
-			duration = btn.getAttribute("data-bs-duration"),
-			songID = btn.getAttribute("data-bs-id");
+		const songName = btn.getAttribute("data-coreui-title"),
+			artistName = btn.getAttribute("data-coreui-artist"),
+			albumName = btn.getAttribute("data-coreui-album"),
+			duration = btn.getAttribute("data-coreui-duration"),
+			songID = btn.getAttribute("data-coreui-id");
 		fileName = `${artistName} - ${songName}`;
 		meta = `\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n[length: ${duration}]\n[by: Musixmatch (Spotify)]\n`;
 		$("#song-title").text(songName);
@@ -25,10 +25,10 @@ if (lyricsModal) {
 		$.ajax({
 			url: `/spotify/${songID}`,
 			beforeSend: function () {
-				$("#lyrics-content").text('');
-				$("#song-release-date").text('');
-				$("#song-last-update").text('');
-				$("#song-copyright").text('');
+				$("#lyrics-content").text("");
+				$("#song-release-date").text("");
+				$("#song-last-update").text("");
+				$("#song-copyright").text("");
 				$("#lyric-type").text("");
 				$("#musixmatch-btn").attr("href", "#");
 				$(".placeholder-glow").removeClass("d-none");

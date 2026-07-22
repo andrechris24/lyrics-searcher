@@ -5,7 +5,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 id="modalLyricsLabel" class="modal-title">Preview lyric</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"
+				<button type="button" class="btn-close" data-coreui-dismiss="modal"
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
@@ -63,12 +63,12 @@
 				<p id="lyrics-content" style="white-space: pre-line"></p>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+				<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
 					Close
 				</button>
 				<div class="dropdown">
 					<button class="btn btn-primary dropdown-toggle" type="button"
-						data-bs-toggle="dropdown" aria-expanded="false">
+						data-coreui-toggle="dropdown" aria-expanded="false">
 						Save
 					</button>
 					<ul class="dropdown-menu">
@@ -79,10 +79,10 @@
 							<a class="dropdown-item" href="#" id="dl-synced">Synced</a>
 						</li>
 						<li>
-							<a class="dropdown-item" href="#" id="dl-syllyric" data-bs-toggle="tooltip" data-bs-title="Not all players supports Syllable lyrics, use with compatible players like Oto Music or BetterLyrics">Syllable</a>
+							<a class="dropdown-item" href="#" id="dl-syllyric" data-coreui-toggle="tooltip" data-coreui-title="Not all players supports Syllable lyrics, use with compatible players like Oto Music or BetterLyrics">Syllable</a>
 						</li>
 						<li>
-							<a class="dropdown-item" href="#" id="dl-multisyllyric" data-bs-toggle="tooltip" data-bs-title="Not all players supports Syllable lyrics, use with compatible players like Oto Music or BetterLyrics">
+							<a class="dropdown-item" href="#" id="dl-multisyllyric" data-coreui-toggle="tooltip" data-coreui-title="Not all players supports Syllable lyrics, use with compatible players like Oto Music or BetterLyrics">
 							Multi Person Syllable
 							</a>
 						</li>
@@ -102,7 +102,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 id="modalPreviewSongLabel" class="modal-title">Preview Song</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"
+				<button type="button" class="btn-close" data-coreui-dismiss="modal"
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
@@ -138,7 +138,7 @@
 				</audio>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+				<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
 					Close
 				</button>
 			</div>
@@ -180,12 +180,12 @@
 					</div>
 					<div class="card-footer">
 						<div class="btn-group" role="group">
-							<button type="button" class="btn btn-primary" data-bs-toggle="modal"
-								data-bs-target="#modalLyrics" data-bs-id="{{ $result['trackId'] }}"
-								data-bs-artist="{{ $result['artistName'] }}"
-								data-bs-title="{{ $result['trackName'] }}"
-								data-bs-album="{{ $result['collectionName'] }}"
-								data-bs-duration="{{ $length }}">
+							<button type="button" class="btn btn-primary" data-coreui-toggle="modal"
+								data-coreui-target="#modalLyrics" data-coreui-id="{{ $result['trackId'] }}"
+								data-coreui-artist="{{ $result['artistName'] }}"
+								data-coreui-title="{{ $result['trackName'] }}"
+								data-coreui-album="{{ $result['collectionName'] }}"
+								data-coreui-duration="{{ $length }}">
 								<i class="fa-solid fa-eye"></i>
 							</button>
 							<button type="button" @class([
@@ -194,12 +194,12 @@
 								'disabled' => empty($result['previewUrl'])
 							])
 								@if (empty($result['previewUrl'])) aria-disabled="true" @endif
-								data-bs-link="{{ $result['previewUrl'] }}"
-								data-bs-artist="{{ $result['artistName'] }}"
-								data-bs-title="{{ $result['trackName'] }}"
-								data-bs-album="{{ $result['collectionName'] }}"
-								data-bs-duration="{{ $length }}" data-bs-toggle="modal"
-								data-bs-target="#modalPreviewSong">
+								data-coreui-link="{{ $result['previewUrl'] }}"
+								data-coreui-artist="{{ $result['artistName'] }}"
+								data-coreui-title="{{ $result['trackName'] }}"
+								data-coreui-album="{{ $result['collectionName'] }}"
+								data-coreui-duration="{{ $length }}" data-coreui-toggle="modal"
+								data-coreui-target="#modalPreviewSong">
 								<i class="fa-solid fa-play"></i>
 							</button>
 							<a href="{{ $result['trackViewUrl'] }}" @class([
@@ -208,7 +208,7 @@
 								'disabled' => empty($result['trackViewUrl'])
 							])
 								@empty($result['trackViewUrl']) aria-disabled="true" @endempty
-								data-bs-toggle="tooltip" data-bs-title="View on Apple Music" target="_blank">
+								data-coreui-toggle="tooltip" data-coreui-title="View on Apple Music" target="_blank">
 								<i class="fa-brands fa-itunes-note"></i>
 							</a>
 						</div>

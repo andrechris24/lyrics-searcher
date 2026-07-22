@@ -65,7 +65,7 @@ class MusixmatchController extends Controller
 			$header = $r['message']['header'];
 			if ($header['status_code'] !== 200) {
 				return to_route('musixmatch.index')->withInput()
-					->withError('Error loading search results: ' . parent::getMXerror($header));
+					->withError('Error loading results: ' . parent::getMXerror($header));
 			}
 			$data = $r['message']['body']['track_list'];
 			return view('musixmatch.result', compact('data', 'header'));
@@ -97,7 +97,7 @@ class MusixmatchController extends Controller
 			$header = $r['message']['header'];
 			if ($header['status_code'] !== 200) {
 				return to_route('musixmatch.advanced')->withInput()
-					->withError('Error loading search results: ' . parent::getMXerror($header));
+					->withError('Error loading results: ' . parent::getMXerror($header));
 			}
 			$data = $r['message']['body']['track_list'];
 			return view('musixmatch.advanced.result', compact('data', 'header'));
@@ -164,7 +164,7 @@ class MusixmatchController extends Controller
 			abort_if(
 				$header['status_code'] !== 200,
 				$header['status_code'],
-				parent::getMXerror($header)
+				'Error retrieving lyric: '.parent::getMXerror($header)
 			);
 			$data = $r['message']['body'][$type];
 			abort_if($data['restricted'] === true, 403, 'This lyric is restricted');
@@ -231,7 +231,7 @@ class MusixmatchController extends Controller
 			abort_if(
 				$header['status_code'] !== 200,
 				$header['status_code'],
-				parent::getMXerror($header)
+				'Error retrieving token: '.parent::getMXerror($header)
 			);
 			$body = $r['message']['body'];
 			if (array_key_exists('user_token', $body)) {

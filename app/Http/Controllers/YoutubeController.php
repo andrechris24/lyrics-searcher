@@ -18,8 +18,9 @@ class YoutubeController extends Controller
 				->get(parent::$paxsenix_url . 'youtube/search', ['q' => $req['query']])->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
 				Log::error('YouTube API error: ', $r);
-				return to_route('youtube.index')->withInput()
-					->withError('Oops, something went wrong with YouTube API. Please try again later.');
+				return to_route('youtube.index')->withInput()->withError(
+					'Oops, something went wrong while loading results. Please try again later.'
+				);
 			}
 			return view('youtube.result', ['data' => $r]);
 		} catch (ValidationException $e) {

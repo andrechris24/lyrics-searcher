@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-/* global Swal, bootstrap */
+/* global Swal, coreui */
 $.ajaxSetup({ timeout: 120000 });
 $(document).on("keydown", function (e) {
 	// Ignore if user is already typing in an input, textarea, or contenteditable
@@ -59,12 +59,8 @@ function blobDL(data, filename, type = "text/plain") {
 	a.remove();
 	window.URL.revokeObjectURL(url);
 }
-const tooltipTriggerList = document.querySelectorAll(
-	'[data-bs-toggle="tooltip"]'
-);
-const tooltipList = [...tooltipTriggerList].map(
-	(tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
-);
+const tooltipTriggerList = document.querySelectorAll('[data-coreui-toggle="tooltip"]');
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new coreui.Tooltip(tooltipTriggerEl));
 function zpad(n) {
 	const s = n.toString();
 	return s.length < 2 ? `0${s}` : s;

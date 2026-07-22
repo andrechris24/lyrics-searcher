@@ -64,7 +64,7 @@
 						<div class="btn-group" role="group">
 							<div class="btn-group" role="group">
 								<button type="button" class="btn btn-primary dropdown-toggle"
-									data-bs-toggle="dropdown" aria-expanded="false"
+									data-coreui-toggle="dropdown" aria-expanded="false"
 									aria-disabled="{{$unavailable}}" @disabled($unavailable)>
 									<i class="fa-solid fa-download"></i>
 								</button>
@@ -105,15 +105,15 @@
 											data-id="{{ $track['commontrack_id'] }}" data-type="richsync"
 											data-album="{{ $track['album_name'] }}"
 											data-artist="{{ $track['artist_name'] }}"
-											data-title="{{ $track['track_name'] }}" data-bs-toggle="tooltip">
+											data-title="{{ $track['track_name'] }}" data-coreui-toggle="tooltip">
 											Richsync
 										</a>
 									</li>
 								</ul>
 							</div>
 							<a href="{{ $track['track_share_url'] }}" @class(['btn', 'btn-info', 'disabled' => !$track['has_lyrics']])
-								@if (!$track['has_lyrics']) aria-disabled="true" @endif target="_blank"
-								data-bs-toggle="tooltip" data-bs-title="View Lyric on Musixmatch">
+								aria-disabled="{{!$track['has_lyrics']}}" target="_blank"
+								data-coreui-toggle="tooltip" data-coreui-title="View Lyric on Musixmatch">
 								<i class="fa-solid fa-eye"></i>
 							</a>
 							<a href="https://open.spotify.com/track/{{ $track['track_spotify_id'] }}"
@@ -122,8 +122,8 @@
 									'btn-success',
 									'disabled' => empty($track['track_spotify_id'])
 								])
-								@empty($track['track_spotify_id']) aria-disabled="true" @endempty
-								data-bs-toggle="tooltip" data-bs-title="View on Spotify" target="_blank">
+								aria-disabled="{{empty($track['track_spotify_id'])}}"
+								data-coreui-toggle="tooltip" data-coreui-title="View on Spotify" target="_blank">
 								<i class="fa-brands fa-spotify"></i>
 							</a>
 						</div>

@@ -8,15 +8,14 @@
 		<title>@yield('title') | {{ env('APP_NAME') }}</title>
 
 		<!-- Bootstrap CSS -->
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-			integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-			crossorigin="anonymous">
+		<link href="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.9.0/dist/css/coreui.min.css" rel="stylesheet" integrity="sha384-9DZ6o3pJWcTwBR8W196XizUEf2kNMD35tkeyWqOB0yzml+nZrEe/13PMCpAIrT4r" crossorigin="anonymous">
 
 		<!-- FontAwesome -->
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.0/css/all.min.css" integrity="sha256-O2p11mherUYPja5rjeK2afvVekcdkigTHg/bG+cj8qk=" crossorigin="anonymous">
 
+		<!-- DataTables -->
 		<link href="https://cdn.datatables.net/v/bs5/dt-2.3.8/r-3.0.8/datatables.min.css" rel="stylesheet" integrity="sha384-tNYQLr593NFEx21InOh9Hbxz0c66iRCODxYVibI1MHkEHCTPXTwB/7k4ZqWvtRt9" crossorigin="anonymous">
+
 		<script type="text/javascript" src="{{ asset('js/theme.js') }}"></script>
 		<style>
 			.bi {
@@ -47,8 +46,8 @@
 				<a class="navbar-brand" href="{{ route('home') }}">
 					<i class="fa-solid fa-music fa-2x"></i>
 				</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-					data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+				<button class="navbar-toggler" type="button" data-coreui-toggle="collapse"
+					data-coreui-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
 					aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
@@ -88,7 +87,7 @@
 								'active' => request()->routeIs('musixmatch.*')
 							]) href="#"
 								@if (request()->routeIs('musixmatch.*')) aria-current="page" @endif role="button"
-								data-bs-toggle="dropdown" aria-expanded="false">
+								data-coreui-toggle="dropdown" aria-expanded="false">
 								Musixmatch
 							</a>
 							<ul class="dropdown-menu">
@@ -179,7 +178,7 @@
 									request()->routeIs('youtube.*') ||
 									request()->routeIs('apple.*')
 								) aria-current="page" @endif href="#"
-								role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								role="button" data-coreui-toggle="dropdown" aria-expanded="false">
 								More
 							</a>
 							<ul class="dropdown-menu">
@@ -213,8 +212,8 @@
 					<hr class="d-lg-none text-white-50">
 					<ul class="navbar-nav flex-row flex-wrap ms-md-auto">
 						<li class="nav-item">
-							<button class="btn btn-link nav-link px-0 px-lg-1" data-bs-toggle="modal"
-							data-bs-target="#modalConvert">Convert</button>
+							<button class="btn btn-link nav-link px-0 px-lg-1" data-coreui-toggle="modal"
+							data-coreui-target="#modalConvert">Convert</button>
 						</li>
 						@auth(backpack_guard_name())
 						<li class="nav-item active">
@@ -227,7 +226,7 @@
 						</li>
 						<li class="nav-item dropdown">
 							<button class="btn me-2 dropdown-toggle d-flex align-items-center"
-								id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown"
+								id="bd-theme" type="button" aria-expanded="false" data-coreui-toggle="dropdown"
 								aria-label="Toggle theme (auto)">
 								<svg class="bi my-1 theme-icon-active" width="1em" height="1em">
 									<use href="#circle-half"></use>
@@ -236,7 +235,7 @@
 							</button>
 							<ul class="dropdown-menu mt-lg-2" aria-labelledby="bd-theme-text">
 								<li>
-									<a href="#" class="dropdown-item" data-bs-theme-value="light"
+									<a href="#" class="dropdown-item" data-coreui-theme-value="light"
 										aria-pressed="false">
 										<svg class="bi me-2" width="1em" height="1em">
 											<use href="#sun-fill"></use>
@@ -245,7 +244,7 @@
 									</a>
 								</li>
 								<li>
-									<a href="#" class="dropdown-item" data-bs-theme-value="dark"
+									<a href="#" class="dropdown-item" data-coreui-theme-value="dark"
 										aria-pressed="false">
 										<svg class="bi me-2" width="1em" height="1em">
 											<use href="#moon-stars-fill"></use>
@@ -254,7 +253,7 @@
 									</a>
 								</li>
 								<li>
-									<a href="#" class="dropdown-item" data-bs-theme-value="auto"
+									<a href="#" class="dropdown-item" data-coreui-theme-value="auto"
 										aria-pressed="true">
 										<svg class="bi me-2" width="1em" height="1em">
 											<use href="#circle-half"></use>
@@ -275,7 +274,7 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<h5 id="modalConvertLabel" class="modal-title">Convert lyric</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal"
+						<button type="button" class="btn-close" data-coreui-dismiss="modal"
 							aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
@@ -309,7 +308,7 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+						<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
 							Close
 						</button>
 						<button type="button" class="btn btn-success" id="save-converted" disabled>
@@ -330,9 +329,17 @@
 			</div>
 			@yield('content')
 		</div>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-			integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-			crossorigin="anonymous"></script>
+		{{-- <footer class="footer">
+			<div>
+				<a href="https://coreui.io">CoreUI</a>
+				<span>&copy; {{date("Y")}} creativeLabs.</span>
+			</div>
+			<div>
+				<span>Powered by</span>
+				<a href="https://coreui.io">CoreUI</a>
+			</div>
+		</footer>  --}}
+		<script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.9.0/dist/js/coreui.bundle.min.js" integrity="sha384-FTek6QoTuxz6Bb078pS0kYQ0qH2LZVB5LWwZl8944mluH+TCk0q3OP4PqA+dHJRl" crossorigin="anonymous"></script>
 		<script src="https://code.jquery.com/jquery-4.0.0.min.js"
 			integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao="
 			crossorigin="anonymous"></script>

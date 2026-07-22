@@ -17,8 +17,8 @@
 						<div class="btn-group" role="group">
 							<button class="btn btn-primary download-btn" data-id="{{ $result['videoId'] }}"
 								data-artist="{{ $result['author'] }}" data-title="{{ $result['title'] }}"
-								data-duration="{{ $result['duration'] }}" data-bs-toggle="tooltip"
-								data-bs-title="Download">
+								data-duration="{{ $result['duration'] }}" data-coreui-toggle="tooltip"
+								data-coreui-title="Download">
 								<i class="fa-solid fa-download"></i>
 							</button>
 							<a href="https://www.youtube.com/watch?v={{ $result['videoId'] }}"
@@ -28,7 +28,7 @@
 									'disabled' => empty($result['videoId'])
 								])
 								@empty($result['videoId']) aria-disabled="true" @endempty
-								data-bs-toggle="tooltip" data-bs-title="View on YouTube" target="_blank">
+								data-coreui-toggle="tooltip" data-coreui-title="View on YouTube" target="_blank">
 								<i class="fa-brands fa-youtube"></i>
 							</a>
 						</div>

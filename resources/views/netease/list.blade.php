@@ -5,7 +5,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 id="modalLyricsLabel" class="modal-title">Preview lyric</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"
+				<button type="button" class="btn-close" data-coreui-dismiss="modal"
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
@@ -44,18 +44,18 @@
 				<p id="lyrics-content" style="white-space: pre-line"></p>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+				<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
 					Close
 				</button>
 				<div class="dropdown">
 					<button class="btn btn-primary dropdown-toggle" type="button"
-						data-bs-toggle="dropdown" aria-expanded="false">
+						data-coreui-toggle="dropdown" aria-expanded="false">
 						Save
 					</button>
 					<ul class="dropdown-menu">
 						<li>
-							<a class="dropdown-item" href="#" id="dl-synced" data-bs-toggle="tooltip"
-								data-bs-title="With format as shown in content">Save</a>
+							<a class="dropdown-item" href="#" id="dl-synced" data-coreui-toggle="tooltip"
+								data-coreui-title="With format as shown in content">Save</a>
 						</li>
 						<li>
 							<a class="dropdown-item" href="#" id="dl-klyric">Word by word</a>
@@ -78,10 +78,10 @@
 				$length = gmdate('i:s', round($result['duration'] / 1000, 0, PHP_ROUND_HALF_UP));
 				foreach ($result['artists'] as $ar) $artists[] = $ar['name'];
 			@endphp
-			<a class="list-group-item list-group-item-action" data-bs-toggle="modal"
-				data-bs-album="{{ $result['album']['name'] }}" data-bs-duration="{{ $length }}"
-				data-bs-title="{{ $result['name'] }}" data-bs-id="{{ $result['id'] }}"
-				data-bs-artist="{{ implode(', ', $artists) }}" href="#modalLyrics">
+			<a class="list-group-item list-group-item-action" data-coreui-toggle="modal"
+				data-coreui-album="{{ $result['album']['name'] }}" data-coreui-duration="{{ $length }}"
+				data-coreui-title="{{ $result['name'] }}" data-coreui-id="{{ $result['id'] }}"
+				data-coreui-artist="{{ implode(', ', $artists) }}" href="#modalLyrics">
 				<div class="d-flex w-100 justify-content-between">
 					<h5 class="mb-1">{{ $result['name'] }}</h5>
 					<small>{{ $length }}</small>

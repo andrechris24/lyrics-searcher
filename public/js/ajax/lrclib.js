@@ -1,4 +1,4 @@
-/* global Swal, blobDL, swalConfirm */
+/* global Swal, blobDL, swalConfirm, toast */
 let plainContents, syncedContents, wbwContents, fileName;
 const lyricsModal = document.getElementById("modalLRCLib"),
 	plainDL = document.getElementById("download-link-lrclib-plain"),
@@ -45,7 +45,7 @@ if (lyricsModal) {
 				`[length: ${songDuration.textContent}]\n${syncedLyrics}`;
 			$("#lrclib-lyric-type").text("Synced");
 		}
-		if (wbwLyrics === null || wbwLyrics === "") {
+		if (!wbwLyrics.includes('words:')) {
 			wbwDL.classList.add("disabled");
 			wbwContents = null;
 		} else {
@@ -59,6 +59,41 @@ document.addEventListener("focusin", (e) => {
 	if (e.target.closest('[class*="swal2-"]') !== null)
 		e.stopImmediatePropagation(); //Prevent modal from stealing focus
 });
+$("#basic-search-form").submit(function (event) {
+	event.preventDefault();
+	sendAjax('/lrclib/results',$("#basic-search-form").serialize(), "#basic-search-form");
+});
+$("#advanced-search-form").submit(function (event) {
+	event.preventDefault();
+	sendAjax(
+		'/lrclib/advanced/results',
+		$("#advanced-search-form").serialize(), 
+		"#advanced-search-form"
+	);
+});
+function sendAjax(url, data, form) {
+	$("#lrclib-container").html("");
+	$(":input").removeClass("is-invalid");
+	$(`${form} :input`).prop("disabled", true);
+	$("#lrclib-loader").removeClass("d-none");
+	$.ajax({
+		url: url,
+		data: data
+	}).done(function (r) {
+		$("#lrclib-container").html(r.html);
+	}).fail(function (xhr, st, err) {
+			toast.fire({
+				icon: "error",
+				text:
+					st === "timeout"
+						? "Connection timed out"
+						: (xhr.responseJSON?.message ?? err ?? st),
+			});
+	}).always(function () {
+			$(`${form} :input`).prop("disabled", false);
+			$("#lrclib-loader").addClass("d-none");
+		});
+}
 plainDL.onclick = function (e) {
 	e.preventDefault();
 	blobDL(plainContents, `${fileName}.txt`);

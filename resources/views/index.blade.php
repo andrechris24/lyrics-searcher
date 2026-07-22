@@ -72,7 +72,7 @@
 					<h5 id="modalMXLabel" class="modal-title">
 						Musixmatch Result for <span class="search-term">...</span>
 					</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"
+					<button type="button" class="btn-close" data-coreui-dismiss="modal"
 						aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
@@ -111,12 +111,12 @@
 					<p id="mx-plain-lyrics-content" style="white-space: pre-line"></p>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+					<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
 						Close
 					</button>
 					<div class="dropdown">
 						<button class="btn btn-primary dropdown-toggle" type="button"
-							data-bs-toggle="dropdown" aria-expanded="false">
+							data-coreui-toggle="dropdown" aria-expanded="false">
 							Save to Device
 						</button>
 						<ul class="dropdown-menu">
@@ -146,7 +146,7 @@
 					<h5 id="modalLyricsOVHLabel" class="modal-title">
 						Lyrics.ovh Result for <span class="search-term">...</span>
 					</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"
+					<button type="button" class="btn-close" data-coreui-dismiss="modal"
 						aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
@@ -158,7 +158,7 @@
 					<p id="lyrics-ovh-content" style="white-space: pre-line"></p>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+					<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
 						Close
 					</button>
 				</div>
@@ -174,7 +174,7 @@
 					<h5 id="modalLocalLabel" class="modal-title">
 						Local search results for <span class="search-term"></span>
 					</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"
+					<button type="button" class="btn-close" data-coreui-dismiss="modal"
 						aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
@@ -213,7 +213,7 @@
 					<p id="local-content" style="white-space: pre-line"></p>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+					<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
 						Close
 					</button>
 					<button class="btn btn-primary" type="button" id="download-link-local">

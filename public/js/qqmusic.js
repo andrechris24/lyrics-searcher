@@ -39,7 +39,7 @@ $(".list-group-item-action").on("click", function (e) {
 							if (!value) resolve("Please select lyric type to continue");
 							else resolve();
 						});
-					},
+					}
 				}).then((result) => {
 					if (result.isConfirmed && result.value) {
 						switch (result.value) {

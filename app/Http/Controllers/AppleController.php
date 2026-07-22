@@ -19,6 +19,7 @@ class AppleController extends Controller
 				"https://itunes.apple.com/search",
 				['term' => $req['query'], 'entity' => 'song']
 			)->json(null, null, JSON_THROW_ON_ERROR);
+			// return response()->json(['html'=>view('apple.result', $r)]);
 			return view('apple.result', $r);
 		} catch (ValidationException $e) {
 			return to_route('apple.index')->withInput()->withErrors($e->errors());

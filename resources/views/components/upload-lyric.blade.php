@@ -5,7 +5,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 id="modalUploadLyric" class="modal-title">Upload Lyrics</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"
+				<button type="button" class="btn-close" data-coreui-dismiss="modal"
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
@@ -24,7 +24,7 @@
 				</form>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+				<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
 					Close
 				</button>
 				<button class="btn btn-primary" type="submit" form="uploadLyricForm">

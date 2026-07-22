@@ -39,7 +39,7 @@ class QQMusicController extends Controller
 				$xmlErrors = libxml_get_errors();
 				Log::error('Invalid XML response: ' . $response->body(), $xmlErrors);
 				return to_route('qqmusic.index')->withInput()
-					->withError('Error parsing response: ' . libxml_get_last_error());
+					->withError('Error parsing results: ' . libxml_get_last_error());
 			}
 			$xml = self::decodeJson(json_encode($xmlResponse)); //Convert XML Objects to Array
 			if ($xml === false) {
@@ -49,8 +49,9 @@ class QQMusicController extends Controller
 			$data = $xml['cmd'];
 			if (!in_array($data['result'], [0, 200])) {
 				Log::error($data);
-				return to_route('qqmusic.index')->withInput()
-					->withError("QQ Music error {$data['result']}, {$data['reason']}");
+				return to_route('qqmusic.index')->withInput()->withError(
+					"Error loading results: QQ Music error {$data['result']}, {$data['reason']}"
+				);
 			}
 			return view('qqmusic.result', $data);
 		} catch (ValidationException $e) {

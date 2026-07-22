@@ -87,7 +87,7 @@ $("#searchSongLyric").on("submit", function (e) {
 						$("#lrclib-song-title").text(data.title);
 						$("#lrclib-song-album").text(data.album);
 						$("#lrclib-song-duration").text(data.duration);
-						if (data.wbw === null || data.wbw === "") {
+						if (!data.wbw.includes('words:')) {
 							wbwDL.classList.add("disabled");
 							wbwContents = null;
 						} else {
@@ -237,14 +237,6 @@ mxRichsyncDL.onclick = function (e) {
 			}
 		});
 };
-// function (e) {
-// 	e.preventDefault();
-// 	blobDL(plainContents, `${fileName}.txt`);
-// };
-// function (e) {
-// 	e.preventDefault();
-// 	blobDL(syncedContents, `${fileName}.lrc`);
-// };
 wbwDL.onclick = function (e) {
 	e.preventDefault();
 	swalConfirm

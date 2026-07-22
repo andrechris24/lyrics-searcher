@@ -4,15 +4,15 @@ const lyricsModal = document.getElementById("modalLyrics"),
 	lyricDL = document.getElementById("dl-synced"),
 	klyricDL = document.getElementById("dl-klyric");
 if (lyricsModal) {
-	lyricsModal.addEventListener("show.bs.modal", (event) => {
+	lyricsModal.addEventListener("show.coreui.modal", (event) => {
 		const button = event.relatedTarget;
 
-		// Extract info from data-bs-* attributes
-		const songName = button.getAttribute("data-bs-title"),
-			artistName = button.getAttribute("data-bs-artist"),
-			albumName = button.getAttribute("data-bs-album"),
-			songID = button.getAttribute("data-bs-id"),
-			duration = button.getAttribute("data-bs-duration");
+		// Extract info from data-coreui-* attributes
+		const songName = button.getAttribute("data-coreui-title"),
+			artistName = button.getAttribute("data-coreui-artist"),
+			albumName = button.getAttribute("data-coreui-album"),
+			songID = button.getAttribute("data-coreui-id"),
+			duration = button.getAttribute("data-coreui-duration");
 		const metaLyric =
 			`[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n` +
 			`[by: NetEase]\n[length: ${duration}]\n`;

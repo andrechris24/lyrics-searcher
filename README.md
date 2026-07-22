@@ -4,13 +4,13 @@
 
 **This repository is the source code of [hosted application](https://andrechris24.serv00.net).**
 
-> [!CAUTION]
-> There is a breaking change on LRCLib side, so all LRCLib lists shows lyrics with Word-by-Word type available despite it isn't. Update is in progress.
+<!-- > [!NOTE]
+> There is a breaking change on LRCLib side, so all LRCLib lists shows lyrics with Word-by-Word type available despite it isn't. Update is in progress. -->
 
 ## Tech Stack
 
 - Laravel 13 with PHP 8.4
-- Bootstrap 5
+- CoreUI 5
 - FontAwesome v7
 - Backpack CRUD v7
 - DataTables v2

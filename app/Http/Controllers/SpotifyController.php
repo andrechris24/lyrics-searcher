@@ -19,8 +19,9 @@ class SpotifyController extends Controller
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
 				Log::error('Spotify API error: ', $r);
-				return to_route('spotify.index')->withInput()
-					->withError('Oops, something went wrong with Spotify API. Please try again later.');
+				return to_route('spotify.index')->withInput()->withError(
+					'Oops, something went wrong while loading results. Please try again later.'
+				);
 			}
 			return view('spotify.result', ['data' => $r]);
 		} catch (ValidationException $e) {
@@ -44,20 +45,20 @@ class SpotifyController extends Controller
 			abort_if(
 				$header['status_code'] !== 200,
 				$header['status_code'],
-				parent::getMXerror($header)
+				'Error retrieving lyric: '.parent::getMXerror($header)
 			);
 			$data = $r['message']['body']['macro_calls'];
 			$tmHeader = $data['matcher.track.get']['message']['header'];
 			abort_if(
 				$tmHeader['status_code'] !== 200,
 				$tmHeader['status_code'],
-				parent::getMXDBerror($tmHeader)
+				'Error retrieving lyric: '.parent::getMXDBerror($tmHeader)
 			);
 			$tmBody = $data['matcher.track.get']['message']['body']['track'];
 			abort_if(
 				$tmBody['has_lyrics'] === 0 && $tmBody['has_subtitles'] === 0,
 				404,
-				"Found song {$tmBody['artist_name']} - {$tmBody['track_name']} but no lyric available"
+				"No lyric available for this song"
 			);
 			if ($tmBody['instrumental']) {
 				$syncedText = "[00:00.00]♪ Instrumental ♪";
@@ -72,7 +73,7 @@ class SpotifyController extends Controller
 			abort_if(
 				$plainBody['restricted'] === 1,
 				403,
-				"Lyric for song {$tmBody['artist_name']} - {$tmBody['track_name']} is restricted"
+				"Lyric for this song is restricted"
 			);
 			if ($tmBody['instrumental'] === 0) $plainText = $plainBody['lyrics_body'];
 			return response()->json([

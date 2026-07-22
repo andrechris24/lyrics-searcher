@@ -17,8 +17,8 @@ use App\Http\Controllers\YoutubeController;
 Route::view('/', 'index')->name('home');
 Route::get('result', SingleController::class)->name('result');
 Route::prefix('lrclib')->name('lrclib.')->group(function () {
-	Route::view('/', 'lrclib.index')->name('index');
-	Route::view('advanced', 'lrclib.advanced.index')->name('advanced');
+	Route::view('/', 'lrclib.basic')->name('index');
+	Route::view('advanced', 'lrclib.advanced')->name('advanced');
 	Route::controller(LRCLibController::class)->group(function () {
 		Route::name('search')->group(function () {
 			Route::get('results', 'standard');

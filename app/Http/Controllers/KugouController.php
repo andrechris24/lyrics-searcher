@@ -27,8 +27,9 @@ class KugouController extends Controller
 				])->json(null, null, JSON_THROW_ON_ERROR);
 			if (!in_array($r['errcode'], [0, 200])) {
 				Log::error($r);
-				return to_route('kugou.index')->withInput()
-					->withError("Kugou Music error {$r['errcode']}: {$r['error']}");
+				return to_route('kugou.index')->withInput()->withError(
+					"Error loading results: Kugou Music error {$r['errcode']}: {$r['error']}"
+				);
 			}
 			$data = $r['data'];
 			return view('kugou.result', compact('data'));
@@ -48,7 +49,10 @@ class KugouController extends Controller
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['errcode'] !== 200) {
 				Log::error($r);
-				abort($r['errcode'], "Kugou Music error {$r['errcode']}: {$r['errmsg']}");
+				abort(
+					$r['errcode'], 
+					"Error loading list: Kugou Music error {$r['errcode']}: {$r['errmsg']}"
+				);
 			}
 			return response()->json($r['candidates']);
 		} catch (ConnectionException | JsonException | RequestException $th) {
@@ -75,8 +79,9 @@ class KugouController extends Controller
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if (!in_array($r['errcode'], [0, 200])) {
 				Log::error($r);
-				return to_route('kugou.advanced')->withInput()
-					->withError("Kugou Music error {$r['errcode']}: {$r['error']}");
+				return to_route('kugou.advanced')->withInput()->withError(
+					"Error loading results: Kugou Music error {$r['errcode']}: {$r['error']}"
+				);
 			}
 			$data = $r['candidates'];
 			return view('kugou.advanced.result', compact('data'));
@@ -99,7 +104,10 @@ class KugouController extends Controller
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['status'] !== 200) {
 				Log::error($r);
-				abort($r['status'], "Kugou Music error {$r['error_code']}: {$r['info']}");
+				abort(
+					$r['status'], 
+					"Error retrieving lyric: Kugou Music error {$r['error_code']}: {$r['info']}"
+				);
 			}
 			if ($r['fmt'] !== 'krc') $context = $r['content'];
 			else {
@@ -121,9 +129,8 @@ class KugouController extends Controller
 	public function aimp(string $hash)
 	{
 		try {
-			$r = Http::retry(2, 100)->timeout(25000)->withHeaders([
-				'User-Agent' => Request::userAgent()
-			])->get(parent::$paxsenix_url . 'kugou/lyrics', ['id' => $hash])
+			$r = Http::retry(2, 100)->timeout(25000)
+				->get(parent::$paxsenix_url . 'kugou/lyrics', ['id' => $hash])
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['status'] !== 200) {
 				Log::error($r);

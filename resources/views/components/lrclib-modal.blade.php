@@ -6,7 +6,7 @@
 			<div class="modal-header">
 				<h5 id="modalLRCLibLabel" class="modal-title">{{ $text }}<span
 						class="search-term"></span></h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"
+				<button type="button" class="btn-close" data-coreui-dismiss="modal"
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
@@ -45,12 +45,12 @@
 				<p id="lrclib-content" style="white-space: pre-line"></p>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+				<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
 					Close
 				</button>
 				<div class="dropdown">
 					<button class="btn btn-primary dropdown-toggle" type="button"
-						data-bs-toggle="dropdown" aria-expanded="false">
+						data-coreui-toggle="dropdown" aria-expanded="false">
 						Save
 					</button>
 					<ul class="dropdown-menu">

@@ -7,7 +7,7 @@
 				<h5 id="modalLyricsLabel" class="modal-title">
 					Select lyrics for <span id="lrc-query">...</span>
 				</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"
+				<button type="button" class="btn-close" data-coreui-dismiss="modal"
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
@@ -23,7 +23,7 @@
 				</table>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+				<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
 					Close
 				</button>
 			</div>
@@ -36,9 +36,9 @@
 		result(s), showing 20 results per page</p>
 	<div class="list-group px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-5 pb-5">
 		@foreach ($data['info'] as $result)
-			<a class="list-group-item list-group-item-action" data-bs-toggle="modal"
-				href="#modalLyrics" data-bs-hash="{{ $result['hash'] }}"
-				data-bs-query="{{ str_replace("\u{3001}", ', ', $result['filename']) }}">
+			<a class="list-group-item list-group-item-action" data-coreui-toggle="modal"
+				href="#modalLyrics" data-coreui-hash="{{ $result['hash'] }}"
+				data-coreui-query="{{ str_replace("\u{3001}", ', ', $result['filename']) }}">
 				<div class="d-flex w-100 justify-content-between">
 					<h5 class="mb-1">{{ $result['songname'] }}</h5>
 					<small>{{ gmdate('i:s', $result['duration']) }}</small>

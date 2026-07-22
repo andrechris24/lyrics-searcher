@@ -3,20 +3,21 @@ let dt_local;
 const lyricsModal = document.getElementById("modalLocalFile");
 $.fn.dataTable.ext.errMode = "none";
 if (lyricsModal) {
-	lyricsModal.addEventListener("show.bs.modal", (e) => {
+	lyricsModal.addEventListener("show.coreui.modal", (e) => {
 		const btn = e.relatedTarget;
-		const songName = btn.getAttribute("data-bs-title"),
-			artistName = btn.getAttribute("data-bs-artist"),
-			albumName = btn.getAttribute("data-bs-album"),
-			duration = btn.getAttribute("data-bs-duration"),
-			content = btn.getAttribute("data-bs-content"),
-			user = btn.getAttribute("data-bs-user"),
-			upload = btn.getAttribute("data-bs-upload"),
-			offset=btn.getAttribute("data-bs-offset");
+		const songName = btn.getAttribute("data-coreui-title"),
+			artistName = btn.getAttribute("data-coreui-artist"),
+			albumName = btn.getAttribute("data-coreui-album"),
+			duration = btn.getAttribute("data-coreui-duration"),
+			content = btn.getAttribute("data-coreui-content"),
+			user = btn.getAttribute("data-coreui-user"),
+			upload = btn.getAttribute("data-coreui-upload"),
+			offset = btn.getAttribute("data-coreui-offset");
 		$("#local-song-title").text(songName);
 		$("#local-song-artist").text(artistName);
 		$("#local-song-album").text(albumName);
-		$("#local-song-duration").text(offset===0?duration:`${duration} (${offset/1000})`);
+		$("#local-song-duration")
+			.text(offset === 0 ? duration : `${duration} (${offset / 1000})`);
 		$("#local-uploader").text(user);
 		$("#local-song-upload").text(upload);
 		$("#local-content").text(content);
@@ -94,18 +95,18 @@ $(document)
 								length = formatSeconds(full["duration"]);
 							return (
 								'<div class="btn-group btn-group-sm">' +
-								'<button type="button" class="btn btn-info" data-bs-toggle="modal"' +
-								`data-bs-target="#modalLocalFile" data-bs-album="${full["album"]??'-'}"` +
-								`data-bs-duration="${length}" data-bs-title="${full["title"]}"` +
-								`data-bs-artist="${full["artist"]}" data-bs-content="${data}"`+
-								`data-bs-upload="${create}" data-bs-offset="${full["offset"]}"` +
-								`data-bs-user="${full["user"]?full["user"]["name"] : "Guest"}">` +
+								'<button type="button" class="btn btn-info" data-coreui-toggle="modal"' +
+								`data-coreui-target="#modalLocalFile" data-coreui-album="${full["album"] ?? "-"}"` +
+								`data-coreui-duration="${length}" data-coreui-title="${full["title"]}"` +
+								`data-coreui-artist="${full["artist"]}" data-coreui-content="${data}"` +
+								`data-coreui-upload="${create}" data-coreui-offset="${full["offset"]}"` +
+								`data-coreui-user="${full["user"] ? full["user"]["name"] : "Guest"}">` +
 								'<i class="fa-solid fa-eye"></i></button>' +
 								'<button type="button" class="btn btn-primary btn-sm dl-button"' +
-								`data-album="${full["album"]??'-'}" data-title="${full["title"]}"` +
+								`data-album="${full["album"] ?? "-"}" data-title="${full["title"]}"` +
 								`data-artist="${full["artist"]}" data-id="${full["id"]}"` +
 								`data-duration="${length}" data-content="${data}"` +
-								`data-user="${full["user"]?full["user"]["name"] : "Guest"}"`+
+								`data-user="${full["user"] ? full["user"]["name"] : "Guest"}"` +
 								`data-offset="${full["offset"]}">` +
 								'<i class="fa-solid fa-download"></i>' +
 								"</button></div>"

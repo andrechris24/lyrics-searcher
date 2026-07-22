@@ -7,15 +7,15 @@ const lyricsModal = document.getElementById("modalLyrics"),
 	previewModal = document.getElementById("modalPreviewSong"),
 	player = $("#preview-player");
 if (lyricsModal) {
-	lyricsModal.addEventListener("show.bs.modal", (event) => {
+	lyricsModal.addEventListener("show.coreui.modal", (event) => {
 		const button = event.relatedTarget;
 
-		// Extract info from data-bs-* attributes
-		const songName = button.getAttribute("data-bs-title"),
-			artistName = button.getAttribute("data-bs-artist"),
-			albumName = button.getAttribute("data-bs-album"),
-			songID = button.getAttribute("data-bs-id"),
-			duration = button.getAttribute("data-bs-duration");
+		// Extract info from data-coreui-* attributes
+		const songName = button.getAttribute("data-coreui-title"),
+			artistName = button.getAttribute("data-coreui-artist"),
+			albumName = button.getAttribute("data-coreui-album"),
+			songID = button.getAttribute("data-coreui-id"),
+			duration = button.getAttribute("data-coreui-duration");
 
 		// Update the modal's content
 		$("#song-album").text(albumName);
@@ -47,7 +47,8 @@ if (lyricsModal) {
 						$("#dl-syllyric").removeClass("disabled");
 						$("#song-lyric-type").text("Syllable");
 						sylLyricContent = `${metaLyric}${data.synced}`;
-						syncedLyricContents = `${metaLyric}${data.synced.replace(/<(\d+):(\d+).(\d+)>/g, "")}`;
+						syncedLyricContents = 
+							`${metaLyric}${data.synced.replace(/<(\d+):(\d+).(\d+)>/g, "")}`;
 					} else {
 						$("#dl-syllyric").addClass("disabled");
 						$("#song-lyric-type").text("Synced");
@@ -81,13 +82,13 @@ if (lyricsModal) {
 	});
 }
 if (previewModal) {
-	previewModal.addEventListener("show.bs.modal", function (e) {
+	previewModal.addEventListener("show.coreui.modal", function (e) {
 		const attr = e.relatedTarget;
-		const songName = attr.getAttribute("data-bs-title"),
-			artistName = attr.getAttribute("data-bs-artist"),
-			albumName = attr.getAttribute("data-bs-album"),
-			songLink = attr.getAttribute("data-bs-link"),
-			duration = attr.getAttribute("data-bs-duration");
+		const songName = attr.getAttribute("data-coreui-title"),
+			artistName = attr.getAttribute("data-coreui-artist"),
+			albumName = attr.getAttribute("data-coreui-album"),
+			songLink = attr.getAttribute("data-coreui-link"),
+			duration = attr.getAttribute("data-coreui-duration");
 		$("#preview-album").text(albumName);
 		$("#preview-duration").text(duration);
 		$("#preview-title").text(songName);
@@ -97,7 +98,7 @@ if (previewModal) {
 		player[0].load();
 		player[0].oncanplaythrough = player[0].play();
 	});
-	previewModal.addEventListener("hidden.bs.modal", function () {
+	previewModal.addEventListener("hidden.coreui.modal", function () {
 		player[0].pause();
 	});
 }

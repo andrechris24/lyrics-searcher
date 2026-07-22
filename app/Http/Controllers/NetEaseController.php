@@ -29,7 +29,7 @@ class NetEaseController extends Controller
 			if ($r['code'] !== 200) {
 				Log::error($r);
 				return to_route('netease.index')->withInput()
-					->withError("NetEase Music HTTP Error {$r['code']}");
+					->withError("Error loading results: NetEase Music HTTP Error {$r['code']}");
 			}
 			$data = $r['result'];
 			return view('netease.result', compact('data'));
@@ -49,7 +49,10 @@ class NetEaseController extends Controller
 				)->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['code'] !== 200) {
 				Log::error($r);
-				abort($r['code'], "NetEase Music HTTP Error {$r['code']}");
+				abort(
+					$r['code'], 
+					"Error retrieving lyric: NetEase Music HTTP Error {$r['code']}"
+				);
 			}
 			abort_if(
 				array_key_exists('needDesc', $r),
