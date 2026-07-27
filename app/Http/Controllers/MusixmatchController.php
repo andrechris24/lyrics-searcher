@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\{Http, Log, Session};
-use Illuminate\Validation\ValidationException;
 use JsonException;
 use Stevebauman\Location\Facades\Location;
 
@@ -68,11 +67,11 @@ class MusixmatchController extends Controller
 					->withError('Error loading results: ' . parent::getMXerror($header));
 			}
 			$data = $r['message']['body']['track_list'];
-			return view('musixmatch.result', compact('data', 'header'));
-		} catch (ValidationException $e) {
-			return to_route('musixmatch.index')->withInput()->withErrors($e->errors());
-		} catch (ConnectionException | JsonException | \Exception $th) {
-			return to_route('musixmatch.index')->withInput()->withErrors(self::matchError($th));
+			return response()->json(
+				['html' => view('musixmatch.list', compact('data', 'header'))->render()]
+			);
+		} catch (ConnectionException | JsonException $th) {
+			abort(500, self::matchError($th));
 		}
 	}
 	public function advanced(Request $req)
@@ -100,47 +99,54 @@ class MusixmatchController extends Controller
 					->withError('Error loading results: ' . parent::getMXerror($header));
 			}
 			$data = $r['message']['body']['track_list'];
-			return view('musixmatch.advanced.result', compact('data', 'header'));
-		} catch (ValidationException $e) {
-			return to_route('musixmatch.advanced')->withInput()->withErrors($e->errors());
-		} catch (ConnectionException | JsonException | \Exception $th) {
-			return to_route('musixmatch.advanced')->withInput()->withError(self::matchError($th));
+			return response()->json([
+				'html' => view('musixmatch.list', compact('data', 'header'))->render()
+			]);
+		} catch (ConnectionException | JsonException $th) {
+			abort(500, self::matchError($th));
 		}
 	}
-	public function charts(string $type)
+	public function charts(Request $req)
 	{
-		if (!in_array($type, ['top', 'hot', 'mxmweekly', 'mxmweekly_new'])) {
-			return to_route('musixmatch.index')
-				->withError('Unrecognized parameter for Musixmatch Chart');
-		}
+		$req->validate(['chart' => 'in:top,hot,mxmweekly,mxmweekly_new']);
 		self::generateToken();
 		$query = self::$query;
 		$query['usertoken'] = Session::get('mx_token');
-		$query['chart_name'] = $type;
-		$typeName = match ($type) {
-			'top' => 'Top Charts',
+		$query['chart_name'] = $req['chart'];
+		$typeName = match ($req['chart']) {
+			'top' => 'Top Songs',
 			'hot' => 'Popular Lyrics',
-			'mxmweekly' => 'Weekly Charts',
+			'mxmweekly' => 'Weekly',
 			'mxmweekly_new' => 'New Releases',
 			default => null
 		};
-		if ($position = Location::get()) $query['country'] = $position->countryCode;
-		else if ($type !== 'top') $query['country'] = 'xw';
+		if ($req['worldwide'] === 'on' && $req['chart'] !== 'top') {
+			$query['country'] = 'xw';
+			$country = 'Worldwide';
+		} else if ($position = Location::get()) {
+			$query['country'] = $position->countryCode;
+			$country = $position->countryName;
+		} else {
+			Log::warning('Failed to locate country for IP ' . $req->ip());
+			$query['country'] = 'id';
+			$country = 'Indonesia (Failed to retrieve your country)';
+		}
 		try {
 			$r = Http::retry(2, 5000, throw: false)->timeout(25000)
 				->withHeaders(self::MX_HEADER)->get(self::$url . 'chart.tracks.get', $query)
 				->json(null, null, JSON_THROW_ON_ERROR);
 			$header = $r['message']['header'];
-			if ($header['status_code'] !== 200) {
-				return to_route('musixmatch.index')
-					->withError('Error loading charts: ' . parent::getMXerror($header));
-			}
+			abort_if(
+				$header['status_code'] !== 200,
+				$header['status_code'],
+				'Error loading charts: ' . parent::getMXerror($header)
+			);
 			$data = $r['message']['body']['track_list'];
-			return view('musixmatch.chart', compact('data', 'header', 'position', 'typeName'));
-		} catch (ValidationException $e) {
-			return to_route('musixmatch.index')->withErrors($e->errors());
-		} catch (ConnectionException | JsonException | \Exception $th) {
-			return to_route('musixmatch.index')->withError(self::matchError($th));
+			return response()->json([
+				'html' => view('musixmatch.list', compact('data', 'header', 'country', 'typeName'))->render()
+			]);
+		} catch (ConnectionException | JsonException $th) {
+			abort(500, self::matchError($th));
 		}
 	}
 	public function get(int $id, string $type)
@@ -164,7 +170,7 @@ class MusixmatchController extends Controller
 			abort_if(
 				$header['status_code'] !== 200,
 				$header['status_code'],
-				'Error retrieving lyric: '.parent::getMXerror($header)
+				'Error retrieving lyric: ' . parent::getMXerror($header)
 			);
 			$data = $r['message']['body'][$type];
 			abort_if($data['restricted'] === true, 403, 'This lyric is restricted');
@@ -211,8 +217,10 @@ class MusixmatchController extends Controller
 					$word['c']
 				);
 			}
-			//Evade MiniLyrics bug
-			$richsync .= sprintf("<%s> \n", parent::formatTime($line['te']));
+			$richsync .= sprintf(
+				env('MINILYRICS_COMPATIBLE') ? "<%s> \n" : "<%s>\n",
+				parent::formatTime($line['te'])
+			);
 			$prevtime = $line['te'];
 			if ($idx === count($lrc) - 1)
 				$richsync .= sprintf("[%s]\n", parent::formatTime($line['te'] + 5));
@@ -231,7 +239,7 @@ class MusixmatchController extends Controller
 			abort_if(
 				$header['status_code'] !== 200,
 				$header['status_code'],
-				'Error retrieving token: '.parent::getMXerror($header)
+				'Error retrieving token: ' . parent::getMXerror($header)
 			);
 			$body = $r['message']['body'];
 			if (array_key_exists('user_token', $body)) {

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Http, Log};
 use Illuminate\Http\Client\{ConnectionException, RequestException};
-use Illuminate\Validation\ValidationException;
 use JsonException;
 
 class YoutubeController extends Controller
@@ -18,15 +17,18 @@ class YoutubeController extends Controller
 				->get(parent::$paxsenix_url . 'youtube/search', ['q' => $req['query']])->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
 				Log::error('YouTube API error: ', $r);
-				return to_route('youtube.index')->withInput()->withError(
+				abort(
+					500,
 					'Oops, something went wrong while loading results. Please try again later.'
 				);
 			}
-			return view('youtube.result', ['data' => $r]);
-		} catch (ValidationException $e) {
-			return to_route('youtube.index')->withInput()->withErrors($e->errors());
-		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			return to_route('youtube.index')->withInput()->withError(self::matchError($th));
+			return response()
+				->json(['html' => view('youtube.list', ['data' => $r])->render()]);
+		} catch (ConnectionException | JsonException | RequestException $th) {
+			abort(
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
+				self::matchError($th)
+			);
 		}
 	}
 	public function get(string $id)

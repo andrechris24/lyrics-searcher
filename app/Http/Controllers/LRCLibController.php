@@ -50,7 +50,6 @@ class LRCLibController extends Controller
 		$prevtime = 0;
 		try {
 			$yaml = Yaml::parse($req['content']);
-			abort_if(empty($yaml['lines']), 404, 'No lyric lines exist in the content');
 			$meta = [
 				'ti' => $yaml['metadata']['title'],
 				'ar' => $yaml['metadata']['artist'],
@@ -65,7 +64,6 @@ class LRCLibController extends Controller
 				$lyricsfile .= sprintf("[%s: %s]\n", $key, $value);
 			}
 			foreach ($yaml['lines'] as $idx => $line) {
-				// abort_if(empty($line['words']), 404, 'No word-by-word lyric available');
 				if ($idx === 0) {
 					if ($line['start_ms'] > 3000)
 						$lyricsfile .= "[" . parent::formatTime(($line['start_ms'] - mt_rand(2500, 3000)) / 1000) . "]";
@@ -86,8 +84,10 @@ class LRCLibController extends Controller
 				}
 				if (array_key_exists('end_ms', $line)) {
 					$prevtime = $line['end_ms'];
-					$lyricsfile .= sprintf("<%s> \n", parent::formatTime($line['end_ms'] / 1000));
-					//^Trailing space to evade MiniLyrics bug^
+					$lyricsfile .= sprintf(
+						env("MINILYRICS_COMPATIBLE")?"<%s> \n":"<%s>\n", 
+						parent::formatTime($line['end_ms'] / 1000)
+					);
 				} else $lyricsfile .= "\n";
 			}
 			return response()->json([

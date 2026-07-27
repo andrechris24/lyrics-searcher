@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Http, Log};
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class QQMusicController extends Controller
 {
@@ -16,18 +15,14 @@ class QQMusicController extends Controller
 	public function search(Request $req)
 	{
 		try {
-			$req->validate([
-				'artist' => 'nullable',
-				'title' => 'required',
-				'offset' => 'nullable|integer|min:0|multiple_of:20'
-			]);
+			$req->validate(['artist' => 'nullable', 'title' => 'required']);
 			$response = Http::retry(3, 100)->timeout(25000)->withHeaders(self::QQ_HEADER)
 				->get(self::$url . 'lyric/fcgi-bin/fcg_search_pc_lrc.fcg', [
 					'SONGNAME' => $req['title'],
 					'SINGERNAME' => $req['artist'],
 					'TYPE' => 2,
-					'RANGE_MIN' => ($req['offset'] ?? 0) + 1,
-					'RANGE_MAX' => 20 + ($req['offset'] ?? 0)
+				'RANGE_MIN' => 1,
+				'RANGE_MAX' => 50
 				]);
 			libxml_use_internal_errors(true);
 			$xmlResponse = simplexml_load_string(
@@ -38,26 +33,28 @@ class QQMusicController extends Controller
 			if ($xmlResponse === false) {
 				$xmlErrors = libxml_get_errors();
 				Log::error('Invalid XML response: ' . $response->body(), $xmlErrors);
-				return to_route('qqmusic.index')->withInput()
-					->withError('Error parsing results: ' . libxml_get_last_error());
+				abort(500, 'Error parsing results: ' . json_encode(libxml_get_last_error()));
 			}
 			$xml = self::decodeJson(json_encode($xmlResponse)); //Convert XML Objects to Array
-			if ($xml === false) {
-				return to_route('qqmusic.index')->withInput()
-					->withError('Oops, an error occurred while reading QQ Music response.');
-			}
+			abort_if(
+				$xml === false,
+				500,
+				'Oops, an error occurred while reading QQ Music response.'
+			);
 			$data = $xml['cmd'];
 			if (!in_array($data['result'], [0, 200])) {
 				Log::error($data);
-				return to_route('qqmusic.index')->withInput()->withError(
+				abort(
+					500,
 					"Error loading results: QQ Music error {$data['result']}, {$data['reason']}"
 				);
 			}
-			return view('qqmusic.result', $data);
-		} catch (ValidationException $e) {
-			return to_route('qqmusic.index')->withInput()->withErrors($e->errors());
-		} catch (ConnectionException  | RequestException | \Exception $th) {
-			return to_route('qqmusic.index')->withInput()->withError(self::matchError($th));
+			return response()->json(['html' => view('qqmusic.list', $data)->render()]);
+		} catch (ConnectionException  | RequestException $th) {
+			abort(
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
+				self::matchError($th)
+			);
 		}
 	}
 	public function get(int $id)
@@ -96,7 +93,10 @@ class QQMusicController extends Controller
 				$lyricXml = $decoder->decode($data['lyric']['content']);
 				$lyricXml = Str::between($lyricXml, 'LyricContent="', "\"/>\n");
 				abort_if(empty($lyricXml), 404, 'Empty lyric, download aborted');
-				$lyric = Str::replace(">\n", "> \n", parent::qrcToLrc($lyricXml), false);
+				$lyric = 
+					env('MINILYRICS_COMPATIBLE')?
+						Str::replace(">\n", "> \n", parent::qrcToLrc($lyricXml), false):
+						parent::qrcToLrc($lyricXml);
 				//^Trailing space to evade MiniLyrics bug^
 			} else {
 				if (is_array($data['lyric']['content'])) {

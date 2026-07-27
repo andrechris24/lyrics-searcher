@@ -1,13 +1,12 @@
-<form action="{{ route($provider . '.search') }}" id="basic-search-form" class="row g-3 mb-3">
+<form action="#" id="basic-search-form" class="row g-3 mb-3">
 	<div class="input-group input-group-lg">
 		<span class="input-group-text">
 			<i class="fa-solid fa-magnifying-glass"></i>
 		</span>
 		<div class="form-floating">
 			<input type="search" name="query" placeholder="Enter search query here..."
-				class="form-control form-control-lg @error('query') is-invalid @enderror "
-				value="{{ request('query') ?? old('query') }}" id="basic-search-query" required
-				@empty(request('query')) autofocus @endempty>
+				class="form-control form-control-lg" value="{{ request('query') ?? old('query') }}"
+				id="basic-search-query" required autofocus>
 			<label for="basic-search-query">Search query</label>
 		</div>
 		<button type="submit" class="btn btn-primary">Search</button>

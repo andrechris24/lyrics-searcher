@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Http, Log};
-use Illuminate\Validation\ValidationException;
 use JsonException;
 
 class NetEaseController extends Controller
@@ -28,15 +27,15 @@ class NetEaseController extends Controller
 				])->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['code'] !== 200) {
 				Log::error($r);
-				return to_route('netease.index')->withInput()
-					->withError("Error loading results: NetEase Music HTTP Error {$r['code']}");
+				abort($r['code'], "Error loading results: NetEase Music HTTP Error {$r['code']}");
 			}
 			$data = $r['result'];
-			return view('netease.result', compact('data'));
-		} catch (ValidationException $e) {
-			return to_route('netease.index')->withInput()->withErrors($e->errors());
-		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			return to_route('netease.index')->withInput()->withError(self::matchError($th));
+			return response()->json(['html' => view('netease.list', compact('data'))->render()]);
+		} catch (ConnectionException | JsonException | RequestException $th) {
+			abort(
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
+				self::matchError($th)
+			);
 		}
 	}
 	public function get(int $id)
@@ -50,7 +49,7 @@ class NetEaseController extends Controller
 			if ($r['code'] !== 200) {
 				Log::error($r);
 				abort(
-					$r['code'], 
+					$r['code'],
 					"Error retrieving lyric: NetEase Music HTTP Error {$r['code']}"
 				);
 			}

@@ -16,8 +16,9 @@ if (lyricsModal) {
 		$("#local-song-title").text(songName);
 		$("#local-song-artist").text(artistName);
 		$("#local-song-album").text(albumName);
-		$("#local-song-duration")
-			.text(offset === 0 ? duration : `${duration} (${offset / 1000})`);
+		$("#local-song-duration").text(
+			offset == 0 ? duration : `${duration} (${offset / 1000})`
+		);
 		$("#local-uploader").text(user);
 		$("#local-song-upload").text(upload);
 		$("#local-content").text(content);
@@ -30,18 +31,18 @@ $(document)
 				processing: true,
 				responsive: true,
 				serverSide: true,
-				// stateSave: true,
 				ajax: {
 					url: "/local/data",
 					method: "GET",
 					headers: null,
 					error: function (xhr, st, err) {
+						console.warn(err);
 						toast.fire({
 							icon: "error",
 							text:
 								st === "timeout"
 									? "Connection timed out"
-									: (xhr.responseJSON?.message ?? err ?? st)
+									: (xhr.responseJSON?.message ?? "Server connection was lost")
 						});
 					}
 				},
@@ -58,8 +59,8 @@ $(document)
 				columnDefs: [
 					{
 						target: 2,
-						render: function(data){
-							if(data===''||data===null) return '-';
+						render: function (data) {
+							if (data === "" || data === null) return "-";
 							return data;
 						}
 					},
@@ -70,10 +71,11 @@ $(document)
 							if (full["offset"] === 0) return formatSeconds(data);
 							return `${formatSeconds(data)} (${full["offset"] > 0 ? "+" : ""}${full["offset"] / 1000})`;
 						}
-					},{
+					},
+					{
 						target: 4,
-						render: function(data){
-							if(data===''||data===null) return 'Guest';
+						render: function (data) {
+							if (data === "" || data === null) return "Guest";
 							return data;
 						}
 					},
@@ -147,8 +149,14 @@ $(document)
 					confirmButtonText: "Yes",
 					denyButtonText: "No"
 				}).then((result) => {
-					if (result.isConfirmed) blobDL(meta + content, fileName + ext);
-					else if (result.isDenied) {
+					if (result.isConfirmed) {
+						blobDL(
+							meta + $('meta[name="minilyrics-compatibility"]').attr("content")==true?
+								content.replaceAll('>\n','> \n'):
+								content, 
+							fileName + ext
+						);
+					} else if (result.isDenied) {
 						const plainContent = content.replace(/<(\d+):(\d+).(\d+)>/g, "");
 						blobDL(`${fileName}\n\n${plainContent}`, fileName + ext);
 					} else console.warn("Download cancelled");
@@ -181,9 +189,13 @@ $("#uploadLyricForm").on("submit", function (e) {
 			$("#uploadLyricForm")[0].reset();
 		},
 		error: function (xhr, st, err) {
+			console.warn(err);
 			toast.fire({
 				icon: "error",
-				text: xhr.responseJSON?.message ?? err ?? st
+				text:
+					st === "timeout"
+						? "Connection timed out"
+						: (xhr.responseJSON?.message ?? "Server connection was lost")
 			});
 		}
 	});

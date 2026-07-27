@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Log, Http};
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 use JsonException;
 
 class AppleController extends Controller
@@ -19,12 +18,12 @@ class AppleController extends Controller
 				"https://itunes.apple.com/search",
 				['term' => $req['query'], 'entity' => 'song']
 			)->json(null, null, JSON_THROW_ON_ERROR);
-			// return response()->json(['html'=>view('apple.result', $r)]);
-			return view('apple.result', $r);
-		} catch (ValidationException $e) {
-			return to_route('apple.index')->withInput()->withErrors($e->errors());
-		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			return to_route('apple.index')->withInput()->withError(self::matchError($th));
+			return response()->json(['html' => view('apple.list', $r)->render()]);
+		} catch (ConnectionException | JsonException | RequestException $th) {
+			abort(
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
+				self::matchError($th)
+			);
 		}
 	}
 	public function get(int $id)
@@ -41,8 +40,8 @@ class AppleController extends Controller
 				'id' => $id,
 				'plain' => $r['plain'],
 				'synced' => $r['lrc'],
-				'syllable' => Str::replace(">\n", "> \n", $r['elrc'], false), //Evade MiniLyrics bug
-				'multisyl' => Str::replace(">\n", "> \n", $r['elrcMultiPerson'], false),
+				'syllable' => env('MINILYRICS_COMPATIBLE')?Str::replace(">\n", "> \n", $r['elrc'], false):$r['elrc'],
+				'multisyl' => env('MINILYRICS_COMPATIBLE')?Str::replace(">\n", "> \n", $r['elrcMultiPerson'], false):$r['elrcMultiPerson'],
 				'ttml' => $r['ttmlContent'],
 				'type' => $r['type'],
 				'writers' => implode(', ', $r['metadata']['songwriters']),
@@ -61,7 +60,7 @@ class AppleController extends Controller
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "Apple Music connection error {$ex->getCode()}: {$ex->getMessage()}",
-			RequestException::class => $ex->response->status() === 404 ? 'No lyric available for this song' : "Apple Music HTTP Error {$ex->response->status()}",
+			RequestException::class => $ex->response->status() === 404 ? 'No result or lyrics' : "Apple Music HTTP Error {$ex->response->status()}",
 			default => "Apple Music unexpected error: {$ex->getMessage()}"
 		};
 	}

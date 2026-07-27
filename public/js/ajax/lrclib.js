@@ -1,4 +1,4 @@
-/* global Swal, blobDL, swalConfirm, toast */
+/* global Swal, blobDL, swalConfirm, toast, basicForm, advancedForm */
 let plainContents, syncedContents, wbwContents, fileName;
 const lyricsModal = document.getElementById("modalLRCLib"),
 	plainDL = document.getElementById("download-link-lrclib-plain"),
@@ -45,7 +45,7 @@ if (lyricsModal) {
 				`[length: ${songDuration.textContent}]\n${syncedLyrics}`;
 			$("#lrclib-lyric-type").text("Synced");
 		}
-		if (!wbwLyrics.includes('words:')) {
+		if (!wbwLyrics.includes("words:")) {
 			wbwDL.classList.add("disabled");
 			wbwContents = null;
 		} else {
@@ -54,43 +54,59 @@ if (lyricsModal) {
 			$("#lrclib-lyric-type").text("Word-by-word");
 		}
 	});
-}
+} else console.warn("No lyrics list modal found");
 document.addEventListener("focusin", (e) => {
 	if (e.target.closest('[class*="swal2-"]') !== null)
 		e.stopImmediatePropagation(); //Prevent modal from stealing focus
 });
-$("#basic-search-form").submit(function (event) {
+$(basicForm).submit(function (event) {
 	event.preventDefault();
-	sendAjax('/lrclib/results',$("#basic-search-form").serialize(), "#basic-search-form");
+	sendAjax("/lrclib/results", $(basicForm).serialize());
 });
-$("#advanced-search-form").submit(function (event) {
+$(advancedForm).submit(function (event) {
 	event.preventDefault();
-	sendAjax(
-		'/lrclib/advanced/results',
-		$("#advanced-search-form").serialize(), 
-		"#advanced-search-form"
-	);
+	sendAjax("/lrclib/advanced/results", $(advancedForm).serialize());
 });
-function sendAjax(url, data, form) {
+function sendAjax(url, data) {
 	$("#lrclib-container").html("");
-	$(":input").removeClass("is-invalid");
-	$(`${form} :input`).prop("disabled", true);
+	$("form :input").prop("disabled", true);
 	$("#lrclib-loader").removeClass("d-none");
 	$.ajax({
 		url: url,
 		data: data
-	}).done(function (r) {
-		$("#lrclib-container").html(r.html);
-	}).fail(function (xhr, st, err) {
-			toast.fire({
-				icon: "error",
-				text:
-					st === "timeout"
-						? "Connection timed out"
-						: (xhr.responseJSON?.message ?? err ?? st),
-			});
-	}).always(function () {
-			$(`${form} :input`).prop("disabled", false);
+	})
+		.done(function (r) {
+			$("#lrclib-container").html(r.html);
+		})
+		.fail(function (xhr, st, err) {
+			console.warn(err);
+			try {
+				if (xhr.status === 422) {
+					if (typeof xhr.responseJSON.errors.title !== "undefined")
+						$("#track-name").addClass("is-invalid");
+					if (typeof xhr.responseJSON.errors.artist !== "undefined")
+						$("#artist-name").addClass("is-invalid");
+					if (typeof xhr.responseJSON.errors.album !== "undefined")
+						$("#album-name").addClass("is-invalid");
+					if (typeof xhr.responseJSON.errors.query !== "undefined")
+						$("#basic-search-query").addClass("is-invalid");
+				}
+				toast.fire({
+					icon: "error",
+					text:
+						st === "timeout"
+							? "Connection timed out"
+							: (xhr.responseJSON?.message ?? "Server connection was lost")
+				});
+			} catch (e) {
+				console.error(e);
+				toast.fire({
+					icon: "error",
+					text: "An error occurred while marking input errors. Please report to developer."
+				});
+			}
+		})
+		.always(function () {
 			$("#lrclib-loader").addClass("d-none");
 		});
 }
@@ -128,14 +144,17 @@ wbwDL.onclick = function (e) {
 							return JSON.stringify(data);
 						},
 						error: function (xhr, st, err) {
-							throw new Error(xhr.responseJSON?.message ?? err ?? st);
+							console.warn(err);
+							throw new Error(
+								xhr.responseJSON?.message ?? "Server connection was lost"
+							);
 						}
 					});
 					return response;
 				} catch (e) {
 					console.warn(e);
 					Swal.showValidationMessage(
-						`Failed to convert: ${e.responseJSON?.message ?? "Server connection was lost"}`
+						`Failed to convert: ${e.responseJSON?.message ?? "Connection lost or timed out"}`
 					);
 				}
 			}

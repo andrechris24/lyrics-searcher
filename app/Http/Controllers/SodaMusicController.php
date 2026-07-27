@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Http, Log};
-use Illuminate\Validation\ValidationException;
 use JsonException;
 
 class SodaMusicController extends Controller
@@ -29,11 +28,14 @@ class SodaMusicController extends Controller
 					'search_method' => 'input'
 				])->json(null, null, JSON_THROW_ON_ERROR);
 			$data = $r['result_groups'][0];
-			return view('sodamusic.result', compact('data'));
-		} catch (ValidationException $e) {
-			return to_route('sodamusic.index')->withInput()->withErrors($e->errors());
-		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			return to_route('sodamusic.index')->withInput()->withError(self::matchError($th));
+			return response()->json(
+				['html' => view('sodamusic.list', compact('data'))->render(), 'data' => $data]
+			);
+		} catch (ConnectionException | JsonException | RequestException $th) {
+			abort(
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
+				self::matchError($th)
+			);
 		}
 	}
 	public function get(int $id)

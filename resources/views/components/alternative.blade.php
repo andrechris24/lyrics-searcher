@@ -1,4 +1,4 @@
-<form class="row g-3 mb-3" id="alternative-search-form" action="{{ route($provider . '.search.advanced') }}">
+<form class="row g-3 mb-3" id="alternative-search-form" action="#">
 	<div class="col-md-7">
 		<div class="input-group input-group-lg">
 			<span class="input-group-text">
@@ -6,9 +6,8 @@
 			</span>
 			<div class="form-floating">
 				<input type="search" name="query" placeholder="Enter search query here..."
-					class="form-control form-control-lg @error('query') is-invalid @enderror "
-					value="{{ request('query') ?? old('query') }}" id="query-input" required
-					@empty(request('query')) autofocus @endempty>
+					class="form-control form-control-lg" value="{{ request('query') ?? old('query') }}"
+					id="query-input" required autofocus>
 				<label for="query-input" class="form-label">Query</label>
 			</div>
 		</div>
@@ -17,10 +16,10 @@
 		<div class="input-group input-group-lg">
 			<span class="input-group-text">Duration</span>
 			<input type="number" name="minutes" min="0" max="199" title="Minutes"
-				class="form-control @error('minutes') is-invalid @enderror " data-coreui-toggle="tooltip"
+				class="form-control" data-coreui-toggle="tooltip" id="search-minutes"
 				value="{{ request('minutes') ?? (old('minutes') ?? 0) }}" required>
 			<input type="number" name="seconds" min="0" max="59" title="Seconds"
-				class="form-control @error('seconds') is-invalid @enderror " data-coreui-toggle="tooltip"
+				class="form-control" data-coreui-toggle="tooltip" id="search-seconds"
 				value="{{ request('seconds') ?? (old('seconds') ?? 0) }}" required>
 		</div>
 	</div>

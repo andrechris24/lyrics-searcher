@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\{Http, Log};
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
-use Illuminate\Validation\ValidationException;
 use JsonException;
 
 class DeezerController extends Controller
@@ -21,11 +20,12 @@ class DeezerController extends Controller
 				'https://api.deezer.com/search/track',
 				['limit' => 20, 'q' => $req['query'], 'index' => $req['offset'] ?? 0]
 			)->json(null, null, JSON_THROW_ON_ERROR);
-			return view('deezer.result', $r);
-		} catch (ValidationException $e) {
-			return to_route('deezer.index')->withInput()->withErrors($e->errors());
-		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			return to_route('deezer.index')->withInput()->withError(self::matchError($th));
+			return response()->json(['html' => view('deezer.list', $r)->render()]);
+		} catch (ConnectionException | JsonException | RequestException $th) {
+			abort(
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
+				self::matchError($th)
+			);
 		}
 	}
 	public function get(int $id)
@@ -97,7 +97,7 @@ class DeezerController extends Controller
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "Deezer API connection error {$ex->getCode()}: {$ex->getMessage()}",
-			RequestException::class => $ex->response->status() === 404 ? 'No lyric available for this song' : "Deezer API error {$ex->response->status()}",
+			RequestException::class => $ex->response->status() === 404 ? 'No result or lyrics' : "Deezer API error {$ex->response->status()}",
 			default => "Deezer API unexpected error: {$ex->getMessage()}"
 		};
 	}

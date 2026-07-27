@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\{Http, Log, Session};
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
-use Illuminate\Validation\ValidationException;
 use JsonException;
 
 class SpotifyController extends Controller
@@ -19,15 +18,18 @@ class SpotifyController extends Controller
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
 				Log::error('Spotify API error: ', $r);
-				return to_route('spotify.index')->withInput()->withError(
+				abort(
+					500,
 					'Oops, something went wrong while loading results. Please try again later.'
 				);
 			}
-			return view('spotify.result', ['data' => $r]);
-		} catch (ValidationException $e) {
-			return to_route('spotify.index')->withInput()->withErrors($e->errors());
-		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			return to_route('spotify.index')->withInput()->withError(self::matchError($th));
+			return response()
+				->json(['html' => view('spotify.list', ['data' => $r])->render()]);
+		} catch (ConnectionException | JsonException | RequestException $th) {
+			abort(
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
+				self::matchError($th)
+			);
 		}
 	}
 	public function get(string $id)
@@ -45,14 +47,14 @@ class SpotifyController extends Controller
 			abort_if(
 				$header['status_code'] !== 200,
 				$header['status_code'],
-				'Error retrieving lyric: '.parent::getMXerror($header)
+				'Error retrieving lyric: ' . parent::getMXerror($header)
 			);
 			$data = $r['message']['body']['macro_calls'];
 			$tmHeader = $data['matcher.track.get']['message']['header'];
 			abort_if(
 				$tmHeader['status_code'] !== 200,
 				$tmHeader['status_code'],
-				'Error retrieving lyric: '.parent::getMXDBerror($tmHeader)
+				'Error retrieving lyric: ' . parent::getMXDBerror($tmHeader)
 			);
 			$tmBody = $data['matcher.track.get']['message']['body']['track'];
 			abort_if(

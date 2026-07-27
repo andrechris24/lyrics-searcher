@@ -2,7 +2,6 @@
 let plainContents,
 	syncedContents,
 	fileName,
-	formData,
 	track_id,
 	meta,
 	localContents,
@@ -21,17 +20,15 @@ document.addEventListener("focusin", (e) => {
 });
 $("#searchSongLyric").on("submit", function (e) {
 	e.preventDefault();
-	formData = $("#searchSongLyric").serializeArray();
+	const formData = $("#searchSongLyric").serializeArray();
 	$.ajax({
 		data: $("#searchSongLyric").serialize(),
 		url: "/result",
 		beforeSend: function () {
-			$(":input").removeClass("is-invalid");
-			$("#searchSongLyric :input").prop("disabled", true);
+			$("form :input").prop("disabled", true);
 			$.LoadingOverlay("show");
 		},
 		complete: function () {
-			$("#searchSongLyric :input").prop("disabled", false);
 			$.LoadingOverlay("hide");
 		},
 		success: function (data) {
@@ -87,7 +84,7 @@ $("#searchSongLyric").on("submit", function (e) {
 						$("#lrclib-song-title").text(data.title);
 						$("#lrclib-song-album").text(data.album);
 						$("#lrclib-song-duration").text(data.duration);
-						if (!data.wbw.includes('words:')) {
+						if (!data.wbw.includes("words:")) {
 							wbwDL.classList.add("disabled");
 							wbwContents = null;
 						} else {
@@ -184,7 +181,7 @@ $("#searchSongLyric").on("submit", function (e) {
 				text:
 					st === "timeout"
 						? "Connection timed out"
-						: (xhr.responseJSON?.message ?? err ?? st)
+						: (xhr.responseJSON?.message ?? "Server connection was lost")
 			});
 		}
 	});
@@ -216,14 +213,17 @@ mxRichsyncDL.onclick = function (e) {
 							return JSON.stringify(data);
 						},
 						error: function (xhr, st, err) {
-							throw new Error(xhr.responseJSON?.message ?? err ?? st);
+							console.warn(`${st}: ${err}`);
+							throw new Error(
+								xhr.responseJSON?.message ?? "Server connection was lost"
+							);
 						}
 					});
 					return response;
 				} catch (e) {
 					console.warn(e);
 					Swal.showValidationMessage(
-						`Download failed: ${e.responseJSON?.message ?? "Server connection was lost"}`
+						`Download failed: ${e.responseJSON?.message ?? "Server connection was lost or timed out"}`
 					);
 				}
 			}
@@ -263,7 +263,10 @@ wbwDL.onclick = function (e) {
 							return JSON.stringify(data);
 						},
 						error: function (xhr, st, err) {
-							throw new Error(xhr.responseJSON?.message ?? err ?? st);
+							console.warn(`${st}: ${err}`);
+							throw new Error(
+								xhr.responseJSON?.message ?? "Server connection was lost"
+							);
 						}
 					});
 					return response;
@@ -299,12 +302,19 @@ localDL.onclick = function () {
 				denyButtonText: "No"
 			}).then((result) => {
 				if (result.isConfirmed) {
-					blobDL(localContents, fileName + ext);
+					blobDL(
+						$('meta[name="minilyrics-compatibility"]').attr("content")==true?
+							localContents.replaceAll('>\n','> \n'):
+							localContents, 
+						fileName + ext
+					);
 				} else if (result.isDenied) {
-					const syncedContent = 
-						localContents.replace(/<(\d+):(\d+).(\d+)>/g, "");
+					const syncedContent = localContents.replace(
+						/<(\d+):(\d+).(\d+)>/g,
+						""
+					);
 					blobDL(syncedContent, fileName + ext);
-				} else console.warn("Download cancelled");
+				}
 			});
 		} else blobDL(localContents, fileName + ext);
 	}

@@ -6,7 +6,6 @@ use App\KrcDecoder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Http, Log};
-use Illuminate\Validation\ValidationException;
 use JsonException;
 
 class KugouController extends Controller
@@ -32,11 +31,12 @@ class KugouController extends Controller
 				);
 			}
 			$data = $r['data'];
-			return view('kugou.result', compact('data'));
-		} catch (ValidationException $e) {
-			return to_route('kugou.index')->withInput()->withErrors($e->errors());
-		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			return to_route('kugou.index')->withInput()->withError(self::matchError($th));
+			return response()->json(['html' => view('kugou.list', compact('data'))->render()]);
+		} catch (ConnectionException | JsonException | RequestException $th) {
+			abort(
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
+				self::matchError($th)
+			);
 		}
 	}
 	public function lyrics(string $hash)
@@ -50,7 +50,7 @@ class KugouController extends Controller
 			if ($r['errcode'] !== 200) {
 				Log::error($r);
 				abort(
-					$r['errcode'], 
+					$r['errcode'],
 					"Error loading list: Kugou Music error {$r['errcode']}: {$r['errmsg']}"
 				);
 			}
@@ -84,11 +84,12 @@ class KugouController extends Controller
 				);
 			}
 			$data = $r['candidates'];
-			return view('kugou.advanced.result', compact('data'));
-		} catch (ValidationException $e) {
-			return to_route('kugou.advanced')->withInput()->withErrors($e->errors());
+			return response()->json(['html' => view('kugou.list-alt', compact('data'))->render()]);
 		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
-			return to_route('kugou.advanced')->withInput()->withError(self::matchError($th));
+			abort(
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
+				self::matchError($th)
+			);
 		}
 	}
 	public function get(Request $req)
@@ -105,7 +106,7 @@ class KugouController extends Controller
 			if ($r['status'] !== 200) {
 				Log::error($r);
 				abort(
-					$r['status'], 
+					$r['status'],
 					"Error retrieving lyric: Kugou Music error {$r['error_code']}: {$r['info']}"
 				);
 			}
@@ -152,7 +153,7 @@ class KugouController extends Controller
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "Kugou Music connection error {$ex->getCode()}: {$ex->getMessage()}",
-			RequestException::class => $ex->response->status() === 404 ? 'No lyric available for this song' : "Kugou Music HTTP Error {$ex->response->status()}",
+			RequestException::class => $ex->response->status() === 404 ? 'No result or lyrics' : "Kugou Music HTTP Error {$ex->response->status()}",
 			default => "Kugou Music unexpected error: {$ex->getMessage()}"
 		};
 	}

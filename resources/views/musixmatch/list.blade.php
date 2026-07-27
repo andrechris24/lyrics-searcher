@@ -1,43 +1,44 @@
-<x-no-script />
 @empty($data)
 	<x-no-results source="musixmatch" />
 @else
-	@if (!request()->routeIs('musixmatch.chart'))
+	@empty($typeName)
 		<p class="text-center">Page {{ request('page') ?? 1 }} out of
 			{{ $header['available'] }} result(s), showing 20 results per page</p>
-	@endif
+	@else
+		<p class="text-center">Showing 20 {{ $typeName }} Charts of {{ $country }}.</p>
+	@endempty
 	<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-3">
 		@foreach ($data as $result)
 			@php
 				$track = $result['track'];
 				$length = gmdate('i:s', $track['track_length']);
 				if ($track['instrumental']) {
-					$lyricType = 'Instrumental';
-					$color = 'text-warning';
+				    $lyricType = 'Instrumental';
+				    $color = 'text-warning';
 				} elseif ($track['has_richsync']) {
-					$lyricType = 'Richsync';
-					$color = 'text-success';
+				    $lyricType = 'Richsync';
+				    $color = 'text-success';
 				} elseif ($track['has_subtitles']) {
-					$lyricType = 'Synced';
-					$color = 'text-primary';
+				    $lyricType = 'Synced';
+				    $color = 'text-primary';
 				} elseif ($track['has_lyrics']) {
-					$lyricType = 'Plain';
-					$color = 'text-info';
+				    $lyricType = 'Plain';
+				    $color = 'text-info';
 				} else {
-					$lyricType = 'No Lyrics';
-					$color = 'text-danger';
+				    $lyricType = 'No Lyrics';
+				    $color = 'text-danger';
 				}
 				$art = !empty($track['album_coverart_800x800'])
-					? $track['album_coverart_800x800']
-					: (!empty($track['album_coverart_500x500'])
-						? $track['album_coverart_500x500']
-						: (!empty($track['album_coverart_350x350'])
-							? $track['album_coverart_350x350']
-							: (!empty($track['album_coverart_100x100'])
-								? $track['album_coverart_100x100']
-								: 'https://placehold.co/500?text=' .
-									urlencode($track['album_name']))));
-				$unavailable=$track['instrumental'] || !$track['has_lyrics'];
+				    ? $track['album_coverart_800x800']
+				    : (!empty($track['album_coverart_500x500'])
+				        ? $track['album_coverart_500x500']
+				        : (!empty($track['album_coverart_350x350'])
+				            ? $track['album_coverart_350x350']
+				            : (!empty($track['album_coverart_100x100'])
+				                ? $track['album_coverart_100x100']
+				                : 'https://placehold.co/500?text=' .
+				                    urlencode($track['album_name']))));
+				$unavailable = $track['instrumental'] || !$track['has_lyrics'];
 			@endphp
 			<div class="col">
 				<div class="card">
@@ -65,7 +66,7 @@
 							<div class="btn-group" role="group">
 								<button type="button" class="btn btn-primary dropdown-toggle"
 									data-coreui-toggle="dropdown" aria-expanded="false"
-									aria-disabled="{{$unavailable}}" @disabled($unavailable)>
+									aria-disabled="{{ $unavailable }}" @disabled($unavailable)>
 									<i class="fa-solid fa-download"></i>
 								</button>
 								<ul class="dropdown-menu">
@@ -112,7 +113,7 @@
 								</ul>
 							</div>
 							<a href="{{ $track['track_share_url'] }}" @class(['btn', 'btn-info', 'disabled' => !$track['has_lyrics']])
-								aria-disabled="{{!$track['has_lyrics']}}" target="_blank"
+								aria-disabled="{{ !$track['has_lyrics'] }}" target="_blank"
 								data-coreui-toggle="tooltip" data-coreui-title="View Lyric on Musixmatch">
 								<i class="fa-solid fa-eye"></i>
 							</a>
@@ -122,7 +123,7 @@
 									'btn-success',
 									'disabled' => empty($track['track_spotify_id'])
 								])
-								aria-disabled="{{empty($track['track_spotify_id'])}}"
+								aria-disabled="{{ empty($track['track_spotify_id']) }}"
 								data-coreui-toggle="tooltip" data-coreui-title="View on Spotify" target="_blank">
 								<i class="fa-brands fa-spotify"></i>
 							</a>
@@ -132,45 +133,52 @@
 			</div>
 		@endforeach
 	</div>
-	@if (!request()->routeIs('musixmatch.chart'))
+	@empty($typeName)
 		@php
-			$curRoute = request()->route()->getName();
 			$queries = [
-				'prev' => ['page' => request('page') === null ? 1 : request('page') - 1],
-				'next' => ['page' => (request('page') ?? 1) + 1]
+			    'prev' => ['page' => request('page') === null ? 1 : request('page') - 1],
+			    'next' => ['page' => (request('page') ?? 1) + 1]
 			];
 			if (request('query')) {
-				$queries['prev']['query'] = request('query');
-				$queries['prev']['type'] = request('type');
-				$queries['next']['query'] = request('query');
-				$queries['next']['type'] = request('type');
+			    $queries['prev']['query'] = request('query');
+			    $queries['prev']['type'] = request('type');
+			    $queries['next']['query'] = request('query');
+			    $queries['next']['type'] = request('type');
 			} else {
-				$queries['prev']['title'] = request('title') ?? '';
-				$queries['prev']['artist'] = request('artist') ?? '';
-				$queries['prev']['lyrics'] = request('lyrics') ?? '';
-				$queries['next']['title'] = request('title') ?? '';
-				$queries['next']['artist'] = request('artist') ?? '';
-				$queries['next']['lyrics'] = request('lyrics') ?? '';
+			    $queries['prev']['title'] = request('title') ?? '';
+			    $queries['prev']['artist'] = request('artist') ?? '';
+			    $queries['prev']['lyrics'] = request('lyrics') ?? '';
+			    $queries['next']['title'] = request('title') ?? '';
+			    $queries['next']['artist'] = request('artist') ?? '';
+			    $queries['next']['lyrics'] = request('lyrics') ?? '';
 			}
 		@endphp
 		<div class="mx-5 px-5 mb-5 pb-5">
 			<nav role="navigation" aria-label="{!! __('Pagination Navigation') !!}">
 				<ul class="pagination justify-content-center">
-					<li @class(["page-item", "disabled"=>in_array(request('page'), [1,null])])
-						aria-disabled="{{in_array(request('page'), [1,null])}}">
-						@if(in_array(request('page'), [1,null]))
+					<li @class([
+						'page-item',
+						'disabled' => in_array(request('page'), [1, null])
+					])
+						aria-disabled="{{ in_array(request('page'), [1, null]) }}">
+						@if (in_array(request('page'), [1, null]))
 							<span class="page-link">{!! __('pagination.previous') !!}</span>
 						@else
-							<a class="page-link" rel="prev" href="{{ route($curRoute, $queries['prev']) }}">
+							<a class="page-link" rel="prev"
+								href="javascript:navigate('{{ request()->url() }}',{{ json_encode($queries['prev']) }})">
 								{!! __('pagination.previous') !!}
 							</a>
 						@endif
 					</li>
-					@php($nextOffset=20 * (request('page') ?? 1))
-					<li @class(["page-item",'disabled'=> $nextOffset >= $header['available']])
-						aria-disabled="{{$nextOffset >= $header['available']}}">
-						@if($nextOffset<$header['available'])
-							<a class="page-link" rel="next" href="{{ route($curRoute, $queries['next']) }}">
+					@php($nextOffset = 20 * (request('page') ?? 1))
+					<li @class([
+						'page-item',
+						'disabled' => $nextOffset >= $header['available']
+					])
+						aria-disabled="{{ $nextOffset >= $header['available'] }}">
+						@if ($nextOffset < $header['available'])
+							<a class="page-link" rel="next"
+								href="javascript:navigate('{{ request()->url() }}',{{ json_encode($queries['next']) }})">
 								{!! __('pagination.next') !!}
 							</a>
 						@else
@@ -180,5 +188,5 @@
 				</ul>
 			</nav>
 		</div>
+	@endempty
 	@endif
-@endif

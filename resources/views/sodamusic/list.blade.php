@@ -1,4 +1,3 @@
-<x-no-script />
 @empty($data['data'])
 	<x-no-results source="sodamusic" />
 @else
@@ -11,7 +10,7 @@
 				$res = $result['entity']['track'];
 				$length = gmdate('i:s', round($res['duration'] / 1000, 0, PHP_ROUND_HALF_UP));
 				foreach ($res['artists'] as $ar) {
-					$artists[] = $ar['name'];
+				    $artists[] = $ar['name'];
 				}
 			@endphp
 			<a class="list-group-item list-group-item-action" data-duration="{{ $length }}"
@@ -29,20 +28,24 @@
 	<div class="mx-5 px-5 mb-5 pb-5">
 		<nav role="navigation" aria-label="{!! __('Pagination Navigation') !!}">
 			<ul class="pagination justify-content-center">
-				<li @class(["page-item", "disabled"=>in_array(request('offset'), [0,null])])
-					aria-disabled="{{in_array(request('offset'), [0,null])}}">
-					@if(in_array(request('offset'), [0,null]))
+				<li @class([
+					'page-item',
+					'disabled' => in_array(request('offset'), [0, null])
+				])
+					aria-disabled="{{ in_array(request('offset'), [0, null]) }}">
+					@if (in_array(request('offset'), [0, null]))
 						<span class="page-link">{!! __('pagination.previous') !!}</span>
 					@else
-						<a class="page-link" rel="prev" href="{{ route('sodamusic.search', ['query' => request('query'), 'offset' => request('offset') - 20]) }}">
+						<a class="page-link" rel="prev"
+							href="javascript:navigate('{{ request('query') }}',{{ request('offset') - 20 }})">
 							{!! __('pagination.previous') !!}
 						</a>
 					@endif
 				</li>
-				<li @class(["page-item",'disabled'=> !$data['has_more']])
-					aria-disabled="{{!$data['has_more']}}">
-					@if($data['has_more'])
-						<a class="page-link" rel="next" href="{{ route('sodamusic.search', ['query' => request('query'), 'offset' => $data['next_cursor']]) }}">
+				<li @class(['page-item', 'disabled' => !$data['has_more']]) aria-disabled="{{ !$data['has_more'] }}">
+					@if ($data['has_more'])
+						<a class="page-link" rel="next"
+							href="javascript:navigate('{{ request('query') }}',{{ $data['next_cursor'] }})">
 							{!! __('pagination.next') !!}
 						</a>
 					@else
@@ -52,4 +55,4 @@
 			</ul>
 		</nav>
 	</div>
-@endif
+	@endif

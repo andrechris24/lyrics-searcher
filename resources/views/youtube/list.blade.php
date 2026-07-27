@@ -1,4 +1,3 @@
-<x-no-script />
 @if (count($data) > 0)
 	<p class="text-center">Found {{ count($data) }} result(s)</p>
 	<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-3">
@@ -26,8 +25,7 @@
 									'btn',
 									'btn-success',
 									'disabled' => empty($result['videoId'])
-								])
-								@empty($result['videoId']) aria-disabled="true" @endempty
+								]) aria-disabled="{{ empty($result['videoId']) }}"
 								data-coreui-toggle="tooltip" data-coreui-title="View on YouTube" target="_blank">
 								<i class="fa-brands fa-youtube"></i>
 							</a>

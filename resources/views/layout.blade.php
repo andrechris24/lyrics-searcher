@@ -5,10 +5,14 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="csrf-token" content="{{ csrf_token() }}">
+		<meta name="minilyrics-compatibility" content="{{env('MINILYRICS_COMPATIBLE')}}">
 		<title>@yield('title') | {{ env('APP_NAME') }}</title>
 
-		<!-- Bootstrap CSS -->
-		<link href="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.9.0/dist/css/coreui.min.css" rel="stylesheet" integrity="sha384-9DZ6o3pJWcTwBR8W196XizUEf2kNMD35tkeyWqOB0yzml+nZrEe/13PMCpAIrT4r" crossorigin="anonymous">
+		<!-- CoreUI CSS -->
+		<link href="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.9.0/dist/css/coreui.min.css"
+			rel="stylesheet"
+			integrity="sha384-9DZ6o3pJWcTwBR8W196XizUEf2kNMD35tkeyWqOB0yzml+nZrEe/13PMCpAIrT4r"
+			crossorigin="anonymous">
 
 		<!-- FontAwesome -->
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.0/css/all.min.css" integrity="sha256-O2p11mherUYPja5rjeK2afvVekcdkigTHg/bG+cj8qk=" crossorigin="anonymous">
@@ -96,57 +100,19 @@
 										'dropdown-item',
 										'active' =>
 											request()->routeIs('musixmatch.index') ||
-											request()->routeIs('musixmatch.search*') ||
 											request()->routeIs('musixmatch.advanced')
 									])
-										@if (request()->routeIs('musixmatch.index') ||
-											request()->routeIs('musixmatch.search*') ||
-											request()->routeIs('musixmatch.advanced')
-										) aria-current="page" @endif href="{{ route('musixmatch.index') }}">
+										@if (request()->routeIs('musixmatch.index') || request()->routeIs('musixmatch.advanced')) aria-current="page" @endif href="{{ route('musixmatch.index') }}">
 										Search
 									</a>
 								</li>
 								<li>
-									<hr class="dropdown-divider">
-								</li>
-								<li>
 									<a @class([
 										'dropdown-item',
-										'active' => request()->is('musixmatch/charts/top')
+										'active' => request()->routeIs('musixmatch.chart')
 									])
-										@if (request()->is('musixmatch/charts/top')) aria-current="page" @endif
-										href="{{ route('musixmatch.chart', ['type' => 'top']) }}">
-										Top charts
-									</a>
-								</li>
-								<li>
-									<a @class([
-										'dropdown-item',
-										'active' => request()->is('musixmatch/charts/hot')
-									])
-										@if (request()->is('musixmatch/charts/hot')) aria-current="page" @endif
-										href="{{ route('musixmatch.chart', ['type' => 'hot']) }}">
-										Popular lyrics
-									</a>
-								</li>
-								<li>
-									<a @class([
-										'dropdown-item',
-										'active' => request()->is('musixmatch/charts/mxmweekly')
-									])
-										@if (request()->is('musixmatch/charts/hot')) aria-current="page" @endif
-										href="{{ route('musixmatch.chart', ['type' => 'mxmweekly']) }}">
-										Weekly charts
-									</a>
-								</li>
-								<li>
-									<a @class([
-										'dropdown-item',
-										'active' => request()->is('musixmatch/charts/mxmweekly_new')
-									])
-										@if (request()->is('musixmatch/charts/hot')) aria-current="page" @endif
-										href="{{ route('musixmatch.chart', ['type' => 'mxmweekly_new']) }}">
-										New Releases
+										@if (request()->routeIs('musixmatch.chart')) aria-current="page" @endif href="{{ route('musixmatch.chart') }}">
+										Charts
 									</a>
 								</li>
 							</ul>
@@ -174,9 +140,9 @@
 									request()->routeIs('apple.*')
 							])
 								@if (request()->routeIs('deezer.*') ||
-									request()->routeIs('spotify.*') ||
-									request()->routeIs('youtube.*') ||
-									request()->routeIs('apple.*')
+										request()->routeIs('spotify.*') ||
+										request()->routeIs('youtube.*') ||
+										request()->routeIs('apple.*')
 								) aria-current="page" @endif href="#"
 								role="button" data-coreui-toggle="dropdown" aria-expanded="false">
 								More
@@ -324,6 +290,7 @@
 		<div class="container">
 			<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-3">
 				<h3 class="mt-5 pt-5 text-center">@yield('subpage-title')</h3>
+				<x-no-script />
 				@if (Session::has('error') || $errors->any())
 					<x-error /> @endif
 			</div>
@@ -339,7 +306,10 @@
 				<a href="https://coreui.io">CoreUI</a>
 			</div>
 		</footer>  --}}
-		<script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.9.0/dist/js/coreui.bundle.min.js" integrity="sha384-FTek6QoTuxz6Bb078pS0kYQ0qH2LZVB5LWwZl8944mluH+TCk0q3OP4PqA+dHJRl" crossorigin="anonymous"></script>
+		<script
+			src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.9.0/dist/js/coreui.bundle.min.js"
+			integrity="sha384-FTek6QoTuxz6Bb078pS0kYQ0qH2LZVB5LWwZl8944mluH+TCk0q3OP4PqA+dHJRl"
+			crossorigin="anonymous"></script>
 		<script src="https://code.jquery.com/jquery-4.0.0.min.js"
 			integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao="
 			crossorigin="anonymous"></script>

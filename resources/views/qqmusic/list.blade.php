@@ -1,10 +1,6 @@
-<x-no-script />
 @empty($songinfo)
 	<x-no-results source="qqmusic" />
 @else
-	<p class="text-center">
-		Showing {{ $rangemin }} to {{ $rangemax <= $songcount ? $rangemax : $songcount }}
-		of {{ $songcount }} result(s)</p>
 	<div class="list-group px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-5 pb-5">
 		@if (!array_key_exists('@attributes', $songinfo))
 			@foreach ($songinfo as $result)
@@ -16,7 +12,7 @@
 						<h5 class="mb-1">{{ urldecode($result['name']) }}</h5>
 					</div>
 					<p class="mb-1">{{ urldecode($result['singername']) }}</p>
-					<small>{{ urldecode($result['albumname']) }}</small>
+					<small>{{ empty($result['albumname']) ? '' : urldecode($result['albumname']) }}</small>
 				</a>
 			@endforeach
 		@else
@@ -28,48 +24,8 @@
 					<h5 class="mb-1">{{ urldecode($songinfo['name']) }}</h5>
 				</div>
 				<p class="mb-1">{{ urldecode($songinfo['singername']) }}</p>
-				<small>{{ urldecode($songinfo['albumname']) }}</small>
+				<small>{{ empty($result['albumname']) ? '' : urldecode($result['albumname']) }}</small>
 			</a>
 		@endif
-	</div>
-	@php
-		$curRoute = request()->route()->getName();
-		$queries = [
-			'prev' => [
-				'title' => request('title'),
-				'artist' => request('artist'),
-				'offset' => $rangemin - 1
-			],'next' => [
-				'title' => request('title'),
-				'artist' => request('artist'),
-				'offset' => $rangemax
-			]
-		];
-	@endphp
-	<div class="mx-5 px-5 mb-5 pb-5">
-		<nav role="navigation" aria-label="{!! __('Pagination Navigation') !!}">
-			<ul class="pagination justify-content-center">
-				<li @class(["page-item", "disabled"=>$rangemin <= 1])
-					aria-disabled="{{$rangemin <= 1}}">
-					@if($rangemin <= 1)
-						<span class="page-link">{!! __('pagination.previous') !!}</span>
-					@else
-						<a class="page-link" rel="prev" href="{{ route($curRoute, $queries['prev']) }}">
-							{!! __('pagination.previous') !!}
-						</a>
-					@endif
-				</li>
-				<li @class(["page-item",'disabled'=> $rangemax >= $songcount])
-					aria-disabled="{{$rangemax >= $songcount}}">
-					@if($rangemax < $songcount)
-						<a class="page-link" rel="next" href="{{ route($curRoute, $queries['next']) }}">
-							{!! __('pagination.next') !!}
-						</a>
-					@else
-						<span class="page-link">{!! __('pagination.next') !!}</span>
-					@endif
-				</li>
-			</ul>
-		</nav>
 	</div>
 @endempty

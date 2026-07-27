@@ -140,7 +140,7 @@ abstract class Controller
 				}
 				$prevtime = $startTime + $duration;
 				$lyricText .= sprintf(
-					"%s<%s> \n",
+					env("MINILYRICS_COMPATIBLE")?"%s<%s> \n":"%s<%s>\n",
 					$lyricLine,
 					self::formatTime(($startTime + $duration) / 1000)
 				);

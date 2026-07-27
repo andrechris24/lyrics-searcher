@@ -28,10 +28,11 @@ Route::prefix('lrclib')->name('lrclib.')->group(function () {
 	});
 });
 Route::prefix('musixmatch')->name('musixmatch.')->group(function () {
-	Route::view('/', 'musixmatch.index')->name('index');
-	Route::view('advanced', 'musixmatch.advanced.index')->name('advanced');
+	Route::view('/', 'musixmatch.basic')->name('index');
+	Route::view('advanced', 'musixmatch.advanced')->name('advanced');
+	Route::view('charts', 'musixmatch.chart')->name('chart');
 	Route::controller(MusixmatchController::class)->group(function () {
-		Route::get('charts/{type}', 'charts')->name('chart');
+		Route::get('charts/list', 'charts')->name('chart.list');
 		Route::name('search')->group(function () {
 			Route::get('results', 'standard');
 			Route::get('advanced/results', 'advanced')->name('.advanced');
@@ -40,22 +41,22 @@ Route::prefix('musixmatch')->name('musixmatch.')->group(function () {
 	});
 });
 Route::prefix('netease')->name('netease.')->group(function () {
-	Route::view('/', 'netease.index')->name('index');
+	Route::view('/', 'netease.search')->name('index');
 	Route::controller(NetEaseController::class)->name('search')->group(function () {
 		Route::get('results', 'search');
 		Route::get('{id}', 'get')->name('.get');
 	});
 });
 Route::prefix('qqmusic')->name('qqmusic.')->group(function () {
-	Route::view('/', 'qqmusic.index')->name('index');
+	Route::view('/', 'qqmusic.search')->name('index');
 	Route::controller(QQMusicController::class)->name('search')->group(function () {
 		Route::get('results', 'search');
 		Route::get('{id}', 'get')->name('.get');
 	});
 });
 Route::prefix('kugou')->name('kugou.')->group(function () {
-	Route::view('/', 'kugou.index')->name('index');
-	Route::view('advanced', 'kugou.advanced.index')->name('advanced');
+	Route::view('/', 'kugou.basic')->name('index');
+	Route::view('advanced', 'kugou.advanced')->name('advanced');
 	Route::controller(KugouController::class)->group(function () {
 		Route::name('search')->group(function () {
 			Route::get('results', 'search');
@@ -67,7 +68,7 @@ Route::prefix('kugou')->name('kugou.')->group(function () {
 	});
 });
 Route::prefix('sodamusic')->name('sodamusic.')->group(function () {
-	Route::view('/', 'sodamusic.index')->name('index');
+	Route::view('/', 'sodamusic.search')->name('index');
 	Route::controller(SodaMusicController::class)->name('search')->group(function () {
 		Route::get('results', 'search');
 		Route::get('{id}', 'get')->name('.get');
@@ -85,28 +86,28 @@ Route::prefix('local')->name('local.')->group(function () {
 	});
 });
 Route::prefix('deezer')->name('deezer.')->group(function () {
-	Route::view('/', 'deezer.index')->name('index');
+	Route::view('/', 'deezer.search')->name('index');
 	Route::controller(DeezerController::class)->name('search')->group(function () {
 		Route::get('results', 'search');
 		Route::get('{id}', 'get')->name('.get');
 	});
 });
 Route::prefix('spotify')->name('spotify.')->group(function () {
-	Route::view('/', 'spotify.index')->name('index');
+	Route::view('/', 'spotify.search')->name('index');
 	Route::controller(SpotifyController::class)->name('search')->group(function () {
 		Route::get('results', 'search');
 		Route::get('{id}', 'get')->name('.get');
 	});
 });
 Route::prefix('apple')->name('apple.')->group(function () {
-	Route::view('/', 'apple.index')->name('index');
+	Route::view('/', 'apple.search')->name('index');
 	Route::controller(AppleController::class)->name('search')->group(function () {
 		Route::get('results', 'search');
 		Route::get('{id}', 'get')->name('.get');
 	});
 });
 Route::prefix('youtube')->name('youtube.')->group(function () {
-	Route::view('/', 'youtube.index')->name('index');
+	Route::view('/', 'youtube.search')->name('index');
 	Route::controller(YoutubeController::class)->name('search')->group(function () {
 		Route::get('results', 'search');
 		Route::get('{id}', 'get')->name('.get');
