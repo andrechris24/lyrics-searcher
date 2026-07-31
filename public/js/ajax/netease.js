@@ -110,6 +110,7 @@ function sendAjax(data) {
 function navigate(query, offset) {
 	$("#netease-container").LoadingOverlay("show");
 	sendAjax({ query: query, offset: offset });
+	$("html, body").animate({scrollTop: $("#netease-container").offset().top},200);
 }
 lyricDL.onclick = function (e) {
 	e.preventDefault();

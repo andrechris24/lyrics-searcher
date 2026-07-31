@@ -85,7 +85,7 @@ class LRCLibController extends Controller
 				if (array_key_exists('end_ms', $line)) {
 					$prevtime = $line['end_ms'];
 					$lyricsfile .= sprintf(
-						env("MINILYRICS_COMPATIBLE")?"<%s> \n":"<%s>\n", 
+						env("MINILYRICS_COMPATIBLE") ? "<%s> \n" : "<%s>\n",
 						parent::formatTime($line['end_ms'] / 1000)
 					);
 				} else $lyricsfile .= "\n";
@@ -101,7 +101,8 @@ class LRCLibController extends Controller
 	}
 	private static function matchError(mixed $ex): string
 	{
-		Log::error($ex);
+		if (get_class($ex) === RequestException::class && $ex->response->status() !== 404)
+			Log::error($ex);
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "LRCLib connection error {$ex->getCode()}: {$ex->getMessage()}",

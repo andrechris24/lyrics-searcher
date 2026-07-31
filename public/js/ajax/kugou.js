@@ -129,6 +129,7 @@ function sendAjax(url, data) {
 function navigate(url, data) {
 	$("#kugou-container").LoadingOverlay("show");
 	sendAjax(url, data);
+	$("html, body").animate({scrollTop: $("#kugou-container").offset().top},200);
 }
 // eslint-disable-next-line no-unused-vars
 function dlLRC(id, key, file = null) {

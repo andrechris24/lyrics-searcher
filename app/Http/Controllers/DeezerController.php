@@ -93,11 +93,12 @@ class DeezerController extends Controller
 	}
 	private static function matchError(mixed $ex): string
 	{
-		Log::error($ex);
+		if (get_class($ex) === RequestException::class && $ex->response->status() !== 404)
+			Log::error($ex);
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "Deezer API connection error {$ex->getCode()}: {$ex->getMessage()}",
-			RequestException::class => $ex->response->status() === 404 ? 'No result or lyrics' : "Deezer API error {$ex->response->status()}",
+			RequestException::class => $ex->response->status() === 404 ? 'No result' : "Deezer API error {$ex->response->status()}",
 			default => "Deezer API unexpected error: {$ex->getMessage()}"
 		};
 	}

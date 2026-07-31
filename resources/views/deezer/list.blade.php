@@ -7,15 +7,15 @@
 			@php
 				$length = gmdate('i:s', $result['duration']);
 				$art = !empty($result['album']['cover_xl'])
-				    ? $result['album']['cover_xl']
-				    : (!empty($result['album']['cover_big'])
-				        ? $result['album']['cover_big']
-				        : (!empty($result['album']['cover_medium'])
-				            ? $result['album']['cover_medium']
-				            : (!empty($result['album']['cover_small'])
-				                ? $result['album']['cover_small']
-				                : 'https://placehold.co/500?text=' .
-				                    urlencode($result['album']['name']))));
+					? $result['album']['cover_xl']
+					: (!empty($result['album']['cover_big'])
+						? $result['album']['cover_big']
+						: (!empty($result['album']['cover_medium'])
+							? $result['album']['cover_medium']
+							: (!empty($result['album']['cover_small'])
+								? $result['album']['cover_small']
+								: 'https://placehold.co/500?text=' .
+									urlencode($result['album']['name']))));
 			@endphp
 			<div class="col">
 				<div class="card">
@@ -68,23 +68,23 @@
 				@empty($prev)
 					<span class="page-link">{!! __('pagination.previous') !!}</span>
 				@else
-					<a class="page-link" rel="prev"
-						href="javascript:navigate('{{ request('query') }}',{{ request('offset') - 20 }})">
+					<a class="page-link" rel="prev" href="#" 
+						onclick="navigate('{{ request('query') }}',{{ request('offset') - 20 }})">
 						{!! __('pagination.previous') !!}
 					</a>
 				@endempty
-			</li>
-			<li @class(['page-item', 'disabled' => empty($next)]) aria-disabled="{{ empty($next) }}">
-			@empty($next)
-				<span class="page-link">{!! __('pagination.next') !!}</span>
-			@else
-				<a class="page-link" rel="next"
-					href="javascript:navigate('{{ request('query') }}',{{ (request('offset') ?? 0) + 20 }})">{!! __('pagination.next') !!}</a>
-			@endempty
-		</li>
-	</ul>
-</nav>
-</div>
+				</li>
+				<li @class(['page-item', 'disabled' => empty($next)]) aria-disabled="{{ empty($next) }}">
+				@empty($next)
+					<span class="page-link">{!! __('pagination.next') !!}</span>
+				@else
+					<a class="page-link" rel="next"
+						href="javascript:navigate('{{ request('query') }}',{{ (request('offset') ?? 0) + 20 }})">{!! __('pagination.next') !!}</a>
+				@endempty
+				</li>
+			</ul>
+		</nav>
+	</div>
 @else
 <x-no-results source="deezer" />
 @endif

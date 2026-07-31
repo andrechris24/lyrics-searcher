@@ -4,17 +4,17 @@
 		@foreach ($results as $result)
 			@php
 				$length = gmdate(
-				    'i:s',
-				    round($result['trackTimeMillis'] / 1000, 0, PHP_ROUND_HALF_UP)
+					'i:s',
+					round($result['trackTimeMillis'] / 1000, 0, PHP_ROUND_HALF_UP)
 				);
 				$art = !empty($result['artworkUrl100'])
-				    ? $result['artworkUrl100']
-				    : (!empty($result['artworkUrl60'])
-				        ? $result['artworkUrl60']
-				        : (!empty($result['artworkUrl30'])
-				            ? $result['artworkUrl30']
-				            : 'https://placehold.co/500?text=' .
-				                urlencode($result['album']['name'])));
+					? $result['artworkUrl100']
+					: (!empty($result['artworkUrl60'])
+						? $result['artworkUrl60']
+						: (!empty($result['artworkUrl30'])
+							? $result['artworkUrl30']
+							: 'https://placehold.co/500?text=' .
+								urlencode($result['album']['name'])));
 			@endphp
 			<div class="col">
 				<div class="card">
@@ -44,7 +44,7 @@
 								'btn-info',
 								'disabled' => empty($result['previewUrl'])
 							])
-								@if (empty($result['previewUrl'])) aria-disabled="true" @endif
+								aria-disabled="{{empty($result['previewUrl'])}}"
 								data-coreui-link="{{ $result['previewUrl'] }}"
 								data-coreui-artist="{{ $result['artistName'] }}"
 								data-coreui-title="{{ $result['trackName'] }}"
@@ -58,9 +58,8 @@
 								'btn-success',
 								'disabled' => empty($result['trackViewUrl'])
 							])
-								@empty($result['trackViewUrl']) aria-disabled="true" @endempty
-								data-coreui-toggle="tooltip" data-coreui-title="View on Apple Music"
-								target="_blank">
+								aria-disabled="{{empty($result['trackViewUrl'])}}" target="_blank"
+								data-coreui-toggle="tooltip" data-coreui-title="View on Apple Music">
 								<i class="fa-brands fa-itunes-note"></i>
 							</a>
 						</div>

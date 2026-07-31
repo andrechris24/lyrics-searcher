@@ -7,7 +7,6 @@
 			Kugou, NetEase, QQ Music, Musixmatch, LRCLib, Soda Music, Deezer, Spotify,
 			Apple Music, YouTube, plus optionally local server and Lyrics.ovh.
 			This form below is a quick search to 4 providers.</p>
-		<x-no-script />
 		<form class="row g-3 mb-3" action="#" id="searchSongLyric">
 			<div class="col-12 col-md-8">
 				<div class="input-group input-group-lg">

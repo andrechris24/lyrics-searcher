@@ -132,4 +132,5 @@ function sendAjax(data) {
 function navigate(query, offset) {
 	sendAjax({ query: query, offset: offset });
 	$("#sodamusic-container").LoadingOverlay("show");
+	$("html, body").animate({scrollTop: $("#sodamusic-container").offset().top},200);
 }

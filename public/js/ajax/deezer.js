@@ -103,13 +103,15 @@ if (previewModal) {
 } else console.warn("No song preview modal exist");
 $(basicForm).submit(function (event) {
 	event.preventDefault();
-	const formData = $(this).serialize();
-	$("form :input").prop("disabled", true);
 	$("#deezer-container").html("");
 	$("#deezer-loader").removeClass("d-none");
+	sendAjax($(this).serialize());
+});
+function sendAjax(data){
+	$("form :input").prop("disabled", true);
 	$.ajax({
 		url: "/deezer/results",
-		data: formData
+		data: data
 	})
 		.done(function (r) {
 			$("#deezer-container").html(r.html);
@@ -131,8 +133,15 @@ $(basicForm).submit(function (event) {
 		})
 		.always(function () {
 			$("#deezer-loader").addClass("d-none");
+			$("#deezer-container").LoadingOverlay("hide");
 		});
-});
+}
+// eslint-disable-next-line no-unused-vars
+function navigate(query, offset) {
+	$("#deezer-container").LoadingOverlay("show");
+	sendAjax({query: query, offset: offset});
+	$("html, body").animate({scrollTop: $("#deezer-container").offset().top},200);
+}
 syncedLyricDL.onclick = function (e) {
 	e.preventDefault();
 	blobDL(syncedLyricContents, `${fileName}.lrc`);

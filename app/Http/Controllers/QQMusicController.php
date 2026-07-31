@@ -21,8 +21,8 @@ class QQMusicController extends Controller
 					'SONGNAME' => $req['title'],
 					'SINGERNAME' => $req['artist'],
 					'TYPE' => 2,
-				'RANGE_MIN' => 1,
-				'RANGE_MAX' => 50
+					'RANGE_MIN' => 1,
+					'RANGE_MAX' => 50
 				]);
 			libxml_use_internal_errors(true);
 			$xmlResponse = simplexml_load_string(
@@ -93,11 +93,10 @@ class QQMusicController extends Controller
 				$lyricXml = $decoder->decode($data['lyric']['content']);
 				$lyricXml = Str::between($lyricXml, 'LyricContent="', "\"/>\n");
 				abort_if(empty($lyricXml), 404, 'Empty lyric, download aborted');
-				$lyric = 
-					env('MINILYRICS_COMPATIBLE')?
-						Str::replace(">\n", "> \n", parent::qrcToLrc($lyricXml), false):
-						parent::qrcToLrc($lyricXml);
-				//^Trailing space to evade MiniLyrics bug^
+				$lyric =
+					env('MINILYRICS_COMPATIBLE') ?
+					Str::replace(">\n", "> \n", parent::qrcToLrc($lyricXml), false) :
+					parent::qrcToLrc($lyricXml);
 			} else {
 				if (is_array($data['lyric']['content'])) {
 					Log::error('Malformed lyric content: ', $data['lyric']['content']);
@@ -122,7 +121,8 @@ class QQMusicController extends Controller
 	}
 	private static function matchError(mixed $ex): string
 	{
-		Log::error($ex);
+		if (get_class($ex) === RequestException::class && $ex->response->status() !== 404)
+			Log::error($ex);
 		return match (get_class($ex)) {
 			ConnectionException::class => "QQ Music connection error {$ex->getCode()}: {$ex->getMessage()}",
 			RequestException::class => "QQ Music HTTP Error {$ex->response->status()}",

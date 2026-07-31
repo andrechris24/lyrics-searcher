@@ -8,7 +8,7 @@
 				$artists = [];
 				$length = gmdate('i:s', round($result['duration'] / 1000, 0, PHP_ROUND_HALF_UP));
 				foreach ($result['artists'] as $ar) {
-				    $artists[] = $ar['name'];
+					$artists[] = $ar['name'];
 				}
 			@endphp
 			<a class="list-group-item list-group-item-action" data-coreui-toggle="modal"

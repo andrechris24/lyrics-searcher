@@ -17,14 +17,14 @@
 	</div>
 	@php
 		$queries = [
-		    'prev' => [
-		        'query' => request('query'),
-		        'page' => request('page') === null ? 1 : request('page') - 1
-		    ],
-		    'next' => [
-		        'query' => request('query'),
-		        'page' => (request('page') ?? 1) + 1
-		    ]
+			'prev' => [
+				'query' => request('query'),
+				'page' => request('page') === null ? 1 : request('page') - 1
+			],
+			'next' => [
+				'query' => request('query'),
+				'page' => (request('page') ?? 1) + 1
+			]
 		];
 	@endphp
 	<div class="mx-5 px-5 mb-5 pb-5">

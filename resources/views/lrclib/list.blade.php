@@ -14,9 +14,9 @@
 			@php
 				$length = gmdate('i:s', $result['duration']);
 				$wbw = \Illuminate\Support\Str::contains(
-				    $result['lyricsfile'],
-				    'words:',
-				    ignoreCase: true
+					$result['lyricsfile'],
+					'words:',
+					ignoreCase: true
 				);
 			@endphp
 			<a class="list-group-item list-group-item-action"
@@ -46,4 +46,4 @@
 			</a>
 		@endforeach
 	</div>
-	@endif
+@endif

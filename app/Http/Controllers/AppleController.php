@@ -40,8 +40,8 @@ class AppleController extends Controller
 				'id' => $id,
 				'plain' => $r['plain'],
 				'synced' => $r['lrc'],
-				'syllable' => env('MINILYRICS_COMPATIBLE')?Str::replace(">\n", "> \n", $r['elrc'], false):$r['elrc'],
-				'multisyl' => env('MINILYRICS_COMPATIBLE')?Str::replace(">\n", "> \n", $r['elrcMultiPerson'], false):$r['elrcMultiPerson'],
+				'syllable' => env('MINILYRICS_COMPATIBLE') ? Str::replace(">\n", "> \n", $r['elrc'], false) : $r['elrc'],
+				'multisyl' => env('MINILYRICS_COMPATIBLE') ? Str::replace(">\n", "> \n", $r['elrcMultiPerson'], false) : $r['elrcMultiPerson'],
 				'ttml' => $r['ttmlContent'],
 				'type' => $r['type'],
 				'writers' => implode(', ', $r['metadata']['songwriters']),
@@ -56,11 +56,12 @@ class AppleController extends Controller
 	}
 	private static function matchError(mixed $ex): string
 	{
-		Log::error($ex);
+		if (get_class($ex) === RequestException::class && $ex->response->status() !== 404)
+			Log::error($ex);
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "Apple Music connection error {$ex->getCode()}: {$ex->getMessage()}",
-			RequestException::class => $ex->response->status() === 404 ? 'No result or lyrics' : "Apple Music HTTP Error {$ex->response->status()}",
+			RequestException::class => $ex->response->status() === 404 ? 'No result' : "Apple Music HTTP Error {$ex->response->status()}",
 			default => "Apple Music unexpected error: {$ex->getMessage()}"
 		};
 	}

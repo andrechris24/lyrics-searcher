@@ -149,4 +149,3 @@
 		</div>
 	</div>
 </div>
-<x-no-script />

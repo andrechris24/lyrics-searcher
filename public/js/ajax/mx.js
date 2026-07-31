@@ -104,4 +104,5 @@ function sendAjax(url, data) {
 function navigate(url, data) {
 	$("#mx-container").LoadingOverlay("show");
 	sendAjax(url, data);
+	$("html, body").animate({scrollTop: $("#mx-container").offset().top},200);
 }
