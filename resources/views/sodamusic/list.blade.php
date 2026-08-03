@@ -37,7 +37,7 @@
 						<span class="page-link">{!! __('pagination.previous') !!}</span>
 					@else
 						<a class="page-link" rel="prev"
-							href="javascript:navigate('{{ request('query') }}',{{ request('offset') - 20 }})">
+							onclick="navigate('{{ request('query') }}',{{ request('offset') - 20 }})">
 							{!! __('pagination.previous') !!}
 						</a>
 					@endif
@@ -45,7 +45,7 @@
 				<li @class(['page-item', 'disabled' => !$data['has_more']]) aria-disabled="{{ !$data['has_more'] }}">
 					@if ($data['has_more'])
 						<a class="page-link" rel="next"
-							href="javascript:navigate('{{ request('query') }}',{{ $data['next_cursor'] }})">
+							onclick="navigate('{{ request('query') }}',{{ $data['next_cursor'] }})">
 							{!! __('pagination.next') !!}
 						</a>
 					@else

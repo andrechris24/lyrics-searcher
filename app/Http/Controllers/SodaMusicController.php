@@ -66,8 +66,10 @@ class SodaMusicController extends Controller
 	}
 	private static function matchError(mixed $ex): string
 	{
-		if (get_class($ex) === RequestException::class && $ex->response->status() !== 404)
-			Log::error($ex);
+		if (get_class($ex) === RequestException::class) {
+			Log::warning($ex->response->effectiveUri());
+			if ($ex->response->status() !== 404) Log::error($ex);
+		}
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "Soda Music connection error {$ex->getCode()}: {$ex->getMessage()}",

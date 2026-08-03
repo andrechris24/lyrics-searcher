@@ -165,7 +165,7 @@
 							<span class="page-link">{!! __('pagination.previous') !!}</span>
 						@else
 							<a class="page-link" rel="prev"
-								href="javascript:navigate('{{ request()->url() }}',{{ json_encode($queries['prev']) }})">
+								onclick="navigate('{{ request()->url() }}',{{ json_encode($queries['prev']) }})">
 								{!! __('pagination.previous') !!}
 							</a>
 						@endif
@@ -178,7 +178,7 @@
 						aria-disabled="{{ $nextOffset >= $header['available'] }}">
 						@if ($nextOffset < $header['available'])
 							<a class="page-link" rel="next"
-								href="javascript:navigate('{{ request()->url() }}',{{ json_encode($queries['next']) }})">
+								onclick="navigate('{{ request()->url() }}',{{ json_encode($queries['next']) }})">
 								{!! __('pagination.next') !!}
 							</a>
 						@else

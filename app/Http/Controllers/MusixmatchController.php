@@ -71,7 +71,7 @@ class MusixmatchController extends Controller
 				['html' => view('musixmatch.list', compact('data', 'header'))->render()]
 			);
 		} catch (ConnectionException | JsonException $th) {
-			abort(500, self::matchError($th));
+			abort(500, self::matchMXError($th));
 		}
 	}
 	public function advanced(Request $req)
@@ -103,7 +103,7 @@ class MusixmatchController extends Controller
 				'html' => view('musixmatch.list', compact('data', 'header'))->render()
 			]);
 		} catch (ConnectionException | JsonException $th) {
-			abort(500, self::matchError($th));
+			abort(500, self::matchMXError($th));
 		}
 	}
 	public function charts(Request $req)
@@ -146,7 +146,7 @@ class MusixmatchController extends Controller
 				'html' => view('musixmatch.list', compact('data', 'header', 'country', 'typeName'))->render()
 			]);
 		} catch (ConnectionException | JsonException $th) {
-			abort(500, self::matchError($th));
+			abort(500, self::matchMXError($th));
 		}
 	}
 	public function get(int $id, string $type)
@@ -189,7 +189,7 @@ class MusixmatchController extends Controller
 			};
 			return response()->json($lyrics);
 		} catch (ConnectionException | JsonException $th) {
-			abort(500, self::matchError($th));
+			abort(500, self::matchMXError($th));
 		}
 	}
 	private static function richsync(array $lrc): ?string
@@ -261,7 +261,7 @@ class MusixmatchController extends Controller
 			}
 		}
 	}
-	private static function matchError(mixed $ex): string
+	public static function matchMXError(mixed $ex): string
 	{
 		Log::error($ex);
 		return match (get_class($ex)) {
