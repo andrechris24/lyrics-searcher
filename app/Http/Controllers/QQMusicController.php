@@ -99,7 +99,7 @@ class QQMusicController extends Controller
 					parent::qrcToLrc($lyricXml);
 			} else {
 				if (is_array($data['lyric']['content'])) {
-					Log::error('Malformed lyric content: ', $data['lyric']['content']);
+					Log::error('Malformed lyric content from QQ Music: ', $data['lyric']['content']);
 					abort(
 						500,
 						'Malformed lyric content. Wait for a while and try again. Contact site owner if issue persist.'
@@ -122,7 +122,7 @@ class QQMusicController extends Controller
 	private static function matchError(mixed $ex): string
 	{
 		if (get_class($ex) === RequestException::class) {
-			Log::warning($ex->response->effectiveUri());
+			Log::warning('Request failed for ' . $ex->response->effectiveUri());
 			if ($ex->response->status() !== 404) Log::error($ex);
 		}
 		return match (get_class($ex)) {

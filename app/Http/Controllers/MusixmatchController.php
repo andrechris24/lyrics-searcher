@@ -230,11 +230,10 @@ class MusixmatchController extends Controller
 	public static function generateToken(): void
 	{
 		if (!Session::has('mx_token')) {
-			$r = Http::retry(2, 5000, throw: false)->timeout(25000)
-				->get('https://apic-desktop.musixmatch.com/ws/1.1/token.get', [
-					'user_language' => 'en',
-					'app_id' => 'web-desktop-app-v1.0'
-				])->json(null, null, JSON_THROW_ON_ERROR);
+			$r = Http::retry(2, 5000, throw: false)->timeout(25000)->get(
+				'https://apic-desktop.musixmatch.com/ws/1.1/token.get',
+				['user_language' => 'en', 'app_id' => 'web-desktop-app-v1.0']
+			)->json(null, null, JSON_THROW_ON_ERROR);
 			$header = $r['message']['header'];
 			abort_if(
 				$header['status_code'] !== 200,

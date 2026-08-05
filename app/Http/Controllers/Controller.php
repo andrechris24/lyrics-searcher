@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Log, Session};
 use Illuminate\Support\Str;
 use JsonException;
@@ -41,7 +42,7 @@ abstract class Controller
 	{
 		if ($tmHeader['status_code'] === 401) Session::forget('mx_token');
 		return match ($tmHeader['status_code']) {
-			404 => "Song does not exist on database",
+			404 => "Song does not exist on Musixmatch database",
 			401 => "Too many requests. Please try again to regenerate musixmatch token.",
 			400 => "Invalid Musixmatch input, please report this issue.",
 			default => "Musixmatch database HTTP Error {$tmHeader['status_code']}"
@@ -144,7 +145,6 @@ abstract class Controller
 					$lyricLine,
 					self::formatTime(($startTime + $duration) / 1000)
 				);
-				//^Trailing space to evade MiniLyrics bug^
 				if ($idx === count($lines) - 1)
 					$lyricText .= "[" . self::formatTime(($startTime + $duration) / 1000 + 5) . "]";
 			}
@@ -167,5 +167,21 @@ abstract class Controller
 				return sprintf("<%s>", self::formatTime(((int)$matches[1] + (int)$matches[2]) / 1000));
 			});
 		return $converted;
+	}
+
+	protected static function lyricallyError(mixed $e)
+	{
+		if (get_class($e) === RequestException::class) {
+			Log::warning('Request failed for ' . $e->response->effectiveUri());
+			if ($e->response->status() !== 404) Log::error($e);
+			$json = $e->response->json();
+			$reqerr = array_key_exists('message', $json) ? $json['message'] : $json['error'];
+		}
+		return match (get_class($e)) {
+			JsonException::class => "Error parsing Lyrically API response: {$e->getMessage()}",
+			ConnectionException::class => "Lyrically API connection error {$e->getCode()}: {$e->getMessage()}",
+			RequestException::class => $e->response->status() === 404 ? $reqerr : "Lyrically API Error {$e->response->status()}",
+			default => "Lyrically API unexpected error: {$e->getMessage()}"
+		};
 	}
 }

@@ -1,4 +1,4 @@
-/* global toast, blobDL, basicForm */
+/* global toast, blobDL, basicForm, coreui */
 let syncedLyricContents, sylLyricContent, plainLyricContent, fileName;
 const lyricsModal = document.getElementById("modalLyrics"),
 	plainLyricDL = document.getElementById("dl-plain"),
@@ -115,6 +115,13 @@ function sendAjax(data){
 	})
 		.done(function (r) {
 			$("#deezer-container").html(r.html);
+			const openTooltip = document.querySelectorAll(
+				'a[data-coreui-toggle="tooltip"].btn-success'
+			);
+			// eslint-disable-next-line no-unused-vars
+			const openList = [...openTooltip].map(
+				(tooltipTriggerEl) => new coreui.Tooltip(tooltipTriggerEl)
+			);
 		})
 		.fail(function (xhr, st, err) {
 			console.warn(err);

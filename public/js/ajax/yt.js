@@ -1,4 +1,4 @@
-/* global blobDL, toast, basicForm */
+/* global blobDL, toast, basicForm, coreui */
 $(basicForm).submit(function (event) {
 	event.preventDefault();
 	const formData = $(this).serialize();
@@ -8,6 +8,13 @@ $(basicForm).submit(function (event) {
 	$.ajax({ url: "/youtube/results", data: formData })
 		.done(function (r) {
 			$("#yt-container").html(r.html);
+			const openDLTooltip = document.querySelectorAll(
+				'[data-coreui-toggle="tooltip"]'
+			);
+			// eslint-disable-next-line no-unused-vars
+			const openDLList = [...openDLTooltip].map(
+				(tooltipTriggerEl) => new coreui.Tooltip(tooltipTriggerEl)
+			);
 			$(".download-btn").on("click", function (e) {
 				e.preventDefault();
 				const songName = $(this).data("title"),

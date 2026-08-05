@@ -32,12 +32,7 @@ class SpotifyController extends Controller
 			}
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				match (get_class($th)) {
-					JsonException::class => "Error parsing response: {$th->getMessage()}",
-					ConnectionException::class => "Spotify API connection error {$th->getCode()}: {$th->getMessage()}",
-					RequestException::class => "Spotify API Error {$th->response->status()}",
-					default => "Spotify API unexpected error: {$th->getMessage()}"
-				}
+				parent::lyricallyError($th)
 			);
 		}
 	}

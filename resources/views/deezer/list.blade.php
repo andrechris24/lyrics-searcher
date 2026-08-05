@@ -15,7 +15,7 @@
 							: (!empty($result['album']['cover_small'])
 								? $result['album']['cover_small']
 								: 'https://placehold.co/500?text=' .
-									urlencode($result['album']['name']))));
+									urlencode($result['title']))));
 			@endphp
 			<div class="col">
 				<div class="card">

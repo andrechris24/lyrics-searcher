@@ -4,9 +4,6 @@
 
 **This repository is the source code of [hosted application](https://andrechris24.serv00.net).**
 
-<!-- > [!NOTE]
-> There is a breaking change on LRCLib side, so all LRCLib lists shows lyrics with Word-by-Word type available despite it isn't. Update is in progress. -->
-
 ## Tech Stack
 
 - Laravel 13 with PHP 8.4
@@ -20,7 +17,7 @@
 ## Setup
 
 > [!IMPORTANT]
-> Make sure `php_openssl` extension is enabled and the `APP_URL` was set properly in .env file, like `http://127.0.0.1:8000` or `http://sample.test`. If you want to self host, enable SSL extension on web server too. This command below are for Windows, and all commands except one are same for Linux.
+> Make sure `php_openssl` extension is enabled and the `APP_URL` was set properly in .env file, like `http://127.0.0.1:8000` or `http://sample.test`. If you want to self host, enable SSL extension on web server too. This command below are for Windows, and all commands except one are same for Linux. The env file contains `MINILYRICS_COMPATIBLE` setting if you use MiniLyrics, defaults to true.
 
 ```sh
 # Clone and install
@@ -76,7 +73,7 @@ That was my version of `aimp_webLyrics.ini` file containing remote source from p
 - Example path (Windows): `C:\Program Files\AIMP\Plugins\aimp_webLyrics`
 
 > [!WARNING]
-> Every AIMP updates resets aimp_webLyrics.ini file, so you need to replace again. Although AIMP can read Enhanced LRC, WebLyrics plugin will remove Enhanced LRC timestamps when lyrics are fetched from remote source.
+> Every AIMP updates resets aimp_webLyrics.ini file, so you need to replace again. Although AIMP can read Enhanced LRC, AIMP does not support it and WebLyrics plugin will remove Enhanced LRC timestamps when lyrics are fetched from remote source.
 
 ## References
 

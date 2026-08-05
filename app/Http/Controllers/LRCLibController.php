@@ -102,7 +102,7 @@ class LRCLibController extends Controller
 	private static function matchError(mixed $ex): string
 	{
 		if (get_class($ex) === RequestException::class) {
-			Log::warning($ex->response->effectiveUri());
+			Log::warning('Request failed for ' . $ex->response->effectiveUri());
 			if ($ex->response->status() !== 404) Log::error($ex);
 		}
 		return match (get_class($ex)) {

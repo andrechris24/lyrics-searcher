@@ -1,4 +1,4 @@
-/* global toast, blobDL, basicForm */
+/* global toast, blobDL, basicForm, coreui */
 let syncedLyricContents,
 	sylLyricContent,
 	plainLyricContent,
@@ -56,14 +56,14 @@ if (lyricsModal) {
 				}
 				if (data.syllable !== null && data.syllable !== "") {
 					$("#dl-syllyric").removeClass("disabled");
-					sylLyricContent = `${metaLyric}${data.syllable}\n[${duration}.000]`;
+					sylLyricContent = `${metaLyric}${data.syllable}`;
 				} else {
 					sylLyricContent = "";
 					$("#dl-syllyric").addClass("disabled");
 				}
 				if (data.multisyl !== null && data.multisyl !== "") {
 					$("#dl-multisyllyric").removeClass("disabled");
-					multisylLyricContent = `${metaLyric}${data.multisyl}\n[${duration}.000]`;
+					multisylLyricContent = `${metaLyric}${data.multisyl}`;
 				} else {
 					multisylLyricContent = "";
 					$("#dl-multisyllyric").addClass("disabled");
@@ -127,6 +127,13 @@ $(basicForm).submit(function (event) {
 	})
 		.done(function (r) {
 			$("#apple-container").html(r.html);
+			const openTooltip = document.querySelectorAll(
+				'a[data-coreui-toggle="tooltip"].btn-success'
+			);
+			// eslint-disable-next-line no-unused-vars
+			const openList = [...openTooltip].map(
+				(tooltipTriggerEl) => new coreui.Tooltip(tooltipTriggerEl)
+			);
 		})
 		.fail(function (xhr, st, err) {
 			console.warn(err);

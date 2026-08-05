@@ -36,12 +36,14 @@ class AppleController extends Controller
 				Log::error("Apple Music API error: {$r['message']}", $r);
 				abort(500, 'Oops, an error occurred with Apple Music API.');
 			}
+			if ($r['type'] === 'Syllable')
+				$endtime = $r['content'][count($r['content']) - 1]['sectionEnd'];
 			return response()->json([
 				'id' => $id,
 				'plain' => $r['plain'],
 				'synced' => $r['lrc'],
-				'syllable' => env('MINILYRICS_COMPATIBLE') ? Str::replace(">\n", "> \n", $r['elrc'], false) : $r['elrc'],
-				'multisyl' => env('MINILYRICS_COMPATIBLE') ? Str::replace(">\n", "> \n", $r['elrcMultiPerson'], false) : $r['elrcMultiPerson'],
+				'syllable' => self::mlWorkaround($r['elrc'], $endtime ?? 0),
+				'multisyl' => self::mlWorkaround($r['elrcMultiPerson'], $endtime ?? 0),
 				'ttml' => $r['ttmlContent'],
 				'type' => $r['type'],
 				'writers' => implode(', ', $r['metadata']['songwriters']),
@@ -50,21 +52,31 @@ class AppleController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				self::matchError($th)
+				parent::lyricallyError($th)
 			);
 		}
 	}
 	private static function matchError(mixed $ex): string
 	{
 		if (get_class($ex) === RequestException::class) {
-			Log::warning($ex->response->effectiveUri());
+			Log::warning('Request failed for ' . $ex->response->effectiveUri());
 			if ($ex->response->status() !== 404) Log::error($ex);
 		}
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "Apple Music connection error {$ex->getCode()}: {$ex->getMessage()}",
-			RequestException::class => $ex->response->status() === 404 ? 'No result' : "Apple Music HTTP Error {$ex->response->status()}",
+			RequestException::class => "Apple Music HTTP Error {$ex->response->status()}",
 			default => "Apple Music unexpected error: {$ex->getMessage()}"
 		};
+	}
+	private static function mlWorkaround(string|null $elrc, int $last): string|null
+	{
+		if (empty($elrc)) return null;
+		return env('MINILYRICS_COMPATIBLE') ?
+			sprintf(
+				"%s\n[%s]",
+				Str::replace(">\n", "> \n", $elrc, false),
+				parent::formatTime($last / 1000)
+			) : $elrc;
 	}
 }

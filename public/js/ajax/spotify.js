@@ -1,4 +1,4 @@
-/* global blobDL, toast, Swal, swalConfirm, basicForm */
+/* global blobDL, toast, Swal, swalConfirm, basicForm, coreui */
 let plainContents, syncedContents, fileName, track_id, meta;
 const plainDL = document.getElementById("download-link-plain"),
 	syncedDL = document.getElementById("download-link-synced"),
@@ -17,6 +17,13 @@ $(basicForm).submit(function (event) {
 	$.ajax({ url: "/spotify/results", data: formData })
 		.done(function (r) {
 			$("#spotify-container").html(r.html);
+			const openTooltip = document.querySelectorAll(
+				'a[data-coreui-toggle="tooltip"].btn-success'
+			);
+			// eslint-disable-next-line no-unused-vars
+			const openList = [...openTooltip].map(
+				(tooltipTriggerEl) => new coreui.Tooltip(tooltipTriggerEl)
+			);
 		})
 		.fail(function (xhr, st, err) {
 			console.warn(err);

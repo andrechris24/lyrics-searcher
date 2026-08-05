@@ -87,20 +87,20 @@ class DeezerController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				self::matchError($th)
+				parent::lyricallyError($th)
 			);
 		}
 	}
 	private static function matchError(mixed $ex): string
 	{
 		if (get_class($ex) === RequestException::class) {
-			Log::warning($ex->response->effectiveUri());
+			Log::warning('Request failed for ' . $ex->response->effectiveUri());
 			if ($ex->response->status() !== 404) Log::error($ex);
 		}
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "Deezer API connection error {$ex->getCode()}: {$ex->getMessage()}",
-			RequestException::class => $ex->response->status() === 404 ? 'No result' : "Deezer API error {$ex->response->status()}",
+			RequestException::class => "Deezer API error {$ex->response->status()}",
 			default => "Deezer API unexpected error: {$ex->getMessage()}"
 		};
 	}

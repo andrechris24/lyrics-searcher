@@ -146,7 +146,6 @@ function parseKLyric(lyricText) {
 			}
 			enhancedlyricText += 
 				`${lyricLine}<${formatTime(startTime + duration)}>${$('meta[name="minilyrics-compatibility"]').attr("content")==true?' ':''}\n`;
-			//^Trailing space to evade MiniLyrics bug^
 		}
 	}
 	return enhancedlyricText;

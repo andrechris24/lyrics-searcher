@@ -31,8 +31,7 @@
 									'btn',
 									'btn-success',
 									'disabled' => empty($result['trackId'])
-								])
-								@empty($result['trackId']) aria-disabled="true" @endempty
+								]) aria-disabled="{{empty($result['trackId'])}}"
 								data-coreui-toggle="tooltip" data-coreui-title="View on Spotify" target="_blank">
 								<i class="fa-brands fa-spotify"></i>
 							</a>

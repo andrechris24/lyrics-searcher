@@ -11,7 +11,7 @@
 		</div>
 		<button type="submit" class="btn btn-primary">Search</button>
 	</div>
-	@if (in_array($provider, ['lrclib', 'musixmatch', 'kugou']))
+	@if (in_array($provider, ['lrclib', 'kugou']))
 		<small class="form-text">
 			<a href="{{ route($provider . '.advanced') }}">Advanced search</a>
 		</small>

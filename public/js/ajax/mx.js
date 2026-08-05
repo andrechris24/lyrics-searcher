@@ -1,4 +1,4 @@
-/* global blobDL, toast */
+/* global blobDL, toast, coreui */
 $("#mx-basic-form").submit(function (event) {
 	event.preventDefault();
 	$("#mx-loader").removeClass("d-none");
@@ -21,6 +21,13 @@ function sendAjax(url, data) {
 	$.ajax({ url: url, data: data })
 		.done(function (r) {
 			$("#mx-container").html(r.html);
+			const allTooltip = document.querySelectorAll(
+				'[data-coreui-toggle="tooltip"]'
+			);
+			// eslint-disable-next-line no-unused-vars
+			const ttList = [...allTooltip].map(
+				(tooltipTriggerEl) => new coreui.Tooltip(tooltipTriggerEl)
+			);
 			$(".download-btn").on("click", function (e) {
 				e.preventDefault();
 				const id = $(this).data("id"),

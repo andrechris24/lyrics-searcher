@@ -27,7 +27,7 @@ class YoutubeController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				self::matchError($th)
+				parent::lyricallyError($th)
 			);
 		}
 	}
@@ -48,7 +48,7 @@ class YoutubeController extends Controller
 					Log::error('YouTube API error: ', $r);
 					abort(500, $r['error']);
 				} else {
-					Log::error('Malformed lyric content: ', $r);
+					Log::error('Malformed lyric content from YouTube: ', $r);
 					abort(500, 'Malformed lyric content, please contact site owner.');
 				}
 			} else if (empty($r) || $r === false) $r = $response->body();
@@ -56,21 +56,8 @@ class YoutubeController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				self::matchError($th)
+				parent::lyricallyError($th)
 			);
 		}
-	}
-	private static function matchError(mixed $ex): string
-	{
-		if (get_class($ex) === RequestException::class) {
-			Log::warning($ex->response->effectiveUri());
-			if ($ex->response->status() !== 404) Log::error($ex);
-		}
-		return match (get_class($ex)) {
-			JsonException::class => "Error parsing response: {$ex->getMessage()}",
-			ConnectionException::class => "YouTube API connection error {$ex->getCode()}: {$ex->getMessage()}",
-			RequestException::class => "YouTube API HTTP Error {$ex->response->status()}",
-			default => "YouTube API unexpected error: {$ex->getMessage()}"
-		};
 	}
 }

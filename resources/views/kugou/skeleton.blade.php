@@ -2,7 +2,7 @@
 	aria-hidden="true">
 	<li class="list-group-item placeholder-glow">
 		<span class="placeholder col-7"></span>
-		<span class="placeholder col-5"></span>
+		<span class="placeholder col-4"></span>
 		<p class="mb-1 placeholder-glow"><span class="placeholder col-12"></span></p>
 		<small class="placeholder-glow"><span class="placeholder col-12"></span></small>
 	</li>

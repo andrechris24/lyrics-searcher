@@ -81,12 +81,14 @@
 						<li>
 							<a class="dropdown-item" href="#" id="dl-syllyric"
 								data-coreui-toggle="tooltip"
-								data-coreui-title="Not all players supports Syllable lyrics, use with compatible players like OuterTune or BetterLyrics">Syllable</a>
+								data-coreui-title="Not all players supports Syllable lyrics, use with compatible players like OuterTune (Android) or BetterLyrics (Windows)">
+							Syllable
+							</a>
 						</li>
 						<li>
 							<a class="dropdown-item" href="#" id="dl-multisyllyric"
 								data-coreui-toggle="tooltip"
-								data-coreui-title="Not all players supports Syllable lyrics, use with compatible players like OuterTune or BetterLyrics">
+								data-coreui-title="Not all players supports Syllable lyrics, use with compatible players like OuterTune (Android) or BetterLyrics (Windows)">
 								Multi Person Syllable
 							</a>
 						</li>

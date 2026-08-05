@@ -7,10 +7,10 @@ Artisan::command('inspire', function () {
 	$this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 Artisan::command('usertoken', function () {
-	$musixmatch = Http::get('https://apic-desktop.musixmatch.com/ws/1.1/token.get', [
-		'user_language' => 'en',
-		'app_id' => 'web-desktop-app-v1.0'
-	])->throw();
+	$musixmatch = Http::get(
+		'https://apic-desktop.musixmatch.com/ws/1.1/token.get', 
+		['user_language' => 'en','app_id' => 'web-desktop-app-v1.0']
+	)->throw();
 	$r = $musixmatch->json(null, null, JSON_THROW_ON_ERROR);
 	$header = $r['message']['header'];
 	abort_if(

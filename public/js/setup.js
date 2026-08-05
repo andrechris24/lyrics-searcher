@@ -7,7 +7,8 @@ $.ajaxSetup({
 	}
 });
 $(document).on("keydown", function (e) {
-	// Ignore if user is already typing in an input, textarea, or contenteditable
+	// Ignore if user is already typing in an input, textarea, or contenteditable, 
+	// and when any modal is shown
 	if (
 		$(e.target).is('input, textarea, [contenteditable="true"]') ||
 		$(".modal.show").length
