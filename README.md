@@ -24,7 +24,7 @@
 git clone git@github.com:andrechris24/lyrics-searcher.git
 cd lyrics-searcher
 composer install
-npm install #Optional, this is for eslint
+pnpm install #Optional, this is for eslint. You can use npm instead of pnpm
 
 # Set Environment
 copy .env.example .env #Linux: use cp instead of copy
