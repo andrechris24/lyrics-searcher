@@ -22,9 +22,15 @@ class DeezerController extends Controller
 			)->json(null, null, JSON_THROW_ON_ERROR);
 			return response()->json(['html' => view('deezer.list', $r)->render()]);
 		} catch (ConnectionException | JsonException | RequestException $th) {
+			Log::error($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				self::matchError($th)
+				match (get_class($th)) {
+					JsonException::class => "Error parsing response: {$th->getMessage()}",
+					ConnectionException::class => "Deezer API connection error {$th->getCode()}: {$th->getMessage()}",
+					RequestException::class => "Deezer API error {$th->response->status()}",
+					default => "Deezer API unexpected error: {$th->getMessage()}"
+				}
 			);
 		}
 	}
@@ -90,19 +96,6 @@ class DeezerController extends Controller
 				parent::lyricallyError($th)
 			);
 		}
-	}
-	private static function matchError(mixed $ex): string
-	{
-		if (get_class($ex) === RequestException::class) {
-			Log::warning('Request failed for ' . $ex->response->effectiveUri());
-			if ($ex->response->status() !== 404) Log::error($ex);
-		}
-		return match (get_class($ex)) {
-			JsonException::class => "Error parsing response: {$ex->getMessage()}",
-			ConnectionException::class => "Deezer API connection error {$ex->getCode()}: {$ex->getMessage()}",
-			RequestException::class => "Deezer API error {$ex->response->status()}",
-			default => "Deezer API unexpected error: {$ex->getMessage()}"
-		};
 	}
 	private static function mergeSyl(array $syl): string
 	{

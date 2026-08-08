@@ -36,7 +36,7 @@
 					@if (in_array(request('offset'), [0, null]))
 						<span class="page-link">{!! __('pagination.previous') !!}</span>
 					@else
-						<a class="page-link" rel="prev"
+						<a class="page-link" rel="prev" href="javascript:"
 							onclick="navigate('{{ request('query') }}',{{ request('offset') - 20 }})">
 							{!! __('pagination.previous') !!}
 						</a>
@@ -49,7 +49,7 @@
 				])
 					aria-disabled="{{ !($nextOffset < $data['songCount']) }}">
 					@if ($nextOffset < $data['songCount'])
-						<a class="page-link" rel="next"
+						<a class="page-link" rel="next" href="javascript:"
 							onclick="navigate('{{ request('query') }}',{{ (request('offset') ?? 0) + 20 }})">
 							{!! __('pagination.next') !!}
 						</a>

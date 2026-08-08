@@ -149,10 +149,7 @@ class KugouController extends Controller
 	}
 	private static function matchError(mixed $ex): string
 	{
-		if (get_class($ex) === RequestException::class) {
-			Log::warning('Request failed for ' . $ex->response->effectiveUri());
-			if ($ex->response->status() !== 404) Log::error($ex);
-		}
+		Log::error($ex);
 		return match (get_class($ex)) {
 			JsonException::class => "Error parsing response: {$ex->getMessage()}",
 			ConnectionException::class => "Kugou Music connection error {$ex->getCode()}: {$ex->getMessage()}",

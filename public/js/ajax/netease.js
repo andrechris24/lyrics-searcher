@@ -51,7 +51,7 @@ if (lyricsModal) {
 					lyricContents = `${fileName}\n\n${data.lrc.lyric}`;
 					ext = "txt";
 				} else {
-					lyricContents = `${metaLyric}[ve: ${data.lrc.version ?? 1.0}]\n${data.lrc.lyric}`;
+					lyricContents = `${metaLyric}[ve: ${data.lrc.version ?? 1}]\n${data.lrc.lyric}`;
 					ext = "lrc";
 				}
 				$("#lyrics-content").text(data.lrc.lyric);
@@ -122,7 +122,7 @@ klyricDL.onclick = function (e) {
 };
 function parseKLyric(lyricText) {
 	let enhancedlyricText = "";
-	let matches;
+	let matches, timestamp;
 	let metaRegex = /^\[(\S+):(\S+)\]$/,
 		timestampsRegex = /^\[(\d+),(\d+)\]/,
 		timestamps2Regex = /\((\d+),(\d+)\)([^(]*)/g,
@@ -144,10 +144,12 @@ function parseKLyric(lyricText) {
 				lyricLine += `<${formatTime(subStartTime)}>${subWord}`;
 				subStartTime += subDuration;
 			}
+			timestamp=formatTime(startTime + duration);
 			enhancedlyricText += 
-				`${lyricLine}<${formatTime(startTime + duration)}>${$('meta[name="minilyrics-compatibility"]').attr("content")==true?' ':''}\n`;
+				`${lyricLine}<${timestamp}>${$('meta[name="minilyrics-compatibility"]').attr("content")==true?' ':''}\n`;
 		}
 	}
+	enhancedlyricText+=`\n[${timestamp}]`;
 	return enhancedlyricText;
 }
 function formatTime(time) {

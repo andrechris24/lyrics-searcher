@@ -1,6 +1,6 @@
 # LRCSearch
 
-<p align="center">A Laravel based lyrics searcher to Kugou, Musixmatch, NetEase, QQ Music, Soda Music, LRCLib, Deezer, Spotify, YouTube, and Apple Music, plus optionally Local database and Lyrics.ovh. This lyrics searcher contains quick search and per-provider lyrics search. LRCSearch also provides LRC converter from SRT and KRC.</p>
+<p align="center">A Laravel based lyrics searcher to Kugou, Musixmatch, NetEase, QQ Music, LRCLib, Deezer, Spotify, YouTube, and Apple Music, plus optionally Local database and Lyrics.ovh. This lyrics searcher contains quick search and per-provider lyrics search. LRCSearch also provides LRC converter from SRT and KRC.</p>
 
 **This repository is the source code of [hosted application](https://andrechris24.serv00.net).**
 
@@ -68,7 +68,7 @@ Solution:
 
 ## Why aimp_webLyrics.ini file exist?
 
-That was my version of `aimp_webLyrics.ini` file containing remote source from providers above (except Soda Music & YouTube) and some codes are taken from AIMP WebLyrics forum. If you want, do setup first, then run `php artisan usertoken` to generate token and replace all `<MX_TOKEN_X>` inside INI file, and the token should be different. After entering Musixmatch token, replace original INI file inside `\path\to\AIMP\Plugins\aimp_webLyrics` folder.
+That was my version of `aimp_webLyrics.ini` file containing remote source from providers above (except YouTube) and some codes are taken from AIMP WebLyrics forum. If you want, do setup first, then run `php artisan usertoken` to generate token and replace all `<MX_TOKEN_X>` inside INI file, and the token should be different. After entering Musixmatch token, replace original INI file inside `\path\to\AIMP\Plugins\aimp_webLyrics` folder.
 
 - Example path (Windows): `C:\Program Files\AIMP\Plugins\aimp_webLyrics`
 

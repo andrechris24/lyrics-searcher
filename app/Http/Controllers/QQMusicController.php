@@ -94,7 +94,7 @@ class QQMusicController extends Controller
 				$lyricXml = Str::between($lyricXml, 'LyricContent="', "\"/>\n");
 				abort_if(empty($lyricXml), 404, 'Empty lyric, download aborted');
 				$lyric =
-					env('MINILYRICS_COMPATIBLE') ?
+					env('MINILYRICS_COMPATIBLE', true) ?
 					Str::replace(">\n", "> \n", parent::qrcToLrc($lyricXml), false) :
 					parent::qrcToLrc($lyricXml);
 			} else {
@@ -121,10 +121,7 @@ class QQMusicController extends Controller
 	}
 	private static function matchError(mixed $ex): string
 	{
-		if (get_class($ex) === RequestException::class) {
-			Log::warning('Request failed for ' . $ex->response->effectiveUri());
-			if ($ex->response->status() !== 404) Log::error($ex);
-		}
+		Log::error($ex);
 		return match (get_class($ex)) {
 			ConnectionException::class => "QQ Music connection error {$ex->getCode()}: {$ex->getMessage()}",
 			RequestException::class => "QQ Music HTTP Error {$ex->response->status()}",

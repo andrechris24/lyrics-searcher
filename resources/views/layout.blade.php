@@ -5,7 +5,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="csrf-token" content="{{ csrf_token() }}">
-		<meta name="minilyrics-compatibility" content="{{env('MINILYRICS_COMPATIBLE')}}">
+		<meta name="minilyrics-compatibility" content="{{env('MINILYRICS_COMPATIBLE',true)}}">
 		<title>@yield('title') | {{ env('APP_NAME') }}</title>
 
 		<!-- CoreUI CSS -->
@@ -116,11 +116,6 @@
 									</a>
 								</li>
 							</ul>
-						</li>
-						<li class="nav-item col-sm-6 col-md-4 col-lg-auto col-12">
-							<a @class(['nav-link', 'active' => request()->routeIs('sodamusic.*')])
-								@if (request()->routeIs('sodamusic.*')) aria-current="page" @endif
-								href="{{ route('sodamusic.index') }}">Soda Music</a>
 						</li>
 						<li class="nav-item col-sm-6 col-md-4 col-lg-auto col-12">
 							<a @class(['nav-link', 'active' => request()->routeIs('local.*')])

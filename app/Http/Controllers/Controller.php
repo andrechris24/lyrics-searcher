@@ -141,12 +141,12 @@ abstract class Controller
 				}
 				$prevtime = $startTime + $duration;
 				$lyricText .= sprintf(
-					env("MINILYRICS_COMPATIBLE") ? "%s<%s> \n" : "%s<%s>\n",
+					env("MINILYRICS_COMPATIBLE", true) ? "%s<%s> \n" : "%s<%s>\n",
 					$lyricLine,
 					self::formatTime(($startTime + $duration) / 1000)
 				);
 				if ($idx === count($lines) - 1)
-					$lyricText .= "[" . self::formatTime(($startTime + $duration) / 1000 + 5) . "]";
+					$lyricText .= "[" . self::formatTime(($startTime + $duration + 1) / 1000) . "]";
 			}
 		}
 		return $lyricText;
@@ -160,12 +160,15 @@ abstract class Controller
 	protected static function qrcToLrc(string $qrcText): ?string
 	{
 		if (empty($qrcText)) return null;
+		$sylTime = '';
 		$converted = Str::of($qrcText)
 			->replaceMatches("/^\[(\d+),(\d+)\]/m", function (array $matches) {
 				return sprintf("[%s]", self::formatTime((int)$matches[1] / 1000));
-			})->replaceMatches("/\((\d+),(\d+)\)/", function (array $matches) {
-				return sprintf("<%s>", self::formatTime(((int)$matches[1] + (int)$matches[2]) / 1000));
+			})->replaceMatches("/\((\d+),(\d+)\)/", function (array $matches) use (&$sylTime) {
+				$sylTime = self::formatTime(((int)$matches[1] + (int)$matches[2]) / 1000);
+				return sprintf("<%s>", $sylTime);
 			});
+		$converted .= "\n[$sylTime]";
 		return $converted;
 	}
 
@@ -175,12 +178,14 @@ abstract class Controller
 			Log::warning('Request failed for ' . $e->response->effectiveUri());
 			if ($e->response->status() !== 404) Log::error($e);
 			$json = $e->response->json();
-			$reqerr = array_key_exists('message', $json) ? $json['message'] : $json['error'];
+			if (!$json) $reqerr = "Lyrically API Error {$e->response->status()}";
+			else
+				$reqerr = array_key_exists('message', $json) ? $json['message'] : $json['error'];
 		}
 		return match (get_class($e)) {
 			JsonException::class => "Error parsing Lyrically API response: {$e->getMessage()}",
 			ConnectionException::class => "Lyrically API connection error {$e->getCode()}: {$e->getMessage()}",
-			RequestException::class => $e->response->status() === 404 ? $reqerr : "Lyrically API Error {$e->response->status()}",
+			RequestException::class => $reqerr,
 			default => "Lyrically API unexpected error: {$e->getMessage()}"
 		};
 	}

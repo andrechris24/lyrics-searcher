@@ -20,9 +20,15 @@ class AppleController extends Controller
 			)->json(null, null, JSON_THROW_ON_ERROR);
 			return response()->json(['html' => view('apple.list', $r)->render()]);
 		} catch (ConnectionException | JsonException | RequestException $th) {
+			Log::error($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				self::matchError($th)
+				match (get_class($th)) {
+					JsonException::class => "Error parsing response: {$th->getMessage()}",
+					ConnectionException::class => "Apple Music connection error {$th->getCode()}: {$th->getMessage()}",
+					RequestException::class => "Apple Music HTTP Error {$th->response->status()}",
+					default => "Apple Music unexpected error: {$th->getMessage()}"
+				}
 			);
 		}
 	}
@@ -56,27 +62,14 @@ class AppleController extends Controller
 			);
 		}
 	}
-	private static function matchError(mixed $ex): string
-	{
-		if (get_class($ex) === RequestException::class) {
-			Log::warning('Request failed for ' . $ex->response->effectiveUri());
-			if ($ex->response->status() !== 404) Log::error($ex);
-		}
-		return match (get_class($ex)) {
-			JsonException::class => "Error parsing response: {$ex->getMessage()}",
-			ConnectionException::class => "Apple Music connection error {$ex->getCode()}: {$ex->getMessage()}",
-			RequestException::class => "Apple Music HTTP Error {$ex->response->status()}",
-			default => "Apple Music unexpected error: {$ex->getMessage()}"
-		};
-	}
 	private static function mlWorkaround(string|null $elrc, int $last): string|null
 	{
 		if (empty($elrc)) return null;
-		return env('MINILYRICS_COMPATIBLE') ?
+		return env('MINILYRICS_COMPATIBLE', true) ?
 			sprintf(
-				"%s\n[%s]",
+				"%s \n[%s]",
 				Str::replace(">\n", "> \n", $elrc, false),
-				parent::formatTime($last / 1000)
+				parent::formatTime($last / 1000 + 0.01)
 			) : $elrc;
 	}
 }

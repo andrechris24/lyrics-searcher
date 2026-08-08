@@ -38,7 +38,7 @@
 					@if (in_array(request('page'), [1, null]))
 						<span class="page-link">{!! __('pagination.previous') !!}</span>
 					@else
-						<a class="page-link" rel="prev"
+						<a class="page-link" rel="prev" href="javascript:"
 							onclick="navigate('{{ request()->url() }}',{{ json_encode($queries['prev']) }})">
 							{!! __('pagination.previous') !!}
 						</a>
@@ -47,7 +47,7 @@
 				@php($nextOffset = 20 * (request('page') ?? 1))
 				<li @class(['page-item', 'disabled' => $nextOffset >= $data['total']]) aria-disabled="{{ $nextOffset >= $data['total'] }}">
 					@if ($nextOffset < $data['total'])
-						<a class="page-link" rel="next"
+						<a class="page-link" rel="next" href="javascript:"
 							onclick="navigate('{{ request()->url() }}',{{ json_encode($queries['next']) }})">
 							{!! __('pagination.next') !!}
 						</a>

@@ -218,12 +218,12 @@ class MusixmatchController extends Controller
 				);
 			}
 			$richsync .= sprintf(
-				env('MINILYRICS_COMPATIBLE') ? "<%s> \n" : "<%s>\n",
+				env('MINILYRICS_COMPATIBLE', true) ? "<%s> \n" : "<%s>\n",
 				parent::formatTime($line['te'])
 			);
 			$prevtime = $line['te'];
 			if ($idx === count($lrc) - 1)
-				$richsync .= sprintf("[%s]\n", parent::formatTime($line['te'] + 5));
+				$richsync .= sprintf("[%s]\n", parent::formatTime($line['te'] + 0.01));
 		}
 		return $richsync;
 	}
