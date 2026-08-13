@@ -107,7 +107,7 @@ $(basicForm).submit(function (event) {
 	$("#deezer-loader").removeClass("d-none");
 	sendAjax($(this).serialize());
 });
-function sendAjax(data){
+function sendAjax(data) {
 	$("form :input").prop("disabled", true);
 	$.ajax({
 		url: "/deezer/results",
@@ -146,8 +146,11 @@ function sendAjax(data){
 // eslint-disable-next-line no-unused-vars
 function navigate(query, offset) {
 	$("#deezer-container").LoadingOverlay("show");
-	sendAjax({query: query, offset: offset});
-	$("html, body").animate({scrollTop: $("#deezer-container").offset().top},200);
+	sendAjax({ query: query, offset: offset });
+	$("html, body").animate(
+		{ scrollTop: $("#deezer-container").offset().top },
+		200
+	);
 }
 syncedLyricDL.onclick = function (e) {
 	e.preventDefault();

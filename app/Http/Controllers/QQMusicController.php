@@ -20,9 +20,9 @@ class QQMusicController extends Controller
 				->get(self::$url . 'lyric/fcgi-bin/fcg_search_pc_lrc.fcg', [
 					'SONGNAME' => $req['title'],
 					'SINGERNAME' => $req['artist'],
-					'TYPE' => 2,
-					'RANGE_MIN' => 1,
-					'RANGE_MAX' => 50
+					'TYPE' => 2
+					// 'RANGE_MIN' => 1,
+					// 'RANGE_MAX' => 50
 				]);
 			libxml_use_internal_errors(true);
 			$xmlResponse = simplexml_load_string(

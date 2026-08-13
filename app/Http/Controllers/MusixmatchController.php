@@ -62,10 +62,11 @@ class MusixmatchController extends Controller
 				->withHeaders(self::MX_HEADER)->get(self::$url . 'track.search', $query)
 				->json(null, null, JSON_THROW_ON_ERROR);
 			$header = $r['message']['header'];
-			if ($header['status_code'] !== 200) {
-				return to_route('musixmatch.index')->withInput()
-					->withError('Error loading results: ' . parent::getMXerror($header));
-			}
+			abort_if(
+				$header['status_code'] !== 200,
+				$header['status_code'],
+				'Error loading results: ' . parent::getMXerror($header)
+			);
 			$data = $r['message']['body']['track_list'];
 			return response()->json(
 				['html' => view('musixmatch.list', compact('data', 'header'))->render()]
@@ -94,10 +95,11 @@ class MusixmatchController extends Controller
 				->withHeaders(self::MX_HEADER)->get(self::$url . 'track.search', $query)
 				->json(null, null, JSON_THROW_ON_ERROR);
 			$header = $r['message']['header'];
-			if ($header['status_code'] !== 200) {
-				return to_route('musixmatch.advanced')->withInput()
-					->withError('Error loading results: ' . parent::getMXerror($header));
-			}
+			abort_if(
+				$header['status_code'] !== 200,
+				$header['status_code'],
+				'Error loading results: ' . parent::getMXerror($header)
+			);
 			$data = $r['message']['body']['track_list'];
 			return response()->json([
 				'html' => view('musixmatch.list', compact('data', 'header'))->render()

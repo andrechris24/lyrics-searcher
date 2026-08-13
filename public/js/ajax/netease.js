@@ -110,7 +110,10 @@ function sendAjax(data) {
 function navigate(query, offset) {
 	$("#netease-container").LoadingOverlay("show");
 	sendAjax({ query: query, offset: offset });
-	$("html, body").animate({scrollTop: $("#netease-container").offset().top},200);
+	$("html, body").animate(
+		{ scrollTop: $("#netease-container").offset().top },
+		200
+	);
 }
 lyricDL.onclick = function (e) {
 	e.preventDefault();
@@ -144,12 +147,11 @@ function parseKLyric(lyricText) {
 				lyricLine += `<${formatTime(subStartTime)}>${subWord}`;
 				subStartTime += subDuration;
 			}
-			timestamp=formatTime(startTime + duration);
-			enhancedlyricText += 
-				`${lyricLine}<${timestamp}>${$('meta[name="minilyrics-compatibility"]').attr("content")==true?' ':''}\n`;
+			timestamp = formatTime(startTime + duration);
+			enhancedlyricText += `${lyricLine}<${timestamp}>${$('meta[name="minilyrics-compatibility"]').attr("content") == true ? " " : ""}\n`;
 		}
 	}
-	enhancedlyricText+=`\n[${timestamp}]`;
+	enhancedlyricText += `\n[${timestamp}]`;
 	return enhancedlyricText;
 }
 function formatTime(time) {

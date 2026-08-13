@@ -303,9 +303,9 @@ localDL.onclick = function () {
 			}).then((result) => {
 				if (result.isConfirmed) {
 					blobDL(
-						$('meta[name="minilyrics-compatibility"]').attr("content")==true?
-							localContents.replaceAll('>\n','> \n'):
-							localContents, 
+						$('meta[name="minilyrics-compatibility"]').attr("content") == true
+							? localContents.replaceAll(">\n", "> \n")
+							: localContents,
 						fileName + ext
 					);
 				} else if (result.isDenied) {

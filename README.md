@@ -73,7 +73,7 @@ That was my version of `aimp_webLyrics.ini` file containing remote source from p
 - Example path (Windows): `C:\Program Files\AIMP\Plugins\aimp_webLyrics`
 
 > [!WARNING]
-> Every AIMP updates resets aimp_webLyrics.ini file, so you need to replace again. Although AIMP can read Enhanced LRC, AIMP does not support it and WebLyrics plugin will remove Enhanced LRC timestamps when lyrics are fetched from remote source.
+> Every AIMP updates resets aimp_webLyrics.ini file, so you need to replace again. Although AIMP can read Enhanced LRC (with additional plugin), WebLyrics plugin will remove Enhanced LRC timestamps when lyrics are fetched from remote source.
 
 ## References
 

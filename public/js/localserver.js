@@ -92,7 +92,7 @@ $(document)
 						target: 6,
 						render: function (data, type, full) {
 							const create = luxon.DateTime.fromISO(
-									full["created_at"],
+									full["created_at"]
 								).toFormat("dd LLL yyyy HH:mm"),
 								length = formatSeconds(full["duration"]);
 							return (
@@ -151,9 +151,11 @@ $(document)
 				}).then((result) => {
 					if (result.isConfirmed) {
 						blobDL(
-							meta + $('meta[name="minilyrics-compatibility"]').attr("content")==true?
-								content.replaceAll('>\n','> \n'):
-								content, 
+							meta +
+								$('meta[name="minilyrics-compatibility"]').attr("content") ==
+								true
+								? content.replaceAll(">\n", "> \n")
+								: content,
 							fileName + ext
 						);
 					} else if (result.isDenied) {

@@ -9,7 +9,8 @@ use JsonException;
 
 abstract class Controller
 {
-	protected const PAXSENIX_HEADER = ['User-Agent' => 'LRCSearch/1.0'];
+	protected const APP_HEADER =
+	['User-Agent' => 'LRCSearch/1.0 (https://github.com/andrechris24/lyrics-searcher)'];
 	protected static string $paxsenix_url = "https://lyrics.paxsenix.org/";
 
 	/**
@@ -176,12 +177,12 @@ abstract class Controller
 	{
 		if (get_class($e) === RequestException::class) {
 			Log::warning('Request failed for ' . $e->response->effectiveUri());
-			if ($e->response->status() !== 404) Log::error($e);
 			$json = $e->response->json();
 			if (!$json) $reqerr = "Lyrically API Error {$e->response->status()}";
 			else
 				$reqerr = array_key_exists('message', $json) ? $json['message'] : $json['error'];
 		}
+		Log::error($e);
 		return match (get_class($e)) {
 			JsonException::class => "Error parsing Lyrically API response: {$e->getMessage()}",
 			ConnectionException::class => "Lyrically API connection error {$e->getCode()}: {$e->getMessage()}",

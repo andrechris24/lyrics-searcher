@@ -6,7 +6,6 @@ use App\Http\Controllers\LRCLibController;
 use App\Http\Controllers\MusixmatchController;
 use App\Http\Controllers\NetEaseController;
 use App\Http\Controllers\QQMusicController;
-// use App\Http\Controllers\SodaMusicController;
 use App\Http\Controllers\SingleController;
 use App\Http\Controllers\LocalController;
 use App\Http\Controllers\DeezerController;
@@ -67,13 +66,6 @@ Route::prefix('kugou')->name('kugou.')->group(function () {
 		Route::get('{hash}', 'lyrics')->name('lyrics');
 	});
 });
-// Route::prefix('sodamusic')->name('sodamusic.')->group(function () {
-// 	Route::view('/', 'sodamusic.search')->name('index');
-// 	Route::controller(SodaMusicController::class)->name('search')->group(function () {
-// 		Route::get('results', 'search');
-// 		Route::get('{id}', 'get')->name('.get');
-// 	});
-// });
 Route::prefix('local')->name('local.')->group(function () {
 	Route::view('/', 'local')->name('index');
 	Route::controller(LocalController::class)->group(function () {

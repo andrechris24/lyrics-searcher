@@ -47,8 +47,7 @@ function krc2lrc(krcText) {
 				const subWord = subMatches[4];
 				lyricLine += `<${formatTime(startTime + offset)}>${subWord}`;
 			}
-			lyricText += 
-				`${lyricLine}<${formatTime(startTime + duration)}>${$('meta[name="minilyrics-compatibility"]').attr("content")==true?' ':''}\n`;
+			lyricText += `${lyricLine}<${formatTime(startTime + duration)}>${$('meta[name="minilyrics-compatibility"]').attr("content") == true ? " " : ""}\n`;
 		}
 	}
 	return lyricText;
@@ -131,7 +130,7 @@ $("#lyric-converter-form").on("submit", function (e) {
 	e.preventDefault();
 	const fileContent = $("#source-file-to-convert")[0].files[0];
 	const fileReader = new FileReader();
-	convertedFileName=$("#source-file-to-convert")[0].files[0].name;
+	convertedFileName = $("#source-file-to-convert")[0].files[0].name;
 	fileReader.onerror = function (e) {
 		console.warn(e);
 		toast.fire({ icon: "error", text: "Failed to read file" });
@@ -177,6 +176,8 @@ $("#lyric-converter-form").on("submit", function (e) {
 	}
 });
 $("#save-converted").on("click", function () {
-	const lrcContent = $("#converted-lyric").text();
-	blobDL(lrcContent, `${convertedFileName.replace(/(.srt|.krc)/i,'')}.lrc`);
+	blobDL(
+		$("#converted-lyric").text(), 
+		`${convertedFileName.replace(/(.srt|.krc)/i, "")}.lrc`
+	);
 });

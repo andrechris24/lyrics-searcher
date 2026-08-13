@@ -1,29 +1,31 @@
 /* eslint-disable no-unused-vars */
 /* global Swal, coreui */
-$.ajaxSetup({ 
+$.ajaxSetup({
 	timeout: 120000,
-	beforeSend: function(){
-		$(":input").removeClass('is-invalid');
+	beforeSend: function () {
+		$(":input").removeClass("is-invalid");
 	}
 });
-$(document).on("keydown", function (e) {
-	// Ignore if user is already typing in an input, textarea, or contenteditable, 
-	// and when any modal is shown
-	if (
-		$(e.target).is('input, textarea, [contenteditable="true"]') ||
-		$(".modal.show").length
-	)
-		return;
+$(document)
+	.on("keydown", function (e) {
+		// Ignore if user is already typing in an input, textarea, or contenteditable,
+		// and when any modal is shown
+		if (
+			$(e.target).is('input, textarea, [contenteditable="true"]') ||
+			$(".modal.show").length
+		)
+			return;
 
-	// Check if the pressed key is forward slash "/"
-	if (e.key === "/" || e.keyCode === 191) {
-		e.preventDefault(); // Prevent browser's quick find (especially in Firefox)
-		if ($("#track-name").length) $("#track-name").trigger("focus");
-		else $('input[type="search"]').trigger("focus");
-	}
-}).on("ajaxComplete",function(){
-	$("form :input").prop("disabled", false);
-});
+		// Check if the pressed key is forward slash "/"
+		if (e.key === "/" || e.keyCode === 191) {
+			e.preventDefault(); // Prevent browser's quick find (especially in Firefox)
+			if ($("#track-name").length) $("#track-name").trigger("focus");
+			else $('input[type="search"]').trigger("focus");
+		}
+	})
+	.on("ajaxComplete", function () {
+		$("form :input").prop("disabled", false);
+	});
 const toast = Swal.mixin({
 		toast: true,
 		position: "top-end",
@@ -45,7 +47,7 @@ const toast = Swal.mixin({
 		showLoaderOnConfirm: true,
 		showCancelButton: true,
 		allowOutsideClick: !Swal.isLoading(),
-		allowEscapeKey: !Swal.isLoading(),
+		allowEscapeKey: !Swal.isLoading()
 	}),
 	basicForm = "#basic-search-form",
 	advancedForm = "#advanced-search-form";
