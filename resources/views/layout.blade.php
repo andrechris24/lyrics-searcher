@@ -144,17 +144,27 @@
 							</a>
 							<ul class="dropdown-menu">
 								<li>
-									<a @class(['dropdown-item', 'active' => request()->routeIs('deezer.*')]) href="{{ route('deezer.index') }}"
+									<a @class([
+										'dropdown-item', 
+										'active' => request()->routeIs('deezer.*'), 
+										'disabled'=>empty(env("PAXSENIX_TOKEN"))
+									]) href="{{ route('deezer.index') }}"
+										aria-disabled="{{empty(env("PAXSENIX_TOKEN"))}}"
 										@if (request()->routeIs('deezer.*')) aria-current="page" @endif >
 										Deezer
 									</a>
 								</li>
-								{{-- <li>
-									<a @class(['dropdown-item', 'active' => request()->routeIs('youtube.*')]) href="{{ route('youtube.index') }}"
-										@if (request()->routeIs('youtube.*')) aria-current="page" @endif >
-										YouTube
+								<li>
+									<a @class([
+										'dropdown-item', 
+										'active' => request()->routeIs('spotify.*'), 
+										'disabled'=>empty(env("PAXSENIX_TOKEN"))
+									]) href="{{ route('spotify.index') }}"
+										aria-disabled="{{empty(env("PAXSENIX_TOKEN"))}}"
+										@if (request()->routeIs('spotify.*')) aria-current="page" @endif >
+										Spotify
 									</a>
-								</li> --}}
+								</li>
 								<li>
 									<a @class(['dropdown-item', 'active' => request()->routeIs('apple.*')]) href="{{ route('apple.index') }}"
 										@if (request()->routeIs('apple.*')) aria-current="page" @endif >

@@ -13,8 +13,9 @@ class SpotifyController extends Controller
 	{
 		try {
 			$req->validate(['query' => 'required']);
-			$r = Http::retry(2, 100)->timeout(25000)
-				->get(parent::$paxsenix_url . 'spotify/search',	['q' => $req['query']])
+			$r = Http::retry(2, 100)->timeout(25000)->withHeaders([
+				'Authorization' => 'Bearer '.env('PAXSENIX_TOKEN','sk-paxsenix-ABC123')
+			])->get(parent::$paxsenix_url . 'spotify/search',	['q' => $req['query']])
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
 				Log::error('Spotify API error: ', $r);
@@ -24,7 +25,7 @@ class SpotifyController extends Controller
 				);
 			}
 			return response()
-				->json(['html' => view('spotify.list', ['data' => $r])->render()]);
+				->json(['html' => view('spotify.list', ['data' => $r['tracks']['items']])->render()]);
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,

@@ -37,8 +37,9 @@ class DeezerController extends Controller
 	public function get(int $id)
 	{
 		try {
-			$r = Http::retry(2, 100)->timeout(25000)->withHeaders(parent::PAXSENIX_TOKEN)
-				->get(parent::$paxsenix_url . 'lyrics/deezer', ['id' => $id])
+			$r = Http::retry(2, 100)->timeout(25000)->withHeaders([
+				'Authorization' => 'Bearer '.env('PAXSENIX_TOKEN','sk-paxsenix-ABC123')
+			])->get(parent::$paxsenix_url . 'lyrics/deezer', ['id' => $id])
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['ok'] === false) {
 				Log::error('Deezer API error: ', $r);
@@ -47,8 +48,7 @@ class DeezerController extends Controller
 			if (empty($r['synchronizedLines'])) $synced = null;
 			else {
 				$prevtime = 0;
-				$synced = '';
-				$lastTime = '';
+				$synced = $lastTime = '';
 				foreach ($r['synchronizedLines'] as $idx => $line) {
 					if (($line['milliseconds'] - $prevtime) > 5000 && $idx !== 0)
 						$synced .= sprintf("[%s]\n", parent::formatTime($prevtime, true));

@@ -11,7 +11,6 @@ abstract class Controller
 {
 	protected const APP_HEADER =
 	['User-Agent' => 'LRCSearch/1.0 (https://github.com/andrechris24/lyrics-searcher)'];
-	protected const PAXSENIX_TOKEN = ['Authorization' => 'Bearer sk-paxsenix-guD0ZfVcPQUB37l-d0StUItAtBNr3kxrZE549SfzpxSeVhgF'];
 	protected static string $paxsenix_url = "https://api.paxsenix.org/";
 
 	/**

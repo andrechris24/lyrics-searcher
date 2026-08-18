@@ -1,6 +1,9 @@
 # LRCSearch
 
-<p align="center">A Laravel based lyrics searcher to Kugou, Musixmatch, NetEase, QQ Music, LRCLib, Deezer, YouTube (Temporarily disabled), and Apple Music, plus optionally Local database and Lyrics.ovh. This lyrics searcher contains quick search and per-provider lyrics search. LRCSearch also provides LRC converter from SRT and KRC.</p>
+<p align="center">A Laravel based lyrics searcher to Kugou, Musixmatch, NetEase, QQ Music, LRCLib, Deezer, Spotify, and Apple Music, plus optionally Local database and Lyrics.ovh. This lyrics searcher contains quick search and per-provider lyrics search. LRCSearch also provides LRC converter from SRT and KRC.</p>
+
+> [!CAUTION]
+> Due to API change, API Token is required for Deezer and Spotify. To get API Token, read [steps to get API Token](#steps-to-get-api-token) in Setup section. 
 
 **This repository is the source code of [hosted application](https://andrechris24.serv00.net).**
 
@@ -17,7 +20,7 @@
 ## Setup
 
 > [!IMPORTANT]
-> Make sure `php_openssl` extension is enabled and the `APP_URL` was set properly in .env file, like `http://127.0.0.1:8000` or `http://sample.test`. If you want to self host, enable SSL extension on web server too. This command below are for Windows, and all commands except one are same for Linux. The env file contains `MINILYRICS_COMPATIBLE` setting if you use MiniLyrics, defaults to true.
+> Make sure `php_openssl` extension is enabled and the `APP_URL` was set properly in .env file, like `http://127.0.0.1:8000` or `http://sample.test`. If you want to self host, enable SSL extension on web server too. This command below are for Windows, and all commands except one are same for Linux. The env file contains `MINILYRICS_COMPATIBLE` setting if you use MiniLyrics (which contains bugs for Enhanced LRC), defaults to true.
 
 ```sh
 # Clone and install
@@ -43,6 +46,13 @@ php artisan serve
 # Optional
 php artisan backpack:user
 ```
+
+#### Steps to get API Token
+
+Required for Deezer and Spotify
+1. Log in to https://api.paxsenix.org/dashboard with your GitHub account.
+2. After log in, navigate to **API Keys**. Generate key, then copy generated key.
+3. Open .env file, then paste copied key into **PAXSENIX_TOKEN** entry and Save.
 
 ## Admin credentials
 
