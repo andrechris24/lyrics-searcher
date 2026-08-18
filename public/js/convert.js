@@ -177,7 +177,7 @@ $("#lyric-converter-form").on("submit", function (e) {
 });
 $("#save-converted").on("click", function () {
 	blobDL(
-		$("#converted-lyric").text(), 
+		$("#converted-lyric").text(),
 		`${convertedFileName.replace(/(.srt|.krc)/i, "")}.lrc`
 	);
 });

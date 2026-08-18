@@ -46,7 +46,7 @@ if (lyricsModal) {
 			success: function (data) {
 				const metaLyric =
 					`[id: ${data.id}]\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n` +
-					`[by: Apple Music]\n[length: ${duration}]\n[lr: ${data.writers}]\n`;
+					`[length: ${duration}]\n[lr: ${data.writers}]\n`;
 				if (data.synced !== null && data.synced !== "") {
 					$("#dl-synced").removeClass("disabled");
 					syncedLyricContents = `${metaLyric}${data.synced}`;

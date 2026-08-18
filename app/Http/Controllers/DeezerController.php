@@ -37,54 +37,56 @@ class DeezerController extends Controller
 	public function get(int $id)
 	{
 		try {
-			$r = Http::retry(2, 100)->timeout(25000)
-				->get(parent::$paxsenix_url . 'deezer/lyrics', ['id' => $id])->json(null, null, JSON_THROW_ON_ERROR);
-			$prevtime = 0;
-			if ($r['isError']) {
-				abort_if($r['error'] === 'No lyrics found', 404, 'No lyric available for this song');
+			$r = Http::retry(2, 100)->timeout(25000)->withHeaders(parent::PAXSENIX_TOKEN)
+				->get(parent::$paxsenix_url . 'lyrics/deezer', ['id' => $id])
+				->json(null, null, JSON_THROW_ON_ERROR);
+			if ($r['ok'] === false) {
 				Log::error('Deezer API error: ', $r);
 				abort(500, 'Oops, something went wrong with Deezer API. Please try again later.');
-			} else if (empty($r['lyrics'])) $synced = null;
+			}
+			if (empty($r['synchronizedLines'])) $synced = null;
 			else {
+				$prevtime = 0;
 				$synced = '';
-				foreach ($r['lyrics'] as $idx => $line) {
-					if (count($line['text']) > 1) {
-						if ($idx === 0) {
-							$synced .= ($line['timestamp'] <= 3000)
-								? '[00:00.00]'
-								: "[" . parent::formatTime(($line['timestamp'] - mt_rand(2500, 3000)) / 1000) . "]";
-						} elseif (($line['timestamp'] - $prevtime) > 9000) {
-							$synced .= sprintf(
-								"[%s]\n[%s]",
-								parent::formatTime(($prevtime + mt_rand(2500, 3500)) / 1000),
-								parent::formatTime(($line['timestamp'] - mt_rand(2500, 3500)) / 1000)
-							);
-						} else $synced .= sprintf("[%s]", parent::formatTime($line['timestamp'] / 1000));
-						foreach ($line['text'] as $syl) $synced .= self::mergeSyl($syl);
-						$synced .= "\n";
-						if ($line['background'] === true) {
-							$synced .= '[bg: ';
-							foreach ($line['backgroundText'] as $bg)
-								$synced .= self::mergeSyl($bg);
-							$synced .= "]\n";
-						}
-					} else {
-						if (($line['timestamp'] - $prevtime) > 5000 && $idx !== 0)
-							$synced .= sprintf("[%s]\n", parent::formatTime($prevtime / 1000));
-						$synced .= sprintf(
-							"[%s]%s\n",
-							parent::formatTime($line['timestamp'] / 1000),
-							$line['text'][0]['text']
-						);
+				$lastTime = '';
+				foreach ($r['synchronizedLines'] as $idx => $line) {
+					if (($line['milliseconds'] - $prevtime) > 5000 && $idx !== 0)
+						$synced .= sprintf("[%s]\n", parent::formatTime($prevtime, true));
+					$synced .= $line['lrcTimestamp'] .= $line['line'] . "\n";
+					if ($idx === count($r['synchronizedLines']) - 1) {
+						$lastTime = '[' . parent::formatTime($line['milliseconds'] + $line['duration'], true) . ']';
+						$synced .= $lastTime;
 					}
-					if ($idx === count($r['lyrics']) - 1)
-						$synced .= '[' . parent::formatTime($line['endtime'] / 1000) . ']';
-					$prevtime = $line['endtime'];
+					$prevtime = $line['milliseconds'] + $line['duration'];
+				}
+			}
+			if (empty($r['synchronizedWordByWordLines'])) $wbw = null;
+			else {
+				$prevtime = 0;
+				$wbw = '';
+				foreach ($r['synchronizedWordByWordLines'] as $idx => $line) {
+					if ($idx === 0) {
+						$wbw .= ($line['start'] <= 3000)
+							? '[00:00.00]'
+							: "[" . parent::formatTime($line['start'] - mt_rand(2500, 3000), true) . "]";
+					} elseif (($line['start'] - $prevtime) > 9000) {
+						$wbw .= sprintf(
+							"[%s]\n[%s]",
+							parent::formatTime($prevtime + mt_rand(2500, 3500), true),
+							parent::formatTime($line['start'] - mt_rand(2500, 3500), true)
+						);
+					} else $wbw .= sprintf("[%s]", parent::formatTime($line['start'], true));
+					foreach ($line['words'] as $syl) $wbw .= self::mergeSyl($syl);
+					$wbw .= "\n";
+					if ($idx === count($r['synchronizedWordByWordLines']) - 1)
+						$wbw .= $lastTime ?? '[' . parent::formatTime($line['end'], true) . ']';
+					$prevtime = $line['end'];
 				}
 			}
 			return response()->json([
-				'plain' => $r['plain_lyrics'],
+				'plain' => $r['text'],
 				'synced' => $synced,
+				'wbw' => $wbw,
 				'id' => $r['id'],
 				'writer' => $r['writers'],
 				'copyright' => $r['copyright'],
@@ -100,12 +102,11 @@ class DeezerController extends Controller
 	private static function mergeSyl(array $syl): string
 	{
 		$part = sprintf(
-			"<%s>%s",
-			parent::formatTime($syl['timestamp'] / 1000),
-			$syl['text']
+			"<%s>%s<%s> ",
+			parent::formatTime($syl['start'], true),
+			$syl['word'],
+			parent::formatTime($syl['end'], true)
 		);
-		if ($syl['part'] === false)
-			$part .= sprintf("<%s> ", parent::formatTime($syl['endtime'] / 1000));
 		return $part;
 	}
 }

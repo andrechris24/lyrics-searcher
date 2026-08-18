@@ -5,7 +5,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="csrf-token" content="{{ csrf_token() }}">
-		<meta name="minilyrics-compatibility" content="{{env('MINILYRICS_COMPATIBLE',true)}}">
+		<meta name="minilyrics-compatibility" content="{{ env('MINILYRICS_COMPATIBLE', true) }}">
 		<title>@yield('title') | {{ env('APP_NAME') }}</title>
 
 		<!-- CoreUI CSS -->
@@ -149,18 +149,12 @@
 										Deezer
 									</a>
 								</li>
-								<li>
-									<a @class(['dropdown-item', 'active' => request()->routeIs('spotify.*')]) href="{{ route('spotify.index') }}"
-										@if (request()->routeIs('spotify.*')) aria-current="page" @endif >
-										Spotify
-									</a>
-								</li>
-								<li>
+								{{-- <li>
 									<a @class(['dropdown-item', 'active' => request()->routeIs('youtube.*')]) href="{{ route('youtube.index') }}"
 										@if (request()->routeIs('youtube.*')) aria-current="page" @endif >
 										YouTube
 									</a>
-								</li>
+								</li> --}}
 								<li>
 									<a @class(['dropdown-item', 'active' => request()->routeIs('apple.*')]) href="{{ route('apple.index') }}"
 										@if (request()->routeIs('apple.*')) aria-current="page" @endif >

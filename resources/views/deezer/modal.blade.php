@@ -99,8 +99,8 @@
 						<li>
 							<a class="dropdown-item" href="#" id="dl-syllyric"
 								data-coreui-toggle="tooltip"
-								data-coreui-title="Not all players supports Syllable lyrics, use with compatible players like OuterTune (Android) or BetterLyrics (Windows)">
-								Syllable
+								data-coreui-title="Not all players supports Word-by-Word lyrics, use with compatible players like MiniLyrics or ESLyric">
+								Word-by-Word
 							</a>
 						</li>
 					</ul>

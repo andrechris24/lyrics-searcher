@@ -39,26 +39,26 @@ if (lyricsModal) {
 				$(".placeholder-glow").addClass("d-none");
 			},
 			success: function (data) {
+				const metaLyric =
+					`[id: ${data.id}]\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n` +
+					`[by: Deezer]\n[length: ${duration}]\n[lr: ${data.writer}]\n`;
 				if (data.synced !== null && data.synced !== "") {
-					const metaLyric =
-						`[id: ${data.id}]\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n` +
-						`[by: Deezer]\n[length: ${duration}]\n[lr: ${data.writer}]\n`;
-					if (data.synced.match(/<(\d+):(\d+).(\d+)>/g)) {
-						$("#dl-syllyric").removeClass("disabled");
-						$("#song-lyric-type").text("Syllable");
-						sylLyricContent = `${metaLyric}${data.synced}`;
-						syncedLyricContents = `${metaLyric}${data.synced.replace(/<(\d+):(\d+).(\d+)>/g, "")}`;
-					} else {
-						$("#dl-syllyric").addClass("disabled");
-						$("#song-lyric-type").text("Synced");
-						sylLyricContent = "";
-						syncedLyricContents = `${metaLyric}${data.synced}`;
-					}
+					$("#song-lyric-type").text("Synced");
+					$("#dl-synced").removeClass("disabled");
+					syncedLyricContents = `${metaLyric}${data.synced}`;
 				} else {
 					$("#dl-syllyric").addClass("disabled");
 					$("#dl-synced").addClass("disabled");
 					$("#song-lyric-type").text("Plain");
-					sylLyricContent = syncedLyricContents = "";
+					syncedLyricContents = "";
+				}
+				if (data.wbw !== null && data.wbw !== "") {
+					$("#dl-syllyric").removeClass("disabled");
+					$("#song-lyric-type").text("Word-by-Word");
+					sylLyricContent = `${metaLyric}${data.wbw}`;
+				} else {
+					$("#dl-syllyric").addClass("disabled");
+					sylLyricContent = "";
 				}
 				plainLyricContent = `${fileName}\n\n${data.plain}`;
 				$("#song-writers").text(data.writer);

@@ -26,7 +26,6 @@ class SpotifyController extends Controller
 			return response()
 				->json(['html' => view('spotify.list', ['data' => $r])->render()]);
 		} catch (ConnectionException | JsonException | RequestException $th) {
-			Log::error($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
 				parent::lyricallyError($th)

@@ -20,9 +20,7 @@ class QQMusicController extends Controller
 				->get(self::$url . 'lyric/fcgi-bin/fcg_search_pc_lrc.fcg', [
 					'SONGNAME' => $req['title'],
 					'SINGERNAME' => $req['artist'],
-					'TYPE' => 2
-					// 'RANGE_MIN' => 1,
-					// 'RANGE_MAX' => 50
+				'TYPE' => 2
 				]);
 			libxml_use_internal_errors(true);
 			$xmlResponse = simplexml_load_string(
@@ -49,6 +47,8 @@ class QQMusicController extends Controller
 					"Error loading results: QQ Music error {$data['result']}, {$data['reason']}"
 				);
 			}
+			if (Str::contains($req->userAgent(), '(aimp/', true))
+				return view('qqmusic.list', $data);
 			return response()->json(['html' => view('qqmusic.list', $data)->render()]);
 		} catch (ConnectionException  | RequestException $th) {
 			abort(

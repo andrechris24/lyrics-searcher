@@ -11,7 +11,8 @@ abstract class Controller
 {
 	protected const APP_HEADER =
 	['User-Agent' => 'LRCSearch/1.0 (https://github.com/andrechris24/lyrics-searcher)'];
-	protected static string $paxsenix_url = "https://lyrics.paxsenix.org/";
+	protected const PAXSENIX_TOKEN = ['Authorization' => 'Bearer sk-paxsenix-guD0ZfVcPQUB37l-d0StUItAtBNr3kxrZE549SfzpxSeVhgF'];
+	protected static string $paxsenix_url = "https://api.paxsenix.org/";
 
 	/**
 	 * Get error messages from Musixmatch
@@ -56,12 +57,15 @@ abstract class Controller
 	 * @param int|float $seconds
 	 * @return string
 	 */
-	protected static function formatTime(int|float $seconds): string
+	protected static function formatTime(int|float $seconds, bool $milliseconds = false): string
 	{
 		if (!is_numeric($seconds) || $seconds < 0) {
 			Log::warning("Invalid time value: $seconds");
 			return '00:00.00';
 		}
+
+		if ($milliseconds === true)
+			$seconds = $seconds / 1000;
 
 		// Extract whole minutes
 		$minutes = floor($seconds / 60);

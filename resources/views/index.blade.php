@@ -4,9 +4,8 @@
 @section('content')
 	<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 pb-5 mb-5">
 		<p class="text-center">Welcome to LRCSearch! This site provides lyrics search from
-			Kugou, NetEase, QQ Music, Musixmatch, LRCLib, Deezer, Spotify, Apple Music,
-			YouTube, plus optionally local server and Lyrics.ovh.
-			This form below is a quick search to 4 providers.</p>
+			Kugou, NetEase, QQ Music, Musixmatch, LRCLib, Deezer, Apple Music, plus optionally
+			local server and Lyrics.ovh. This form below is a quick search to 4 providers.</p>
 		<form class="row g-3 mb-3" action="#" id="searchSongLyric">
 			<div class="col-12 col-md-8">
 				<div class="input-group input-group-lg">
