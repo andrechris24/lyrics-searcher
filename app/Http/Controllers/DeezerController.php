@@ -36,9 +36,10 @@ class DeezerController extends Controller
 	}
 	public function get(int $id)
 	{
+		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Deezer lyrics API token is not set. Please contact site owner.');
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)->withHeaders([
-				'Authorization' => 'Bearer '.env('PAXSENIX_TOKEN','sk-paxsenix-ABC123')
+				'Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')
 			])->get(parent::$paxsenix_url . 'lyrics/deezer', ['id' => $id])
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['ok'] === false) {

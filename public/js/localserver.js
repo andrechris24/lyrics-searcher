@@ -136,7 +136,7 @@ $(document)
 			ext = ".txt";
 			blobDL(`${fileName}\n\n${content}`, fileName + ext);
 		} else {
-			const meta = `[id: ${songID}]\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n[by: ${user}]\n[length: ${duration}]\n[offset: ${offset}]\n`;
+			const meta = `[id:${songID}]\n[ar:${artistName}]\n[ti:${songName}]\n[al:${albumName}]\n[by:${user}]\n[length:${duration}]\n[offset:${offset}]\n`;
 			ext = ".lrc";
 			if (content.match(/<(\d+):(\d+).(\d+)>/g)) {
 				Swal.fire({

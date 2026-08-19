@@ -114,7 +114,7 @@ abstract class Controller
 					(in_array($matches[1], ['ar', 'ti']) && is_numeric($matches[2]))
 				) continue;
 				else if (in_array($matches[1], ['total'])) {
-					$lyricText .= sprintf("[length: %s]\n", gmdate('i:s', floor($matches[2] / 1000)));
+					$lyricText .= sprintf("[length:%s]\n", gmdate('i:s', floor($matches[2] / 1000)));
 					continue;
 				}
 				$lyricText .= $matches[0] . "\n";
@@ -181,16 +181,16 @@ abstract class Controller
 		if (get_class($e) === RequestException::class) {
 			Log::warning('Request failed for ' . $e->response->effectiveUri());
 			$json = $e->response->json();
-			if (!$json) $reqerr = "Lyrically API Error {$e->response->status()}";
+			if (!$json) $reqerr = "Paxsenix API Error {$e->response->status()}";
 			else
 				$reqerr = array_key_exists('message', $json) ? $json['message'] : $json['error'];
 		}
 		Log::error($e);
 		return match (get_class($e)) {
-			JsonException::class => "Error parsing Lyrically API response: {$e->getMessage()}",
-			ConnectionException::class => "Lyrically API connection error {$e->getCode()}: {$e->getMessage()}",
+			JsonException::class => "Error parsing Paxsenix API response: {$e->getMessage()}",
+			ConnectionException::class => "Paxsenix API connection error {$e->getCode()}: {$e->getMessage()}",
 			RequestException::class => $reqerr,
-			default => "Lyrically API unexpected error: {$e->getMessage()}"
+			default => "Paxsenix API unexpected error: {$e->getMessage()}"
 		};
 	}
 }

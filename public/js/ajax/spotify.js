@@ -3,7 +3,9 @@ let plainContents, syncedContents, fileName, track_id, meta;
 const plainDL = document.getElementById("download-link-plain"),
 	syncedDL = document.getElementById("download-link-synced"),
 	richsyncDL = document.getElementById("download-link-richsync"),
-	lyricsModal = document.getElementById("modalMX");
+	lyricsModal = document.getElementById("modalMX"),
+	previewModal = document.getElementById("modalPreviewSong"),
+	player = $("#preview-player");
 document.addEventListener("focusin", (e) => {
 	if (e.target.closest('[class*="swal2-"]') !== null)
 		e.stopImmediatePropagation(); //Prevent modal from stealing focus
@@ -111,6 +113,27 @@ if (lyricsModal) {
 		});
 	});
 } else console.warn("No lyric preview modal found");
+if (previewModal) {
+	previewModal.addEventListener("show.coreui.modal", function (e) {
+		const attr = e.relatedTarget;
+		const songName = attr.getAttribute("data-coreui-title"),
+			artistName = attr.getAttribute("data-coreui-artist"),
+			albumName = attr.getAttribute("data-coreui-album"),
+			songLink = attr.getAttribute("data-coreui-link"),
+			duration = attr.getAttribute("data-coreui-duration");
+		$("#preview-album").text(albumName);
+		$("#preview-duration").text(duration);
+		$("#preview-title").text(songName);
+		$("#preview-artist").text(artistName);
+		$("#preview-song").attr("src", songLink);
+		player[0].pause();
+		player[0].load();
+		player[0].oncanplaythrough = player[0].play();
+	});
+	previewModal.addEventListener("hidden.coreui.modal", function () {
+		player[0].pause();
+	});
+} else console.warn("No song preview modal exist");
 plainDL.onclick = function (e) {
 	e.preventDefault();
 	blobDL(plainContents, `${fileName}.txt`);

@@ -11,10 +11,11 @@ class SpotifyController extends Controller
 {
 	public function search(Request $req)
 	{
+		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Spotify lyrics API token is not set. Please contact site owner.');
 		try {
 			$req->validate(['query' => 'required']);
 			$r = Http::retry(2, 100)->timeout(25000)->withHeaders([
-				'Authorization' => 'Bearer '.env('PAXSENIX_TOKEN','sk-paxsenix-ABC123')
+				'Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')
 			])->get(parent::$paxsenix_url . 'spotify/search',	['q' => $req['query']])
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {

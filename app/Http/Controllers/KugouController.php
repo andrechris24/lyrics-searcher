@@ -117,7 +117,7 @@ class KugouController extends Controller
 			}
 			return response()->json([
 				'format' => $r['fmt'],
-				'content' => '[id: ' . $req['id'] . "]\n" . $context,
+				'content' => '[id:' . $req['id'] . "]\n" . $context,
 				'raw' => $r['content']
 			]);
 		} catch (ConnectionException | JsonException | RequestException $th) {

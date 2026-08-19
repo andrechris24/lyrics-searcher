@@ -150,9 +150,9 @@ function dlLRC(id, key, file = null) {
 			if (data.format === "krc") {
 				Swal.fire({
 					title: "Choose lyric type to download",
-					text: "To import lyric to Aegisub, choose KRC Raw or Synced. For Word-by-Word lyrics, only a few players supported.",
+					text: "To import lyrics to Aegisub, choose KRC Raw or Synced. For Word-by-Word lyrics, only a few players supported.",
 					footer:
-						'<a href="https://github.com/qwe7989199/Lyric-Importer-for-Aegisub">Additional script for Aegisub (Sometimes not working for KRC)</a>',
+						'<a href="https://github.com/qwe7989199/Lyric-Importer-for-Aegisub">Additional script for Aegisub (Buggy for KRC)</a>',
 					theme: "bootstrap-5",
 					buttonsStyling: false,
 					customClass: {

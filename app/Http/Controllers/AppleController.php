@@ -36,7 +36,7 @@ class AppleController extends Controller
 	{
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)
-				->get(parent::$paxsenix_url . "apple-music/lyrics", ['id' => $id])
+				->get("https://lyrics.paxsenix.org/apple-music/lyrics", ['id' => $id])
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
 				Log::error("Apple Music API error: {$r['message']}", $r);

@@ -16,6 +16,6 @@
 			<a href="{{ route($provider . '.advanced') }}">Advanced search</a>
 		</small>
 	@elseif(in_array($provider, ['spotify', 'youtube']))
-		<small class="form-text">Powered by Lyrically API</small>
+		<small class="form-text">Powered by Paxsenix API</small>
 	@endif
 </form>

@@ -49,7 +49,7 @@ php artisan backpack:user
 
 #### Steps to get API Token
 
-Required for Deezer and Spotify
+This steps are required for Deezer and Spotify
 1. Log in to https://api.paxsenix.org/dashboard with your GitHub account.
 2. After log in, navigate to **API Keys**. Generate key, then copy generated key.
 3. Open .env file, then paste copied key into **PAXSENIX_TOKEN** entry and Save.
@@ -78,7 +78,7 @@ Solution:
 
 ## Why aimp_webLyrics.ini file exist?
 
-That was my version of `aimp_webLyrics.ini` file containing remote source from providers above (except Kugou) and some codes are taken from AIMP WebLyrics forum. If you want, do setup first, then run `php artisan usertoken` to generate token and replace all `<MX_TOKEN_X>` inside INI file, and the token should be different. After entering Musixmatch token, replace original INI file inside `\path\to\AIMP\Plugins\aimp_webLyrics` folder.
+That was my version of `aimp_webLyrics.ini` file containing remote source from providers above (except Kugou & Spotify) and some codes are taken from AIMP WebLyrics forum. If you want, do setup first, then run `php artisan usertoken` to generate token and replace all `<MX_TOKEN_X>` inside INI file, and the token should be different. After entering Musixmatch token, replace original INI file inside `\path\to\AIMP\Plugins\aimp_webLyrics` folder.
 
 - Example path (Windows): `C:\Program Files\AIMP\Plugins\aimp_webLyrics`
 

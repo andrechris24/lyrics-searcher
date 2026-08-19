@@ -61,7 +61,7 @@ class LRCLibController extends Controller
 			];
 			$lyricsfile = '';
 			foreach ($meta as $key => $value) {
-				$lyricsfile .= sprintf("[%s: %s]\n", $key, $value);
+				$lyricsfile .= sprintf("[%s:%s]\n", $key, $value);
 			}
 			foreach ($yaml['lines'] as $idx => $line) {
 				if ($idx === 0) {
