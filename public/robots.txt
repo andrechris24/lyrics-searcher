@@ -1,0 +1,10 @@
+User-agent: *
+Disallow:
+DisallowAITraining: /
+
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-Agent: Scrapy
+User-Agent: ClaudeBot
+User-Agent: Claude-SearchBot
+Disallow: /
