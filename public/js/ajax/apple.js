@@ -46,7 +46,7 @@ if (lyricsModal) {
 			success: function (data) {
 				const metaLyric =
 					`[id:${data.id}]\n[ar:${artistName}]\n[ti:${songName}]\n[al:${albumName}]\n` +
-					`[length: ${duration}]\n${data.writers!==null||data.writers!==""?`[lr: ${data.writers}]\n`:''}`;
+					`[length:${duration}]\n${data.writers !== null || data.writers !== "" ? `[lr:${data.writers}]\n` : ""}`;
 				if (data.synced !== null && data.synced !== "") {
 					$("#dl-synced").removeClass("disabled");
 					syncedLyricContents = `${metaLyric}${data.synced}`;
@@ -128,7 +128,7 @@ $(basicForm).submit(function (event) {
 		.done(function (r) {
 			$("#apple-container").html(r.html);
 			const openTooltip = document.querySelectorAll(
-				'[data-coreui-toggle="tooltip"], [data-coreui-toggle2="tooltip"]'
+				'[data-coreui-toggle="tooltip"]'
 			);
 			// eslint-disable-next-line no-unused-vars
 			const openList = [...openTooltip].map(

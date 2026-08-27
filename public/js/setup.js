@@ -77,7 +77,7 @@ function blobDL(data, filename, type = "text/plain") {
 function musicDL(url, filename) {
 	let a = document.createElement("a");
 	a.href = url;
-	a.download = `${filename}.${url.split(/[#?]/)[0].split('.').pop().trim()}`;
+	a.download = `${filename}.${url.split(/[#?]/)[0].split(".").pop().trim()}`;
 	document.body.appendChild(a);
 	a.click();
 	a.remove();

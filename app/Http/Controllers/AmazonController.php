@@ -11,6 +11,7 @@ class AmazonController extends Controller
 {
 	public function search(Request $req)
 	{
+		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
 		try {
 			$req->validate(['query' => 'required']);
 			$r = Http::retry(3, 100)->timeout(25000)
@@ -20,7 +21,7 @@ class AmazonController extends Controller
 			if ($r['ok'] === false) {
 				Log::error('Amazon Music API error: ', $r);
 				abort(500, 'Oops, something went wrong with Amazon Music API. Please try again later.');
-			}else if(array_key_exists('error', $r['results'])){
+			} else if (array_key_exists('error', $r['results'])) {
 				Log::error($r['results']);
 				abort(500, 'Oops, an error occurred while loading results');
 			}
@@ -35,6 +36,7 @@ class AmazonController extends Controller
 	}
 	public function get(string $id)
 	{
+		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)
 				->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])
@@ -62,7 +64,7 @@ class AmazonController extends Controller
 	}
 	public function download(Request $req)
 	{
-		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is not set. Please contact site owner.');
+		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
 		$req->validate(['url' => 'required|url']);
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)
@@ -73,14 +75,7 @@ class AmazonController extends Controller
 				Log::error("Amazon Music API error: {$r['message']}", $r);
 				abort(500, 'Oops, an error occurred with Amazon Music API.');
 			}
-			Log::debug($r);
-			// $fileInfo = parent::getFileInfo($r['directUrl']);
-			// return response()->streamDownload(function () use ($r) {
-			// 	echo $r['directUrl'];
-			// }, $req['id'] . '.' . $fileInfo['ext'], [
-			// 	'Content-Type' => $fileInfo['type'],
-			// 	'Content-Disposition' => 'attachment; filename="' . $req['id'] . '.' . $fileInfo['ext'] . '"',
-			// ]);
+			// Log::debug($r);
 			return response()->json($r);
 		} catch (ConnectionException | RequestException | JsonException $e) {
 			abort(

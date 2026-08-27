@@ -5,7 +5,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="csrf-token" content="{{ csrf_token() }}">
-		<meta name="minilyrics-compatibility" content="{{ env('MINILYRICS_COMPATIBLE', true) }}">
+		<meta name="minilyrics-compatibility" content="{{ env('MINILYRICS_COMPATIBLE') }}">
 		<title>@yield('title') | {{ env('APP_NAME') }}</title>
 
 		<!-- CoreUI CSS -->
@@ -147,8 +147,8 @@
 							<ul class="dropdown-menu">
 								<li>
 									<a @class([
-										'dropdown-item', 
-										'active' => request()->routeIs('deezer.*'), 
+										'dropdown-item',
+										'active' => request()->routeIs('deezer.*'),
 										'disabled'=>empty(env("PAXSENIX_TOKEN"))
 									]) href="{{ route('deezer.index') }}"
 										aria-disabled="{{empty(env("PAXSENIX_TOKEN"))}}"
@@ -158,8 +158,8 @@
 								</li>
 								<li>
 									<a @class([
-										'dropdown-item', 
-										'active' => request()->routeIs('spotify.*'), 
+										'dropdown-item',
+										'active' => request()->routeIs('spotify.*'),
 										'disabled'=>empty(env("PAXSENIX_TOKEN"))
 									]) href="{{ route('spotify.index') }}"
 										aria-disabled="{{empty(env("PAXSENIX_TOKEN"))}}"
@@ -175,8 +175,8 @@
 								</li>
 								<li>
 									<a @class([
-										'dropdown-item', 
-										'active' => request()->routeIs('amazon.*'), 
+										'dropdown-item',
+										'active' => request()->routeIs('amazon.*'),
 										'disabled'=>empty(env("PAXSENIX_TOKEN"))
 									]) href="{{ route('amazon.index') }}"
 										aria-disabled="{{empty(env("PAXSENIX_TOKEN"))}}"

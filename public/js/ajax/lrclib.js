@@ -40,9 +40,8 @@ if (lyricsModal) {
 		} else {
 			syncedDL.classList.remove("disabled");
 			syncedContents =
-				`[id: ${lyricID}]\n[ar: ${artistName}]\n[ti: ${songName}]\n` +
-				`[al: ${albumName}]\n[by: LRCLib]\n` +
-				`[length: ${songDuration.textContent}]\n${syncedLyrics}`;
+				`[id:${lyricID}]\n[ar:${artistName}]\n[ti:${songName}]\n[al:${albumName}]\n` +
+				`[by: LRCLib]\n[length:${songDuration.textContent}]\n${syncedLyrics}`;
 			$("#lrclib-lyric-type").text("Synced");
 		}
 		if (!wbwLyrics.includes("words:")) {

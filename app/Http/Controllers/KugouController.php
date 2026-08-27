@@ -131,7 +131,7 @@ class KugouController extends Controller
 	{
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)
-				->get(parent::$paxsenix_url . 'kugou/lyrics', ['id' => $hash])
+				->get(parent::$lyrically_url . 'kugou/lyrics', ['id' => $hash])
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['status'] !== 200) {
 				Log::error($r);

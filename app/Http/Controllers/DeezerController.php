@@ -36,7 +36,7 @@ class DeezerController extends Controller
 	}
 	public function get(int $id)
 	{
-		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is not set. Please contact site owner.');
+		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)->withHeaders([
 				'Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')
@@ -102,7 +102,7 @@ class DeezerController extends Controller
 	}
 	public function download(Request $req)
 	{
-		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is not set. Please contact site owner.');
+		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
 		$req->validate(['url' => 'required|url', 'quality' => 'required|in:128kbps,320kbps,flac']);
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)
@@ -117,14 +117,7 @@ class DeezerController extends Controller
 					'Oops, something went wrong while downloading the song. Please try again later.'
 				);
 			}
-			Log::debug($r);
-			// $fileInfo = parent::getFileInfo($r['directUrl']);
-			// return response()->streamDownload(function () use ($r) {
-			// 	echo $r['directUrl'];
-			// }, $req['id'] . '.' . $fileInfo['ext'], [
-			// 	'Content-Type' => $fileInfo['type'],
-			// 	'Content-Disposition' => 'attachment; filename="' . $req['id'] . '.' . $fileInfo['ext'] . '"',
-			// ]);
+			// Log::debug($r);
 			return response()->json($r);
 		} catch (ConnectionException | JsonException | RequestException $e) {
 			abort(

@@ -66,9 +66,9 @@
 							<div class="btn-group" role="group">
 								<button type="button" class="btn btn-primary dropdown-toggle"
 									data-coreui-toggle="dropdown" aria-expanded="false"
-									data-coreui-toggle2="tooltip" data-coreui-title="Download lyric"
 									aria-disabled="{{ $unavailable }}" @disabled($unavailable)>
-									<i class="fa-solid fa-download"></i>
+									<i class="fa-solid fa-download" data-coreui-toggle="tooltip"
+									data-coreui-title="Download lyric"></i>
 								</button>
 								<ul class="dropdown-menu">
 									<li>

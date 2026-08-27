@@ -22,7 +22,7 @@ function sendAjax(url, data) {
 		.done(function (r) {
 			$("#mx-container").html(r.html);
 			const allTooltip = document.querySelectorAll(
-				'[data-coreui-toggle="tooltip"], [data-coreui-toggle2="tooltip"]'
+				'[data-coreui-toggle="tooltip"]'
 			);
 			// eslint-disable-next-line no-unused-vars
 			const ttList = [...allTooltip].map(
@@ -51,8 +51,8 @@ function sendAjax(url, data) {
 							ext = "txt";
 						} else {
 							contents =
-								`[id: ${data.id}]\n[ar: ${artist}]\n[ti: ${title}]\n` +
-								`[al: ${album}]\n[by: Musixmatch]\n[length: ${data.duration}]\n`;
+								`[id:${data.id}]\n[ar:${artist}]\n[ti:${title}]\n` +
+								`[al:${album}]\n[by:Musixmatch]\n[length:${data.duration}]\n`;
 							ext = "lrc";
 						}
 						blobDL(contents + data.content, `${fileName}.${ext}`);

@@ -32,11 +32,11 @@
 		<div class="input-group input-group-lg" id="song-duration">
 			<span class="input-group-text">Duration (Minutes:seconds)</span>
 			<input type="number" name="minutes" min="0" max="199" class="form-control"
-			id="search-minutes" value="{{ request('minutes') ?? (old('minutes') ?? 0) }}"
-			required>
+				id="search-minutes" value="{{ request('minutes') ?? (old('minutes') ?? 0) }}"
+				required>
 			<input type="number" name="seconds" min="0" max="59" class="form-control"
-			id="search-seconds" value="{{ request('seconds') ?? (old('seconds') ?? 0) }}"
-			required>
+				id="search-seconds" value="{{ request('seconds') ?? (old('seconds') ?? 0) }}"
+				required>
 		</div>
 	</div>
 	<button type="submit" class="btn btn-primary">Search</button>

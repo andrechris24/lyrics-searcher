@@ -4,8 +4,9 @@
 @section('content')
 	<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 pb-5 mb-5">
 		<p class="text-center">Welcome to LRCSearch! This site provides lyrics search from
-			Kugou, NetEase, QQ Music, Musixmatch, LRCLib, Deezer, Apple Music, plus optionally
-			local server and Lyrics.ovh. This form below is a quick search to 4 providers.</p>
+			Kugou, NetEase, QQ Music, Musixmatch, LRCLib, Deezer, Apple Music, Amazon Music,
+			plus optionally local server and plain sources.
+			This form below is a quick search to 4 providers.</p>
 		<form class="row g-3 mb-3" action="#" id="searchSongLyric">
 			<div class="col-12 col-md-8">
 				<div class="input-group input-group-lg">
@@ -26,6 +27,7 @@
 						<option value="musixmatch">Musixmatch</option>
 						<option value="lrclib">LRCLib</option>
 						<option value="plains">Lyrics.ovh</option>
+						<option value="genius">Genius</option>
 						<option value="local">Local</option>
 					</select>
 					<label for="lyric-source" class="form-label">
@@ -56,7 +58,7 @@
 						<label for="album-name" class="form-label">Album</label>
 					</div>
 				</div>
-				<div class="form-text">Unused for Lyrics.ovh and Musixmatch.</div>
+				<div class="form-text">Unused for Lyrics.ovh, Genius, & Musixmatch.</div>
 			</div>
 			<button type="submit" class="btn btn-primary">Search</button>
 		</form>
@@ -217,6 +219,48 @@
 					<button class="btn btn-primary" type="button" id="download-link-local">
 						Save
 					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" tabindex="-1" id="modalGenius" aria-labelledby="modalGeniusLabel"
+		role="dialog" aria-hidden="true">
+		<div role="document"
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 id="modalGeniusLabel" class="modal-title">
+						Genius Result for <span class="search-term">...</span>
+					</h5>
+					<button type="button" class="btn-close" data-coreui-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="row mb-3">
+						<div class="col-12 col-md-4 mb-md-0 mb-2">
+							<img src="" class="img-fluid" id="genius-art">
+						</div>
+						<div class="col-12 col-md-8">
+							<div class="callout callout-info">
+								Genius only serves plain lyrics, so you can only copy and paste lyrics to save to your device.
+							</div>
+							<div class="row mb-2">
+								<div class="col-4"><b>Title</b></div>
+								<div class="col-8"><span id="genius-song-title">...</span></div>
+								<div class="col-4"><b>Artist</b></div>
+								<div class="col-8"><span id="genius-song-artist">...</span></div>
+							</div>
+						</div>
+					</div>
+					<p id="genius-lyrics-content" style="white-space: pre-line"></p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
+						Close
+					</button>
+					<a href="#" class="btn btn-warning" target="_blank" id="genius-btn">
+						<i class="fa-solid fa-music"></i> Genius
+					</a>
 				</div>
 			</div>
 		</div>

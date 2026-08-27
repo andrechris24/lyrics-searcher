@@ -36,7 +36,7 @@ class AppleController extends Controller
 	{
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)
-				->get("https://lyrics.paxsenix.org/apple-music/lyrics", ['id' => $id])
+				->get(parent::$lyrically_url . "apple-music/lyrics", ['id' => $id])
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
 				Log::error("Apple Music API error: {$r['message']}", $r);
@@ -64,7 +64,7 @@ class AppleController extends Controller
 	}
 	public function download(Request $req)
 	{
-		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is not set. Please contact site owner.');
+		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
 		$req->validate(['url' => 'required|url']);
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)
@@ -78,14 +78,7 @@ class AppleController extends Controller
 					'Oops, something went wrong while downloading the song. Please try again later.'
 				);
 			}
-			Log::debug($r);
-			// $fileInfo = parent::getFileInfo($r['directUrl']);
-			// return response()->streamDownload(function () use ($r) {
-			// 	echo $r['directUrl'];
-			// }, $req['id'] . '.' . $fileInfo['ext'], [
-			// 	'Content-Type' => $fileInfo['type'],
-			// 	'Content-Disposition' => 'attachment; filename="' . $req['id'] . '.' . $fileInfo['ext'] . '"',
-			// ]);
+			// Log::debug($r);
 			return response()->json($r);
 		} catch (ConnectionException | RequestException | JsonException $e) {
 			abort(

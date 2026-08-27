@@ -1,4 +1,4 @@
-/* global blobDL, toast, basicForm, musicDL, coreui */
+/* global blobDL, toast, basicForm, musicDL, coreui, Swal */
 let syncedLyricContents, plainLyricContent, fileName;
 const lyricsModal = document.getElementById("modalLyrics"),
 	plainLyricDL = document.getElementById("dl-plain"),
@@ -93,7 +93,7 @@ function sendAjax(data) {
 		.done(function (r) {
 			$("#amazon-container").html(r.html);
 			const openTooltip = document.querySelectorAll(
-				'[data-coreui-toggle="tooltip"], [data-coreui-toggle2="tooltip"]'
+				'[data-coreui-toggle="tooltip"]'
 			);
 			// eslint-disable-next-line no-unused-vars
 			const openList = [...openTooltip].map(
@@ -115,9 +115,16 @@ function sendAjax(data) {
 					},
 					success: function (r) {
 						let file;
-						if(typeof r.data!=='undefined')
-							file=`${r.data.artist} - ${r.data.name}`;
-						else file=`${artist} - ${title}`;
+						if (typeof r.data !== "undefined")
+							file = `${r.data.artist} - ${r.data.name}`;
+						else file = `${artist} - ${title}`;
+						if(r.url.includes('.flac')){
+							Swal.fire({
+								icon: 'warning',
+								titleText: 'Important Note',
+								text:'If none of your players can open this file, try to open it with file archiver like 7Zip or WinRAR.'
+							});
+						}
 						musicDL(r.directUrl, file);
 					},
 					error: function (xhr, st, err) {

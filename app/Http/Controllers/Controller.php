@@ -12,6 +12,7 @@ abstract class Controller
 	protected const APP_HEADER =
 	['User-Agent' => 'LRCSearch/1.1 (https://github.com/andrechris24/lyrics-searcher)'];
 	protected static string $paxsenix_url = "https://api.paxsenix.org/";
+	protected static string $lyrically_url = "https://lyrics.paxsenix.org/";
 
 	/**
 	 * Get error messages from Musixmatch

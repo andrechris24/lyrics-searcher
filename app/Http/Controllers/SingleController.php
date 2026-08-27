@@ -17,7 +17,7 @@ class SingleController extends Controller
 			'title' => 'required|string',
 			'artist' => 'required|string',
 			'album' => 'nullable|string',
-			'source' => 'required|in:lrclib,musixmatch,plains,local'
+			'source' => 'required|in:lrclib,musixmatch,plains,local,genius'
 		]);
 		try {
 			switch ($req['source']) {
@@ -141,7 +141,7 @@ class SingleController extends Controller
 						abort($response->status(), $r['error']);
 					} else {
 						Log::error('Unknown Lyrics.ovh response: ', $r);
-						abort(500, 'Unknown response received');
+						abort(500, 'Unknown response from Lyrics.ovh');
 					}
 					break;
 				case 'local':
@@ -154,6 +154,33 @@ class SingleController extends Controller
 					$data['source'] = 'local';
 					$data['instrumental'] = false;
 					return response()->json($data);
+				case 'genius':
+					abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required for Genius');
+					$response = Http::retry(2, 100, throw: false)->timeout(25000)
+					->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])
+					->get(
+						parent::$paxsenix_url . 'lyrics/genius',
+						['q' => $req['title'] . ' ' . $req['artist']]
+					);
+					$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+					if ($response->successful()) {
+						return response()->json([
+							'title' => $r['title'],
+							'artist' => $r['artist'],
+							'content' => $r['lyrics'],
+							'instrumental' => false,
+							'cover' => $r['cover'],
+							'url' => $r['url'],
+							'source' => 'genius'
+						]);
+					} else if ($r['ok'] === false) {
+						Log::warning($r);
+						abort($response->status(), $r['message']);
+					} else {
+						Log::error('Unknown Genius Paxsenix API response: ', $r);
+						abort(500, 'Unknown response from Genius');
+					}
+					break;
 				default:
 					abort(422, 'Unsupported source');
 					break;

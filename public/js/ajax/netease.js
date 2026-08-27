@@ -14,8 +14,8 @@ if (lyricsModal) {
 			songID = button.getAttribute("data-coreui-id"),
 			duration = button.getAttribute("data-coreui-duration");
 		const metaLyric =
-			`[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n` +
-			`[by: NetEase]\n[length: ${duration}]\n`;
+			`[ar:${artistName}]\n[ti:${songName}]\n[al:${albumName}]\n` +
+			`[by:NetEase]\n[length:${duration}]\n`;
 
 		// Update the modal's content
 		$("#song-album").text(albumName);
@@ -38,7 +38,7 @@ if (lyricsModal) {
 				if (typeof data.klyric !== "undefined") {
 					if (data.klyric.lyric !== "" && data.klyric.lyric !== null) {
 						$("#dl-klyric").removeClass("disabled");
-						klyricContent = `${metaLyric}[ve: ${data.klyric.version}]\n${parseKLyric(data.klyric.lyric)}`;
+						klyricContent = `${metaLyric}[ve:${data.klyric.version}]\n${parseKLyric(data.klyric.lyric)}`;
 					} else {
 						$("#dl-klyric").addClass("disabled");
 						klyricContent = "";
@@ -51,7 +51,7 @@ if (lyricsModal) {
 					lyricContents = `${fileName}\n\n${data.lrc.lyric}`;
 					ext = "txt";
 				} else {
-					lyricContents = `${metaLyric}[ve: ${data.lrc.version ?? 1}]\n${data.lrc.lyric}`;
+					lyricContents = `${metaLyric}[ve:${data.lrc.version ?? 1}]\n${data.lrc.lyric}`;
 					ext = "lrc";
 				}
 				$("#lyrics-content").text(data.lrc.lyric);

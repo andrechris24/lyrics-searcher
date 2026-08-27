@@ -11,7 +11,7 @@ class SpotifyController extends Controller
 {
 	public function search(Request $req)
 	{
-		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is not set. Please contact site owner.');
+		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
 		try {
 			$req->validate(['query' => 'required']);
 			$r = Http::retry(2, 100)->timeout(25000)->withHeaders([
@@ -98,7 +98,7 @@ class SpotifyController extends Controller
 	}
 	public function download(Request $req)
 	{
-		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is not set. Please contact site owner.');
+		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
 		$req->validate(
 			['url' => 'required|url', 'source' => 'required|in:spotify,spotdl,youtube,deezer']
 		);
@@ -115,15 +115,7 @@ class SpotifyController extends Controller
 					'Oops, something went wrong while downloading the song. Please try again later.'
 				);
 			}
-			Log::debug($r);
-			// $fileInfo = parent::getFileInfo($r['directUrl']);
-			// return response()->download(
-			// 	$r['url'], 
-			// 	$fileInfo['name'] . '.' . $fileInfo['ext'], 
-			// 	[
-			// 	'Content-Type' => $fileInfo['type'],
-			// 	'Content-Disposition' => 'attachment; filename="' . $fileInfo['name'] . '.' . $fileInfo['ext'] . '"',
-			// ]);
+			// Log::debug($r);
 			return response()->json($r);
 		} catch (ConnectionException | RequestException | JsonException $e) {
 			abort(

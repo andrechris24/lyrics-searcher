@@ -38,16 +38,16 @@ $("#searchSongLyric").on("submit", function (e) {
 					text: `Found song ${data.artist} - ${data.title} but it's marked as Instrumental`
 				});
 			} else {
-				if (data.source !== "lyrics.ovh") {
+				if (data.source !== "lyrics.ovh" && data.souce !== "genius") {
 					fileName = `${data.artist} - ${data.title}`;
-					meta = `\n[ar: ${data.artist}]\n[ti: ${data.title}]\n[al: ${data.album}]\n`;
+					meta = `\n[ar:${data.artist}]\n[ti:${data.title}]\n[al:${data.album}]\n`;
 					if (data.source === "local") {
 						if (!data.content.match(/\[(\d+):(\d+).(\d+)\]/))
 							localContents = data.content;
 						else {
 							localContents =
-								`[id: ${data.id}]${meta}[length: ${formatSeconds(data.duration)}]\n` +
-								`[by: ${data.user.name}]\n[offset: ${data.offset}]\n${data.content}`;
+								`[id:${data.id}]${meta}[length:${formatSeconds(data.duration)}]\n` +
+								`[by:${data.user.name}]\n[offset:${data.offset}]\n${data.content}`;
 						}
 					} else {
 						plainContents = `${fileName}\n\n${data.plain}`;
@@ -68,7 +68,7 @@ $("#searchSongLyric").on("submit", function (e) {
 								mxSyncedDL.classList.remove("disabled");
 								$("#mx-lyric-type").text("Synced");
 							}
-							syncedContents = `[id: ${data.id}]${meta}[length: ${data.duration}]\n[by: ${data.source}]\n${data.synced}`;
+							syncedContents = `[id:${data.id}]${meta}[length:${data.duration}]\n[by:${data.source}]\n${data.synced}`;
 						}
 					}
 				}
@@ -154,6 +154,14 @@ $("#searchSongLyric").on("submit", function (e) {
 						$("#lyric-by").text(data.user.name);
 						$("#modalLocal").modal("show");
 						break;
+					case "genius":
+						$("#genius-lyrics-content").text(data.content);
+						$("#genius-song-title").text(data.title);
+						$("#genius-song-artist").text(data.artist);
+						$("#genius-btn").attr("href", data.url);
+						$("#genius-art").attr("src", data.cover);
+						$("#modalGenius").modal("show");
+						break;
 					default:
 						toast.fire({ icon: "error", text: "Unsupported source" });
 						break;
@@ -231,7 +239,7 @@ mxRichsyncDL.onclick = function (e) {
 		.then((result) => {
 			if (result.isConfirmed) {
 				blobDL(
-					`[id: ${result.value.id}]${meta}[length: ${result.value.duration}]\n[by: Musixmatch (Richsync)]\n${result.value.content}`,
+					`[id:${result.value.id}]${meta}[length:${result.value.duration}]\n[by:Musixmatch]\n${result.value.content}`,
 					`${fileName}.lrc`
 				);
 			}

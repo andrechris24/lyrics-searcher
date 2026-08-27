@@ -82,7 +82,7 @@
 							<a class="dropdown-item" href="#" id="dl-syllyric"
 								data-coreui-toggle="tooltip"
 								data-coreui-title="Not all players supports Syllable lyrics, use with compatible players like OuterTune (Android) or BetterLyrics (Windows)">
-							Syllable
+								Syllable
 							</a>
 						</li>
 						<li>

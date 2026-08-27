@@ -85,12 +85,12 @@ function sendAjax(data) {
 									if (ext === ".txt")
 										blobDL(`${fileName}\n\n${lyricContent}`, fileName + ext);
 									else if (typeof data.id !== "undefined")
-										blobDL(`[id: ${data.id}]\n${lyricContent}`, fileName + ext);
+										blobDL(`[id:${data.id}]\n${lyricContent}`, fileName + ext);
 									else blobDL(lyricContent, fileName + ext);
 								}
 							});
 						} else if (data.lyric.match(/\[(\d+):(\d+).(\d+)\]/))
-							blobDL(`[id: ${data.id}]\n${data.lyric}`, `${fileName}.lrc`);
+							blobDL(`[id:${data.id}]\n${data.lyric}`, `${fileName}.lrc`);
 						else {
 							toast.fire({ icon: "warning", text: "Plain lyric detected" });
 							blobDL(`${fileName}\n\n${data.lyric}`, `${fileName}.txt`);

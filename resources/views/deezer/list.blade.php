@@ -36,9 +36,9 @@
 								data-coreui-artist="{{ $result['artist']['name'] }}"
 								data-coreui-track="{{ $result['title'] }}"
 								data-coreui-album="{{ $result['album']['title'] }}"
-								data-coreui-duration="{{ $length }}" data-coreui-toggle2="tooltip"
-								data-coreui-title="Show & download lyric">
-								<i class="fa-solid fa-eye"></i>
+								data-coreui-duration="{{ $length }}">
+								<i class="fa-solid fa-eye" data-coreui-toggle="tooltip"
+								data-coreui-title="Show & download lyric"></i>
 							</button>
 							<button type="button" class="btn btn-info" @disabled(empty($result['preview']))
 								data-coreui-link="{{ $result['preview'] }}"
@@ -46,9 +46,9 @@
 								data-coreui-track="{{ $result['title'] }}"
 								data-coreui-album="{{ $result['album']['title'] }}"
 								data-coreui-duration="{{ $length }}" data-coreui-toggle="modal"
-								data-coreui-target="#modalPreviewSong" data-coreui-toggle2="tooltip"
-								data-coreui-title="Preview song">
-								<i class="fa-solid fa-play"></i>
+								data-coreui-target="#modalPreviewSong">
+								<i class="fa-solid fa-play" data-coreui-toggle="tooltip"
+								data-coreui-title="Preview song"></i>
 							</button>
 							<button type="button" class="btn btn-secondary download-btn"
 								@disabled(empty($result['link']) || empty(env('PAXSENIX_TOKEN'))) data-href="{{ $result['link'] }}"

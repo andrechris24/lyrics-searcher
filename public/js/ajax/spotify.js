@@ -20,7 +20,7 @@ $(basicForm).submit(function (event) {
 		.done(function (r) {
 			$("#spotify-container").html(r.html);
 			const openTooltip = document.querySelectorAll(
-				'[data-coreui-toggle="tooltip"], [data-coreui-toggle2="tooltip"]'
+				'[data-coreui-toggle="tooltip"]'
 			);
 			// eslint-disable-next-line no-unused-vars
 			const openList = [...openTooltip].map(
@@ -123,7 +123,7 @@ if (lyricsModal) {
 			duration = btn.getAttribute("data-coreui-duration"),
 			songID = btn.getAttribute("data-coreui-id");
 		fileName = `${artistName} - ${songName}`;
-		meta = `\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n[length: ${duration}]\n[by: Musixmatch (Spotify)]\n`;
+		meta = `\n[ar:${artistName}]\n[ti:${songName}]\n[al:${albumName}]\n[length:${duration}]\n[by:Musixmatch Spotify]\n`;
 		$("#song-title").text(songName);
 		$("#song-artist").text(artistName);
 		$("#song-album").text(albumName);
@@ -246,7 +246,7 @@ richsyncDL.onclick = function (e) {
 		.then((result) => {
 			if (result.isConfirmed) {
 				blobDL(
-					`[id: ${result.value.id}]${meta}${result.value.content}`,
+					`[id:${result.value.id}]${meta}${result.value.content}`,
 					`${fileName}.lrc`
 				);
 			}

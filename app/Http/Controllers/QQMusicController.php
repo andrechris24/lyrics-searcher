@@ -102,7 +102,7 @@ class QQMusicController extends Controller
 					Log::error('Malformed lyric content from QQ Music: ', $data['lyric']['content']);
 					abort(
 						500,
-						'Malformed lyric content. Wait for a while and try again. Contact site owner if issue persist.'
+						'Malformed lyric content. Wait for a while and try again or contact site owner if issue persist.'
 					);
 				}
 				$lyric = $data['lyric']['content'];

@@ -40,8 +40,8 @@ if (lyricsModal) {
 			},
 			success: function (data) {
 				const metaLyric =
-					`[id: ${data.id}]\n[ar: ${artistName}]\n[ti: ${songName}]\n[al: ${albumName}]\n` +
-					`[by: Deezer]\n[length: ${duration}]\n${data.writer!==null||data.writer!==""?`[lr: ${data.writer}]\n`:''}`;
+					`[id:${data.id}]\n[ar:${artistName}]\n[ti:${songName}]\n[al:${albumName}]\n[by:Deezer]\n` +
+					`[length:${duration}]\n${data.writer !== null || data.writer !== "" ? `[lr:${data.writer}]\n` : ""}`;
 				if (data.synced !== null && data.synced !== "") {
 					$("#song-lyric-type").text("Synced");
 					$("#dl-synced").removeClass("disabled");
@@ -116,7 +116,7 @@ function sendAjax(data) {
 		.done(function (r) {
 			$("#deezer-container").html(r.html);
 			const openTooltip = document.querySelectorAll(
-				'[data-coreui-toggle="tooltip"], [data-coreui-toggle2="tooltip"]'
+				'[data-coreui-toggle="tooltip"]'
 			);
 			// eslint-disable-next-line no-unused-vars
 			const openList = [...openTooltip].map(
@@ -183,10 +183,10 @@ function sendAjax(data) {
 				}).then((result) => {
 					let file;
 					if (result.isConfirmed) {
-						if(typeof result.value.metadata!=="undefined")
-							file=`${result.value.metadata.author} - ${result.value.metadata.title}`;
-						else file=`${$(this).data("artist")} - ${$(this).data("title")}`;
-						musicDL(result.value.directUrl,file);
+						if (typeof result.value.metadata !== "undefined")
+							file = `${result.value.metadata.author} - ${result.value.metadata.title}`;
+						else file = `${$(this).data("artist")} - ${$(this).data("title")}`;
+						musicDL(result.value.directUrl, file);
 					}
 				});
 			});

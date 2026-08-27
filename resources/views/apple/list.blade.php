@@ -36,9 +36,9 @@
 								data-coreui-artist="{{ $result['artistName'] }}"
 								data-coreui-track="{{ $result['trackName'] }}"
 								data-coreui-album="{{ $result['collectionName'] }}"
-								data-coreui-duration="{{ $length }}" data-coreui-toggle2="tooltip"
-								data-coreui-title="Show & download lyric">
-								<i class="fa-solid fa-eye"></i>
+								data-coreui-duration="{{ $length }}">
+								<i class="fa-solid fa-eye" data-coreui-toggle="tooltip"
+								data-coreui-title="Show & download lyric"></i>
 							</button>
 							<button type="button" class="btn btn-info" @disabled(!array_key_exists('previewUrl', $result))
 								data-coreui-link="{{ $result['previewUrl'] ?? '#' }}"
@@ -46,9 +46,9 @@
 								data-coreui-track="{{ $result['trackName'] }}"
 								data-coreui-album="{{ $result['collectionName'] }}"
 								data-coreui-duration="{{ $length }}" data-coreui-toggle="modal"
-								data-coreui-target="#modalPreviewSong" data-coreui-toggle2="tooltip"
-								data-coreui-title="Preview song">
-								<i class="fa-solid fa-play"></i>
+								data-coreui-target="#modalPreviewSong">
+								<i class="fa-solid fa-play" data-coreui-toggle="tooltip"
+								data-coreui-title="Preview song"></i>
 							</button>
 							<button type="button" class="btn btn-secondary download-btn"
 								@disabled(empty($result['trackViewUrl']) || empty(env('PAXSENIX_TOKEN'))) data-href="{{ $result['trackViewUrl'] }}"
@@ -64,7 +64,7 @@
 							])
 								aria-disabled="{{ empty($result['trackViewUrl']) }}" target="_blank"
 								data-coreui-toggle="tooltip" data-coreui-title="Go to Apple Music">
-								<i class="fa-brands fa-itunes-note"></i>
+								<i class="fa-brands fa-apple"></i>
 							</a>
 						</div>
 					</div>
