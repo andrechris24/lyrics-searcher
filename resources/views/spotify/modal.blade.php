@@ -1,0 +1,134 @@
+<div class="modal fade" tabindex="-1" id="modalMX" aria-labelledby="modalMXLabel"
+	role="dialog" aria-hidden="true">
+	<div role="document"
+		class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 id="modalMXLabel" class="modal-title">
+					Preview Lyric
+				</h5>
+				<button type="button" class="btn-close" data-coreui-dismiss="modal"
+					aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="alert alert-info mb-2">
+					Spotify lyrics provided by Musixmatch
+				</div>
+				<div class="row mb-2">
+					<div class="col-12 col-sm-4"><b>Title</b></div>
+					<div class="col-12 col-sm-8"><span id="song-title">...</span></div>
+					<div class="col-12 col-sm-4"><b>Artist</b></div>
+					<div class="col-12 col-sm-8"><span id="song-artist">...</span></div>
+					<div class="col-12 col-sm-4"><b>Album</b></div>
+					<div class="col-12 col-sm-8"><span id="song-album">-</span></div>
+					<div class="col-12 col-sm-4"><b>Duration</b></div>
+					<div class="col-12 col-sm-8"><span id="song-duration"></span></div>
+					<div class="col-12 col-sm-4"><b>Released</b></div>
+					<div class="col-12 col-sm-8">
+						<p class="placeholder-glow d-none">
+							<span class="placeholder col-12"></span>
+						</p>
+						<span id="song-release-date"></span>
+					</div>
+					<div class="col-12 col-sm-4"><b>Last Update</b></div>
+					<div class="col-12 col-sm-8">
+						<p class="placeholder-glow d-none">
+							<span class="placeholder col-12"></span>
+						</p>
+						<span id="song-last-update"></span>
+					</div>
+					<div class="col-12 col-sm-4"><b>Lyric Type</b></div>
+					<div class="col-12 col-sm-8">
+						<p class="placeholder-glow d-none">
+							<span class="placeholder col-12"></span>
+						</p>
+						<span id="lyric-type"></span>
+					</div>
+					<div class="col-12 col-sm-4"><b>Copyright</b></div>
+					<div class="col-12 col-sm-8">
+						<p class="placeholder-glow d-none">
+							<span class="placeholder col-12"></span>
+						</p>
+						<span id="song-copyright"></span>
+					</div>
+				</div>
+				<p id="lyrics-content" style="white-space: pre-line"></p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
+					Close
+				</button>
+				<a href="#" class="btn btn-warning" target="_blank" id="musixmatch-btn">
+					<i class="fa-solid fa-music"></i> Musixmatch
+				</a>
+				<div class="dropdown">
+					<button class="btn btn-primary dropdown-toggle" type="button"
+						data-coreui-toggle="dropdown" aria-expanded="false">
+						Save to Device
+					</button>
+					<ul class="dropdown-menu">
+						<li>
+							<a class="dropdown-item" href="#" id="download-link-plain">Plain</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="#" id="download-link-synced">Synced</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="#" id="download-link-richsync">Richsync</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" tabindex="-1" id="modalPreviewSong"
+	aria-labelledby="modalPreviewSongLabel" role="dialog" aria-hidden="true">
+	<div role="document"
+		class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 id="modalPreviewSongLabel" class="modal-title">Preview Song</h5>
+				<button type="button" class="btn-close" data-coreui-dismiss="modal"
+					aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="row mb-3">
+					<div class="col-12 col-sm-4">
+						<b>Artist</b>
+					</div>
+					<div class="col-12 col-sm-8">
+						<span id="preview-artist">...</span>
+					</div>
+					<div class="col-12 col-sm-4">
+						<b>Title</b>
+					</div>
+					<div class="col-12 col-sm-8">
+						<span id="preview-title">...</span>
+					</div>
+					<div class="col-12 col-sm-4">
+						<b>Album</b>
+					</div>
+					<div class="col-12 col-sm-8">
+						<span id="preview-album">-</span>
+					</div>
+					<div class="col-12 col-sm-4">
+						<b>Duration</b>
+					</div>
+					<div class="col-12 col-sm-8">
+						<span id="preview-duration">--:--</span>
+					</div>
+				</div>
+				<audio controls id="preview-player">
+					<source id="preview-song" src="">
+					Your browser does not support the audio element.
+				</audio>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
+					Close
+				</button>
+			</div>
+		</div>
+	</div>
+</div>

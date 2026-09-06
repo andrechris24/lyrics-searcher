@@ -14,6 +14,7 @@ export default defineConfig([
 		rules: {
 			"no-unused-vars": ["warn"],
 			"no-console": ["warn"],
+			"no-unreachable": ["warn"],
 			"@typescript-eslint/no-unused-vars": ["off"]
 		}
 	},
@@ -23,6 +24,7 @@ export default defineConfig([
 		rules: {
 			"no-unused-vars": ["warn"],
 			"no-console": ["warn"],
+			"no-unreachable": ["warn"],
 			"@typescript-eslint/no-unused-vars": ["off"]
 		}
 	}

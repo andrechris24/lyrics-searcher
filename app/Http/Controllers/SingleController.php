@@ -47,6 +47,7 @@ class SingleController extends Controller
 						'source' => 'lrclib'
 					]);
 				case 'musixmatch':
+					abort(500, 'Musixmatch source is currently unavailable due to API issue');
 					MusixmatchController::generateToken();
 					$query = MusixmatchController::$macro_query;
 					$query['q_album'] = $req['album'];
@@ -57,6 +58,7 @@ class SingleController extends Controller
 						->withHeaders(MusixmatchController::MX_MACRO_HEADER)
 						->get(MusixmatchController::MX_MACRO_URL, $query)
 						->json(null, null, JSON_THROW_ON_ERROR);
+					Log::debug($r);
 					$header = $r['message']['header'];
 					abort_if(
 						$header['status_code'] !== 200,
@@ -71,7 +73,7 @@ class SingleController extends Controller
 						parent::getMXDBerror($tmHeader)
 					);
 					$tmBody = $data['matcher.track.get']['message']['body']['track'];
-					$duration = $tmBody['track_length'];
+					// $duration = $tmBody['track_length'];
 					abort_if(
 						$tmBody['has_lyrics'] === 0 && $tmBody['has_subtitles'] === 0,
 						404,
@@ -100,12 +102,9 @@ class SingleController extends Controller
 						'title' => $tmBody['track_name'],
 						'artist' => $tmBody['artist_name'],
 						'album' => $tmBody['album_name'],
-						'art100' => $tmBody['album_coverart_100x100'],
-						'art350' => $tmBody['album_coverart_350x350'],
-						'art500' => $tmBody['album_coverart_500x500'],
-						'art800' => $tmBody['album_coverart_800x800'],
-						'duration' => gmdate('i:s', $duration),
-						'spotify' => $tmBody['track_spotify_id'],
+						'art' => $tmBody['album_coverart_800x800']??$tmBody['album_coverart_500x500']??$tmBody['album_coverart_350x350']??$tmBody['album_coverart_100x100']??'',
+						'duration' => gmdate('i:s', $duration??0),
+						'spotify' => $tmBody['track_spotify_id']??'',
 						'share' => $tmBody['track_share_url'],
 						'release' => date_format(date_create($tmBody['first_release_date']), 'l, j F Y'),
 						'updated' => date_format(date_create($tmBody['updated_time']), 'l, j F Y'),
@@ -114,7 +113,7 @@ class SingleController extends Controller
 						'synced' => $syncedText,
 						'richsync' => $tmBody['has_richsync'],
 						'track_id' => $tmBody['commontrack_id'],
-						'id' => $tmBody['subtitle_id'],
+						'id' => $tmBody['subtitle_id']??$tmBody['commontrack_id'],
 						'instrumental' => $tmBody['instrumental'],
 						'explicit' => $tmBody['explicit'],
 						'source' => 'musixmatch'

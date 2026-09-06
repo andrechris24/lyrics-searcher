@@ -20,13 +20,8 @@
 		<!-- DataTables -->
 		<link href="https://cdn.datatables.net/v/bs5/dt-2.3.8/r-3.0.8/datatables.min.css" rel="stylesheet" integrity="sha384-tNYQLr593NFEx21InOh9Hbxz0c66iRCODxYVibI1MHkEHCTPXTwB/7k4ZqWvtRt9" crossorigin="anonymous">
 
+		<link rel="stylesheet" type="text/css" href="{{ asset('css/theme.css') }}">
 		<script type="text/javascript" src="{{ asset('js/theme.js') }}"></script>
-		<style>
-			.bi {
-				vertical-align: -0.125em;
-				fill: currentColor;
-			}
-		</style>
 	</head>
 
 	<body>
@@ -47,7 +42,7 @@
 		</svg>
 		<nav class="navbar navbar-expand-lg bg-body-tertiary">
 			<div class="container-fluid">
-				<a class="navbar-brand" href="{{ route('home') }}">
+				<a class="navbar-brand logo" href="{{ route('home') }}">
 					<i class="fa-solid fa-music fa-2x"></i>
 				</a>
 				<button class="navbar-toggler" type="button" data-coreui-toggle="collapse"
@@ -84,7 +79,7 @@
 								@if (request()->routeIs('kugou.*')) aria-current="page" @endif
 								href="{{ route('kugou.index') }}">Kugou</a>
 						</li>
-						<li class="nav-item dropdown col-sm-6 col-md-4 col-lg-auto col-12">
+						{{-- <li class="nav-item dropdown col-sm-6 col-md-4 col-lg-auto col-12">
 							<a @class([
 								'nav-link',
 								'dropdown-toggle',
@@ -116,7 +111,7 @@
 									</a>
 								</li>
 							</ul>
-						</li>
+						</li> --}}
 						<li class="nav-item col-sm-6 col-md-4 col-lg-auto col-12">
 							<a @class(['nav-link', 'active' => request()->routeIs('local.*')])
 								@if (request()->routeIs('local.*')) aria-current="page" @endif
@@ -139,7 +134,7 @@
 										request()->routeIs('spotify.*') ||
 										request()->routeIs('youtube.*') ||
 										request()->routeIs('apple.*') ||
-									request()->routeIs('amazon.*')
+										request()->routeIs('amazon.*')
 								) aria-current="page" @endif href="#"
 								role="button" data-coreui-toggle="dropdown" aria-expanded="false">
 								More
@@ -149,9 +144,9 @@
 									<a @class([
 										'dropdown-item',
 										'active' => request()->routeIs('deezer.*'),
-										'disabled'=>empty(env("PAXSENIX_TOKEN"))
+										'disabled' => empty(env('PAXSENIX_TOKEN'))
 									]) href="{{ route('deezer.index') }}"
-										aria-disabled="{{empty(env("PAXSENIX_TOKEN"))}}"
+										aria-disabled="{{ empty(env('PAXSENIX_TOKEN')) }}"
 										@if (request()->routeIs('deezer.*')) aria-current="page" @endif >
 										Deezer
 									</a>
@@ -160,9 +155,9 @@
 									<a @class([
 										'dropdown-item',
 										'active' => request()->routeIs('spotify.*'),
-										'disabled'=>empty(env("PAXSENIX_TOKEN"))
+										'disabled' => empty(env('PAXSENIX_TOKEN'))
 									]) href="{{ route('spotify.index') }}"
-										aria-disabled="{{empty(env("PAXSENIX_TOKEN"))}}"
+										aria-disabled="{{ empty(env('PAXSENIX_TOKEN')) }}"
 										@if (request()->routeIs('spotify.*')) aria-current="page" @endif >
 										Spotify
 									</a>
@@ -177,9 +172,9 @@
 									<a @class([
 										'dropdown-item',
 										'active' => request()->routeIs('amazon.*'),
-										'disabled'=>empty(env("PAXSENIX_TOKEN"))
+										'disabled' => empty(env('PAXSENIX_TOKEN'))
 									]) href="{{ route('amazon.index') }}"
-										aria-disabled="{{empty(env("PAXSENIX_TOKEN"))}}"
+										aria-disabled="{{ empty(env('PAXSENIX_TOKEN')) }}"
 										@if (request()->routeIs('amazon.*')) aria-current="page" @endif >
 										Amazon Music
 									</a>

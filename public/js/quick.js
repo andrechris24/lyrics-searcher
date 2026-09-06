@@ -95,14 +95,12 @@ $("#searchSongLyric").on("submit", function (e) {
 						$("#modalLRCLib").modal("show");
 						break;
 					case "musixmatch":
-						if (data.art800 !== "" && data.art800 !== null)
-							$("#song-art").attr("src", data.art800);
-						else if (data.art500 !== "" && data.art500 !== null)
-							$("#song-art").attr("src", data.art500);
-						else if (data.art350 !== "" && data.art350 !== null)
-							$("#song-art").attr("src", data.art350);
-						else if (data.art100 !== "" && data.art100 !== null)
-							$("#song-art").attr("src", data.art100);
+						return toast.fire({
+							icon: 'error',
+							text: 'Musixmatch source is disabled temporarily due to API issue'
+						});
+						if (data.art !== "" && data.art !== null)
+							$("#song-art").attr("src", data.art);
 						else {
 							$("#song-art").attr(
 								"src",

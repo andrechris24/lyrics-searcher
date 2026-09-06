@@ -46,7 +46,7 @@ abstract class Controller
 		return match ($tmHeader['status_code']) {
 			404 => "Song does not exist on Musixmatch database",
 			401 => "Too many requests. Please try again to regenerate musixmatch token.",
-			400 => "Invalid Musixmatch input, please report this issue.",
+			400 => "Invalid Musixmatch input or selected Spotify song does not exist in Musixmatch.",
 			default => "Musixmatch database HTTP Error {$tmHeader['status_code']}"
 		};
 	}
@@ -173,7 +173,7 @@ abstract class Controller
 				$sylTime = self::formatTime(((int)$matches[1] + (int)$matches[2]) / 1000);
 				return sprintf("<%s>", $sylTime);
 			});
-		$converted .= "\n[$sylTime]";
+		$converted .= "[$sylTime]";
 		return $converted;
 	}
 

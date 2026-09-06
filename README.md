@@ -1,9 +1,9 @@
 # LRCSearch
 
-<p align="center">A Laravel based lyrics searcher to Kugou, Musixmatch, NetEase, QQ Music, LRCLib, Deezer, Spotify, Apple Music, and Amazon Music, plus optionally Local database and Plain source. This lyrics searcher contains quick search and per-provider lyrics search. LRCSearch also provides LRC converter from SRT and KRC.</p>
+<p align="center">A Laravel based lyrics searcher to Kugou, Musixmatch (temporarily disabled due to API issue), NetEase, QQ Music, LRCLib, Deezer, Spotify (currently only serves song download), Apple Music, and Amazon Music, plus optionally Local database and Plain source. This lyrics searcher contains quick search and per-provider lyrics search. LRCSearch also provides LRC converter from SRT and KRC.</p>
 
 > [!CAUTION]
-> Due to API change, API Token is now required for Deezer and Spotify. To get API Token, read [steps to get API Token](#steps-to-get-api-token) in Setup section.  Also, previous commits were removed due to security issues.
+> Due to API change, API Token is now required for Deezer and Spotify. To get API Token, read [steps to get API Token](#steps-to-get-api-token) in Setup section. Also, previous commits were removed due to security risk.
 
 **This repository is the source code of [hosted application](https://andrechris24.serv00.net).**
 

@@ -11,6 +11,11 @@
 		</div>
 		<button type="submit" class="btn btn-primary">Search</button>
 	</div>
+	@if($provider==='spotify')
+		<small class="form-text">
+			<a href="{{ route('spotify.chart') }}">Show charts</a>
+		</small>
+	@endif
 	@if (in_array($provider, ['lrclib', 'kugou']))
 		<small class="form-text">
 			<a href="{{ route($provider . '.advanced') }}">Advanced search</a>

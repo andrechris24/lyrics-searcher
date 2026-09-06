@@ -7,6 +7,12 @@
 	@else
 		<p class="text-center">Found {{ $data['total'] }} result(s)</p>
 	@endif
+	<div class="alert alert-danger d-flex align-items-center">
+		<i class="fas fa-exclamation-triangle"></i>
+		<div>
+			Spotify lyrics are currently unavailable due to API issue. It will be available again after issue fixed.
+		</div>
+	</div>
 	<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-3">
 		@foreach ($data['items'] as $result)
 			@php
@@ -34,7 +40,7 @@
 					</div>
 					<div class="card-footer">
 						<div class="btn-group" role="group">
-							<button class="btn btn-primary" data-coreui-id="{{ $result['id'] }}"
+							{{-- <button class="btn btn-primary" data-coreui-id="{{ $result['id'] }}"
 								data-coreui-artist="{{ $artistName }}"
 								data-coreui-track="{{ $result['name'] }}"
 								data-coreui-album="{{ $album['name'] }}"
@@ -42,7 +48,7 @@
 								data-coreui-target="#modalMX">
 								<i class="fa-solid fa-eye" data-coreui-toggle="tooltip"
 								data-coreui-title="Show & download lyric"></i>
-							</button>
+							</button> --}}
 							<button type="button" class="btn btn-info" @disabled(empty($result['preview_url']))
 								data-coreui-link="{{ $result['preview_url'] }}"
 								data-coreui-artist="{{ $artistName }}"

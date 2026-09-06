@@ -36,8 +36,10 @@ class SpotifyController extends Controller
 	}
 	public function get(string $id)
 	{
+		abort(500, 'Spotify lyrics fetching is currently unavailable due to API issue.');
 		try {
 			MusixmatchController::generateToken();
+			// Log::debug('Querying Spotify lyrics for id ' . $id);
 			$query = MusixmatchController::$macro_query;
 			$query['track_spotify_id'] = $id;
 			$query['usertoken'] = Session::get("mx_token");
@@ -45,6 +47,7 @@ class SpotifyController extends Controller
 				->withHeaders(MusixmatchController::MX_MACRO_HEADER)
 				->get(MusixmatchController::MX_MACRO_URL, $query)
 				->json(null, null, JSON_THROW_ON_ERROR);
+			// Log::debug($r);
 			$header = $r['message']['header'];
 			abort_if(
 				$header['status_code'] !== 200,
@@ -89,7 +92,7 @@ class SpotifyController extends Controller
 				'synced' => $syncedText,
 				'richsync' => $tmBody['has_richsync'],
 				'track_id' => $tmBody['commontrack_id'],
-				'id' => $tmBody['subtitle_id'],
+				'id' => $tmBody['subtitle_id']??$id,
 				'instrumental' => $tmBody['instrumental']
 			]);
 		} catch (ConnectionException | JsonException $th) {
@@ -122,6 +125,26 @@ class SpotifyController extends Controller
 				(get_class($e) === RequestException::class) ? $e->response->status() : 500,
 				parent::lyricallyError($e)
 			);
+		}
+	}
+	public function charts()
+	{
+		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
+		try {
+			$r = Http::retry(2, 100)->timeout(25000)
+				->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])
+				->get(parent::$paxsenix_url . 'spotify/charts')
+				->json(null, null, JSON_THROW_ON_ERROR);
+			if ($r['ok'] === false) {
+				Log::error('Spotify API error: ', $r);
+				return to_route('spotify.index')->withError(
+					'Oops, something went wrong while loading charts. Please try again later.'
+				);
+			}
+			return view('spotify.chart', $r);
+		} catch (ConnectionException | RequestException | JsonException $e) {
+			return to_route('spotify.index')
+				->withError('Error loading charts: ' . parent::lyricallyError($e));
 		}
 	}
 }

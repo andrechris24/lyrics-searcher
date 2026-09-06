@@ -4,8 +4,8 @@
 @section('content')
 	<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 pb-5 mb-5">
 		<p class="text-center">Welcome to LRCSearch! This site provides lyrics search from
-			Kugou, NetEase, QQ Music, Musixmatch, LRCLib, Deezer, Apple Music, Amazon Music,
-			plus optionally local server and plain sources.
+			Kugou, NetEase, QQ Music, <del>Musixmatch,</del> LRCLib, Deezer, Apple Music,
+			Amazon Music, plus optionally local server and plain sources.
 			This form below is a quick search to 4 providers.</p>
 		<form class="row g-3 mb-3" action="#" id="searchSongLyric">
 			<div class="col-12 col-md-8">
@@ -24,7 +24,7 @@
 				<div class="form-floating">
 					<select class="form-select form-select-lg" name="source" id="lyric-source" required>
 						<option value="" selected>Choose</option>
-						<option value="musixmatch">Musixmatch</option>
+						{{-- <option value="musixmatch">Musixmatch</option> --}}
 						<option value="lrclib">LRCLib</option>
 						<option value="plains">Lyrics.ovh</option>
 						<option value="genius">Genius</option>
@@ -223,8 +223,8 @@
 			</div>
 		</div>
 	</div>
-	<div class="modal fade" tabindex="-1" id="modalGenius" aria-labelledby="modalGeniusLabel"
-		role="dialog" aria-hidden="true">
+	<div class="modal fade" tabindex="-1" id="modalGenius"
+		aria-labelledby="modalGeniusLabel" role="dialog" aria-hidden="true">
 		<div role="document"
 			class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down modal-lg">
 			<div class="modal-content">
@@ -242,7 +242,8 @@
 						</div>
 						<div class="col-12 col-md-8">
 							<div class="callout callout-info">
-								Genius only serves plain lyrics, so you can only copy and paste lyrics to save to your device.
+								Genius only serves plain lyrics. Copy and paste them to save to
+								your device.
 							</div>
 							<div class="row mb-2">
 								<div class="col-4"><b>Title</b></div>

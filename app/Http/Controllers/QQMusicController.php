@@ -91,7 +91,8 @@ class QQMusicController extends Controller
 			if (ctype_xdigit($data['lyric']['content'])) {
 				$decoder = new QrcDecoder();
 				$lyricXml = $decoder->decode($data['lyric']['content']);
-				$lyricXml = Str::between($lyricXml, 'LyricContent="', "\"/>\n");
+				// Log::debug($lyricXml);
+				$lyricXml = Str::between($lyricXml, 'LyricContent="', "\"/>");
 				abort_if(empty($lyricXml), 404, 'Empty lyric, download aborted');
 				$lyric =
 					env('MINILYRICS_COMPATIBLE', true) ?
