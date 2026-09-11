@@ -4,17 +4,11 @@
 		@foreach ($results as $result)
 			@php
 				$length = gmdate(
-				    'i:s',
-				    round($result['trackTimeMillis'] / 1000, 0, PHP_ROUND_HALF_UP)
+					'i:s',
+					round($result['trackTimeMillis'] / 1000, 0, PHP_ROUND_HALF_UP)
 				);
-				$art = !empty($result['artworkUrl100'])
-				    ? $result['artworkUrl100']
-				    : (!empty($result['artworkUrl60'])
-				        ? $result['artworkUrl60']
-				        : (!empty($result['artworkUrl30'])
-				            ? $result['artworkUrl30']
-				            : 'https://placehold.co/500?text=' .
-				                urlencode($result['album']['name'])));
+				$art = $result['artworkUrl100']?? $result['artworkUrl60'] ?? $result['artworkUrl30']
+						?? 'https://placehold.co/500?text=' .urlencode($result['album']['name']);
 			@endphp
 			<div class="col">
 				<div class="card">

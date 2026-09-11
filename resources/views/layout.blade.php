@@ -181,6 +181,14 @@
 								</li>
 							</ul>
 						</li>
+						<li class="nav-item col-sm-6 col-md-4 col-lg-auto col-12">
+							<a @class(['nav-link', 'active' => request()->routeIs('dl.youtube.*'), 'disabled'=>empty(env('PAXSENIX_TOKEN'))])
+								aria-disabled="{{empty(env('PAXSENIX_TOKEN'))}}"
+								@if (request()->routeIs('dl.youtube.*')) aria-current="page" @endif
+								href="{{ route('dl.youtube.index') }}">
+								YT DL
+							</a>
+						</li>
 					</ul>
 					<hr class="d-lg-none text-white-50">
 					<ul class="navbar-nav flex-row flex-wrap ms-md-auto">

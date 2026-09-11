@@ -55,13 +55,12 @@ if (lyricsModal) {
 				// 	sylLyricContent = "";
 				// }
 				plainLyricContent = `${fileName}\n\n${data.plain}`;
-				if (Array.isArray(data.syllable) && data.syllable.length > 0)
+				if (Array.isArray(data.syllable) && data.syllable.length > 0){
 					toast.fire({
 						icon: "info",
 						text: "This song may contain word-by-word or syllable lyric. Please contact site owner to confirm."
 					});
-				// $("#song-copyright").text(data.copyright);
-				// $("#song-license").text(data.license);
+				}
 				$("#lyrics-content").text(data.plain);
 			},
 			error: function (xhr, st, err) {

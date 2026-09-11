@@ -28,16 +28,10 @@
 					$lyricType = 'No Lyrics';
 					$color = 'text-danger';
 				}
-				$art = !empty($track['album_coverart_800x800'])
-					? $track['album_coverart_800x800']
-					: (!empty($track['album_coverart_500x500'])
-						? $track['album_coverart_500x500']
-						: (!empty($track['album_coverart_350x350'])
-							? $track['album_coverart_350x350']
-							: (!empty($track['album_coverart_100x100'])
-								? $track['album_coverart_100x100']
-								: 'https://placehold.co/500?text=' .
-									urlencode($track['album_name']))));
+				$art = $track['album_coverart_800x800'] ??
+					$track['album_coverart_800x800'] ?? $track['album_coverart_500x500']
+						?? $track['album_coverart_350x350']?? $track['album_coverart_100x100']
+							??'https://placehold.co/500?text=' . urlencode($track['album_name']);
 				$unavailable = $track['instrumental'] || !$track['has_lyrics'];
 			@endphp
 			<div class="col">

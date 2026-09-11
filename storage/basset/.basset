@@ -156,8 +156,7 @@
         "asset_name": "E:\\web_garbages\\lyrics-searcher\\vendor/backpack/crud/src/resources/assets/libs/jquery.mjs.nestedSortable2.js",
         "asset_path": "E:\\web_garbages\\lyrics-searcher\\vendor/backpack/crud/src/resources/assets/libs/jquery.mjs.nestedSortable2.js",
         "asset_disk_path": "basset/vendor/backpack/crud/src/resources/assets/libs/jquery.mjs.nestedSortable2.js",
-        "asset_attributes": [],
-        "asset_content_hash": "c4616f9b"
+        "asset_attributes": []
     },
     "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/base16/dracula.min.css": {
         "asset_name": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/base16/dracula.min.css",

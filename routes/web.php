@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KugouController;
 use App\Http\Controllers\LRCLibController;
-// use App\Http\Controllers\MusixmatchController;
+use App\Http\Controllers\MusixmatchController;
 use App\Http\Controllers\NetEaseController;
 use App\Http\Controllers\QQMusicController;
 use App\Http\Controllers\SingleController;
@@ -11,7 +11,7 @@ use App\Http\Controllers\LocalController;
 use App\Http\Controllers\DeezerController;
 use App\Http\Controllers\SpotifyController;
 use App\Http\Controllers\AmazonController;
-// use App\Http\Controllers\YoutubeController;
+use App\Http\Controllers\YoutubeController;
 use App\Http\Controllers\AppleController;
 
 Route::view('/', 'index')->name('home');
@@ -27,19 +27,19 @@ Route::prefix('lrclib')->name('lrclib.')->group(function () {
 		Route::post('convert', 'convert')->name('convert');
 	});
 });
-// Route::prefix('musixmatch')->name('musixmatch.')->group(function () {
-// 	Route::view('/', 'musixmatch.basic')->name('index');
-// 	Route::view('advanced', 'musixmatch.advanced')->name('advanced');
-// 	Route::view('charts', 'musixmatch.chart')->name('chart');
-// 	Route::controller(MusixmatchController::class)->group(function () {
-// 		Route::get('charts/list', 'charts')->name('chart.list');
-// 		Route::name('search')->group(function () {
-// 			Route::get('results', 'standard');
-// 			Route::get('advanced/results', 'advanced')->name('.advanced');
-// 			Route::get('{id}/{type}', 'get')->name('.get');
-// 		});
-// 	});
-// });
+Route::prefix('musixmatch')->name('musixmatch.')->group(function () {
+	// Route::view('/', 'musixmatch.basic')->name('index');
+	// Route::view('advanced', 'musixmatch.advanced')->name('advanced');
+	// Route::view('charts', 'musixmatch.chart')->name('chart');
+	Route::controller(MusixmatchController::class)->group(function () {
+		// Route::get('charts/list', 'charts')->name('chart.list');
+		Route::name('search')->group(function () {
+			Route::get('results', 'standard');
+			Route::get('advanced/results', 'advanced')->name('.advanced');
+			Route::get('{id}/{type}', 'get')->name('.get');
+		});
+	});
+});
 Route::prefix('netease')->name('netease.')->group(function () {
 	Route::view('/', 'netease.search')->name('index');
 	Route::controller(NetEaseController::class)->name('search')->group(function () {
@@ -120,16 +120,16 @@ Route::prefix('amazon')->name('amazon.')->group(function () {
 		Route::get('{id}', 'get')->name('.get');
 	});
 });
-// Route::prefix('dl')->name('dl.')->group(function () {
-// 	Route::prefix('youtube')->name('youtube.')->group(function () {
-// 		Route::view('/', 'youtube.dl')->name('index');
-// 		Route::controller(YoutubeController::class)->group(function () {
-// 			Route::get('video', 'dlvideo')->name('video');
-// 			Route::get('audio', 'dlaudio')->name('audio');
-// 			Route::get('ytdlp', 'altdl')->name('alt');
-// 		});
-// 	});
-// });
+Route::prefix('dl')->name('dl.')->group(function () {
+	Route::prefix('youtube')->name('youtube.')->group(function () {
+		Route::view('/', 'youtube.dl')->name('index');
+		Route::controller(YoutubeController::class)->group(function () {
+			Route::get('video', 'dlvideo')->name('video');
+			Route::get('audio', 'dlaudio')->name('audio');
+			Route::get('alt', 'altdl')->name('alt');
+		});
+	});
+});
 Route::view('laravel', 'welcome')->name('laravel');
 Route::get('phpinfo', function () {
 	return phpinfo();

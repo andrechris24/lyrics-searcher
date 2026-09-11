@@ -1,9 +1,9 @@
 # LRCSearch
 
-<p align="center">A Laravel based lyrics searcher to Kugou, Musixmatch (temporarily disabled due to API issue), NetEase, QQ Music, LRCLib, Deezer, Spotify (currently only serves song download), Apple Music, and Amazon Music, plus optionally Local database and Plain source. This lyrics searcher contains quick search and per-provider lyrics search. LRCSearch also provides LRC converter from SRT and KRC.</p>
+<p align="center">A Laravel based lyrics searcher to Kugou, Musixmatch (temporarily disabled due to API change), NetEase, QQ Music, LRCLib, Deezer, Spotify, Apple Music, and Amazon Music, plus optionally Local database and Plain source. This lyrics searcher contains quick search and per-provider lyrics search. LRCSearch also provides LRC converter from SRT and KRC.</p>
 
 > [!CAUTION]
-> Due to API change, API Token is now required for Deezer and Spotify. To get API Token, read [steps to get API Token](#steps-to-get-api-token) in Setup section. Also, previous commits were removed due to security risk.
+> Due to API change, Additional Token is now required for Deezer and Spotify. To get API Token, read [Additional Token Steps](#additional-token-steps) in Setup section. Also, previous commits were removed due to security risk.
 
 **This repository is the source code of [hosted application](https://andrechris24.serv00.net).**
 
@@ -37,7 +37,7 @@ php artisan storage:link
 # Setup Database
 php artisan migrate --seed
 
-# Generate Musixmatch fallback token
+# Generate Musixmatch fallback token (Musixmatch search is currently disabled)
 php artisan usertoken
 
 # Run development server
@@ -47,12 +47,16 @@ php artisan serve
 php artisan backpack:user
 ```
 
-#### Steps to get API Token
+#### Additional Token Steps
 
-**Required for Deezer, Spotify, Amazon Music, and song downloaders (Deezer, Spotify, Apple Music, and Amazon Music)**
+**Required for Deezer, Spotify, Amazon Music, song downloaders (Deezer, Spotify, Apple Music, and Amazon Music), and YouTube downloads**
 1. Log in to https://api.paxsenix.org/dashboard with your GitHub account.
 2. After log in, navigate to **API Keys**. Generate key, then copy generated key.
 3. Open .env file, then paste copied key into **PAXSENIX_TOKEN** entry and Save.
+
+#### For Spotify Lyrics
+
+Follow steps from [SpotiFLAC guide](https://github.com/spotbye/SpotiFLAC-Next/wiki/How-to-Obtain-Spotify-sp_dc-Cookies/69d347ab6f4e08587faf31daa31c29571e7c2cb2) to obtain sp_dc cookie, then paste to SPOTIFY_COOKIE in env file.
 
 ## Admin credentials
 

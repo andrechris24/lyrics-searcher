@@ -23,7 +23,7 @@
 					<div class="col-12 col-sm-8"><span id="song-album">-</span></div>
 					<div class="col-12 col-sm-4"><b>Duration</b></div>
 					<div class="col-12 col-sm-8"><span id="song-duration"></span></div>
-					<div class="col-12 col-sm-4"><b>Released</b></div>
+					{{-- <div class="col-12 col-sm-4"><b>Released</b></div>
 					<div class="col-12 col-sm-8">
 						<p class="placeholder-glow d-none">
 							<span class="placeholder col-12"></span>
@@ -36,7 +36,7 @@
 							<span class="placeholder col-12"></span>
 						</p>
 						<span id="song-last-update"></span>
-					</div>
+					</div> --}}
 					<div class="col-12 col-sm-4"><b>Lyric Type</b></div>
 					<div class="col-12 col-sm-8">
 						<p class="placeholder-glow d-none">
@@ -44,7 +44,7 @@
 						</p>
 						<span id="lyric-type"></span>
 					</div>
-					<div class="col-12 col-sm-4"><b>Copyright</b></div>
+					<div class="col-12 col-sm-4"><b>Provider</b></div>
 					<div class="col-12 col-sm-8">
 						<p class="placeholder-glow d-none">
 							<span class="placeholder col-12"></span>
@@ -58,9 +58,6 @@
 				<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
 					Close
 				</button>
-				<a href="#" class="btn btn-warning" target="_blank" id="musixmatch-btn">
-					<i class="fa-solid fa-music"></i> Musixmatch
-				</a>
 				<div class="dropdown">
 					<button class="btn btn-primary dropdown-toggle" type="button"
 						data-coreui-toggle="dropdown" aria-expanded="false">
@@ -74,8 +71,11 @@
 							<a class="dropdown-item" href="#" id="download-link-synced">Synced</a>
 						</li>
 						<li>
-							<a class="dropdown-item" href="#" id="download-link-richsync">Richsync</a>
+							<a class="dropdown-item" href="#" id="download-link-srt">SRT</a>
 						</li>
+						{{-- <li>
+							<a class="dropdown-item" href="#" id="download-link-richsync">Richsync</a>
+						</li> --}}
 					</ul>
 				</div>
 			</div>
@@ -110,13 +110,13 @@
 						<b>Album</b>
 					</div>
 					<div class="col-12 col-sm-8">
-						<span id="preview-album">-</span>
+						<span id="preview-album">No info</span>
 					</div>
 					<div class="col-12 col-sm-4">
 						<b>Duration</b>
 					</div>
 					<div class="col-12 col-sm-8">
-						<span id="preview-duration">--:--</span>
+						<span id="preview-duration">No info</span>
 					</div>
 				</div>
 				<audio controls id="preview-player">

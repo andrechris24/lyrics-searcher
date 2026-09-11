@@ -61,6 +61,7 @@ class MusixmatchController extends Controller
 			$r = Http::retry(2, 5000, throw: false)->timeout(25000)
 				->withHeaders(self::MX_HEADER)->get(self::$url . 'track.search', $query)
 				->json(null, null, JSON_THROW_ON_ERROR);
+			// Log::debug($r);
 			$header = $r['message']['header'];
 			abort_if(
 				$header['status_code'] !== 200,

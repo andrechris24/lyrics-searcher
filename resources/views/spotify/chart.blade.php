@@ -40,13 +40,6 @@
 								</h5>
 								<p class="card-text">{{ $hl['id'] }}</p>
 							</div>
-							{{-- <div class="card-footer">
-									<a href="{{ $hl['uri'] }}" @class(['btn', 'btn-success', 'disabled' => empty($hl['uri'])])
-										aria-disabled="{{ empty($hl['url']) }}" data-coreui-toggle="tooltip"
-										data-coreui-title="Go to Spotify" target="_blank">
-										<i class="fa-brands fa-spotify"></i>
-									</a>
-							</div> --}}
 						</div>
 					</div>
 				@endforeach
@@ -54,41 +47,42 @@
 		</div>
 		<div class="tab-pane fade" id="track-tab-pane" role="tabpanel"
 			aria-labelledby="track-tab" tabindex="0">
-	<div class="alert alert-danger d-flex align-items-center">
-		<i class="fas fa-exclamation-triangle"></i>
-		<div>
-			Spotify lyrics are currently unavailable due to API issue. It will be available again after issue fixed.
-		</div>
-	</div>
+			{{-- <div class="alert alert-danger d-flex align-items-center">
+				<i class="fas fa-exclamation-triangle"></i>
+				<div>
+					Spotify lyrics are currently unavailable due to API issue.
+					It will be available again after issue fixed.
+				</div>
+			</div> --}}
 			<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-3">
 				@foreach ($track_chart as $tr)
 					@php
 						$artists = [];
 						foreach ($tr['artists'] as $artist) {
-						    $artists[] = $artist;
+							$artists[] = $artist;
 						}
 						$artistName = implode(', ', $artists);
 						switch ($tr['movement']) {
-						    case 'MOVED_UP':
-						        $color = 'text-bg-success';
-						        $teks = '<i class="fa-solid fa-caret-up"></i>';
-						        break;
-						    case 'MOVED_DOWN':
-						        $color = 'text-bg-danger';
-						        $teks = '<i class="fa-solid fa-caret-down"></i>';
-						        break;
-						    case 'NO_CHANGE':
-						        $color = 'text-bg-secondary';
-						        $teks = '=';
-						        break;
-						    case 'NEW_ENTRY':
-						        $color = 'text-bg-primary';
-						        $teks = 'NEW';
-						        break;
-						    default:
-						        $color = 'text-bg-info';
-						        $teks = $tr['movement'];
-						        break;
+							case 'MOVED_UP':
+								$color = 'text-bg-success';
+								$teks = '<i class="fa-solid fa-caret-up"></i>';
+								break;
+							case 'MOVED_DOWN':
+								$color = 'text-bg-danger';
+								$teks = '<i class="fa-solid fa-caret-down"></i>';
+								break;
+							case 'NO_CHANGE':
+								$color = 'text-bg-secondary';
+								$teks = '=';
+								break;
+							case 'NEW_ENTRY':
+								$color = 'text-bg-primary';
+								$teks = 'NEW';
+								break;
+							default:
+								$color = 'text-bg-info';
+								$teks = $tr['movement'];
+								break;
 						}
 					@endphp
 					<div class="col">
@@ -106,13 +100,13 @@
 							</div>
 							<div class="card-footer">
 								<div class="btn-group" role="group">
-									{{-- <button class="btn btn-primary" data-coreui-id="{{ $tr['id'] }}"
+									<button class="btn btn-primary" data-coreui-id="{{ $tr['id'] }}"
 										data-coreui-artist="{{ $artistName }}"
 										data-coreui-track="{{ $tr['name'] }}"data-coreui-toggle="modal"
-										data-coreui-target="#modalSpotify">
+										data-coreui-target="#modalMX">
 										<i class="fa-solid fa-eye" data-coreui-toggle="tooltip"
 											data-coreui-title="Show & download lyric"></i>
-									</button> --}}
+									</button>
 									<button type="button" class="btn btn-secondary download-btn"
 										@disabled(empty(env('PAXSENIX_TOKEN')))
 										data-href="https://open.spotify.com/track/{{ $tr['id'] }}"
@@ -139,30 +133,30 @@
 					@php
 						$artists = [];
 						foreach ($al['artists'] as $artist) {
-						    $artists[] = $artist;
+							$artists[] = $artist;
 						}
 						$artistName = implode(', ', $artists);
 						switch ($al['movement']) {
-						    case 'MOVED_UP':
-						        $color = 'text-bg-success';
-						        $teks = '<i class="fa-solid fa-caret-up"></i>';
-						        break;
-						    case 'MOVED_DOWN':
-						        $color = 'text-bg-danger';
-						        $teks = '<i class="fa-solid fa-caret-down"></i>';
-						        break;
-						    case 'NO_CHANGE':
-						        $color = 'text-bg-secondary';
-						        $teks = '=';
-						        break;
-						    case 'NEW_ENTRY':
-						        $color = 'text-bg-primary';
-						        $teks = 'NEW';
-						        break;
-						    default:
-						        $color = 'text-bg-info';
-						        $teks = $al['movement'];
-						        break;
+							case 'MOVED_UP':
+								$color = 'text-bg-success';
+								$teks = '<i class="fa-solid fa-caret-up"></i>';
+								break;
+							case 'MOVED_DOWN':
+								$color = 'text-bg-danger';
+								$teks = '<i class="fa-solid fa-caret-down"></i>';
+								break;
+							case 'NO_CHANGE':
+								$color = 'text-bg-secondary';
+								$teks = '=';
+								break;
+							case 'NEW_ENTRY':
+								$color = 'text-bg-primary';
+								$teks = 'NEW';
+								break;
+							default:
+								$color = 'text-bg-info';
+								$teks = $al['movement'];
+								break;
 						}
 					@endphp
 					<div class="col">

@@ -6,15 +6,9 @@
 		@foreach ($data as $result)
 			@php
 				$length = gmdate('i:s', $result['duration']);
-				$art = !empty($result['album']['cover_xl'])
-				    ? $result['album']['cover_xl']
-				    : (!empty($result['album']['cover_big'])
-				        ? $result['album']['cover_big']
-				        : (!empty($result['album']['cover_medium'])
-				            ? $result['album']['cover_medium']
-				            : (!empty($result['album']['cover_small'])
-				                ? $result['album']['cover_small']
-				                : 'https://placehold.co/500?text=' . urlencode($result['title']))));
+				$art = $result['album']['cover_xl']?? $result['album']['cover_big']
+					?? $result['album']['cover_medium']?? $result['album']['cover_small']
+						??'https://placehold.co/500?text=' . urlencode($result['title']);
 			@endphp
 			<div class="col">
 				<div class="card">

@@ -5,14 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Http, Log};
 use Illuminate\Http\Client\{ConnectionException, RequestException};
+use Illuminate\Support\Sleep;
 use JsonException;
 
 class YoutubeController extends Controller
 {
 	public function search(Request $req)
 	{
+		$req->validate(['query' => 'required']);
 		try {
-			$req->validate(['query' => 'required']);
 			$r = Http::retry(2, 100)->timeout(25000)
 				->get(parent::$paxsenix_url . 'youtube/search', ['q' => $req['query']])->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
@@ -57,6 +58,158 @@ class YoutubeController extends Controller
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
 				parent::lyricallyError($th)
+			);
+		}
+	}
+	public function dlvideo(Request $req)
+	{
+		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
+		$req->validate(
+			['url' => 'required|url', 'q' => 'required|in:360,480,720,1080,1440']
+		);
+		try {
+			$r = Http::retry(2, 100)->timeout(25000)
+				->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])
+				->get(
+					parent::$paxsenix_url . 'dl/ytmp4',
+					['url' => $req['url'], 'quality' => $req['q']]
+				)->json(null, null, JSON_THROW_ON_ERROR);
+			if ($r['ok'] === false) {
+				Log::error('YouTube API error: ', $r);
+				abort(
+					500,
+					'Failed to retrieve YouTube Video. Please try again later.'
+				);
+			}
+			do {
+				$queue = Http::timeout(25000)->get($r['task_url']);
+				$arrQueue = $queue->json(null, null, JSON_THROW_ON_ERROR);
+				if ($r['ok'] === false && !array_key_exists('status', $arrQueue)) {
+					Log::error($arrQueue);
+					abort(
+						$queue->status(),
+						$arrQueue['message'] ?? "Unknown error while downloading video"
+					);
+				} else if (in_array($arrQueue['status'], ['failed', 'error'])) {
+					Log::error('Error downloading YouTube Video: ', $arrQueue);
+					abort(
+						500,
+						$arrQueue['error'] ?? $arrQueue['message'] ?? 'Failed to download YouTube Video'
+					);
+					break;
+				} else if ($arrQueue['status'] === 'pending')
+					Sleep::for(5)->seconds();
+			} while ($arrQueue['status'] === 'pending');
+			return response()
+				->json(['html' => view('youtube.result', $arrQueue)->render()]);
+		} catch (ConnectionException | JsonException | RequestException $e) {
+			// if (get_class($e) === RequestException::class) {
+			// 	$json = $e->response->json();
+			// 	abort_if(
+			// 		is_array($json) && array_key_exists('qualities', $json),
+			// 		400,
+			// 		'Selected quality is unavailable. Available qualities: ' . implode(', ', $json['qualities'])
+			// 	);
+			// }
+			abort(
+				(get_class($e) === RequestException::class) ? $e->response->status() : 500,
+				parent::lyricallyError($e)
+			);
+		}
+	}
+	public function dlaudio(Request $req)
+	{
+		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
+		$req->validate(
+			['url' => 'required|url', 'fmt' => 'required|in:mp3,m4a,webm,aac,flac,opus,ogg,wav']
+		);
+		try {
+			$r = Http::retry(2, 100)->timeout(25000)
+				->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])
+				->get(
+					parent::$paxsenix_url . 'dl/ytmp3',
+					['url' => $req['url'], 'format' => $req['fmt']]
+				)->json(null, null, JSON_THROW_ON_ERROR);
+			if ($r['ok'] === false) {
+				Log::error('YouTube API error: ', $r);
+				abort(
+					500,
+					'Failed to retrieve YouTube audio download. Please try again later.'
+				);
+			}
+			do {
+				$queue = Http::timeout(25000)->get($r['task_url']);
+				$arrQueue = $queue->json(null, null, JSON_THROW_ON_ERROR);
+				if ($r['ok'] === false && !array_key_exists('status', $arrQueue)) {
+					Log::error($arrQueue);
+					abort(
+						$queue->status(),
+						$arrQueue['message'] ?? "Unknown error while downloading audio"
+					);
+				} else if (in_array($arrQueue['status'], ['failed', 'error'])) {
+					Log::error('Error downloading YouTube Audio: ', $arrQueue);
+					abort(
+						500,
+						$arrQueue['error'] ?? $arrQueue['message'] ?? 'Failed to download YouTube Audio'
+					);
+					break;
+				} else if ($arrQueue['status'] === 'pending')
+					Sleep::for(5)->seconds();
+			} while ($arrQueue['status'] === 'pending');
+			return response()
+				->json(['html' => view('youtube.result', $arrQueue)->render()]);
+		} catch (ConnectionException | JsonException | RequestException $e) {
+			abort(
+				(get_class($e) === RequestException::class) ? $e->response->status() : 500,
+				parent::lyricallyError($e)
+			);
+		}
+	}
+	public function altdl(Request $req)
+	{
+		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
+		$req->validate(
+			['url' => 'required|url', 'fmt' => 'required|in:mp3,1080,720,480,360,240,144']
+		);
+		try {
+			$r = Http::retry(2, 100)->timeout(25000)
+				->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])
+				->get(
+					parent::$paxsenix_url . 'yt/savetube',
+					['url' => $req['url'], 'quality' => $req['fmt']]
+				)->json(null, null, JSON_THROW_ON_ERROR);
+			if ($r['ok'] === false) {
+				Log::error('YouTube API error: ', $r);
+				abort(
+					500,
+					'Failed to retrieve YouTube Content. Please try again later.'
+				);
+			}
+			do {
+				$queue = Http::timeout(25000)->get($r['task_url']);
+				$arrQueue = $queue->json(null, null, JSON_THROW_ON_ERROR);
+				if ($r['ok'] === false && !array_key_exists('status', $arrQueue)) {
+					Log::error($arrQueue);
+					abort(
+						$queue->status(),
+						$arrQueue['message'] ?? "Unknown error while downloading video"
+					);
+				} else if (in_array($arrQueue['status'], ['failed', 'error'])) {
+					Log::error('Error downloading YouTube Content: ', $arrQueue);
+					abort(
+						500,
+						$arrQueue['message'] ?? 'Failed to download YouTube Content'
+					);
+					break;
+				} else if ($arrQueue['status'] === 'pending')
+					Sleep::for(5)->seconds();
+			} while ($arrQueue['status'] === 'pending');
+			return response()
+				->json(['html' => view('youtube.result', $arrQueue)->render()]);
+		} catch (ConnectionException | JsonException | RequestException $e) {
+			abort(
+				(get_class($e) === RequestException::class) ? $e->response->status() : 500,
+				parent::lyricallyError($e)
 			);
 		}
 	}

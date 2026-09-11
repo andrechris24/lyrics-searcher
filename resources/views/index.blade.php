@@ -24,7 +24,7 @@
 				<div class="form-floating">
 					<select class="form-select form-select-lg" name="source" id="lyric-source" required>
 						<option value="" selected>Choose</option>
-						{{-- <option value="musixmatch">Musixmatch</option> --}}
+						<option value="musixmatch">Musixmatch</option>
 						<option value="lrclib">LRCLib</option>
 						<option value="plains">Lyrics.ovh</option>
 						<option value="genius">Genius</option>
@@ -81,6 +81,10 @@
 							<img src="" class="img-fluid" id="song-art">
 						</div>
 						<div class="col-12 col-md-8">
+							<div class="callout callout-warning">
+								Musixmatch currently returning misleading results
+								so no full search available for this provider.
+							</div>
 							<div class="row mb-2">
 								<div class="col-4"><b>Title</b></div>
 								<div class="col-8"><span id="mx-song-title">...</span></div>

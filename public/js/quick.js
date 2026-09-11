@@ -95,10 +95,10 @@ $("#searchSongLyric").on("submit", function (e) {
 						$("#modalLRCLib").modal("show");
 						break;
 					case "musixmatch":
-						return toast.fire({
-							icon: 'error',
-							text: 'Musixmatch source is disabled temporarily due to API issue'
-						});
+						// return toast.fire({
+						// 	icon: 'error',
+						// 	text: 'Musixmatch source is disabled temporarily due to API issue'
+						// });
 						if (data.art !== "" && data.art !== null)
 							$("#song-art").attr("src", data.art);
 						else {
@@ -108,9 +108,9 @@ $("#searchSongLyric").on("submit", function (e) {
 							);
 						}
 						if (data.spotify === "" || data.spotify === null)
-							$("#spotify-btn").prop("disabled", true);
+							$("#spotify-btn").addClass("disabled");
 						else {
-							$("#spotify-btn").prop("disabled", false);
+							$("#spotify-btn").removeClass("disabled");
 							$("#spotify-btn").attr(
 								"href",
 								`https://open.spotify.com/track/${data.spotify}`
@@ -207,7 +207,7 @@ mxRichsyncDL.onclick = function (e) {
 			title: "Download Richsync lyric?",
 			text: "Musixmatch richsync lyric is a word-by-word version of synced lyric and not all players are supported.",
 			customClass: {
-				confirmButton: "btn btn-primary btn-lg me-2",
+				confirmButton: "btn btn-primary btn-lg ms-2",
 				cancelButton: "btn btn-danger btn-lg"
 			},
 			cancelButtonText: "No",

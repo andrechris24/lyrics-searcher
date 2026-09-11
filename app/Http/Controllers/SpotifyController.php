@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\{Http, Log, Session};
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use JsonException;
+use SpotifyLyricsApi\Spotify;
+use SpotifyLyricsApi\SpotifyException;
 
 class SpotifyController extends Controller
 {
@@ -36,68 +38,85 @@ class SpotifyController extends Controller
 	}
 	public function get(string $id)
 	{
-		abort(500, 'Spotify lyrics fetching is currently unavailable due to API issue.');
+		$spotify = new Spotify(env('SPOTIFY_COOKIE'));
 		try {
-			MusixmatchController::generateToken();
-			// Log::debug('Querying Spotify lyrics for id ' . $id);
-			$query = MusixmatchController::$macro_query;
-			$query['track_spotify_id'] = $id;
-			$query['usertoken'] = Session::get("mx_token");
-			$r = Http::retry(2, 5000, throw: false)->timeout(25000)
-				->withHeaders(MusixmatchController::MX_MACRO_HEADER)
-				->get(MusixmatchController::MX_MACRO_URL, $query)
-				->json(null, null, JSON_THROW_ON_ERROR);
-			// Log::debug($r);
-			$header = $r['message']['header'];
-			abort_if(
-				$header['status_code'] !== 200,
-				$header['status_code'],
-				'Error retrieving lyric: ' . parent::getMXerror($header)
-			);
-			$data = $r['message']['body']['macro_calls'];
-			$tmHeader = $data['matcher.track.get']['message']['header'];
-			abort_if(
-				$tmHeader['status_code'] !== 200,
-				$tmHeader['status_code'],
-				'Error retrieving lyric: ' . parent::getMXDBerror($tmHeader)
-			);
-			$tmBody = $data['matcher.track.get']['message']['body']['track'];
-			abort_if(
-				$tmBody['has_lyrics'] === 0 && $tmBody['has_subtitles'] === 0,
-				404,
-				"No lyric available for this song"
-			);
-			if ($tmBody['instrumental']) {
-				$syncedText = "[00:00.00]♪ Instrumental ♪";
-				$plainText = "♪ Instrumental ♪";
-			} else if ($tmBody['has_subtitles'] === 0) $syncedText = "";
-			else {
-				$syncedBody = $data['track.subtitles.get']['message']['body']['subtitle_list'][0]['subtitle'];
-				if ($syncedBody['restricted']) $syncedText = "";
-				else $syncedText = $syncedBody['subtitle_body'];
-			}
-			$plainBody = $data['track.lyrics.get']['message']['body']['lyrics'];
-			abort_if(
-				$plainBody['restricted'] === 1,
-				403,
-				"Lyric for this song is restricted"
-			);
-			if ($tmBody['instrumental'] === 0) $plainText = $plainBody['lyrics_body'];
+			$spotify->checkTokenExpire();
+			$lyrics = $spotify->getLyrics(track_id: $id);
+			if(!empty($lyrics['lyrics']['lines'][0]['syllables'])) Log::debug($lyrics);
 			return response()->json([
-				'share' => $tmBody['track_share_url'],
-				'release' => date_format(date_create($tmBody['first_release_date']), 'l, j F Y'),
-				'updated' => date_format(date_create($tmBody['updated_time']), 'l, j F Y'),
-				'copyright' => $plainBody['lyrics_copyright'],
-				'plain' => $plainText,
-				'synced' => $syncedText,
-				'richsync' => $tmBody['has_richsync'],
-				'track_id' => $tmBody['commontrack_id'],
-				'id' => $tmBody['subtitle_id']??$id,
-				'instrumental' => $tmBody['instrumental']
+				'type'=>$lyrics['lyrics']['syncType'],
+				'synced'=>$spotify->getLrcLyrics($lyrics['lyrics']['lines']),
+				'srt'=>$spotify->getSrtLyrics($lyrics['lyrics']['lines']),
+				'plain'=>$spotify->getRawLyrics($lyrics['lyrics']['lines']),
+				'provider'=>$lyrics['lyrics']['providerDisplayName'],
+				'id'=>$lyrics['lyrics']['providerLyricsId'],
+				'syllable'=>$lyrics['lyrics']['lines'][0]['syllables']
 			]);
-		} catch (ConnectionException | JsonException $th) {
-			abort(500, MusixmatchController::matchMXError($th));
+		} catch (SpotifyException $e) {
+			Log::error($e);
+			abort($e->getCode(), $e->getMessage());
 		}
+		// try {
+		// 	MusixmatchController::generateToken();
+		// 	// Log::debug('Querying Spotify lyrics for id ' . $id);
+		// 	$query = MusixmatchController::$macro_query;
+		// 	$query['track_spotify_id'] = $id;
+		// 	$query['usertoken'] = Session::get("mx_token");
+		// 	$r = Http::retry(2, 5000, throw: false)->timeout(25000)
+		// 		->withHeaders(MusixmatchController::MX_MACRO_HEADER)
+		// 		->get(MusixmatchController::MX_MACRO_URL, $query)
+		// 		->json(null, null, JSON_THROW_ON_ERROR);
+		// 	// Log::debug($r);
+		// 	$header = $r['message']['header'];
+		// 	abort_if(
+		// 		$header['status_code'] !== 200,
+		// 		$header['status_code'],
+		// 		'Error retrieving lyric: ' . parent::getMXerror($header)
+		// 	);
+		// 	$data = $r['message']['body']['macro_calls'];
+		// 	$tmHeader = $data['matcher.track.get']['message']['header'];
+		// 	abort_if(
+		// 		$tmHeader['status_code'] !== 200,
+		// 		$tmHeader['status_code'],
+		// 		'Error retrieving lyric: ' . parent::getMXDBerror($tmHeader)
+		// 	);
+		// 	$tmBody = $data['matcher.track.get']['message']['body']['track'];
+		// 	abort_if(
+		// 		$tmBody['has_lyrics'] === 0 && $tmBody['has_subtitles'] === 0,
+		// 		404,
+		// 		"No lyric available for this song"
+		// 	);
+		// 	if ($tmBody['instrumental']) {
+		// 		$syncedText = "[00:00.00]♪ Instrumental ♪";
+		// 		$plainText = "♪ Instrumental ♪";
+		// 	} else if ($tmBody['has_subtitles'] === 0) $syncedText = "";
+		// 	else {
+		// 		$syncedBody = $data['track.subtitles.get']['message']['body']['subtitle_list'][0]['subtitle'];
+		// 		if ($syncedBody['restricted']) $syncedText = "";
+		// 		else $syncedText = $syncedBody['subtitle_body'];
+		// 	}
+		// 	$plainBody = $data['track.lyrics.get']['message']['body']['lyrics'];
+		// 	abort_if(
+		// 		$plainBody['restricted'] === 1,
+		// 		403,
+		// 		"Lyric for this song is restricted"
+		// 	);
+		// 	if ($tmBody['instrumental'] === 0) $plainText = $plainBody['lyrics_body'];
+		// 	return response()->json([
+		// 		'share' => $tmBody['track_share_url'],
+		// 		'release' => date_format(date_create($tmBody['first_release_date']), 'l, j F Y'),
+		// 		'updated' => date_format(date_create($tmBody['updated_time']), 'l, j F Y'),
+		// 		'copyright' => $plainBody['lyrics_copyright'],
+		// 		'plain' => $plainText,
+		// 		'synced' => $syncedText,
+		// 		'richsync' => $tmBody['has_richsync'],
+		// 		'track_id' => $tmBody['commontrack_id'],
+		// 		'id' => $tmBody['subtitle_id'] ?? $id,
+		// 		'instrumental' => $tmBody['instrumental']
+		// 	]);
+		// } catch (ConnectionException | JsonException $th) {
+		// 	abort(500, MusixmatchController::matchMXError($th));
+		// }
 	}
 	public function download(Request $req)
 	{
