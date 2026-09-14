@@ -11,20 +11,28 @@ use Stevebauman\Location\Facades\Location;
 class MusixmatchController extends Controller
 {
 	private const array MX_HEADER = ["cookie" => "AWSELBCORS=0; AWSELB=0"];
-	public const MX_MACRO_HEADER =
-	['authority' => 'apic-desktop.musixmatch.com', 'cookie' => 'x-mxm-token-guid='];
-	public const MX_MACRO_URL = 'https://apic-desktop.musixmatch.com/ws/1.1/macro.subtitles.get';
-	public static string $url = 'https://apic-desktop.musixmatch.com/ws/1.1/';
+	public const array MX_MACRO_HEADER = [
+		'Host'  => 'apic-appmobile.musixmatch.com',
+		'authority' => 'apic-appmobile.musixmatch.com',
+		'X-Cookie' => 'x-mxm-token-guid=',
+		'x-mxm-app-version' => '10.1.1',
+		'X-User-Agent' => 'Musixmatch/2025120901 CFNetwork/3860.300.31 Darwin/25.2.0',
+		'Accept-Language' => 'en-US,en;q=0.9',
+		'Connection' => 'keep-alive',
+		'Accept' => 'application/json'
+	];
+	public const MX_MACRO_URL = 'https://apic-appmobile.musixmatch.com/ws/1.1/macro.subtitles.get';
+	public static string $url = 'https://apic-appmobile.musixmatch.com/ws/1.1/';
 	private static array $query = [
-		'user_language' => 'en',
-		'app_id' => 'web-desktop-app-v1.0',
+		// 'user_language' => 'en',
+		'app_id' => 'mac-ios-v2.0',
 		'page_size' => 20,
 		'f_has_lyrics' => 1
 	];
 	public static array $macro_query = [
 		'format' => 'json',
 		'namespace' => 'lyrics_richsynched',
-		'app_id' => 'web-desktop-app-v1.0'
+		'app_id' => 'mac-ios-v2.0'
 	];
 	public function standard(Request $req)
 	{
@@ -61,7 +69,6 @@ class MusixmatchController extends Controller
 			$r = Http::retry(2, 5000, throw: false)->timeout(25000)
 				->withHeaders(self::MX_HEADER)->get(self::$url . 'track.search', $query)
 				->json(null, null, JSON_THROW_ON_ERROR);
-			// Log::debug($r);
 			$header = $r['message']['header'];
 			abort_if(
 				$header['status_code'] !== 200,
@@ -73,7 +80,7 @@ class MusixmatchController extends Controller
 				['html' => view('musixmatch.list', compact('data', 'header'))->render()]
 			);
 		} catch (ConnectionException | JsonException $th) {
-			abort(500, self::matchMXError($th));
+			abort(500, 'Error loading results: ' . self::matchMXError($th));
 		}
 	}
 	public function advanced(Request $req)
@@ -106,7 +113,7 @@ class MusixmatchController extends Controller
 				'html' => view('musixmatch.list', compact('data', 'header'))->render()
 			]);
 		} catch (ConnectionException | JsonException $th) {
-			abort(500, self::matchMXError($th));
+			abort(500, 'Error loading results: ' . self::matchMXError($th));
 		}
 	}
 	public function charts(Request $req)
@@ -149,7 +156,7 @@ class MusixmatchController extends Controller
 				'html' => view('musixmatch.list', compact('data', 'header', 'country', 'typeName'))->render()
 			]);
 		} catch (ConnectionException | JsonException $th) {
-			abort(500, self::matchMXError($th));
+			abort(500, 'Error loading charts: ' . self::matchMXError($th));
 		}
 	}
 	public function get(int $id, string $type)
@@ -176,7 +183,7 @@ class MusixmatchController extends Controller
 				'Error retrieving lyric: ' . parent::getMXerror($header)
 			);
 			$data = $r['message']['body'][$type];
-			abort_if($data['restricted'] === true, 403, 'This lyric is restricted');
+			abort_if($data['restricted'] === true, 403, 'Lyric for this song is restricted');
 			$lyrics = match ($type) {
 				'subtitle' => [
 					'content' => $data['subtitle_body'],
@@ -192,7 +199,7 @@ class MusixmatchController extends Controller
 			};
 			return response()->json($lyrics);
 		} catch (ConnectionException | JsonException $th) {
-			abort(500, self::matchMXError($th));
+			abort(500, 'Error retrieving lyric: ' . self::matchMXError($th));
 		}
 	}
 	private static function richsync(array $lrc): ?string
@@ -234,8 +241,8 @@ class MusixmatchController extends Controller
 	{
 		if (!Session::has('mx_token')) {
 			$r = Http::retry(2, 5000, throw: false)->timeout(25000)->get(
-				'https://apic-desktop.musixmatch.com/ws/1.1/token.get',
-				['user_language' => 'en', 'app_id' => 'web-desktop-app-v1.0']
+				'https://apic-appmobile.musixmatch.com/ws/1.1/token.get',
+				['app_id' => 'mac-ios-v2.0']
 			)->json(null, null, JSON_THROW_ON_ERROR);
 			$header = $r['message']['header'];
 			abort_if(
@@ -245,11 +252,14 @@ class MusixmatchController extends Controller
 			);
 			$body = $r['message']['body'];
 			if (array_key_exists('user_token', $body)) {
-				if ($body['user_token'] === 'UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly') {
+				if (in_array($body['user_token'], [
+					'UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly',
+					'00000000000000000000000000000000000000000000000000000000'
+				])) {
 					abort_if(
 						empty(env('MUSIXMATCH_TOKEN')),
 						500,
-						'Failed to retrieve Musixmatch token, no fallback token found'
+						'Invalid generated Musixmatch token, no fallback token found'
 					);
 					Session::put('mx_token', env('MUSIXMATCH_TOKEN'));
 				} else Session::put('mx_token', $body['user_token']);
@@ -267,9 +277,9 @@ class MusixmatchController extends Controller
 	{
 		Log::error($ex);
 		return match (get_class($ex)) {
-			JsonException::class => "Error parsing response: {$ex->getMessage()}",
-			ConnectionException::class => "Musixmatch connection error {$ex->getCode()}: {$ex->getMessage()}",
-			default => "Musixmatch unexpected error: {$ex->getMessage()}"
+			JsonException::class => "Malformed response ({$ex->getMessage()})",
+			ConnectionException::class => "Musixmatch connection error, {$ex->getMessage()}",
+			default => "Musixmatch unexpected error"
 		};
 	}
 }

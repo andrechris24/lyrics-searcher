@@ -20,7 +20,7 @@ class QQMusicController extends Controller
 				->get(self::$url . 'lyric/fcgi-bin/fcg_search_pc_lrc.fcg', [
 					'SONGNAME' => $req['title'],
 					'SINGERNAME' => $req['artist'],
-				'TYPE' => 2
+					'TYPE' => 2
 				]);
 			libxml_use_internal_errors(true);
 			$xmlResponse = simplexml_load_string(
@@ -53,7 +53,7 @@ class QQMusicController extends Controller
 		} catch (ConnectionException  | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				self::matchError($th)
+				'Error loading results: ' . self::matchError($th)
 			);
 		}
 	}
@@ -73,15 +73,22 @@ class QQMusicController extends Controller
 			$xmlResponse = simplexml_load_string($res, 'SimpleXMLElement', LIBXML_NOCDATA);
 			if ($xmlResponse === false) {
 				$xmlErrors = libxml_get_errors();
-				Log::error("Invalid XML response: {$response->body()}", $xmlErrors);
-				abort(500, 'Error parsing response: ' . libxml_get_last_error());
+				Log::error("Malformed XML response: {$response->body()}", $xmlErrors);
+				abort(
+					500,
+					'Error retrieving lyric: Malformed response (' . libxml_get_last_error() . ')'
+				);
 			}
 			$xml = self::decodeJson(json_encode($xmlResponse));
-			abort_if($xml === false, 500, 'Error reading QQ Music response');
+			abort_if(
+				$xml === false,
+				500,
+				'Error retrieving lyric: Malformed QQ Music response'
+			);
 			$data = $xml['cmd'];
 			if (!in_array($data['result'], [0, 200])) {
 				Log::error($data);
-				abort(500, "QQ Music error {$data['result']}");
+				abort(500, "Error retrieving lyric: QQ Music error {$data['result']}");
 			}
 			abort_if(
 				empty($data['lyric']['content']),
@@ -91,7 +98,6 @@ class QQMusicController extends Controller
 			if (ctype_xdigit($data['lyric']['content'])) {
 				$decoder = new QrcDecoder();
 				$lyricXml = $decoder->decode($data['lyric']['content']);
-				// Log::debug($lyricXml);
 				$lyricXml = Str::between($lyricXml, 'LyricContent="', "\"/>");
 				abort_if(empty($lyricXml), 404, 'Empty lyric, download aborted');
 				$lyric =
@@ -116,7 +122,7 @@ class QQMusicController extends Controller
 		} catch (ConnectionException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				self::matchError($th)
+				'Error retrieving lyric: ' . self::matchError($th)
 			);
 		}
 	}
@@ -124,9 +130,9 @@ class QQMusicController extends Controller
 	{
 		Log::error($ex);
 		return match (get_class($ex)) {
-			ConnectionException::class => "QQ Music connection error {$ex->getCode()}: {$ex->getMessage()}",
+			ConnectionException::class => "QQ Music connection error, {$ex->getMessage()}",
 			RequestException::class => "QQ Music HTTP Error {$ex->response->status()}",
-			default => "QQ Music unexpected error: {$ex->getMessage()}"
+			default => "QQ Music unexpected error"
 		};
 	}
 }

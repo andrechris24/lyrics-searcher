@@ -28,11 +28,11 @@ Route::prefix('lrclib')->name('lrclib.')->group(function () {
 	});
 });
 Route::prefix('musixmatch')->name('musixmatch.')->group(function () {
-	// Route::view('/', 'musixmatch.basic')->name('index');
-	// Route::view('advanced', 'musixmatch.advanced')->name('advanced');
-	// Route::view('charts', 'musixmatch.chart')->name('chart');
+	Route::view('/', 'musixmatch.basic')->name('index');
+	Route::view('advanced', 'musixmatch.advanced')->name('advanced');
+	Route::view('charts', 'musixmatch.chart')->name('chart');
 	Route::controller(MusixmatchController::class)->group(function () {
-		// Route::get('charts/list', 'charts')->name('chart.list');
+		Route::get('charts/list', 'charts')->name('chart.list');
 		Route::name('search')->group(function () {
 			Route::get('results', 'standard');
 			Route::get('advanced/results', 'advanced')->name('.advanced');
@@ -63,7 +63,7 @@ Route::prefix('kugou')->name('kugou.')->group(function () {
 			Route::get('advanced/results', 'advanced')->name('.advanced');
 			Route::get('get', 'get')->name('.get');
 		});
-		Route::get('aimp/{hash}', 'aimp')->name('aimp');
+		// Route::get('aimp/{hash}', 'aimp')->name('aimp');
 		Route::get('{hash}', 'lyrics')->name('lyrics');
 	});
 });

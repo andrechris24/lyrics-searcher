@@ -121,7 +121,7 @@ function sendAjax(data) {
 							Swal.fire({
 								icon: 'warning',
 								titleText: 'Important Note',
-								text:'If none of your players can open this file, try to open it with file archiver like 7Zip or WinRAR.'
+								text:'If none of your players can open this file, open it with file archiver like 7Zip or WinRAR.'
 							});
 						}
 						musicDL(r.directUrl, file);

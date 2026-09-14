@@ -23,7 +23,7 @@ class LRCLibController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				self::matchError($th)
+				'Error loading results: ' . self::matchError($th)
 			);
 		}
 	}
@@ -40,7 +40,7 @@ class LRCLibController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				self::matchError($th)
+				'Error loading results: ' . self::matchError($th)
 			);
 		}
 	}
@@ -103,10 +103,10 @@ class LRCLibController extends Controller
 	{
 		Log::error($ex);
 		return match (get_class($ex)) {
-			JsonException::class => "Error parsing response: {$ex->getMessage()}",
-			ConnectionException::class => "LRCLib connection error {$ex->getCode()}: {$ex->getMessage()}",
+			JsonException::class => "Malformed response ({$ex->getMessage()})",
+			ConnectionException::class => "LRCLib connection error, {$ex->getMessage()}",
 			RequestException::class => "LRCLib HTTP Error {$ex->response->status()}",
-			default => "LRCLib unexpected error: {$ex->getMessage()}"
+			default => "LRCLib unexpected error"
 		};
 	}
 }

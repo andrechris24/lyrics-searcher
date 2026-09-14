@@ -25,18 +25,22 @@ class DeezerController extends Controller
 			Log::error($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				match (get_class($th)) {
-					JsonException::class => "Error parsing response: {$th->getMessage()}",
-					ConnectionException::class => "Deezer API connection error {$th->getCode()}: {$th->getMessage()}",
+				'Error loading results: ' . match (get_class($th)) {
+					JsonException::class => "Malformed response ({$th->getMessage()})",
+					ConnectionException::class => "Deezer API connection error, {$th->getMessage()}",
 					RequestException::class => "Deezer API error {$th->response->status()}",
-					default => "Deezer API unexpected error: {$th->getMessage()}"
+					default => "Unexpected error"
 				}
 			);
 		}
 	}
 	public function get(int $id)
 	{
-		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
+		abort_if(
+			empty(env('PAXSENIX_TOKEN')),
+			401,
+			'Paxsenix API token is required for lyrics and song downloads'
+		);
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)->withHeaders([
 				'Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')
@@ -96,13 +100,17 @@ class DeezerController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				parent::lyricallyError($th)
+				'Error retrieving lyric: ' . parent::lyricallyError($th)
 			);
 		}
 	}
 	public function download(Request $req)
 	{
-		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
+		abort_if(
+			empty(env('PAXSENIX_TOKEN')),
+			401,
+			'Paxsenix API token is required for lyrics and song downloads'
+		);
 		$req->validate(['url' => 'required|url', 'quality' => 'required|in:128kbps,320kbps,flac']);
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)
@@ -114,15 +122,14 @@ class DeezerController extends Controller
 				Log::error('Deezer API error: ', $r);
 				abort(
 					500,
-					'Oops, something went wrong while downloading the song. Please try again later.'
+					'Oops, something went wrong while downloading song. Please try again later.'
 				);
 			}
-			// Log::debug($r);
 			return response()->json($r);
 		} catch (ConnectionException | JsonException | RequestException $e) {
 			abort(
 				(get_class($e) === RequestException::class) ? $e->response->status() : 500,
-				parent::lyricallyError($e)
+				'Download failed: ' . parent::lyricallyError($e)
 			);
 		}
 	}

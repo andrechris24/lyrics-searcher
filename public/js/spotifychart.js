@@ -12,7 +12,7 @@ document.addEventListener("focusin", (e) => {
 $(".download-btn").on("click", function () {
 				Swal.fire({
 					title: "Download song?",
-					text: "This will download the song from Spotify, not lyrics.",
+					text: "This will download song from Spotify, not lyrics.",
 					showCancelButton: true,
 					confirmButtonText: "Download",
 					cancelButtonText: "Cancel",
@@ -61,7 +61,7 @@ $(".download-btn").on("click", function () {
 							return response;
 						} catch (error) {
 							Swal.showValidationMessage(
-								`Download failed: ${error.responseJSON?.message ?? "Server connection was lost or timed out"}`
+								`${error.responseJSON?.message ?? "Server connection was lost or timed out"}`
 							);
 						}
 					},

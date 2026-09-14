@@ -95,10 +95,6 @@ $("#searchSongLyric").on("submit", function (e) {
 						$("#modalLRCLib").modal("show");
 						break;
 					case "musixmatch":
-						// return toast.fire({
-						// 	icon: 'error',
-						// 	text: 'Musixmatch source is disabled temporarily due to API issue'
-						// });
 						if (data.art !== "" && data.art !== null)
 							$("#song-art").attr("src", data.art);
 						else {
@@ -229,7 +225,7 @@ mxRichsyncDL.onclick = function (e) {
 				} catch (e) {
 					console.warn(e);
 					Swal.showValidationMessage(
-						`Download failed: ${e.responseJSON?.message ?? "Server connection was lost or timed out"}`
+						`${e.responseJSON?.message ?? "Server connection was lost or timed out"}`
 					);
 				}
 			}
@@ -286,7 +282,7 @@ wbwDL.onclick = function (e) {
 		})
 		.then((result) => {
 			if (result.isConfirmed) blobDL(result.value.lrc, `${fileName}.lrc`);
-			else if (result.isDenied) blobDL(wbwContents, `${fileName}.yaml`);
+			else if (result.isDenied) blobDL(wbwContents, `${fileName}.lyricsfile.yaml`);
 			else console.warn("Download aborted");
 		});
 };

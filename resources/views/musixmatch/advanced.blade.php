@@ -42,7 +42,7 @@
 			<button type="submit" class="btn btn-primary">Search</button>
 			<small class="form-text">
 				<a href="{{ route('musixmatch.index') }}">Basic search</a>
-				<a href="{{ route('musixmatch.chart') }}">Show Charts</a>
+				<a href="{{ route('musixmatch.chart') }}">Open Charts</a>
 			</small>
 		</form>
 	</div>

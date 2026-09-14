@@ -125,7 +125,7 @@ function sendAjax(data) {
 			$(".download-btn").on("click", function () {
 				Swal.fire({
 					title: "Download song?",
-					text: "This will download the song from Deezer, not lyrics.",
+					text: "This will download song from Deezer, not lyrics.",
 					showCancelButton: true,
 					confirmButtonText: "Download",
 					cancelButtonText: "Cancel",
@@ -173,7 +173,7 @@ function sendAjax(data) {
 							return response;
 						} catch (error) {
 							Swal.showValidationMessage(
-								`Download failed: ${error.responseJSON?.message ?? "Server connection was lost or timed out"}`
+								`${error.responseJSON?.message ?? "Server connection was lost or timed out"}`
 							);
 						}
 					},

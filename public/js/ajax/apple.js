@@ -1,4 +1,4 @@
-/* global toast, blobDL, basicForm, coreui, musicDL */
+/* global toast, blobDL, coreui, musicDL */
 let syncedLyricContents,
 	sylLyricContent,
 	plainLyricContent,
@@ -115,7 +115,7 @@ if (previewModal) {
 		player[0].pause();
 	});
 } else console.warn("No song preview modal exist");
-$(basicForm).submit(function (event) {
+$("#apple-form").submit(function (event) {
 	event.preventDefault();
 	const formData = $(this).serialize();
 	$("form :input").prop("disabled", true);

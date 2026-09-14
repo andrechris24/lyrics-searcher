@@ -11,9 +11,6 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<div class="alert alert-info mb-2">
-					Spotify lyrics provided by Musixmatch
-				</div>
 				<div class="row mb-2">
 					<div class="col-12 col-sm-4"><b>Title</b></div>
 					<div class="col-12 col-sm-8"><span id="song-title">...</span></div>
@@ -23,20 +20,6 @@
 					<div class="col-12 col-sm-8"><span id="song-album">-</span></div>
 					<div class="col-12 col-sm-4"><b>Duration</b></div>
 					<div class="col-12 col-sm-8"><span id="song-duration"></span></div>
-					{{-- <div class="col-12 col-sm-4"><b>Released</b></div>
-					<div class="col-12 col-sm-8">
-						<p class="placeholder-glow d-none">
-							<span class="placeholder col-12"></span>
-						</p>
-						<span id="song-release-date"></span>
-					</div>
-					<div class="col-12 col-sm-4"><b>Last Update</b></div>
-					<div class="col-12 col-sm-8">
-						<p class="placeholder-glow d-none">
-							<span class="placeholder col-12"></span>
-						</p>
-						<span id="song-last-update"></span>
-					</div> --}}
 					<div class="col-12 col-sm-4"><b>Lyric Type</b></div>
 					<div class="col-12 col-sm-8">
 						<p class="placeholder-glow d-none">
@@ -74,7 +57,7 @@
 							<a class="dropdown-item" href="#" id="download-link-srt">SRT</a>
 						</li>
 						{{-- <li>
-							<a class="dropdown-item" href="#" id="download-link-richsync">Richsync</a>
+							<a class="dropdown-item" href="#" id="download-link-richsync">Syllable</a>
 						</li> --}}
 					</ul>
 				</div>

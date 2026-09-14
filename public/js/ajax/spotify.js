@@ -79,7 +79,7 @@ $(basicForm).submit(function (event) {
 							return response;
 						} catch (error) {
 							Swal.showValidationMessage(
-								`Download failed: ${error.responseJSON?.message ?? "Server connection was lost or timed out"}`
+								`${error.responseJSON?.message ?? "Server connection was lost or timed out"}`
 							);
 						}
 					},
@@ -133,11 +133,8 @@ if (lyricsModal) {
 			url: `/spotify/${songID}`,
 			beforeSend: function () {
 				$("#lyrics-content").text("");
-				// $("#song-release-date").text("");
-				// $("#song-last-update").text("");
 				$("#song-copyright").text("");
 				$("#lyric-type").text("");
-				// $("#musixmatch-btn").attr("href", "#");
 				$(".placeholder-glow").removeClass("d-none");
 			},
 			complete: function () {

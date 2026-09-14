@@ -79,13 +79,13 @@
 								@if (request()->routeIs('kugou.*')) aria-current="page" @endif
 								href="{{ route('kugou.index') }}">Kugou</a>
 						</li>
-						{{-- <li class="nav-item dropdown col-sm-6 col-md-4 col-lg-auto col-12">
+						<li class="nav-item dropdown col-sm-6 col-md-4 col-lg-auto col-12">
 							<a @class([
 								'nav-link',
 								'dropdown-toggle',
 								'active' => request()->routeIs('musixmatch.*')
-							]) href="#"
-								@if (request()->routeIs('musixmatch.*')) aria-current="page" @endif role="button"
+							]) href="#" role="button"
+								@if (request()->routeIs('musixmatch.*')) aria-current="page" @endif
 								data-coreui-toggle="dropdown" aria-expanded="false">
 								Musixmatch
 							</a>
@@ -111,7 +111,7 @@
 									</a>
 								</li>
 							</ul>
-						</li> --}}
+						</li>
 						<li class="nav-item col-sm-6 col-md-4 col-lg-auto col-12">
 							<a @class(['nav-link', 'active' => request()->routeIs('local.*')])
 								@if (request()->routeIs('local.*')) aria-current="page" @endif

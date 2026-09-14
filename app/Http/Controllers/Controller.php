@@ -22,14 +22,15 @@ abstract class Controller
 	 */
 	protected static function getMXerror(array $header): string
 	{
-		if ($header['status_code'] === 401) Session::forget('mx_token');
 		if (array_key_exists('hint', $header)) {
+			Session::forget('mx_token');
 			$msg = match ($header['hint']) {
 				'renew' => "Musixmatch token expired or invalid. Please try again to regenerate token.",
 				'captcha' => "Musixmatch blocked your IP, please wait for a few minutes or refresh your device IP address.",
 				default => "Musixmatch returned an error with reason: {$header['hint']}"
 			};
 		} else {
+			if ($header['status_code'] === 401) Session::forget('mx_token');
 			$msg = match ($header['status_code']) {
 				401 => "Musixmatch rate limit exceeded. Please try again to regenerate token.",
 				404 => "Musixmatch query returned no result",
@@ -46,7 +47,7 @@ abstract class Controller
 		return match ($tmHeader['status_code']) {
 			404 => "Song does not exist on Musixmatch database",
 			401 => "Too many requests. Please try again to regenerate musixmatch token.",
-			400 => "Invalid Musixmatch input or selected Spotify song does not exist in Musixmatch.",
+			400 => "Invalid Musixmatch input, please report this issue.",
 			default => "Musixmatch database HTTP Error {$tmHeader['status_code']}"
 		};
 	}
@@ -188,10 +189,10 @@ abstract class Controller
 		}
 		Log::error($e);
 		return match (get_class($e)) {
-			JsonException::class => "Error parsing Paxsenix API response: {$e->getMessage()}",
-			ConnectionException::class => "Paxsenix API connection error {$e->getCode()}: {$e->getMessage()}",
+			JsonException::class => "Malformed Paxsenix API response ({$e->getMessage()})",
+			ConnectionException::class => "Paxsenix API connection error, {$e->getMessage()}",
 			RequestException::class => $reqerr,
-			default => "Paxsenix API unexpected error: {$e->getMessage()}"
+			default => "Paxsenix API unexpected error"
 		};
 	}
 

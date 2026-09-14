@@ -14,7 +14,7 @@
 		@endif --}}
 		<div class="row mb-2">
 			<div class="col-12">
-				{{ $title ?? $info['title'] }}
+				<b>{{ $title ?? $info['title'] }}</b>
 			</div>
 			@if (!empty($duration))
 				<div class="col-12">

@@ -26,7 +26,8 @@ class KugouController extends Controller
 				])->json(null, null, JSON_THROW_ON_ERROR);
 			if (!in_array($r['errcode'], [0, 200])) {
 				Log::error($r);
-				return to_route('kugou.index')->withInput()->withError(
+				abort(
+					$r['errcode'],
 					"Error loading results: Kugou Music error {$r['errcode']}: {$r['error']}"
 				);
 			}
@@ -35,7 +36,7 @@ class KugouController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				self::matchError($th)
+				'Error loading results: ' . self::matchError($th)
 			);
 		}
 	}
@@ -44,8 +45,7 @@ class KugouController extends Controller
 		$query = self::$query;
 		$query['hash'] = $hash;
 		try {
-			$r = Http::retry(3, 100)->timeout(25000)
-				->get(self::$lrcUrl . 'search', $query)
+			$r = Http::retry(3, 100)->timeout(25000)->get(self::$lrcUrl . 'search', $query)
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['errcode'] !== 200) {
 				Log::error($r);
@@ -58,7 +58,7 @@ class KugouController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				self::matchError($th)
+				'Error loading list: ' . self::matchError($th)
 			);
 		}
 	}
@@ -74,12 +74,12 @@ class KugouController extends Controller
 			$query = self::$query;
 			$query['keyword'] = "{$req['artist']} - {$req['title']}";
 			$query['duration'] = ($req['minutes'] * 60 + $req['seconds']) * 1000;
-			$r = Http::retry(3, 100)->timeout(25000)
-				->get(self::$lrcUrl . 'search', $query)
+			$r = Http::retry(3, 100)->timeout(25000)->get(self::$lrcUrl . 'search', $query)
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if (!in_array($r['errcode'], [0, 200])) {
 				Log::error($r);
-				return to_route('kugou.advanced')->withInput()->withError(
+				abort(
+					$r['errcode'],
 					"Error loading results: Kugou Music error {$r['errcode']}: {$r['error']}"
 				);
 			}
@@ -88,7 +88,7 @@ class KugouController extends Controller
 		} catch (ConnectionException | JsonException | RequestException | \Exception $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				self::matchError($th)
+				'Error loading results: ' . self::matchError($th)
 			);
 		}
 	}
@@ -123,7 +123,7 @@ class KugouController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				self::matchError($th)
+				'Error retrieving lyric: ' . self::matchError($th)
 			);
 		}
 	}
@@ -151,10 +151,10 @@ class KugouController extends Controller
 	{
 		Log::error($ex);
 		return match (get_class($ex)) {
-			JsonException::class => "Error parsing response: {$ex->getMessage()}",
-			ConnectionException::class => "Kugou Music connection error {$ex->getCode()}: {$ex->getMessage()}",
+			JsonException::class => "Malformed response ({$ex->getMessage()})",
+			ConnectionException::class => "Kugou Music connection error, {$ex->getMessage()}",
 			RequestException::class => "Kugou Music HTTP Error {$ex->response->status()}",
-			default => "Kugou Music unexpected error: {$ex->getMessage()}"
+			default => "Kugou Music unexpected error"
 		};
 	}
 }

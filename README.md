@@ -1,9 +1,11 @@
 # LRCSearch
 
-<p align="center">A Laravel based lyrics searcher to Kugou, Musixmatch (temporarily disabled due to API change), NetEase, QQ Music, LRCLib, Deezer, Spotify, Apple Music, and Amazon Music, plus optionally Local database and Plain source. This lyrics searcher contains quick search and per-provider lyrics search. LRCSearch also provides LRC converter from SRT and KRC.</p>
+<p align="center">A Laravel based lyrics searcher to Kugou, Musixmatch, NetEase, QQ Music, LRCLib, Deezer*, Spotify*, Apple Music, and Amazon Music*, plus optionally Local database and Plain source. This lyrics searcher contains quick search and per-provider lyrics search. LRCSearch also provides LRC converter from SRT and KRC, and now comes with song downloaders and YouTube Downloader.</p>
 
-> [!CAUTION]
-> Due to API change, Additional Token is now required for Deezer and Spotify. To get API Token, read [Additional Token Steps](#additional-token-steps) in Setup section. Also, previous commits were removed due to security risk.
+\*Configuration needed, read [Additional Config Setup](#additional-configuration)
+
+<!-- > [!CAUTION]
+> Due to API change, Additional Token is now required for Deezer and Spotify. To get API Token, . Also, previous commits were removed due to security risk. -->
 
 **This repository is the source code of [hosted application](https://andrechris24.serv00.net).**
 
@@ -37,7 +39,7 @@ php artisan storage:link
 # Setup Database
 php artisan migrate --seed
 
-# Generate Musixmatch fallback token (Musixmatch search is currently disabled)
+# Generate Musixmatch fallback token
 php artisan usertoken
 
 # Run development server
@@ -47,9 +49,11 @@ php artisan serve
 php artisan backpack:user
 ```
 
-#### Additional Token Steps
+### Additional Configuration
 
-**Required for Deezer, Spotify, Amazon Music, song downloaders (Deezer, Spotify, Apple Music, and Amazon Music), and YouTube downloads**
+#### Deezer, Spotify, Amazon Music, Genius, song downloaders (Deezer, Spotify, Apple Music, and Amazon Music), and YouTube Downloader
+
+Requires API Token. If not configured, it will be disabled.
 1. Log in to https://api.paxsenix.org/dashboard with your GitHub account.
 2. After log in, navigate to **API Keys**. Generate key, then copy generated key.
 3. Open .env file, then paste copied key into **PAXSENIX_TOKEN** entry and Save.
@@ -87,7 +91,7 @@ That was my version of `aimp_webLyrics.ini` file containing remote source from p
 - Example path (Windows): `C:\Program Files\AIMP\Plugins\aimp_webLyrics`
 
 > [!WARNING]
-> Every AIMP updates resets aimp_webLyrics.ini file, so you need to replace again. Although AIMP can read Enhanced LRC ([with additional plugin](https://aimp.ru/?do=catalog&rec_id=1391)), WebLyrics plugin will remove Enhanced LRC timestamps when lyrics are fetched from remote source.
+> Every AIMP updates resets aimp_webLyrics.ini file, so you need to replace again. Although AIMP can read Enhanced LRC ([with additional plugin](https://aimp.ru/?do=catalog&rec_id=1391)), WebLyrics plugin will remove Enhanced LRC timestamps when fetched from remote source.
 
 ## References
 

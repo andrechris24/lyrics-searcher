@@ -160,7 +160,7 @@ wbwDL.onclick = function (e) {
 		})
 		.then((result) => {
 			if (result.isConfirmed) blobDL(result.value.lrc, `${fileName}.lrc`);
-			else if (result.isDenied) blobDL(wbwContents, `${fileName}.yaml`);
+			else if (result.isDenied) blobDL(wbwContents, `${fileName}.lyricsfile.yaml`);
 			else console.warn("Download aborted");
 		});
 };

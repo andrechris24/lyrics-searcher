@@ -12,22 +12,39 @@ class AppleController extends Controller
 {
 	public function search(Request $req)
 	{
+		$req->validate(['query' => 'required', 'api' => 'required|in:itunes,paxsenix']);
 		try {
-			$req->validate(['query' => 'required']);
-			$r = Http::retry(3, 100)->timeout(25000)->get(
-				"https://itunes.apple.com/search",
-				['term' => $req['query'], 'entity' => 'song']
-			)->json(null, null, JSON_THROW_ON_ERROR);
+			if ($req['api'] === 'paxsenix') {
+				abort_if(
+					empty(env('PAXSENIX_TOKEN')),
+					401,
+					'API Token is required for Paxsenix request and song downloads'
+				);
+				$r = Http::retry(2, 100)->timeout(25000)
+					->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])
+					->get(parent::$paxsenix_url . "apple-music/search", ['q' => $req['query']])
+					->json(null, null, JSON_THROW_ON_ERROR);
+			} else {
+				$r = Http::retry(3, 100)->timeout(25000)->get(
+					"https://itunes.apple.com/search",
+					['term' => $req['query'], 'entity' => 'song']
+				)->json(null, null, JSON_THROW_ON_ERROR);
+			}
 			return response()->json(['html' => view('apple.list', $r)->render()]);
 		} catch (ConnectionException | JsonException | RequestException $th) {
+			abort_if(
+				$req['api'] === 'paxsenix',
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
+				'Error loading results: ' . parent::lyricallyError($th)
+			);
 			Log::error($th);
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				match (get_class($th)) {
-					JsonException::class => "Error parsing response: {$th->getMessage()}",
-					ConnectionException::class => "Apple Music connection error {$th->getCode()}: {$th->getMessage()}",
+				'Error loading results: ' . match (get_class($th)) {
+					JsonException::class => "Malformed response ({$th->getMessage()})",
+					ConnectionException::class => "Apple Music connection error, {$th->getMessage()}",
 					RequestException::class => "Apple Music HTTP Error {$th->response->status()}",
-					default => "Apple Music unexpected error: {$th->getMessage()}"
+					default => "Apple Music unexpected error"
 				}
 			);
 		}
@@ -58,13 +75,17 @@ class AppleController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				parent::lyricallyError($th)
+				'Error retrieving lyric: ' . parent::lyricallyError($th)
 			);
 		}
 	}
 	public function download(Request $req)
 	{
-		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
+		abort_if(
+			empty(env('PAXSENIX_TOKEN')),
+			401,
+			'API Token is required for Paxsenix request and song downloads'
+		);
 		$req->validate(['url' => 'required|url']);
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)
@@ -75,7 +96,7 @@ class AppleController extends Controller
 				Log::error('Apple Music API error: ', $r);
 				abort(
 					500,
-					'Oops, something went wrong while downloading the song. Please try again later.'
+					'Oops, something went wrong while downloading song. Please try again later.'
 				);
 			}
 			// Log::debug($r);
@@ -83,7 +104,7 @@ class AppleController extends Controller
 		} catch (ConnectionException | RequestException | JsonException $e) {
 			abort(
 				(get_class($e) === RequestException::class) ? $e->response->status() : 500,
-				parent::lyricallyError($e)
+				'Download failed: ' . parent::lyricallyError($e)
 			);
 		}
 	}

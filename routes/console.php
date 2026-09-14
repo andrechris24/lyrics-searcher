@@ -8,8 +8,8 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 Artisan::command('usertoken', function () {
 	$musixmatch = Http::get(
-		'https://apic-desktop.musixmatch.com/ws/1.1/token.get', 
-		['user_language' => 'en','app_id' => 'web-desktop-app-v1.0']
+		'https://apic-appmobile.musixmatch.com/ws/1.1/token.get',
+		['app_id' => 'mac-ios-v2.0']
 	)->throw();
 	$r = $musixmatch->json(null, null, JSON_THROW_ON_ERROR);
 	$header = $r['message']['header'];
@@ -20,15 +20,18 @@ Artisan::command('usertoken', function () {
 	);
 	$body = $r['message']['body'];
 	if (array_key_exists('user_token', $body)) {
-		if ($body['user_token'] === 'UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly') {
+		if (in_array($body['user_token'], [
+			'UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly',
+			'00000000000000000000000000000000000000000000000000000000'
+		])) {
 			throw new Exception(
-				message: "Failed to retrieve Musixmatch token, please try again in a few minutes.",
+				message: "Invalid generated Musixmatch token, please try again in a few minutes.",
 				previous: new Exception($body['user_token'])
 			);
 		}
 		$this->comment("<options=bold>Open env file, then set MUSIXMATCH_TOKEN value to:</>");
 		$this->info($body['user_token']);
 		$this->question("\nIf you use AIMP, replace <MX_TOKEN_X> placeholders inside aimp_webLyrics.ini with above value before replacing original file.");
-		$this->warn("Don't use same token for all placeholders including env due to strict rate limit.");
+		$this->warn("Don't use same token for all placeholders including env due to strict rate limit. Also, wait for a while before regenerating token.");
 	} else abort(404, 'No user token provided from Musixmatch');
 })->purpose('Generates Musixmatch token');

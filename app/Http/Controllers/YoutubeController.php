@@ -63,7 +63,11 @@ class YoutubeController extends Controller
 	}
 	public function dlvideo(Request $req)
 	{
-		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
+		abort_if(
+			empty(env('PAXSENIX_TOKEN')),
+			401,
+			'Paxsenix API token is required for YouTube downloads'
+		);
 		$req->validate(
 			['url' => 'required|url', 'q' => 'required|in:360,480,720,1080,1440']
 		);
@@ -76,10 +80,7 @@ class YoutubeController extends Controller
 				)->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['ok'] === false) {
 				Log::error('YouTube API error: ', $r);
-				abort(
-					500,
-					'Failed to retrieve YouTube Video. Please try again later.'
-				);
+				abort(500, 'Failed to retrieve YouTube Link. Please try again later.');
 			}
 			do {
 				$queue = Http::timeout(25000)->get($r['task_url']);
@@ -113,13 +114,17 @@ class YoutubeController extends Controller
 			// }
 			abort(
 				(get_class($e) === RequestException::class) ? $e->response->status() : 500,
-				parent::lyricallyError($e)
+				'YouTube Video download failed: ' . parent::lyricallyError($e)
 			);
 		}
 	}
 	public function dlaudio(Request $req)
 	{
-		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
+		abort_if(
+			empty(env('PAXSENIX_TOKEN')),
+			401,
+			'Paxsenix API token is required for YouTube downloads'
+		);
 		$req->validate(
 			['url' => 'required|url', 'fmt' => 'required|in:mp3,m4a,webm,aac,flac,opus,ogg,wav']
 		);
@@ -132,10 +137,7 @@ class YoutubeController extends Controller
 				)->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['ok'] === false) {
 				Log::error('YouTube API error: ', $r);
-				abort(
-					500,
-					'Failed to retrieve YouTube audio download. Please try again later.'
-				);
+				abort(500, 'Failed to retrieve YouTube link. Please try again later.');
 			}
 			do {
 				$queue = Http::timeout(25000)->get($r['task_url']);
@@ -161,13 +163,17 @@ class YoutubeController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $e) {
 			abort(
 				(get_class($e) === RequestException::class) ? $e->response->status() : 500,
-				parent::lyricallyError($e)
+				'YouTube Audio download failed: ' . parent::lyricallyError($e)
 			);
 		}
 	}
 	public function altdl(Request $req)
 	{
-		abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required');
+		abort_if(
+			empty(env('PAXSENIX_TOKEN')),
+			401,
+			'Paxsenix API token is required for YouTube downloads'
+		);
 		$req->validate(
 			['url' => 'required|url', 'fmt' => 'required|in:mp3,1080,720,480,360,240,144']
 		);
@@ -180,10 +186,7 @@ class YoutubeController extends Controller
 				)->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['ok'] === false) {
 				Log::error('YouTube API error: ', $r);
-				abort(
-					500,
-					'Failed to retrieve YouTube Content. Please try again later.'
-				);
+				abort(500, 'Failed to retrieve YouTube link. Please try again later.');
 			}
 			do {
 				$queue = Http::timeout(25000)->get($r['task_url']);
@@ -192,7 +195,7 @@ class YoutubeController extends Controller
 					Log::error($arrQueue);
 					abort(
 						$queue->status(),
-						$arrQueue['message'] ?? "Unknown error while downloading video"
+						$arrQueue['message'] ?? "Unknown error while downloading YouTube Content"
 					);
 				} else if (in_array($arrQueue['status'], ['failed', 'error'])) {
 					Log::error('Error downloading YouTube Content: ', $arrQueue);
@@ -209,7 +212,7 @@ class YoutubeController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $e) {
 			abort(
 				(get_class($e) === RequestException::class) ? $e->response->status() : 500,
-				parent::lyricallyError($e)
+				'YouTube Content download failed: ' . parent::lyricallyError($e)
 			);
 		}
 	}

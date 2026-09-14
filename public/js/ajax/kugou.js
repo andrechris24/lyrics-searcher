@@ -116,7 +116,7 @@ function sendAjax(url, data) {
 				console.error(e);
 				toast.fire({
 					icon: "error",
-					text: "An error occurred while marking input errors. Please report to developer."
+					text: "An error occurred while marking input errors."
 				});
 			}
 		})

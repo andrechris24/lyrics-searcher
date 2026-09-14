@@ -57,7 +57,6 @@ class SingleController extends Controller
 						->withHeaders(MusixmatchController::MX_MACRO_HEADER)
 						->get(MusixmatchController::MX_MACRO_URL, $query)
 						->json(null, null, JSON_THROW_ON_ERROR);
-					// Log::debug($r);
 					$header = $r['message']['header'];
 					abort_if(
 						$header['status_code'] !== 200,
@@ -72,7 +71,7 @@ class SingleController extends Controller
 						parent::getMXDBerror($tmHeader)
 					);
 					$tmBody = $data['matcher.track.get']['message']['body']['track'];
-					$duration = $tmBody['track_length']??0;
+					$duration = $tmBody['track_length'] ?? 0;
 					abort_if(
 						$tmBody['has_lyrics'] === 0 && $tmBody['has_subtitles'] === 0,
 						404,
@@ -153,7 +152,11 @@ class SingleController extends Controller
 					$data['instrumental'] = false;
 					return response()->json($data);
 				case 'genius':
-					abort_if(empty(env('PAXSENIX_TOKEN')), 500, 'Paxsenix API token is required for Genius');
+					abort_if(
+						empty(env('PAXSENIX_TOKEN')),
+						401,
+						'Paxsenix API token is required for Genius'
+					);
 					$response = Http::retry(2, 100, throw: false)->timeout(25000)
 						->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])
 						->get(
@@ -174,9 +177,12 @@ class SingleController extends Controller
 					} else if ($r['ok'] === false) {
 						Log::warning($r);
 						abort($response->status(), $r['message']);
+					} else if ($response->failed()) {
+						Log::error('Genius Paxsenix API error: ', $r);
+						abort($response->status(), 'Genius Paxsenix API error ' . $response->status());
 					} else {
 						Log::error('Unknown Genius Paxsenix API response: ', $r);
-						abort(500, 'Unknown response from Genius');
+						abort(500, 'Unknown response from Genius Paxsenix');
 					}
 					break;
 				default:
@@ -188,8 +194,8 @@ class SingleController extends Controller
 			abort(
 				500,
 				match (get_class($th)) {
-					JsonException::class => "Error parsing response: {$th->getMessage()}",
-					ConnectionException::class => "Connection error {$th->getCode()}: {$th->getMessage()}",
+					JsonException::class => "Malformed response ({$th->getMessage()})",
+					ConnectionException::class => "Connection error, {$th->getMessage()}",
 					QueryException::class => "Local database Error: {$th->errorInfo[2]}",
 					default => "Unexpected error: {$th->getMessage()}"
 				}
