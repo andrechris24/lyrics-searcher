@@ -28,9 +28,15 @@
 					$lyricType = 'No Lyrics';
 					$color = 'text-danger';
 				}
-				$art = $track['album_coverart_800x800'] ?? $track['album_coverart_500x500']
-					?? $track['album_coverart_350x350']?? $track['album_coverart_100x100']
-						??'https://placehold.co/500?text=' . urlencode($track['album_name']);
+				$covers=[$track['album_coverart_800x800'],$track['album_coverart_500x500'],$track['album_coverart_350x350'],$track['album_coverart_100x100']];
+				foreach($covers as $cover){
+					if(!empty($cover)){
+						$art=$cover;
+						break;
+					}
+				}
+				if(empty($art))
+					$art = 'https://placehold.co/500?text=' . urlencode($track['album_name']);
 				$unavailable = $track['instrumental'] || !$track['has_lyrics'];
 			@endphp
 			<div class="col">
@@ -61,7 +67,7 @@
 									data-coreui-toggle="dropdown" aria-expanded="false"
 									aria-disabled="{{ $unavailable }}" @disabled($unavailable)>
 									<i class="fa-solid fa-download" data-coreui-toggle="tooltip"
-									data-coreui-title="Download lyric"></i>
+										data-coreui-title="Download lyric"></i>
 								</button>
 								<ul class="dropdown-menu">
 									<li>

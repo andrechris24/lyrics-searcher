@@ -66,7 +66,7 @@ class YoutubeController extends Controller
 		abort_if(
 			empty(env('PAXSENIX_TOKEN')),
 			401,
-			'Paxsenix API token is required for YouTube downloads'
+			'API token is required for YouTube downloads'
 		);
 		$req->validate(
 			['url' => 'required|url', 'q' => 'required|in:360,480,720,1080,1440']
@@ -123,7 +123,7 @@ class YoutubeController extends Controller
 		abort_if(
 			empty(env('PAXSENIX_TOKEN')),
 			401,
-			'Paxsenix API token is required for YouTube downloads'
+			'API token is required for YouTube downloads'
 		);
 		$req->validate(
 			['url' => 'required|url', 'fmt' => 'required|in:mp3,m4a,webm,aac,flac,opus,ogg,wav']
@@ -172,7 +172,7 @@ class YoutubeController extends Controller
 		abort_if(
 			empty(env('PAXSENIX_TOKEN')),
 			401,
-			'Paxsenix API token is required for YouTube downloads'
+			'API token is required for YouTube downloads'
 		);
 		$req->validate(
 			['url' => 'required|url', 'fmt' => 'required|in:mp3,1080,720,480,360,240,144']

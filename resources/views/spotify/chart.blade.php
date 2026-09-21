@@ -47,13 +47,6 @@
 		</div>
 		<div class="tab-pane fade" id="track-tab-pane" role="tabpanel"
 			aria-labelledby="track-tab" tabindex="0">
-			{{-- <div class="alert alert-danger d-flex align-items-center">
-				<i class="fas fa-exclamation-triangle"></i>
-				<div>
-					Spotify lyrics are currently unavailable due to API issue.
-					It will be available again after issue fixed.
-				</div>
-			</div> --}}
 			<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-3">
 				@foreach ($track_chart as $tr)
 					@php

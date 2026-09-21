@@ -40,10 +40,12 @@
 			.querySelector("svg use")
 			.getAttribute("href");
 
-		document.querySelectorAll("[data-coreui-theme-value]").forEach((element) => {
-			element.classList.remove("active");
-			element.setAttribute("aria-pressed", "false");
-		});
+		document
+			.querySelectorAll("[data-coreui-theme-value]")
+			.forEach((element) => {
+				element.classList.remove("active");
+				element.setAttribute("aria-pressed", "false");
+			});
 
 		btnToActive.classList.add("active");
 		btnToActive.setAttribute("aria-pressed", "true");

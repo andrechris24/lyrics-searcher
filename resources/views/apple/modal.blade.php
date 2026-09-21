@@ -9,7 +9,7 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<x-lyrically />
+				{{-- <x-lyrically /> --}}
 				<div class="row mb-3">
 					<div class="col-12 col-sm-4">
 						<b>Artist</b>
@@ -81,14 +81,14 @@
 						<li>
 							<a class="dropdown-item" href="#" id="dl-syllyric"
 								data-coreui-toggle="tooltip"
-								data-coreui-title="Not all players supports Syllable lyrics, use with compatible players like OuterTune (Android) or BetterLyrics (Windows)">
+								data-coreui-title="Not all players supports Syllable lyrics, use with compatible players like Gramophone (Android) or BetterLyrics (Windows)">
 								Syllable
 							</a>
 						</li>
 						<li>
 							<a class="dropdown-item" href="#" id="dl-multisyllyric"
 								data-coreui-toggle="tooltip"
-								data-coreui-title="Not all players supports Syllable lyrics, use with compatible players like OuterTune (Android) or BetterLyrics (Windows)">
+								data-coreui-title="Not all players supports Syllable lyrics, use with compatible players like Gramophone (Android) or BetterLyrics (Windows)">
 								Multi Person Syllable
 							</a>
 						</li>

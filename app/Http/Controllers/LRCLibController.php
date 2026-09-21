@@ -66,29 +66,29 @@ class LRCLibController extends Controller
 			foreach ($yaml['lines'] as $idx => $line) {
 				if ($idx === 0) {
 					if ($line['start_ms'] > 3000)
-						$lyricsfile .= "[" . parent::formatTime(($line['start_ms'] - mt_rand(2500, 3000)) / 1000) . "]";
+						$lyricsfile .= "[" . parent::formatTime(($line['start_ms'] - mt_rand(2500, 3000)), true) . "]";
 					else $lyricsfile .= "[00:00.00]";
 				} else if (($line['start_ms'] - $prevtime) > 9000) {
 					$lyricsfile .= sprintf(
 						"[%s]\n[%s]",
-						parent::formatTime(($prevtime + mt_rand(2500, 3500)) / 1000),
-						parent::formatTime(($line['start_ms'] - mt_rand(2500, 3500)) / 1000)
+						parent::formatTime(($prevtime + mt_rand(2500, 3500)), true),
+						parent::formatTime(($line['start_ms'] - mt_rand(2500, 3500)), true)
 					);
-				} else $lyricsfile .= "[" . parent::formatTime($line['start_ms'] / 1000) . "]";
+				} else $lyricsfile .= "[" . parent::formatTime($line['start_ms'], true) . "]";
 				foreach ($line['words'] as $word) {
 					$lyricsfile .= sprintf(
 						"<%s>%s",
-						parent::formatTime($word['start_ms'] / 1000),
+						parent::formatTime($word['start_ms'], true),
 						$word['text']
 					);
 				}
 				if (array_key_exists('end_ms', $line)) {
 					$prevtime = $line['end_ms'];
-					$lyricsfile .= sprintf(
-						env("MINILYRICS_COMPATIBLE", true) ? "<%s> \n" : "<%s>\n",
-						parent::formatTime($line['end_ms'] / 1000)
-					);
-				} else $lyricsfile .= "\n";
+					$formattedTime = parent::formatTime($line['end_ms'], true);
+					$lyricsfile .= env('MINILYRICS_COMPATIBLE', false)
+						? sprintf("<%s> <%s>\n", $formattedTime, $formattedTime)
+						: sprintf("<%s>\n", $formattedTime);
+				} else $lyricsfile .= PHP_EOL;
 			}
 			return response()->json([
 				'instrumental' => array_key_exists('instrumental', $yaml['metadata']) && $yaml['metadata']['instrumental'] == true,

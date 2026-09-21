@@ -4,9 +4,6 @@
 
 \*Configuration needed, read [Additional Config Setup](#additional-configuration)
 
-<!-- > [!CAUTION]
-> Due to API change, Additional Token is now required for Deezer and Spotify. To get API Token, . Also, previous commits were removed due to security risk. -->
-
 **This repository is the source code of [hosted application](https://andrechris24.serv00.net).**
 
 ## Tech Stack
@@ -22,7 +19,7 @@
 ## Setup
 
 > [!IMPORTANT]
-> Make sure `php_openssl` extension is enabled and the `APP_URL` was set properly in .env file, like `http://127.0.0.1:8000` or `http://sample.test`. If you want to self host, enable SSL extension on web server too. This command below are for Windows, and all commands except one are same for Linux. The env file contains `MINILYRICS_COMPATIBLE` setting if you use MiniLyrics (which contains bugs for Enhanced LRC), defaults to true.
+> Make sure `php_openssl` extension is enabled and the `APP_URL` was set properly in .env file, like `http://127.0.0.1:8000` or `http://sample.test`. If you want to self host, enable SSL extension on web server too. This command below are for Windows, and all commands except one are same for Linux. The env file contains `MINILYRICS_COMPATIBLE` setting if you use MiniLyrics (which contains bugs for Enhanced LRC), defaults to true in env file.
 
 ```sh
 # Clone and install

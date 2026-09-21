@@ -75,7 +75,7 @@ class AppleController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				'Error retrieving lyric: ' . parent::lyricallyError($th)
+				'Error retrieving lyric: ' . parent::lyricallyError($th, true)
 			);
 		}
 	}
@@ -111,11 +111,11 @@ class AppleController extends Controller
 	private static function mlWorkaround(string|null $elrc, int $last): string|null
 	{
 		if (empty($elrc)) return null;
-		return env('MINILYRICS_COMPATIBLE', true) ?
+		return env('MINILYRICS_COMPATIBLE', false) ?
 			sprintf(
 				"%s \n[%s]",
 				Str::replace(">\n", "> \n", $elrc, false),
-				parent::formatTime($last / 1000 + 0.01)
+			parent::formatTime($last + 1, true)
 			) : $elrc;
 	}
 }

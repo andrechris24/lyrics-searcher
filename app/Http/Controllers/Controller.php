@@ -115,44 +115,47 @@ abstract class Controller
 					in_array($matches[1], ['language', 'sign', 'id']) ||
 					(in_array($matches[1], ['ar', 'ti']) && is_numeric($matches[2]))
 				) continue;
-				else if (in_array($matches[1], ['total'])) {
-					$lyricText .= sprintf("[length:%s]\n", gmdate('i:s', floor($matches[2] / 1000)));
+				else if ($matches[1] == 'total') {
+					$lyricText .= sprintf(
+						"[length:%s]\n",
+						gmdate('i:s', floor($matches[2] / 1000))
+					);
 					continue;
 				}
-				$lyricText .= $matches[0] . "\n";
+				$lyricText .= $matches[0] . PHP_EOL;
 			} else if (preg_match($timestampsRegex, $line, $matches)) {
 				$lyricLine = "";
 				$startTime = (int)$matches[1];
 				$duration = (int)$matches[2];
 				if ($idx === 0) {
 					$lyricLine .= ($startTime > 3000)
-						? "[" . self::formatTime(($startTime - mt_rand(2500, 3000)) / 1000) . "]"
+						? "[" . self::formatTime(($startTime - mt_rand(2500, 3000)), true) . "]"
 						: "[00:00.00]";
 				} else if (($startTime - $prevtime) > 9000) {
 					$lyricLine .= sprintf(
 						"[%s]\n[%s]",
-						self::formatTime(($prevtime + mt_rand(2500, 3500)) / 1000),
-						self::formatTime(($startTime - mt_rand(2500, 3500)) / 1000)
+						self::formatTime(($prevtime + mt_rand(2500, 3500)), true),
+						self::formatTime(($startTime - mt_rand(2500, 3500)), true)
 					);
-				} else $lyricLine .= sprintf("[%s]", self::formatTime($startTime / 1000));
+				} else $lyricLine .= sprintf("[%s]", self::formatTime($startTime, true));
 				// parse sub-timestamps
 				if (preg_match_all($timestamps2Regex, $line, $subMatches)) {
 					for ($a = 0; $a < count($subMatches[0]); $a++) {
 						$lyricLine .= sprintf(
 							"<%s>%s",
-							self::formatTime(($startTime + (int)$subMatches[1][$a]) / 1000),
+							self::formatTime(($startTime + (int)$subMatches[1][$a]), true),
 							$subMatches[4][$a]
 						);
 					}
 				}
 				$prevtime = $startTime + $duration;
-				$lyricText .= sprintf(
-					env("MINILYRICS_COMPATIBLE", true) ? "%s<%s> \n" : "%s<%s>\n",
-					$lyricLine,
-					self::formatTime(($startTime + $duration) / 1000)
-				);
+				$formattedTime = self::formatTime(($startTime + $duration), true);
+				$lyricText .=
+					env('MINILYRICS_COMPATIBLE', false)
+					? sprintf("%s<%s> <%s>\n", $lyricLine, $formattedTime, $formattedTime)
+					: sprintf("%s<%s>\n", $lyricLine, $formattedTime);
 				if ($idx === count($lines) - 1)
-					$lyricText .= "[" . self::formatTime(($startTime + $duration + 1) / 1000) . "]";
+					$lyricText .= "[" . self::formatTime(($startTime + $duration + 1), true) . "]";
 			}
 		}
 		return $lyricText;
@@ -169,21 +172,25 @@ abstract class Controller
 		$sylTime = '';
 		$converted = Str::of($qrcText)
 			->replaceMatches("/^\[(\d+),(\d+)\]/m", function (array $matches) {
-				return sprintf("[%s]", self::formatTime((int)$matches[1] / 1000));
+			return sprintf("[%s]", self::formatTime((int)$matches[1], true));
 			})->replaceMatches("/\((\d+),(\d+)\)/", function (array $matches) use (&$sylTime) {
-				$sylTime = self::formatTime(((int)$matches[1] + (int)$matches[2]) / 1000);
+			$sylTime = self::formatTime(((int)$matches[1] + (int)$matches[2]), true);
 				return sprintf("<%s>", $sylTime);
 			});
 		$converted .= "[$sylTime]";
-		return $converted;
+		return env('MINILYRICS_COMPATIBLE', false) ?
+			Str::replace(">\n", "> \n", $converted, false) :
+			$converted;
 	}
 
-	protected static function lyricallyError(mixed $e): string
+	protected static function lyricallyError(mixed $e, bool $lrc = false): string
 	{
 		if (get_class($e) === RequestException::class) {
 			Log::warning('Request failed for ' . $e->response->effectiveUri());
 			$json = $e->response->json();
 			if (!$json) $reqerr = "Paxsenix API Error {$e->response->status()}";
+			else if ($lrc === true && $e->response->status() === 404)
+				$reqerr = 'No lyric found for this song';
 			else
 				$reqerr = $json['message'] ?? $json['error'] ?? $json['detail'] ?? "Paxsenix API Error {$e->response->status()}";
 		}
@@ -211,5 +218,16 @@ abstract class Controller
 			'ext' => $fileInfo['extension'],
 			'name' => $fileInfo['filename']
 		];
+	}
+
+	/**
+	 * Sets LRC by: tag to source of LRC file if by is unavailable
+	 * @param string $lrc    Content of LRC file
+	 * @param string $source Source of LRC file
+	 */
+	protected static function setLrcAuthor(string $lrc, string $source): string
+	{
+		if (!Str::contains($lrc, '[by:')) $lrc = "[by:$source]\n$lrc";
+		return Str::replace('[by:]', "[by:$source]", $lrc);
 	}
 }

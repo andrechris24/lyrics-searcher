@@ -10,8 +10,6 @@
 		<div class="row mb-2 placeholder-glow">
 			<span class="placeholder col-12"></span>
 		</div>
-		{{-- <div class="row g-3"> --}}
 		<a href="#" class="btn btn-primary disabled">Link</a>
-		{{-- </div> --}}
 	</div>
 </div>

@@ -32,134 +32,154 @@ $("#searchSongLyric").on("submit", function (e) {
 			$.LoadingOverlay("hide");
 		},
 		success: function (data) {
-			if (data.instrumental === true || data.instrumental === 1) {
-				toast.fire({
-					icon: "info",
-					text: `Found song ${data.artist} - ${data.title} but it's marked as Instrumental`
-				});
-			} else {
-				if (data.source !== "lyrics.ovh" && data.souce !== "genius") {
-					fileName = `${data.artist} - ${data.title}`;
-					meta = `\n[ar:${data.artist}]\n[ti:${data.title}]\n[al:${data.album}]\n`;
-					if (data.source === "local") {
-						if (!data.content.match(/\[(\d+):(\d+).(\d+)\]/))
-							localContents = data.content;
-						else {
-							localContents =
-								`[id:${data.id}]${meta}[length:${formatSeconds(data.duration)}]\n` +
-								`[by:${data.user.name}]\n[offset:${data.offset}]\n${data.content}`;
-						}
-					} else {
-						plainContents = `${fileName}\n\n${data.plain}`;
-						if (data.synced === "" || data.synced === null) {
-							if (data.source === "lrclib") {
-								llSyncedDL.classList.add("disabled");
-								$("#lrclib-lyric-type").text("Plain");
-							} else {
-								mxSyncedDL.classList.add("disabled");
-								$("#mx-lyric-type").text("Plain");
+			try {
+				if (data.instrumental === true || data.instrumental === 1) {
+					toast.fire({
+						icon: "info",
+						text: `Found song ${data.artist} - ${data.title} but it's marked as Instrumental`
+					});
+				} else {
+					if (
+						data.source !== "lyrics.ovh" &&
+						data.source !== "genius" &&
+						data.source !== "youtube"
+					) {
+						fileName = `${data.artist} - ${data.title}`;
+						meta = `\n[ar:${data.artist}]\n[ti:${data.title}]\n[al:${data.album}]\n`;
+						if (data.source === "local") {
+							if (!data.content.match(/\[(\d+):(\d+).(\d+)\]/))
+								localContents = data.content;
+							else {
+								localContents =
+									`[id:${data.id}]${meta}[length:${formatSeconds(data.duration)}]\n` +
+									`[by:${data.user.name}]\n[offset:${data.offset}]\n${data.content}`;
 							}
-							syncedContents = null;
 						} else {
-							if (data.source === "lrclib") {
-								llSyncedDL.classList.remove("disabled");
-								$("#lrclib-lyric-type").text("Synced");
+							plainContents = `${fileName}\n\n${data.plain}`;
+							if (data.synced === "" || data.synced === null) {
+								if (data.source === "lrclib") {
+									llSyncedDL.classList.add("disabled");
+									$("#lrclib-lyric-type").text("Plain");
+								} else {
+									mxSyncedDL.classList.add("disabled");
+									$("#mx-lyric-type").text("Plain");
+								}
+								syncedContents = null;
 							} else {
-								mxSyncedDL.classList.remove("disabled");
-								$("#mx-lyric-type").text("Synced");
+								if (data.source === "lrclib") {
+									llSyncedDL.classList.remove("disabled");
+									$("#lrclib-lyric-type").text("Synced");
+								} else {
+									mxSyncedDL.classList.remove("disabled");
+									$("#mx-lyric-type").text("Synced");
+								}
+								syncedContents = `[id:${data.id}]${meta}[length:${data.duration}]\n[by:${data.source}]\n${data.synced}`;
 							}
-							syncedContents = `[id:${data.id}]${meta}[length:${data.duration}]\n[by:${data.source}]\n${data.synced}`;
 						}
 					}
-				}
-				$(".search-term").text(
-					`${formData[2].value} - ${formData[0].value} ${
-						formData[3].value !== "" ? `(${formData[3].value})` : ""
-					}`
-				);
-				switch (data.source) {
-					case "lrclib":
-						$("#lrclib-content").text(data.plain);
-						$("#lrclib-song-artist").text(data.artist);
-						$("#lrclib-song-title").text(data.title);
-						$("#lrclib-song-album").text(data.album);
-						$("#lrclib-song-duration").text(data.duration);
-						if (!data.wbw.includes("words:")) {
-							wbwDL.classList.add("disabled");
-							wbwContents = null;
-						} else {
-							wbwDL.classList.remove("disabled");
-							$("#lrclib-lyric-type").text("Word-by-word");
-							wbwContents = data.wbw;
-						}
-						$("#modalLRCLib").modal("show");
-						break;
-					case "musixmatch":
-						if (data.art !== "" && data.art !== null)
-							$("#song-art").attr("src", data.art);
-						else {
-							$("#song-art").attr(
-								"src",
-								`https://placehold.co/500?text=${encodeURIComponent(data.album)}`
+					$(".search-term").text(
+						`${formData[2].value} - ${formData[0].value} ${
+							formData[3].value !== "" ? `(${formData[3].value})` : ""
+						}`
+					);
+					switch (data.source) {
+						case "lrclib":
+							$("#lrclib-content").text(data.plain);
+							$("#lrclib-song-artist").text(data.artist);
+							$("#lrclib-song-title").text(data.title);
+							$("#lrclib-song-album").text(data.album);
+							$("#lrclib-song-duration").text(data.duration);
+							if (!data.wbw.includes("words:")) {
+								wbwDL.classList.add("disabled");
+								wbwContents = null;
+							} else {
+								wbwDL.classList.remove("disabled");
+								$("#lrclib-lyric-type").text("Word-by-word");
+								wbwContents = data.wbw;
+							}
+							$("#modalLRCLib").modal("show");
+							break;
+						case "musixmatch":
+							if (data.art !== "" && data.art !== null)
+								$("#song-art").attr("src", data.art);
+							else {
+								$("#song-art").attr(
+									"src",
+									`https://placehold.co/500?text=${encodeURIComponent(data.album)}`
+								);
+							}
+							if (data.spotify === "" || data.spotify === null)
+								$("#spotify-btn").addClass("disabled");
+							else {
+								$("#spotify-btn").removeClass("disabled");
+								$("#spotify-btn").attr(
+									"href",
+									`https://open.spotify.com/track/${data.spotify}`
+								);
+							}
+							if (data.richsync === true || data.richsync === 1) {
+								track_id = data.track_id;
+								mxRichsyncDL.classList.remove("disabled");
+								$("#mx-lyric-type").text("Richsync");
+							} else {
+								track_id = null;
+								mxRichsyncDL.classList.add("disabled");
+							}
+							$("#mx-plain-lyrics-content").text(data.plain);
+							$("#mx-song-artist").text(data.artist);
+							$("#mx-song-title").text(
+								data.title + (data.explicit === 1 ? " [E]" : "")
 							);
-						}
-						if (data.spotify === "" || data.spotify === null)
-							$("#spotify-btn").addClass("disabled");
-						else {
-							$("#spotify-btn").removeClass("disabled");
-							$("#spotify-btn").attr(
-								"href",
-								`https://open.spotify.com/track/${data.spotify}`
+							$("#mx-song-album").text(data.album);
+							$("#mx-song-duration").text(data.duration);
+							$("#song-release-date").text(data.release);
+							$("#song-last-update").text(data.updated);
+							$("#song-copyright").text(data.copyright);
+							$("#musixmatch-btn").attr("href", data.share);
+							$("#modalMX").modal("show");
+							break;
+						case "lyrics.ovh":
+							$("#lyrics-ovh-content").text(data.content);
+							$("#modalLyricsOVH").modal("show");
+							break;
+						case "local":
+							$("#local-content").text(data.content);
+							$("#local-song-artist").text(data.artist);
+							$("#local-song-title").text(data.title);
+							$("#local-song-album").text(data.album);
+							$("#local-song-duration").text(
+								`${formatSeconds(data.duration)} (offset: ${data.offset})`
 							);
-						}
-						if (data.richsync === true || data.richsync === 1) {
-							track_id = data.track_id;
-							mxRichsyncDL.classList.remove("disabled");
-							$("#mx-lyric-type").text("Richsync");
-						} else {
-							track_id = null;
-							mxRichsyncDL.classList.add("disabled");
-						}
-						$("#mx-plain-lyrics-content").text(data.plain);
-						$("#mx-song-artist").text(data.artist);
-						$("#mx-song-title").text(
-							data.title + (data.explicit === 1 ? " [E]" : "")
-						);
-						$("#mx-song-album").text(data.album);
-						$("#mx-song-duration").text(data.duration);
-						$("#song-release-date").text(data.release);
-						$("#song-last-update").text(data.updated);
-						$("#song-copyright").text(data.copyright);
-						$("#musixmatch-btn").attr("href", data.share);
-						$("#modalMX").modal("show");
-						break;
-					case "lyrics.ovh":
-						$("#lyrics-ovh-content").text(data.content);
-						$("#modalLyricsOVH").modal("show");
-						break;
-					case "local":
-						$("#local-content").text(data.content);
-						$("#local-song-artist").text(data.artist);
-						$("#local-song-title").text(data.title);
-						$("#local-song-album").text(data.album);
-						$("#local-song-duration").text(
-							`${formatSeconds(data.duration)} (offset: ${data.offset})`
-						);
-						$("#lyric-by").text(data.user.name);
-						$("#modalLocal").modal("show");
-						break;
-					case "genius":
-						$("#genius-lyrics-content").text(data.content);
-						$("#genius-song-title").text(data.title);
-						$("#genius-song-artist").text(data.artist);
-						$("#genius-btn").attr("href", data.url);
-						$("#genius-art").attr("src", data.cover);
-						$("#modalGenius").modal("show");
-						break;
-					default:
-						toast.fire({ icon: "error", text: "Unsupported source" });
-						break;
+							$("#lyric-by").text(data.user.name);
+							$("#modalLocal").modal("show");
+							break;
+						case "genius":
+							$("#genius-lyrics-content").text(data.content);
+							$("#genius-song-title").text(data.title);
+							$("#genius-song-artist").text(data.artist);
+							$("#genius-btn").attr("href", data.url);
+							$("#genius-art").attr("src", data.cover);
+							$("#modalGenius").modal("show");
+							break;
+						case "youtube":
+							$("#youtube-lyrics-content").text(data.content);
+							$("#youtube-song-title").text(data.title);
+							$("#youtube-song-artist").text(data.artist);
+							$("#youtube-btn").attr("href", `https://youtu.be/${data.id}`);
+							$("#youtube-art").attr("src", data.cover);
+							$("#modalYouTube").modal("show");
+							break;
+						default:
+							toast.fire({ icon: "error", text: "Unsupported source" });
+							break;
+					}
 				}
+			} catch (e) {
+				console.error(e);
+				toast.fire({
+					icon: "error",
+					text: "Script error detected while fetching result. Please contact site owner."
+				});
 			}
 		},
 		error: function (xhr, st, err) {
@@ -176,10 +196,10 @@ $("#searchSongLyric").on("submit", function (e) {
 			}
 			toast.fire({
 				icon: "error",
-				titleText:
-					typeof xhr.responseJSON.source !== "undefined"
-						? xhr.responseJSON.source
-						: "",
+				// titleText:
+				// 	typeof xhr.responseJSON.source !== "undefined"
+				// 		? xhr.responseJSON.source
+				// 		: "",
 				text:
 					st === "timeout"
 						? "Connection timed out"
@@ -282,7 +302,8 @@ wbwDL.onclick = function (e) {
 		})
 		.then((result) => {
 			if (result.isConfirmed) blobDL(result.value.lrc, `${fileName}.lrc`);
-			else if (result.isDenied) blobDL(wbwContents, `${fileName}.lyricsfile.yaml`);
+			else if (result.isDenied)
+				blobDL(wbwContents, `${fileName}.lyricsfile.yaml`);
 			else console.warn("Download aborted");
 		});
 };

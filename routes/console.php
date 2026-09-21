@@ -9,7 +9,7 @@ Artisan::command('inspire', function () {
 Artisan::command('usertoken', function () {
 	$musixmatch = Http::get(
 		'https://apic-appmobile.musixmatch.com/ws/1.1/token.get',
-		['app_id' => 'mac-ios-v2.0']
+		['user_language' => 'en', 'app_id' => 'mac-ios-v2.0']
 	)->throw();
 	$r = $musixmatch->json(null, null, JSON_THROW_ON_ERROR);
 	$header = $r['message']['header'];
@@ -25,8 +25,8 @@ Artisan::command('usertoken', function () {
 			'00000000000000000000000000000000000000000000000000000000'
 		])) {
 			throw new Exception(
-				message: "Invalid generated Musixmatch token, please try again in a few minutes.",
-				previous: new Exception($body['user_token'])
+				message: "Blacklisted token, please try again in a few minutes.",
+				previous: new Exception($body['user_token'] . ' is blacklisted')
 			);
 		}
 		$this->comment("<options=bold>Open env file, then set MUSIXMATCH_TOKEN value to:</>");

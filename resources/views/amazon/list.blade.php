@@ -17,7 +17,7 @@
 								data-coreui-track="{{ $result['title'] }}" data-coreui-toggle="modal"
 								data-coreui-target="#modalLyrics">
 								<i class="fa-solid fa-eye" data-coreui-toggle="tooltip"
-								data-coreui-title="Show & Download lyric"></i>
+									data-coreui-title="Show & Download lyric"></i>
 							</button>
 							<button class="btn btn-secondary download-btn"
 								data-href="{{ $result['deeplink'] }}" @disabled(empty($result['deeplink']))

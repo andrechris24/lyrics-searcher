@@ -39,7 +39,7 @@ class DeezerController extends Controller
 		abort_if(
 			empty(env('PAXSENIX_TOKEN')),
 			401,
-			'Paxsenix API token is required for lyrics and song downloads'
+			'API token is required for Deezer requests'
 		);
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)->withHeaders([
@@ -57,7 +57,7 @@ class DeezerController extends Controller
 				foreach ($r['synchronizedLines'] as $idx => $line) {
 					if (($line['milliseconds'] - $prevtime) > 5000 && $idx !== 0)
 						$synced .= sprintf("[%s]\n", parent::formatTime($prevtime, true));
-					$synced .= $line['lrcTimestamp'] .= $line['line'] . "\n";
+					$synced .= $line['lrcTimestamp'] .= $line['line'] . PHP_EOL;
 					if ($idx === count($r['synchronizedLines']) - 1) {
 						$lastTime = '[' . parent::formatTime($line['milliseconds'] + $line['duration'], true) . ']';
 						$synced .= $lastTime;
@@ -82,7 +82,7 @@ class DeezerController extends Controller
 						);
 					} else $wbw .= sprintf("[%s]", parent::formatTime($line['start'], true));
 					foreach ($line['words'] as $syl) $wbw .= self::mergeSyl($syl);
-					$wbw .= "\n";
+					$wbw .= PHP_EOL;
 					if ($idx === count($r['synchronizedWordByWordLines']) - 1)
 						$wbw .= $lastTime ?? '[' . parent::formatTime($line['end'], true) . ']';
 					$prevtime = $line['end'];
@@ -100,7 +100,7 @@ class DeezerController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				'Error retrieving lyric: ' . parent::lyricallyError($th)
+				'Error retrieving lyric: ' . parent::lyricallyError($th, true)
 			);
 		}
 	}
@@ -109,7 +109,7 @@ class DeezerController extends Controller
 		abort_if(
 			empty(env('PAXSENIX_TOKEN')),
 			401,
-			'Paxsenix API token is required for lyrics and song downloads'
+			'API token is required for Deezer requests'
 		);
 		$req->validate(['url' => 'required|url', 'quality' => 'required|in:128kbps,320kbps,flac']);
 		try {

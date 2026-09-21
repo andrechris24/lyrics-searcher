@@ -11,7 +11,7 @@
 		</div>
 		<button type="submit" class="btn btn-primary">Search</button>
 	</div>
-	@if($provider==='spotify')
+	@if ($provider === 'spotify')
 		<small class="form-text">
 			<a href="{{ route('spotify.chart') }}">Show charts</a>
 		</small>

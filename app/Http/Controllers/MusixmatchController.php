@@ -24,12 +24,14 @@ class MusixmatchController extends Controller
 	public const MX_MACRO_URL = 'https://apic-appmobile.musixmatch.com/ws/1.1/macro.subtitles.get';
 	public static string $url = 'https://apic-appmobile.musixmatch.com/ws/1.1/';
 	private static array $query = [
-		// 'user_language' => 'en',
+		'user_language' => 'en',
 		'app_id' => 'mac-ios-v2.0',
+		// 'subtitle_format' => 'lrc',
 		'page_size' => 20,
 		'f_has_lyrics' => 1
 	];
 	public static array $macro_query = [
+		'user_language' => 'en',
 		'format' => 'json',
 		'namespace' => 'lyrics_richsynched',
 		'app_id' => 'mac-ios-v2.0'
@@ -227,10 +229,10 @@ class MusixmatchController extends Controller
 					$word['c']
 				);
 			}
-			$richsync .= sprintf(
-				env('MINILYRICS_COMPATIBLE', true) ? "<%s> \n" : "<%s>\n",
-				parent::formatTime($line['te'])
-			);
+			$formattedTime = parent::formatTime($line['te']);
+			$richsync .= env('MINILYRICS_COMPATIBLE', false)
+				? sprintf("<%s> <%s>\n", $formattedTime, $formattedTime)
+				: sprintf("<%s>\n", $formattedTime);
 			$prevtime = $line['te'];
 			if ($idx === count($lrc) - 1)
 				$richsync .= sprintf("[%s]\n", parent::formatTime($line['te'] + 0.01));
@@ -256,10 +258,11 @@ class MusixmatchController extends Controller
 					'UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly',
 					'00000000000000000000000000000000000000000000000000000000'
 				])) {
+					Log::warning('Blacklisted Musixmatch token: ' . $body['user_token']);
 					abort_if(
 						empty(env('MUSIXMATCH_TOKEN')),
 						500,
-						'Invalid generated Musixmatch token, no fallback token found'
+						'Blacklisted Musixmatch token, no fallback token found'
 					);
 					Session::put('mx_token', env('MUSIXMATCH_TOKEN'));
 				} else Session::put('mx_token', $body['user_token']);
@@ -281,5 +284,12 @@ class MusixmatchController extends Controller
 			ConnectionException::class => "Musixmatch connection error, {$ex->getMessage()}",
 			default => "Musixmatch unexpected error"
 		};
+	}
+	public static function getArt(array $albumArt): string|null
+	{
+		foreach ($albumArt as $art) {
+			if (!empty($art)) return $art;
+		}
+		return null;
 	}
 }

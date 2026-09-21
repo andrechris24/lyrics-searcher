@@ -14,7 +14,7 @@ class AmazonController extends Controller
 		abort_if(
 			empty(env('PAXSENIX_TOKEN')),
 			401,
-			'Paxsenix API token is required for all Amazon Music requests'
+			'API token is required for all Amazon Music requests'
 		);
 		try {
 			$req->validate(['query' => 'required']);
@@ -26,7 +26,7 @@ class AmazonController extends Controller
 				Log::error('Amazon Music API error: ', $r);
 				abort(500, 'Oops, something went wrong with Amazon Music API. Please try again later.');
 			} else if (array_key_exists('error', $r['results'])) {
-				Log::error($r['results']);
+				Log::error('Error loading Amazon Music results: ', $r['results']);
 				abort(500, 'Oops, an error occurred while loading results');
 			}
 			return response()->json(['html' => view('amazon.list', ['data' => $r['results']])
@@ -43,7 +43,7 @@ class AmazonController extends Controller
 		abort_if(
 			empty(env('PAXSENIX_TOKEN')),
 			401,
-			'Paxsenix API token is required for all Amazon Music requests'
+			'API token is required for all Amazon Music requests'
 		);
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)
@@ -51,11 +51,15 @@ class AmazonController extends Controller
 				->get("https://api.paxsenix.org/lyrics/amazonmusic", ['id' => $id])
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['ok'] === false) {
-				Log::error("Amazon Music API error: {$r['message']}", $r);
+				Log::error("Amazon Music API error: ", $r);
 				abort(500, 'Oops, an error occurred with Amazon Music API.');
 			}
 			if (!empty($r['json'])) Log::debug($r['json']);
-			abort_if(empty($r['text']) && empty($r['lrc']), 404, 'No lyric available for this song');
+			abort_if(
+				empty($r['text']) && empty($r['lrc']),
+				404,
+				'No lyric available for this song'
+			);
 			return response()->json([
 				'id' => $id,
 				'plain' => $r['text'],
@@ -66,7 +70,7 @@ class AmazonController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				'Error retrieving lyric: ' . parent::lyricallyError($th)
+				'Error retrieving lyric: ' . parent::lyricallyError($th, true)
 			);
 		}
 	}
@@ -75,7 +79,7 @@ class AmazonController extends Controller
 		abort_if(
 			empty(env('PAXSENIX_TOKEN')),
 			401,
-			'Paxsenix API token is required for all Amazon Music requests'
+			'API token is required for all Amazon Music requests'
 		);
 		$req->validate(['url' => 'required|url']);
 		try {
@@ -84,8 +88,8 @@ class AmazonController extends Controller
 				->get("https://api.paxsenix.org/dl/amazonmusic", ['url' => $req['url']])
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['ok'] === false) {
-				Log::error("Amazon Music API error: {$r['message']}", $r);
-				abort(500, 'Oops, an error occurred with downloading song.');
+				Log::error("Amazon Music API error:", $r);
+				abort(500, 'Oops, an error occurred while downloading song.');
 			}
 			return response()->json($r);
 		} catch (ConnectionException | RequestException | JsonException $e) {

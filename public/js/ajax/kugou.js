@@ -147,66 +147,77 @@ function dlLRC(id, key, file = null) {
 			$.LoadingOverlay("hide");
 		},
 		success: function (data) {
-			if (data.format === "krc") {
-				Swal.fire({
-					title: "Choose lyric type to download",
-					text: "To import lyrics to Aegisub, choose KRC Raw or Synced. For Word-by-Word lyrics, only a few players supported.",
-					footer:
-						'<a href="https://github.com/qwe7989199/Lyric-Importer-for-Aegisub">Additional script for Aegisub (Buggy for KRC)</a>',
-					theme: "bootstrap-5",
-					buttonsStyling: false,
-					customClass: {
-						confirmButton: "btn btn-primary btn-lg me-2",
-						cancelButton: "btn btn-danger btn-lg"
-					},
-					topLayer: true,
-					inputOptions: {
-						wordbyword: "Word-by-Word",
-						synced: "Synced",
-						plain: "Plain",
-						raw: "KRC Raw"
-					},
-					input: "select",
-					inputPlaceholder: "Select lyric type",
-					showCancelButton: true,
-					inputValidator: (value) => {
-						return new Promise((resolve) => {
-							if (!value) resolve("Please select lyric type to continue");
-							else resolve();
-						});
-					}
-				}).then((result) => {
-					if (result.isConfirmed && result.value) {
-						switch (result.value) {
-							case "synced":
-								lyricContent = data.content.replace(/<(\d+):(\d+).(\d+)>/g, "");
-								ext = ".lrc";
-								break;
-							case "wordbyword":
-								lyricContent = data.content;
-								ext = ".lrc";
-								break;
-							case "raw":
-								lyricContent = Uint8Array.fromBase64(data.raw);
-								ext = ".krc";
-								break;
-							default: //plain or unknown
-								lyricContent = data.content
-									.replace(/<(\d+):(\d+).(\d+)>/g, "")
-									.replace(/\[(\d+):(\d+).(\d+)\]/g, "");
-								ext = ".txt";
-								break;
+			try {
+				if (data.format === "krc") {
+					Swal.fire({
+						title: "Choose lyric type to download",
+						text: "To import lyrics to Aegisub, choose KRC Raw or Synced. For Word-by-Word lyrics, only a few players supported.",
+						footer:
+							'<a href="https://github.com/qwe7989199/Lyric-Importer-for-Aegisub">Additional script for Aegisub (Buggy for KRC)</a>',
+						theme: "bootstrap-5",
+						buttonsStyling: false,
+						customClass: {
+							confirmButton: "btn btn-primary btn-lg me-2",
+							cancelButton: "btn btn-danger btn-lg"
+						},
+						topLayer: true,
+						inputOptions: {
+							wordbyword: "Word-by-Word",
+							synced: "Synced",
+							plain: "Plain",
+							raw: "KRC Raw"
+						},
+						input: "select",
+						inputPlaceholder: "Select lyric type",
+						showCancelButton: true,
+						inputValidator: (value) => {
+							return new Promise((resolve) => {
+								if (!value) resolve("Please select lyric type to continue");
+								else resolve();
+							});
 						}
-						blobDL(
-							lyricContent,
-							(file ?? fileName) + ext,
-							ext === ".krc" ? "application/octet-stream" : undefined
-						);
-					}
+					}).then((result) => {
+						if (result.isConfirmed && result.value) {
+							switch (result.value) {
+								case "synced":
+									lyricContent = data.content.replace(
+										/<(\d+):(\d+).(\d+)>/g,
+										""
+									);
+									ext = ".lrc";
+									break;
+								case "wordbyword":
+									lyricContent = data.content;
+									ext = ".lrc";
+									break;
+								case "raw":
+									lyricContent = Uint8Array.fromBase64(data.raw);
+									ext = ".krc";
+									break;
+								default: //plain or unknown
+									lyricContent = data.content
+										.replace(/<(\d+):(\d+).(\d+)>/g, "")
+										.replace(/\[(\d+):(\d+).(\d+)\]/g, "");
+									ext = ".txt";
+									break;
+							}
+							blobDL(
+								lyricContent,
+								(file ?? fileName) + ext,
+								ext === ".krc" ? "application/octet-stream" : undefined
+							);
+						}
+					});
+				} else {
+					console.info(`Lyric type: ${data.format}`);
+					blobDL(data.content, `${file ?? fileName}.lrc`);
+				}
+			} catch (e) {
+				console.error(e);
+				toast.fire({
+					icon: "error",
+					text: "Script error detected while downloading lyric. Please contact site owner."
 				});
-			} else {
-				console.info(`Lyric type: ${data.format}`);
-				blobDL(data.content, `${file ?? fileName}.lrc`);
 			}
 		},
 		error: function (xhr, st, err) {

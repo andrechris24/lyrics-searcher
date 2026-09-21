@@ -35,33 +35,41 @@ if (lyricsModal) {
 				$(".placeholder-glow").addClass("d-none");
 			},
 			success: function (data) {
-				const metaLyric = `[id: ${data.id}]\n[ar: ${artistName}]\n[ti: ${songName}]\n[by: Amazon Music]\n`;
-				if (data.synced !== null && data.synced !== "") {
-					$("#song-lyric-type").text("Synced");
-					$("#dl-synced").removeClass("disabled");
-					syncedLyricContents = `${metaLyric}${data.synced}`;
-				} else {
-					// $("#dl-syllyric").addClass("disabled");
-					$("#dl-synced").addClass("disabled");
-					$("#song-lyric-type").text("Plain");
-					syncedLyricContents = "";
-				}
-				// if (data.wbw !== null && data.wbw !== "") {
-				// 	$("#dl-syllyric").removeClass("disabled");
-				// 	$("#song-lyric-type").text("Word-by-Word");
-				// 	sylLyricContent = `${metaLyric}${data.wbw}`;
-				// } else {
-				// 	$("#dl-syllyric").addClass("disabled");
-				// 	sylLyricContent = "";
-				// }
-				plainLyricContent = `${fileName}\n\n${data.plain}`;
-				if (Array.isArray(data.syllable) && data.syllable.length > 0){
+				try {
+					const metaLyric = `[id:${data.id}]\n[ar:${artistName}]\n[ti:${songName}]\n[by:Amazon Music]\n`;
+					if (data.synced !== null && data.synced !== "") {
+						$("#song-lyric-type").text("Synced");
+						$("#dl-synced").removeClass("disabled");
+						syncedLyricContents = `${metaLyric}${data.synced}`;
+					} else {
+						// $("#dl-syllyric").addClass("disabled");
+						$("#dl-synced").addClass("disabled");
+						$("#song-lyric-type").text("Plain");
+						syncedLyricContents = "";
+					}
+					// if (data.wbw !== null && data.wbw !== "") {
+					// 	$("#dl-syllyric").removeClass("disabled");
+					// 	$("#song-lyric-type").text("Word-by-Word");
+					// 	sylLyricContent = `${metaLyric}${data.wbw}`;
+					// } else {
+					// 	$("#dl-syllyric").addClass("disabled");
+					// 	sylLyricContent = "";
+					// }
+					plainLyricContent = `${fileName}\n\n${data.plain}`;
+					if (Array.isArray(data.syllable) && data.syllable.length > 0) {
+						toast.fire({
+							icon: "info",
+							text: "This song may contain word-by-word or syllable lyric. Please contact site owner to confirm."
+						});
+					}
+					$("#lyrics-content").text(data.plain);
+				} catch (e) {
+					console.error(e);
 					toast.fire({
-						icon: "info",
-						text: "This song may contain word-by-word or syllable lyric. Please contact site owner to confirm."
+						icon: "error",
+						text: "Script error detected while fetching lyric. Please contact site owner."
 					});
 				}
-				$("#lyrics-content").text(data.plain);
 			},
 			error: function (xhr, st, err) {
 				console.warn(err);
@@ -106,9 +114,6 @@ function sendAjax(data) {
 				$.ajax({
 					url: `/amazon/download`,
 					data: { url: href },
-					// xhrFields: {
-					// 	responseType: "blob" // Fetch as binary data
-					// },
 					complete: function () {
 						$.LoadingOverlay("hide");
 					},
@@ -117,11 +122,11 @@ function sendAjax(data) {
 						if (typeof r.data !== "undefined")
 							file = `${r.data.artist} - ${r.data.name}`;
 						else file = `${artist} - ${title}`;
-						if(r.url.includes('.flac')){
+						if (r.url.includes(".flac")) {
 							Swal.fire({
-								icon: 'warning',
-								titleText: 'Important Note',
-								text:'If none of your players can open this file, open it with file archiver like 7Zip or WinRAR.'
+								icon: "warning",
+								titleText: "Important Note",
+								text: "If none of your players can open this file, open with file archiver. The actual file might be hidden inside."
 							});
 						}
 						musicDL(r.directUrl, file);

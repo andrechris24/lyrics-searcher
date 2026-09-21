@@ -36,64 +36,78 @@ function sendAjax(data) {
 						$.LoadingOverlay("hide");
 					},
 					success: function (data) {
-						if (data.encoded === true) {
-							Swal.fire({
-								title: "Word-by-word lyric detected",
-								text: "Select lyric type to download, then click OK. Please note that only a few players support word-by-word lyrics.",
-								theme: "bootstrap-5",
-								buttonsStyling: false,
-								customClass: {
-									confirmButton: "btn btn-primary btn-lg me-2",
-									cancelButton: "btn btn-danger btn-lg"
-								},
-								topLayer: true,
-								inputOptions: {
-									wordbyword: "Word-by-Word",
-									synced: "Synced",
-									plain: "Plain"
-								},
-								input: "select",
-								inputPlaceholder: "Select lyric type",
-								showCancelButton: true,
-								inputValidator: (value) => {
-									return new Promise((resolve) => {
-										if (!value) resolve("Please select lyric type to continue");
-										else resolve();
-									});
-								}
-							}).then((result) => {
-								if (result.isConfirmed && result.value) {
-									switch (result.value) {
-										case "synced":
-											lyricContent = data.lyric.replace(
-												/<(\d+):(\d+).(\d+)>/g,
-												""
-											);
-											ext = ".lrc";
-											break;
-										case "wordbyword":
-											lyricContent = data.lyric;
-											ext = ".lrc";
-											break;
-										default: //plain or unknown
-											lyricContent = data.lyric
-												.replace(/<(\d+):(\d+).(\d+)>/g, "")
-												.replace(/\[(\d+):(\d+).(\d+)\]/g, "");
-											ext = ".txt";
-											break;
+						try {
+							if (data.encoded === true) {
+								Swal.fire({
+									title: "Word-by-word lyric detected",
+									text: "Select lyric type to download, then click OK. Please note that only a few players support word-by-word lyrics.",
+									theme: "bootstrap-5",
+									buttonsStyling: false,
+									customClass: {
+										confirmButton: "btn btn-primary btn-lg me-2",
+										cancelButton: "btn btn-danger btn-lg"
+									},
+									topLayer: true,
+									inputOptions: {
+										wordbyword: "Word-by-Word",
+										synced: "Synced",
+										plain: "Plain"
+									},
+									input: "select",
+									inputPlaceholder: "Select lyric type",
+									showCancelButton: true,
+									inputValidator: (value) => {
+										return new Promise((resolve) => {
+											if (!value)
+												resolve("Please select lyric type to continue");
+											else resolve();
+										});
 									}
-									if (ext === ".txt")
-										blobDL(`${fileName}\n\n${lyricContent}`, fileName + ext);
-									else if (typeof data.id !== "undefined")
-										blobDL(`[id:${data.id}]\n${lyricContent}`, fileName + ext);
-									else blobDL(lyricContent, fileName + ext);
-								}
+								}).then((result) => {
+									if (result.isConfirmed && result.value) {
+										switch (result.value) {
+											case "synced":
+												lyricContent = data.lyric.replace(
+													/<(\d+):(\d+).(\d+)>/g,
+													""
+												);
+												ext = ".lrc";
+												break;
+											case "wordbyword":
+												lyricContent = data.lyric;
+												ext = ".lrc";
+												break;
+											default: //plain or unknown
+												lyricContent = data.lyric
+													.replace(/<(\d+):(\d+).(\d+)>/g, "")
+													.replace(/\[(\d+):(\d+).(\d+)\]/g, "");
+												ext = ".txt";
+												break;
+										}
+										if (ext === ".txt")
+											blobDL(`${fileName}\n\n${lyricContent}`, fileName + ext);
+										else
+											blobDL(
+												`[id:${data.id ?? songID}]\n${lyricContent}`,
+												fileName + ext
+											);
+									}
+								});
+							} else if (data.lyric.match(/\[(\d+):(\d+).(\d+)\]/))
+								blobDL(
+									`[id:${data.id ?? songID}]\n${data.lyric}`,
+									`${fileName}.lrc`
+								);
+							else {
+								toast.fire({ icon: "warning", text: "Plain lyric detected" });
+								blobDL(`${fileName}\n\n${data.lyric}`, `${fileName}.txt`);
+							}
+						} catch (e) {
+							console.error(e);
+							toast.fire({
+								icon: "error",
+								text: "Script error detected while downloading lyric. Please contact site owner."
 							});
-						} else if (data.lyric.match(/\[(\d+):(\d+).(\d+)\]/))
-							blobDL(`[id:${data.id}]\n${data.lyric}`, `${fileName}.lrc`);
-						else {
-							toast.fire({ icon: "warning", text: "Plain lyric detected" });
-							blobDL(`${fileName}\n\n${data.lyric}`, `${fileName}.txt`);
 						}
 					},
 					error: function (xhr, st, err) {

@@ -35,26 +35,34 @@ if (lyricsModal) {
 				$(".placeholder-glow").addClass("d-none");
 			},
 			success: function (data) {
-				if (typeof data.klyric !== "undefined") {
-					if (data.klyric.lyric !== "" && data.klyric.lyric !== null) {
-						$("#dl-klyric").removeClass("disabled");
-						klyricContent = `${metaLyric}[ve:${data.klyric.version}]\n${parseKLyric(data.klyric.lyric)}`;
+				try {
+					if (typeof data.klyric !== "undefined") {
+						if (data.klyric.lyric !== "" && data.klyric.lyric !== null) {
+							$("#dl-klyric").removeClass("disabled");
+							klyricContent = `${metaLyric}[ve:${data.klyric.version}]\n${parseKLyric(data.klyric.lyric)}`;
+						} else {
+							$("#dl-klyric").addClass("disabled");
+							klyricContent = "";
+						}
 					} else {
 						$("#dl-klyric").addClass("disabled");
 						klyricContent = "";
 					}
-				} else {
-					$("#dl-klyric").addClass("disabled");
-					klyricContent = "";
+					if (!data.lrc.lyric.match(/\[(\d+):(\d+).(\d+)\]/)) {
+						lyricContents = `${fileName}\n\n${data.lrc.lyric}`;
+						ext = "txt";
+					} else {
+						lyricContents = `${metaLyric}[ve:${data.lrc.version ?? 1}]\n${data.lrc.lyric}`;
+						ext = "lrc";
+					}
+					$("#lyrics-content").text(data.lrc.lyric);
+				} catch (e) {
+					console.error(e);
+					toast.fire({
+						icon: "error",
+						text: "Script error detected while fetching lyric. Please contact site owner."
+					});
 				}
-				if (!data.lrc.lyric.match(/\[(\d+):(\d+).(\d+)\]/)) {
-					lyricContents = `${fileName}\n\n${data.lrc.lyric}`;
-					ext = "txt";
-				} else {
-					lyricContents = `${metaLyric}[ve:${data.lrc.version ?? 1}]\n${data.lrc.lyric}`;
-					ext = "lrc";
-				}
-				$("#lyrics-content").text(data.lrc.lyric);
 			},
 			error: function (xhr, st, err) {
 				console.warn(err);
@@ -148,7 +156,7 @@ function parseKLyric(lyricText) {
 				subStartTime += subDuration;
 			}
 			timestamp = formatTime(startTime + duration);
-			enhancedlyricText += `${lyricLine}<${timestamp}>${$('meta[name="minilyrics-compatibility"]').attr("content") == true ? " " : ""}\n`;
+			enhancedlyricText += `${lyricLine}<${timestamp}>${$('meta[name="minilyrics-compatibility"]').attr("content") == true ? ` ${timestamp}` : ""}\n`;
 		}
 	}
 	enhancedlyricText += `\n[${timestamp}]`;

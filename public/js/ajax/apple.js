@@ -44,41 +44,49 @@ if (lyricsModal) {
 				$(".placeholder-glow").addClass("d-none");
 			},
 			success: function (data) {
-				const metaLyric =
-					`[id:${data.id}]\n[ar:${artistName}]\n[ti:${songName}]\n[al:${albumName}]\n` +
-					`[length:${duration}]\n${data.writers !== null || data.writers !== "" ? `[lr:${data.writers}]\n` : ""}`;
-				if (data.synced !== null && data.synced !== "") {
-					$("#dl-synced").removeClass("disabled");
-					syncedLyricContents = `${metaLyric}${data.synced}`;
-				} else {
-					$("#dl-synced").addClass("disabled");
-					syncedLyricContents = "";
+				try {
+					const metaLyric =
+						`[id:${data.id}]\n[ar:${artistName}]\n[ti:${songName}]\n[al:${albumName}]\n` +
+						`[length:${duration}]\n${data.writers !== null || data.writers !== "" ? `[lr:${data.writers}]\n` : ""}`;
+					if (data.synced !== null && data.synced !== "") {
+						$("#dl-synced").removeClass("disabled");
+						syncedLyricContents = `${metaLyric}${data.synced}`;
+					} else {
+						$("#dl-synced").addClass("disabled");
+						syncedLyricContents = "";
+					}
+					if (data.syllable !== null && data.syllable !== "") {
+						$("#dl-syllyric").removeClass("disabled");
+						sylLyricContent = `${metaLyric}${data.syllable}`;
+					} else {
+						sylLyricContent = "";
+						$("#dl-syllyric").addClass("disabled");
+					}
+					if (data.multisyl !== null && data.multisyl !== "") {
+						$("#dl-multisyllyric").removeClass("disabled");
+						multisylLyricContent = `${metaLyric}${data.multisyl}`;
+					} else {
+						multisylLyricContent = "";
+						$("#dl-multisyllyric").addClass("disabled");
+					}
+					if (data.ttml !== null && data.ttml !== "") {
+						$("#dl-ttml").removeClass("disabled");
+						ttmlContent = data.ttml;
+					} else {
+						$("#dl-ttml").addClass("disabled");
+						ttmlContent = "";
+					}
+					plainLyricContent = `${fileName}\n\n${data.plain}`;
+					$("#song-writers").text(data.writers);
+					$("#song-lyric-type").text(data.type);
+					$("#lyrics-content").text(data.plain);
+				} catch (e) {
+					console.error(e);
+					toast.fire({
+						icon: "error",
+						text: "Script error detected while fetching lyric. Please contact site oowner."
+					});
 				}
-				if (data.syllable !== null && data.syllable !== "") {
-					$("#dl-syllyric").removeClass("disabled");
-					sylLyricContent = `${metaLyric}${data.syllable}`;
-				} else {
-					sylLyricContent = "";
-					$("#dl-syllyric").addClass("disabled");
-				}
-				if (data.multisyl !== null && data.multisyl !== "") {
-					$("#dl-multisyllyric").removeClass("disabled");
-					multisylLyricContent = `${metaLyric}${data.multisyl}`;
-				} else {
-					multisylLyricContent = "";
-					$("#dl-multisyllyric").addClass("disabled");
-				}
-				if (data.ttml !== null && data.ttml !== "") {
-					$("#dl-ttml").removeClass("disabled");
-					ttmlContent = data.ttml;
-				} else {
-					$("#dl-ttml").addClass("disabled");
-					ttmlContent = "";
-				}
-				plainLyricContent = `${fileName}\n\n${data.plain}`;
-				$("#song-writers").text(data.writers);
-				$("#song-lyric-type").text(data.type);
-				$("#lyrics-content").text(data.plain);
 			},
 			error: function (xhr, st, err) {
 				console.warn(err);
@@ -142,9 +150,6 @@ $("#apple-form").submit(function (event) {
 				$.ajax({
 					url: `/apple/download`,
 					data: { url: href },
-					// xhrFields: {
-					// 	responseType: "blob" // Fetch as binary data
-					// },
 					complete: function () {
 						$.LoadingOverlay("hide");
 					},

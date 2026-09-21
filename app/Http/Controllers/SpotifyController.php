@@ -46,7 +46,7 @@ class SpotifyController extends Controller
 		try {
 			$spotify->checkTokenExpire();
 			$lyrics = $spotify->getLyrics(track_id: $id);
-			if (!empty($lyrics['lyrics']['lines'][0]['syllables'])) 
+			if (!empty($lyrics['lyrics']['lines'][0]['syllables']))
 				Log::debug($lyrics['lyrics']);
 			return response()->json([
 				'type' => $lyrics['lyrics']['syncType'],

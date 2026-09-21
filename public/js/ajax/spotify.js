@@ -1,8 +1,8 @@
 /* global blobDL, toast, Swal, basicForm, coreui, musicDL */
-let plainContents, syncedContents, srtContents, fileName, meta;
+let plainContents, syncedContents, srtContents, fileName, meta, srtIdx;
 const plainDL = document.getElementById("download-link-plain"),
 	syncedDL = document.getElementById("download-link-synced"),
-	srtDL=document.getElementById('download-link-srt'),
+	srtDL = document.getElementById("download-link-srt"),
 	// richsyncDL = document.getElementById("download-link-richsync"),
 	lyricsModal = document.getElementById("modalMX"),
 	previewModal = document.getElementById("modalPreviewSong"),
@@ -30,7 +30,7 @@ $(basicForm).submit(function (event) {
 			$(".download-btn").on("click", function () {
 				Swal.fire({
 					title: "Download song?",
-					text: "This will download song from Spotify, not lyrics.",
+					text: "This will download song from Spotify. Lyric will be embedded inside song if available (Tested with Spotify source)",
 					showCancelButton: true,
 					confirmButtonText: "Download",
 					cancelButtonText: "Cancel",
@@ -60,9 +60,6 @@ $(basicForm).submit(function (event) {
 							const response = await $.ajax({
 								url: "/spotify/download",
 								data: { url: $(this).data("href"), source: value }
-								// xhrFields: {
-								// 	responseType: "blob" // Fetch as binary data
-								// }
 							})
 								.done(function (data) {
 									return JSON.stringify(data);
@@ -141,35 +138,54 @@ if (lyricsModal) {
 				$(".placeholder-glow").addClass("d-none");
 			},
 			success: function (data) {
-				if (Array.isArray(data.syllable) && data.syllable.length > 0){
+				try {
+					if (Array.isArray(data.syllable) && data.syllable.length > 0) {
+						toast.fire({
+							icon: "info",
+							text: "This song may contain syllable lyric. Please contact site owner to confirm."
+						});
+					}
+					plainContents = `${fileName}\n\n${data.plain}`;
+					$("#lyric-type").text(data.type);
+					if (
+						data.synced === "" ||
+						data.synced === null ||
+						data.type === "UNSYNCED"
+					) {
+						syncedDL.classList.add("disabled");
+						syncedContents = null;
+					} else {
+						syncedDL.classList.remove("disabled");
+						syncedContents = `[id:${data.id}]${meta}[by:${data.provider}]\n`;
+						for (const lines of data.synced) {
+							syncedContents += `[${lines.timeTag}]${lines.words}\n`;
+						}
+					}
+					if (
+						data.srt === "" ||
+						data.srt === null ||
+						data.type === "UNSYNCED"
+					) {
+						srtDL.classList.add("disabled");
+						srtContents = null;
+					} else {
+						srtDL.classList.remove("disabled");
+						srtContents = "";
+						srtIdx = 0;
+						for (const srtLines of data.srt) {
+							if (srtLines.words === "" || srtLines.words === "\u266a")
+								continue;
+							srtContents += `${++srtIdx}\n${srtLines.startTime} --> ${srtLines.endTime}\n${srtLines.words}\n\n`;
+						}
+					}
+					$("#song-copyright").text(data.provider);
+					$("#lyrics-content").text(data.plain);
+				} catch (e) {
+					console.error(e);
 					toast.fire({
-						icon: "info",
-						text: "This song may contain syllable lyric. Please contact site owner to confirm."
+						icon: "error",
+						text: "Script error detected while fetching lyric. Please contact site owner."
 					});
-				}
-				plainContents = `${fileName}\n\n${data.plain}`;
-				$("#lyric-type").text(data.type);
-				if (data.synced === "" || data.synced === null || data.type==='UNSYNCED') {
-					syncedDL.classList.add("disabled");
-					syncedContents = null;
-				} else {
-					syncedDL.classList.remove("disabled");
-					syncedContents = `[id:${data.id}]${meta}[by:${data.provider}]\n`;
-					for(const lines of data.synced){
-						syncedContents+=`[${lines.timeTag}]${lines.words}\n`;
-					}
-				}
-				if(data.srt===''||data.srt===null || data.type==='UNSYNCED'){
-					srtDL.classList.add('disabled');
-					srtContents=null;
-				}else{
-					srtDL.classList.remove("disabled");
-					srtContents='';
-					for(const srtLines of data.srt){
-						if(srtLines.words === '' || srtLines.words==="\u266a")
-							continue;
-						srtContents+=`${srtLines.index}\n${srtLines.startTime} --> ${srtLines.endTime}\n${srtLines.words}\n\n`;
-					}
 				}
 				// if (data.richsync === true || data.richsync === 1) {
 				// 	track_id = data.track_id;
@@ -178,10 +194,8 @@ if (lyricsModal) {
 				// 	track_id = null;
 				// 	richsyncDL.classList.add("disabled");
 				// }
-				$("#lyrics-content").text(data.plain);
 				// $("#song-release-date").text(data.release);
 				// $("#song-last-update").text(data.updated);
-				$("#song-copyright").text(data.provider);
 				// $("#musixmatch-btn").attr("href", data.share);
 			},
 			error: function (xhr, st, err) {

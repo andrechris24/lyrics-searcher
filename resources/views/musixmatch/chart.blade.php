@@ -23,7 +23,7 @@
 							autocomplete="off">
 						<label class="btn btn-outline-info" for="btn-check">Show Worldwide Charts</label>
 					</div>
-					<small class="form-text">Not working with top songs</small>
+					<small class="form-text">Unused for top songs</small>
 				</div>
 			</div>
 			<button type="submit" class="btn btn-primary">Show</button>

@@ -100,10 +100,8 @@ class QQMusicController extends Controller
 				$lyricXml = $decoder->decode($data['lyric']['content']);
 				$lyricXml = Str::between($lyricXml, 'LyricContent="', "\"/>");
 				abort_if(empty($lyricXml), 404, 'Empty lyric, download aborted');
-				$lyric =
-					env('MINILYRICS_COMPATIBLE', true) ?
-					Str::replace(">\n", "> \n", parent::qrcToLrc($lyricXml), false) :
-					parent::qrcToLrc($lyricXml);
+				$converted = parent::qrcToLrc($lyricXml);
+				$lyric = parent::setLrcAuthor($converted, 'QQ Music');
 			} else {
 				if (is_array($data['lyric']['content'])) {
 					Log::error('Malformed lyric content from QQ Music: ', $data['lyric']['content']);

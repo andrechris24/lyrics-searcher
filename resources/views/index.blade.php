@@ -6,7 +6,7 @@
 		<p class="text-center">Welcome to LRCSearch! This site provides lyrics search from
 			Kugou, NetEase, QQ Music, Musixmatch, LRCLib, Deezer, Apple Music,
 			Amazon Music, plus optionally local server and plain sources.
-			This form below is a quick search to 5 providers.</p>
+			This form below is a quick search to 6 providers.</p>
 		<form class="row g-3 mb-3" action="#" id="searchSongLyric">
 			<div class="col-12 col-md-8">
 				<div class="input-group input-group-lg">
@@ -28,6 +28,7 @@
 						<option value="lrclib">LRCLib</option>
 						<option value="plains">Lyrics.ovh</option>
 						<option value="genius">Genius</option>
+						<option value="youtube">YouTube</option>
 						<option value="local">Local</option>
 					</select>
 					<label for="lyric-source" class="form-label">
@@ -261,6 +262,48 @@
 					</button>
 					<a href="#" class="btn btn-warning" target="_blank" id="genius-btn">
 						<i class="fa-solid fa-music"></i> Genius
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" tabindex="-1" id="modalYouTube"
+		aria-labelledby="modalYouTubeLabel" role="dialog" aria-hidden="true">
+		<div role="document"
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 id="modalYouTubeLabel" class="modal-title">
+						YouTube Result for <span class="search-term">...</span>
+					</h5>
+					<button type="button" class="btn-close" data-coreui-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="row mb-3">
+						<div class="col-12 col-md-4 mb-md-0 mb-2">
+							<img src="" class="img-fluid" id="youtube-art">
+						</div>
+						<div class="col-12 col-md-8">
+							<div class="callout callout-info">
+								Due to API limitation, only plain lyrics are served.
+							</div>
+							<div class="row mb-2">
+								<div class="col-4"><b>Title</b></div>
+								<div class="col-8"><span id="youtube-song-title">...</span></div>
+								<div class="col-4"><b>Artist</b></div>
+								<div class="col-8"><span id="youtube-song-artist">...</span></div>
+							</div>
+						</div>
+					</div>
+					<p id="youtube-lyrics-content" style="white-space: pre-line"></p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">
+						Close
+					</button>
+					<a href="#" class="btn btn-danger" target="_blank" id="youtube-btn">
+						<i class="fa-brands fa-youtube"></i> YouTube
 					</a>
 				</div>
 			</div>

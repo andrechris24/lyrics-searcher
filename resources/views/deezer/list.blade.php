@@ -6,9 +6,12 @@
 		@foreach ($data as $result)
 			@php
 				$length = gmdate('i:s', $result['duration']);
-				$art = $result['album']['cover_xl']?? $result['album']['cover_big']
-					?? $result['album']['cover_medium']?? $result['album']['cover_small']
-						??'https://placehold.co/500?text=' . urlencode($result['title']);
+				$art =
+					$result['album']['cover_xl'] ??
+					($result['album']['cover_big'] ??
+						($result['album']['cover_medium'] ??
+							($result['album']['cover_small'] ??
+								'https://placehold.co/500?text=' . urlencode($result['title']))));
 			@endphp
 			<div class="col">
 				<div class="card">
@@ -32,7 +35,7 @@
 								data-coreui-album="{{ $result['album']['title'] }}"
 								data-coreui-duration="{{ $length }}">
 								<i class="fa-solid fa-eye" data-coreui-toggle="tooltip"
-								data-coreui-title="Show & download lyric"></i>
+									data-coreui-title="Show & download lyric"></i>
 							</button>
 							<button type="button" class="btn btn-info" @disabled(empty($result['preview']))
 								data-coreui-link="{{ $result['preview'] }}"
@@ -42,7 +45,7 @@
 								data-coreui-duration="{{ $length }}" data-coreui-toggle="modal"
 								data-coreui-target="#modalPreviewSong">
 								<i class="fa-solid fa-play" data-coreui-toggle="tooltip"
-								data-coreui-title="Preview song"></i>
+									data-coreui-title="Preview song"></i>
 							</button>
 							<button type="button" class="btn btn-secondary download-btn"
 								@disabled(empty($result['link']) || empty(env('PAXSENIX_TOKEN'))) data-href="{{ $result['link'] }}"
@@ -74,18 +77,18 @@
 						{!! __('pagination.previous') !!}
 					</a>
 				@endempty
-			</li>
-			<li @class(['page-item', 'disabled' => empty($next)]) aria-disabled="{{ empty($next) }}">
-			@empty($next)
-				<span class="page-link">{!! __('pagination.next') !!}</span>
-			@else
-				<a class="page-link" rel="next" href="javascript:"
-					onclick="navigate('{{ request('query') }}',{{ (request('offset') ?? 0) + 20 }})">{!! __('pagination.next') !!}</a>
-			@endempty
-		</li>
-	</ul>
-</nav>
-</div>
+				</li>
+				<li @class(['page-item', 'disabled' => empty($next)]) aria-disabled="{{ empty($next) }}">
+				@empty($next)
+					<span class="page-link">{!! __('pagination.next') !!}</span>
+				@else
+					<a class="page-link" rel="next" href="javascript:"
+						onclick="navigate('{{ request('query') }}',{{ (request('offset') ?? 0) + 20 }})">{!! __('pagination.next') !!}</a>
+				@endempty
+				</li>
+			</ul>
+		</nav>
+	</div>
 @else
 <x-no-results source="deezer" />
 @endif

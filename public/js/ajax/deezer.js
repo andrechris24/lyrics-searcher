@@ -39,32 +39,40 @@ if (lyricsModal) {
 				$(".placeholder-glow").addClass("d-none");
 			},
 			success: function (data) {
-				const metaLyric =
-					`[id:${data.id}]\n[ar:${artistName}]\n[ti:${songName}]\n[al:${albumName}]\n[by:Deezer]\n` +
-					`[length:${duration}]\n${data.writer !== null || data.writer !== "" ? `[lr:${data.writer}]\n` : ""}`;
-				if (data.synced !== null && data.synced !== "") {
-					$("#song-lyric-type").text("Synced");
-					$("#dl-synced").removeClass("disabled");
-					syncedLyricContents = `${metaLyric}${data.synced}`;
-				} else {
-					$("#dl-syllyric").addClass("disabled");
-					$("#dl-synced").addClass("disabled");
-					$("#song-lyric-type").text("Plain");
-					syncedLyricContents = "";
+				try {
+					const metaLyric =
+						`[id:${data.id}]\n[ar:${artistName}]\n[ti:${songName}]\n[al:${albumName}]\n[by:Deezer]\n` +
+						`[length:${duration}]\n${data.writer !== null || data.writer !== "" ? `[lr:${data.writer}]\n` : ""}`;
+					if (data.synced !== null && data.synced !== "") {
+						$("#song-lyric-type").text("Synced");
+						$("#dl-synced").removeClass("disabled");
+						syncedLyricContents = `${metaLyric}${data.synced}`;
+					} else {
+						$("#dl-syllyric").addClass("disabled");
+						$("#dl-synced").addClass("disabled");
+						$("#song-lyric-type").text("Plain");
+						syncedLyricContents = "";
+					}
+					if (data.wbw !== null && data.wbw !== "") {
+						$("#dl-syllyric").removeClass("disabled");
+						$("#song-lyric-type").text("Word-by-Word");
+						sylLyricContent = `${metaLyric}${data.wbw}`;
+					} else {
+						$("#dl-syllyric").addClass("disabled");
+						sylLyricContent = "";
+					}
+					plainLyricContent = `${fileName}\n\n${data.plain}`;
+					$("#song-writers").text(data.writer);
+					$("#song-copyright").text(data.copyright);
+					$("#song-license").text(data.license);
+					$("#lyrics-content").text(data.plain);
+				} catch (e) {
+					console.error(e);
+					toast.fire({
+						icon: "error",
+						text: "Script error detected while fetching lyric. Please contact site owner."
+					});
 				}
-				if (data.wbw !== null && data.wbw !== "") {
-					$("#dl-syllyric").removeClass("disabled");
-					$("#song-lyric-type").text("Word-by-Word");
-					sylLyricContent = `${metaLyric}${data.wbw}`;
-				} else {
-					$("#dl-syllyric").addClass("disabled");
-					sylLyricContent = "";
-				}
-				plainLyricContent = `${fileName}\n\n${data.plain}`;
-				$("#song-writers").text(data.writer);
-				$("#song-copyright").text(data.copyright);
-				$("#song-license").text(data.license);
-				$("#lyrics-content").text(data.plain);
 			},
 			error: function (xhr, st, err) {
 				console.warn(err);
@@ -154,9 +162,6 @@ function sendAjax(data) {
 							const response = await $.ajax({
 								url: "/deezer/download",
 								data: { url: $(this).data("href"), quality: value }
-								// xhrFields: {
-								// 	responseType: "blob" // Fetch as binary data
-								// }
 							})
 								.done(function (data) {
 									return JSON.stringify(data);

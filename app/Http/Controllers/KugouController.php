@@ -6,6 +6,7 @@ use App\KrcDecoder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Http, Log};
+use Illuminate\Support\Str;
 use JsonException;
 
 class KugouController extends Controller
@@ -117,7 +118,7 @@ class KugouController extends Controller
 			}
 			return response()->json([
 				'format' => $r['fmt'],
-				'content' => '[id:' . $req['id'] . "]\n" . $context,
+				'content' => "[id:{$req['id']}]\n" . parent::setLrcAuthor($context, 'Kugou'),
 				'raw' => $r['content']
 			]);
 		} catch (ConnectionException | JsonException | RequestException $th) {

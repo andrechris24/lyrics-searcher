@@ -17,7 +17,7 @@ class SingleController extends Controller
 			'title' => 'required|string',
 			'artist' => 'required|string',
 			'album' => 'nullable|string',
-			'source' => 'required|in:lrclib,musixmatch,plains,local,genius'
+			'source' => 'required|in:lrclib,musixmatch,plains,local,genius,youtube'
 		]);
 		try {
 			switch ($req['source']) {
@@ -100,7 +100,7 @@ class SingleController extends Controller
 						'title' => $tmBody['track_name'],
 						'artist' => $tmBody['artist_name'],
 						'album' => $tmBody['album_name'],
-						'art' => $tmBody['album_coverart_800x800'] ?? $tmBody['album_coverart_500x500'] ?? $tmBody['album_coverart_350x350'] ?? $tmBody['album_coverart_100x100'] ?? '',
+						'art' => MusixmatchController::getArt([$tmBody['album_coverart_800x800'], $tmBody['album_coverart_500x500'], $tmBody['album_coverart_350x350'], $tmBody['album_coverart_100x100']]),
 						'duration' => gmdate('i:s', $duration ?? 0),
 						'spotify' => $tmBody['track_spotify_id'] ?? '',
 						'share' => $tmBody['track_share_url'],
@@ -155,7 +155,7 @@ class SingleController extends Controller
 					abort_if(
 						empty(env('PAXSENIX_TOKEN')),
 						401,
-						'Paxsenix API token is required for Genius'
+						'API token is required for Genius source'
 					);
 					$response = Http::retry(2, 100, throw: false)->timeout(25000)
 						->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])
@@ -178,13 +178,39 @@ class SingleController extends Controller
 						Log::warning($r);
 						abort($response->status(), $r['message']);
 					} else if ($response->failed()) {
-						Log::error('Genius Paxsenix API error: ', $r);
-						abort($response->status(), 'Genius Paxsenix API error ' . $response->status());
+						Log::error('Genius API error: ', $r);
+						abort($response->status(), 'Genius API error ' . $response->status());
 					} else {
-						Log::error('Unknown Genius Paxsenix API response: ', $r);
-						abort(500, 'Unknown response from Genius Paxsenix');
+						Log::error('Unknown Genius API response: ', $r);
+						abort(500, 'Unknown response from Genius');
 					}
 					break;
+				case 'youtube':
+					$response = Http::retry(2, 100, throw: false)->timeout(25000)->get(
+						'https://lyrics.lewdhutao.my.eu.org/v2/youtube/lyrics',
+						['title' => $req['title'], 'artist' => $req['artist']]
+					);
+					$r = $response->json(null, null, JSON_THROW_ON_ERROR);
+					$data = $r['data'];
+					if (!array_key_exists('lyrics', $data)) {
+						Log::error('YouTube request error: ', $data);
+						if(array_key_exists('response', $data)){
+							abort(
+								(int)substr($data['response'], 0, 2),
+								$data['message'] ?? 'YouTube API error ' . $data['response']
+							);
+						}
+						abort(500,'Unknown error with YouTube API');
+					}
+					return response()->json([
+						'title' => $data['trackName'],
+						'artist' => $data['artistName'],
+						'content' => $data['lyrics'],
+						'instrumental' => false,
+						'cover' => $data['artworkUrl'],
+						'id' => $data['trackId'],
+						'source' => 'youtube'
+					]);
 				default:
 					abort(422, 'Unsupported source');
 					break;

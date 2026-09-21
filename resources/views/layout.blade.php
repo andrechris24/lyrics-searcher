@@ -5,7 +5,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="csrf-token" content="{{ csrf_token() }}">
-		<meta name="minilyrics-compatibility" content="{{ env('MINILYRICS_COMPATIBLE') }}">
+		<meta name="minilyrics-compatibility" content="{{ env('MINILYRICS_COMPATIBLE', false) }}">
 		<title>@yield('title') | {{ env('APP_NAME') }}</title>
 
 		<!-- CoreUI CSS -->
@@ -15,7 +15,7 @@
 			crossorigin="anonymous">
 
 		<!-- FontAwesome -->
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.0/css/all.min.css" integrity="sha256-O2p11mherUYPja5rjeK2afvVekcdkigTHg/bG+cj8qk=" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
 
 		<!-- DataTables -->
 		<link href="https://cdn.datatables.net/v/bs5/dt-2.3.8/r-3.0.8/datatables.min.css" rel="stylesheet" integrity="sha384-tNYQLr593NFEx21InOh9Hbxz0c66iRCODxYVibI1MHkEHCTPXTwB/7k4ZqWvtRt9" crossorigin="anonymous">
@@ -126,13 +126,13 @@
 								'active' =>
 									request()->routeIs('deezer.*') ||
 									request()->routeIs('spotify.*') ||
-									request()->routeIs('youtube.*') ||
+									// request()->routeIs('youtube.*') ||
 									request()->routeIs('apple.*') ||
 									request()->routeIs('amazon.*')
 							])
 								@if (request()->routeIs('deezer.*') ||
 										request()->routeIs('spotify.*') ||
-										request()->routeIs('youtube.*') ||
+										// request()->routeIs('youtube.*') ||
 										request()->routeIs('apple.*') ||
 										request()->routeIs('amazon.*')
 								) aria-current="page" @endif href="#"
@@ -182,8 +182,12 @@
 							</ul>
 						</li>
 						<li class="nav-item col-sm-6 col-md-4 col-lg-auto col-12">
-							<a @class(['nav-link', 'active' => request()->routeIs('dl.youtube.*'), 'disabled'=>empty(env('PAXSENIX_TOKEN'))])
-								aria-disabled="{{empty(env('PAXSENIX_TOKEN'))}}"
+							<a @class([
+								'nav-link',
+								'active' => request()->routeIs('dl.youtube.*'),
+								'disabled' => empty(env('PAXSENIX_TOKEN'))
+							])
+								aria-disabled="{{ empty(env('PAXSENIX_TOKEN')) }}"
 								@if (request()->routeIs('dl.youtube.*')) aria-current="page" @endif
 								href="{{ route('dl.youtube.index') }}">
 								YT DL
@@ -336,8 +340,8 @@
 		<script src="https://cdn.datatables.net/v/bs5/dt-2.3.8/r-3.0.8/datatables.min.js"
 			integrity="sha384-4GcaTyTewMDCAbLVgOubCZiRYKyuZ+uHk2sLNSwuCz0Bi8kf2R6cg6P0iNVIH5XE"
 			crossorigin="anonymous"></script>
-		<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"
-			integrity="sha256-7eJpOkpqUSa501ZpBis1jsq2rnubhqHPMC/rRahRSQc="
+		<script src="https://cdn.jsdelivr.net/npm/pako@2.2.0/dist/pako.min.js"
+			integrity="sha256-peMhSuXPq8AbP926pjW3ik92apOLZMINVycaKX7evpI="
 			crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/luxon@3.7.2/build/global/luxon.min.js"
 			integrity="sha256-UWxf6lyCvfH7XEcrmq/cqc2m3IBrLBLOnWLC4Pw0gQQ="

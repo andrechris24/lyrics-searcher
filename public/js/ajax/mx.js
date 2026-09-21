@@ -46,16 +46,24 @@ function sendAjax(url, data) {
 						$.LoadingOverlay("hide");
 					},
 					success: function (data) {
-						if (type === "lyrics") {
-							contents = `${fileName}\n\n`;
-							ext = "txt";
-						} else {
-							contents =
-								`[id:${data.id}]\n[ar:${artist}]\n[ti:${title}]\n` +
-								`[al:${album}]\n[by:Musixmatch]\n[length:${data.duration}]\n`;
-							ext = "lrc";
+						try {
+							if (type === "lyrics") {
+								contents = `${fileName}\n\n`;
+								ext = "txt";
+							} else {
+								contents =
+									`[id:${data.id}]\n[ar:${artist}]\n[ti:${title}]\n` +
+									`[al:${album}]\n[by:Musixmatch]\n[length:${data.duration}]\n`;
+								ext = "lrc";
+							}
+							blobDL(contents + data.content, `${fileName}.${ext}`);
+						} catch (e) {
+							console.error(e);
+							toast.fire({
+								icon: "error",
+								text: "Script error detected while downloading lyric. Please contact site owner."
+							});
 						}
-						blobDL(contents + data.content, `${fileName}.${ext}`);
 					},
 					error: function (xhr, st, err) {
 						console.warn(err);

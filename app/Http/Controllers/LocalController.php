@@ -91,7 +91,7 @@ class LocalController extends Controller
 					$queries['album'] = $queries['title'];
 				File::delete($absolutePath);
 				$queries['user_id'] = backpack_user()->id;
-				$queries['content'] = implode("\n", $lrcLines);
+				$queries['content'] = implode(PHP_EOL, $lrcLines);
 				Lyric::create($queries);
 			} catch (QueryException | \Exception $e) {
 				if ($file->getClientOriginalName())
