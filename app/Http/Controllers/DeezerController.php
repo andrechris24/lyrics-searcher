@@ -29,7 +29,7 @@ class DeezerController extends Controller
 					JsonException::class => "Malformed response ({$th->getMessage()})",
 					ConnectionException::class => "Deezer API connection error, {$th->getMessage()}",
 					RequestException::class => "Deezer API error {$th->response->status()}",
-					default => "Unexpected error"
+					default => "Deezer unexpected error"
 				}
 			);
 		}

@@ -115,7 +115,7 @@ class AppleController extends Controller
 			sprintf(
 				"%s \n[%s]",
 				Str::replace(">\n", "> \n", $elrc, false),
-			parent::formatTime($last + 1, true)
+				parent::formatTime($last + 1, true)
 			) : $elrc;
 	}
 }

@@ -132,9 +132,8 @@ klyricDL.onclick = function (e) {
 	blobDL(klyricContent, `${fileName}.lrc`);
 };
 function parseKLyric(lyricText) {
-	let enhancedlyricText = "";
-	let matches, timestamp;
-	let metaRegex = /^\[(\S+):(\S+)\]$/,
+	let matches, timestamp, enhancedlyricText = "";
+	const metaRegex = /^\[(\S+):(\S+)\]$/,
 		timestampsRegex = /^\[(\d+),(\d+)\]/,
 		timestamps2Regex = /\((\d+),(\d+)\)([^(]*)/g,
 		lines = lyricText.split(/[\n]/);
@@ -143,15 +142,13 @@ function parseKLyric(lyricText) {
 			// meta info
 			enhancedlyricText += `${matches[0]}\n`;
 		else if ((matches = timestampsRegex.exec(line))) {
-			let startTime = parseInt(matches[1]);
-			let duration = parseInt(matches[2]);
-			let lyricLine = `[${formatTime(startTime)}]`;
+			let startTime = parseInt(matches[1]),
+				duration = parseInt(matches[2]),
+				lyricLine = `[${formatTime(startTime)}]`;
 			// parse sub-timestamps
-			let subMatches;
-			let subStartTime = startTime;
+			let subMatches, subStartTime = startTime;
 			while ((subMatches = timestamps2Regex.exec(line))) {
-				let subDuration = parseInt(subMatches[2]);
-				let subWord = subMatches[3];
+				let subDuration = parseInt(subMatches[2]), subWord = subMatches[3];
 				lyricLine += `<${formatTime(subStartTime)}>${subWord}`;
 				subStartTime += subDuration;
 			}
@@ -168,7 +165,6 @@ function formatTime(time) {
 	t -= h * 3600;
 	const m = Math.floor(t / 60);
 	t -= m * 60;
-	const s = Math.floor(t);
-	const ms = t - s;
+	const s = Math.floor(t), ms = t - s;
 	return `${(h ? `${zpad(h)}:` : "") + zpad(m)}:${zpad(s)}.${zpad(Math.floor(ms * 100))}`;
 }

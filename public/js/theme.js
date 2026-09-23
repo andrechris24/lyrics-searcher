@@ -6,24 +6,22 @@
 
 (() => {
 	"use strict";
-	const getStoredTheme = () => localStorage.getItem("theme");
-	const setStoredTheme = (theme) => localStorage.setItem("theme", theme);
-	const getPreferredTheme = () => {
-		const storedTheme = getStoredTheme();
-		if (storedTheme) return storedTheme;
-		return window.matchMedia("(prefers-color-scheme: dark)").matches
-			? "dark"
-			: "light";
-	};
-
-	const setTheme = (theme) => {
-		if (
-			theme === "auto" &&
-			window.matchMedia("(prefers-color-scheme: dark)").matches
-		)
-			document.documentElement.setAttribute("data-coreui-theme", "dark");
-		else document.documentElement.setAttribute("data-coreui-theme", theme);
-	};
+	const getStoredTheme = () => localStorage.getItem("theme"),
+		setStoredTheme = (theme) => localStorage.setItem("theme", theme),
+		getPreferredTheme = () => {
+			const storedTheme = getStoredTheme();
+			if (storedTheme) return storedTheme;
+			return window.matchMedia("(prefers-color-scheme: dark)").matches
+				? "dark"
+				: "light";
+		}, setTheme = (theme) => {
+			if (
+				theme === "auto" &&
+				window.matchMedia("(prefers-color-scheme: dark)").matches
+			)
+				document.documentElement.setAttribute("data-coreui-theme", "dark");
+			else document.documentElement.setAttribute("data-coreui-theme", theme);
+		};
 
 	setTheme(getPreferredTheme());
 
@@ -31,11 +29,11 @@
 		const themeSwitcher = document.querySelector("#bd-theme");
 		if (!themeSwitcher) return;
 
-		const themeSwitcherText = document.querySelector("#bd-theme-text");
-		const activeThemeIcon = document.querySelector(".theme-icon-active use");
-		const btnToActive = document.querySelector(
-			`[data-coreui-theme-value="${theme}"]`
-		);
+		const themeSwitcherText = document.querySelector("#bd-theme-text"),
+			activeThemeIcon = document.querySelector(".theme-icon-active use"),
+			btnToActive = document.querySelector(
+				`[data-coreui-theme-value="${theme}"]`
+			);
 		const svgOfActiveBtn = btnToActive
 			.querySelector("svg use")
 			.getAttribute("href");

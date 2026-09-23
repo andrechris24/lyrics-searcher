@@ -194,13 +194,13 @@ class SingleController extends Controller
 					$data = $r['data'];
 					if (!array_key_exists('lyrics', $data)) {
 						Log::error('YouTube request error: ', $data);
-						if(array_key_exists('response', $data)){
+						if (array_key_exists('response', $data) || array_key_exists('respone', $data)) {
 							abort(
-								(int)substr($data['response'], 0, 2),
-								$data['message'] ?? 'YouTube API error ' . $data['response']
+								(int)substr($data['response'] ?? $data['respone'], 0, 2),
+								$data['message'] ?? 'YouTube API error ' . $data['response'] ?? $data['respone']
 							);
 						}
-						abort(500,'Unknown error with YouTube API');
+						abort(404, 'No lyric data found with YouTube API');
 					}
 					return response()->json([
 						'title' => $data['trackName'],

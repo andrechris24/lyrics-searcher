@@ -2,30 +2,29 @@
 function xorKRC(rawData) {
 	if (null == rawData) return;
 
-	let dataView = new Uint8Array(rawData);
-	let magicBytes = [0x6b, 0x72, 0x63, 0x31]; // 'k' , 'r' , 'c' ,'1'
+	const dataView = new Uint8Array(rawData),
+		magicBytes = [0x6b, 0x72, 0x63, 0x31]; // 'k' , 'r' , 'c' ,'1'
 	if (dataView.length < magicBytes.length) return;
 
 	for (let i = 0; i < magicBytes.length; ++i) {
 		if (dataView[i] != magicBytes[i]) return;
 	}
-	let decryptedData = new Uint8Array(dataView.length - magicBytes.length);
-	let encKey = [
-		0x40, 0x47, 0x61, 0x77, 0x5e, 0x32, 0x74, 0x47, 0x51, 0x36, 0x31, 0x2d,
-		0xce, 0xd2, 0x6e, 0x69
-	];
-	let hdrOffset = magicBytes.length;
+	const decryptedData = new Uint8Array(dataView.length - magicBytes.length),
+		encKey = [
+			0x40, 0x47, 0x61, 0x77, 0x5e, 0x32, 0x74, 0x47, 0x51, 0x36, 0x31, 0x2d,
+			0xce, 0xd2, 0x6e, 0x69
+		],
+		hdrOffset = magicBytes.length;
 	for (let i = hdrOffset; i < dataView.length; ++i) {
-		let x = dataView[i];
-		let y = encKey[(i - hdrOffset) % encKey.length];
+		const x = dataView[i],
+			y = encKey[(i - hdrOffset) % encKey.length];
 		decryptedData[i - hdrOffset] = x ^ y;
 	}
 	return decryptedData;
 }
 
 function krc2lrc(krcText) {
-	let lyricText = "",
-		matches;
+	let matches, lyricText = "";
 	const metaRegex = /^\[(\S+):(\S+)\]$/,
 		timestampsRegex = /^\[(\d+),(\d+)\]/,
 		timestamps2Regex = /<(\d+),(\d+),(\d+)>([^<]*)/g,
@@ -43,8 +42,8 @@ function krc2lrc(krcText) {
 			// parse sub-timestamps
 			let subMatches;
 			while ((subMatches = timestamps2Regex.exec(line))) {
-				const offset = parseInt(subMatches[1]);
-				const subWord = subMatches[4];
+				const offset = parseInt(subMatches[1]),
+					subWord = subMatches[4];
 				lyricLine += `<${formatTime(startTime + offset)}>${subWord}`;
 			}
 			lyricText += `${lyricLine}<${formatTime(startTime + duration)}>${$('meta[name="minilyrics-compatibility"]').attr("content") == true ? " " : ""}\n`;
@@ -99,13 +98,13 @@ function formatTime(time) {
 			centiseconds = Math.floor(parseInt(srtTime[4], 10) / 10); // mmm → xx
 		str = `${(hours ? `${zpad(hours)}:` : "") + zpad(minutes)}:${zpad(seconds)}.${zpad(centiseconds)}`;
 	} else {
-		let t = Math.abs(time / 1000);
-		let h = Math.floor(t / 3600);
+		let t = Math.abs(time / 1000),
+			h = Math.floor(t / 3600);
 		t -= h * 3600;
 		let m = Math.floor(t / 60);
 		t -= m * 60;
-		let s = Math.floor(t);
-		let ms = t - s;
+		let s = Math.floor(t),
+			ms = t - s;
 		str = `${(h ? `${zpad(h)}:` : "") + zpad(m)}:${zpad(s)}.${zpad(Math.floor(ms * 100))}`;
 	}
 	return str;
@@ -128,8 +127,8 @@ function timeMilliseconds(val) {
 let convertedFileName;
 $("#lyric-converter-form").on("submit", function (e) {
 	e.preventDefault();
-	const fileContent = $("#source-file-to-convert")[0].files[0];
-	const fileReader = new FileReader();
+	const fileContent = $("#source-file-to-convert")[0].files[0],
+		fileReader = new FileReader();
 	convertedFileName = $("#source-file-to-convert")[0].files[0].name;
 	fileReader.onerror = function (e) {
 		console.warn(e);

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Client\{ConnectionException, RequestException};
-use Illuminate\Support\Facades\{Log, Session, Http};
+use Illuminate\Support\Facades\{Log, Session};
 use Illuminate\Support\Str;
 use JsonException;
 
@@ -172,9 +172,9 @@ abstract class Controller
 		$sylTime = '';
 		$converted = Str::of($qrcText)
 			->replaceMatches("/^\[(\d+),(\d+)\]/m", function (array $matches) {
-			return sprintf("[%s]", self::formatTime((int)$matches[1], true));
+				return sprintf("[%s]", self::formatTime((int)$matches[1], true));
 			})->replaceMatches("/\((\d+),(\d+)\)/", function (array $matches) use (&$sylTime) {
-			$sylTime = self::formatTime(((int)$matches[1] + (int)$matches[2]), true);
+				$sylTime = self::formatTime(((int)$matches[1] + (int)$matches[2]), true);
 				return sprintf("<%s>", $sylTime);
 			});
 		$converted .= "[$sylTime]";
@@ -183,6 +183,12 @@ abstract class Controller
 			$converted;
 	}
 
+	/**
+	 * Get Lyrically & Paxsenix error message by exception type
+	 * @param  mixed        $e		Error Exception class
+	 * @param  bool|boolean $lrc	Lyrics request?
+	 * @return string							Error message by Exception class
+	 */
 	protected static function lyricallyError(mixed $e, bool $lrc = false): string
 	{
 		if (get_class($e) === RequestException::class) {
@@ -203,25 +209,8 @@ abstract class Controller
 		};
 	}
 
-	protected static function getFileInfo(string $url): array
-	{
-		$response = Http::head($url);
-		if ($response->successful())
-			$mimeType = $response->header('Content-Type');
-		else {
-			Log::warning('Failed to get mime type for ' . $url . ': ', $response);
-			$mimeType = 'audio/webm';
-		}
-		$fileInfo = pathinfo($url);
-		return [
-			'type' => $mimeType,
-			'ext' => $fileInfo['extension'],
-			'name' => $fileInfo['filename']
-		];
-	}
-
 	/**
-	 * Sets LRC by: tag to source of LRC file if by is unavailable
+	 * Sets LRC by: tag to source of LRC file if empty or unavailable
 	 * @param string $lrc    Content of LRC file
 	 * @param string $source Source of LRC file
 	 */

@@ -6,7 +6,6 @@ use App\KrcDecoder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Http, Log};
-use Illuminate\Support\Str;
 use JsonException;
 
 class KugouController extends Controller

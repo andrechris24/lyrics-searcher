@@ -59,7 +59,7 @@
 						<label for="album-name" class="form-label">Album</label>
 					</div>
 				</div>
-				<div class="form-text">Unused for Lyrics.ovh, Genius, & Musixmatch.</div>
+				<div class="form-text">Unused for Lyrics.ovh, Genius, & YouTube.</div>
 			</div>
 			<button type="submit" class="btn btn-primary">Search</button>
 		</form>

@@ -18,7 +18,7 @@
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css" integrity="sha256-4Lad8m4ZWW1Lgb9+sMVLYEfnIh7BjV1NQMEe79Pviks=" crossorigin="anonymous">
 
 		<!-- DataTables -->
-		<link href="https://cdn.datatables.net/v/bs5/dt-2.3.8/r-3.0.8/datatables.min.css" rel="stylesheet" integrity="sha384-tNYQLr593NFEx21InOh9Hbxz0c66iRCODxYVibI1MHkEHCTPXTwB/7k4ZqWvtRt9" crossorigin="anonymous">
+		<link href="https://cdn.datatables.net/v/bs5/dt-3.0.4/r-4.0.3/datatables.min.css" rel="stylesheet" integrity="sha384-G+ChyOUNm/8/uQh3GBRhdblBK0mzj21kEcrp4adpM/ZZnLikKcGjROeEiHgDd7r3" crossorigin="anonymous">
 
 		<link rel="stylesheet" type="text/css" href="{{ asset('css/theme.css') }}">
 		<script type="text/javascript" src="{{ asset('js/theme.js') }}"></script>
@@ -337,9 +337,7 @@
 			integrity="sha256-jLFv9iIrIbqKULHpqp/jmePDqi989pKXOcOht3zgRcw="
 			crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-		<script src="https://cdn.datatables.net/v/bs5/dt-2.3.8/r-3.0.8/datatables.min.js"
-			integrity="sha384-4GcaTyTewMDCAbLVgOubCZiRYKyuZ+uHk2sLNSwuCz0Bi8kf2R6cg6P0iNVIH5XE"
-			crossorigin="anonymous"></script>
+		<script src="https://cdn.datatables.net/v/bs5/dt-3.0.4/r-4.0.3/datatables.min.js" integrity="sha384-5xW4y435TjmEQQVIA0TYGVgT63bZtktS85buRaLC8KsDPpvGCTSz6k8GUV0JRo1n" crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/pako@2.2.0/dist/pako.min.js"
 			integrity="sha256-peMhSuXPq8AbP926pjW3ik92apOLZMINVycaKX7evpI="
 			crossorigin="anonymous"></script>
