@@ -12,7 +12,10 @@ if (lyricsModal) {
 
 		// Update the modal's content
 		dt_lyrics = $("#lyrics-table").DataTable({
-			language: { emptyTable: "No lyrics available for this song, try advanced search instead." },
+			language: {
+				emptyTable:
+					"No lyrics available for this song, try advanced search instead."
+			},
 			lengthChange: false,
 			processing: true,
 			responsive: true,
@@ -240,10 +243,12 @@ function formatMilliseconds(ms) {
 	const totalSeconds = Math.floor(ms / 1000);
 
 	// Calculate minutes and seconds
-	const minutes = Math.floor(totalSeconds / 60), seconds = totalSeconds % 60;
+	const minutes = Math.floor(totalSeconds / 60),
+		seconds = totalSeconds % 60;
 
 	// Pad with leading zeros if needed
-	const formattedMinutes = zpad(minutes), formattedSeconds = zpad(seconds);
+	const formattedMinutes = zpad(minutes),
+		formattedSeconds = zpad(seconds);
 
 	return `${formattedMinutes}:${formattedSeconds}`;
 }

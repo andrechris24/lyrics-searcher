@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\{Http, Log, Session};
+use Illuminate\Support\Str;
 use JsonException;
 use Stevebauman\Location\Facades\Location;
 
@@ -186,6 +187,21 @@ class MusixmatchController extends Controller
 			);
 			$data = $r['message']['body'][$type];
 			abort_if($data['restricted'] === true, 403, 'Lyric for this song is restricted');
+			if ($type === 'subtitle') {
+				abort_if(
+					$data['subtitle_id'] === parent::brokenMXResult['subtitle_id'] &&
+						Str::contains($data['subtitle_body'], parent::brokenMXResult['lyric'], true),
+					500,
+					'Broken lyrics detected, download aborted.'
+				);
+			} else if ($type === 'lyrics') {
+				abort_if(
+					$data['lyrics_id'] === parent::brokenMXResult['lyric_id'] &&
+						Str::contains($data['lyrics_body'], parent::brokenMXResult['lyric'], true),
+					500,
+					'Broken lyrics detected, download aborted.'
+				);
+			}
 			$lyrics = match ($type) {
 				'subtitle' => [
 					'content' => $data['subtitle_body'],
@@ -254,10 +270,7 @@ class MusixmatchController extends Controller
 			);
 			$body = $r['message']['body'];
 			if (array_key_exists('user_token', $body)) {
-				if (in_array($body['user_token'], [
-					'UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly',
-					'00000000000000000000000000000000000000000000000000000000'
-				])) {
+				if (in_array($body['user_token'], parent::blacklistedTokens)) {
 					Log::warning('Blacklisted Musixmatch token: ' . $body['user_token']);
 					abort_if(
 						empty(env('MUSIXMATCH_TOKEN')),

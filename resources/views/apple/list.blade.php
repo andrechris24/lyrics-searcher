@@ -35,16 +35,36 @@
 					</div>
 					<div class="card-footer">
 						<div class="btn-group" role="group">
-							<button type="button" class="btn btn-primary" data-coreui-toggle="modal"
-								data-coreui-target="#modalLyrics"
-								data-coreui-id="{{ $result['trackId'] ?? $result['playParams']['id'] }}"
-								data-coreui-artist="{{ $result['artistName'] }}"
-								data-coreui-track="{{ $result['trackName'] ?? $result['name'] }}"
-								data-coreui-album="{{ $result['collectionName'] ?? $result['albumName'] }}"
-								data-coreui-duration="{{ $length }}">
-								<i class="fa-solid fa-eye" data-coreui-toggle="tooltip"
-									data-coreui-title="Show & download lyric"></i>
-							</button>
+							<div class="btn-group" role="group">
+								<button type="button" class="btn btn-primary dropdown-toggle"
+									data-coreui-toggle="dropdown" aria-expanded="false">
+									<i class="fa-solid fa-eye" data-coreui-toggle="tooltip"
+										data-coreui-title="Show & download lyric (Select lyric source)"></i>
+								</button>
+								<ul class="dropdown-menu">
+									<li>
+										<a class="dropdown-item" href="#modalLyrics" data-coreui-toggle="modal"
+											data-coreui-id="{{ $result['trackId'] ?? $result['playParams']['id'] }}"
+											data-coreui-source="lyrically" data-coreui-duration="{{ $length }}"
+											data-coreui-artist="{{ $result['artistName'] }}"
+											data-coreui-track="{{ $result['trackName'] ?? $result['name'] }}"
+											data-coreui-album="{{ $result['collectionName'] ?? $result['albumName'] }}">
+											Lyrically
+										</a>
+									</li>
+									<li>
+										<a @class(['dropdown-item','disabled' => empty(env('PAXSENIX_TOKEN'))])
+											href="#modalLyrics" data-coreui-toggle="modal"
+											data-coreui-id="{{ $result['trackId'] ?? $result['playParams']['id'] }}"
+											data-coreui-source="paxsenix" data-coreui-duration="{{ $length }}"
+											data-coreui-artist="{{ $result['artistName'] }}"
+											data-coreui-track="{{ $result['trackName'] ?? $result['name'] }}"
+											data-coreui-album="{{ $result['collectionName'] ?? $result['albumName'] }}">
+											Paxsenix
+										</a>
+									</li>
+								</ul>
+							</div>
 							<button type="button" class="btn btn-info" @disabled(!array_key_exists('previewUrl', $result) && !array_key_exists('previews', $result))
 								data-coreui-link="{{ $result['previewUrl'] ?? ($result['previews'][0]['url'] ?? '#') }}"
 								data-coreui-artist="{{ $result['artistName'] }}"

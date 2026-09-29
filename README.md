@@ -57,7 +57,15 @@ Requires API Token. If not configured, it will be disabled.
 
 #### For Spotify Lyrics
 
-Follow steps from [SpotiFLAC guide](https://github.com/spotbye/SpotiFLAC-Next/wiki/How-to-Obtain-Spotify-sp_dc-Cookies/69d347ab6f4e08587faf31daa31c29571e7c2cb2) to obtain sp_dc cookie, then paste to SPOTIFY_COOKIE in env file.
+> [!CAUTION]
+> Please do not use main Spotify account to avoid risk of unwanted issues like being suspended. Use secondary or throwaway account instead.
+
+1. Log in to Spotify.
+2. Open **Developer Tools (DevTools)** by pressing `F12`.
+3. Inside DevTools, open **Application** tab, select **Cookies** under **Storage**, choose `https://open.spotify.com/`, then copy `sp_dc` value.
+4. Open env file then paste `sp_dc` value to **SPOTIFY_COOKIE** and save.
+
+<!-- Follow steps from [SpotiFLAC guide](https://github.com/spotbye/SpotiFLAC-Next/wiki/How-to-Obtain-Spotify-sp_dc-Cookies/69d347ab6f4e08587faf31daa31c29571e7c2cb2) to obtain sp_dc cookie, then paste to SPOTIFY_COOKIE in env file. -->
 
 ## Admin credentials
 

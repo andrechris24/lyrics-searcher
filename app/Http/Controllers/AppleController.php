@@ -57,7 +57,7 @@ class AppleController extends Controller
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
 				Log::error("Apple Music API error: {$r['message']}", $r);
-				abort(500, 'Oops, an error occurred with Apple Music API.');
+				abort(500, 'Oops, an error occurred with Lyrically API.');
 			}
 			if ($r['type'] === 'Syllable')
 				$endtime = $r['content'][count($r['content']) - 1]['sectionEnd'];
@@ -75,7 +75,43 @@ class AppleController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				'Error retrieving lyric: ' . parent::lyricallyError($th, true)
+				'Error retrieving lyric: ' . parent::lyricallyError($th)
+			);
+		}
+	}
+	public function getAlt(int $id)
+	{
+		abort_if(
+			empty(env('PAXSENIX_TOKEN')),
+			401,
+			'API Token is required for Paxsenix request and song downloads'
+		);
+		try {
+			$r = Http::retry(2, 100)->timeout(25000)
+				->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])
+				->get(parent::$paxsenix_url . "lyrics/applemusic", ['id' => $id])
+				->json(null, null, JSON_THROW_ON_ERROR);
+			if ($r['ok']===false) {
+				Log::error("Apple Music API error: {$r['message']}", $r);
+				abort(500, 'Oops, an error occurred with Apple Music Paxsenix API.');
+			}
+			if ($r['type'] === 'Syllable')
+				$endtime = $r['content'][count($r['content']) - 1]['sectionEnd'];
+			return response()->json([
+				'id' => $id,
+				'plain' => $r['plain'],
+				'synced' => $r['lrc'],
+				'syllable' => self::mlWorkaround($r['elrc'], $endtime ?? 0),
+				'multisyl' => self::mlWorkaround($r['elrc_multi_person'], $endtime ?? 0),
+				'ttml' => $r['ttml_content'],
+				'type' => $r['type'],
+				'writers' => implode(', ', $r['metadata']['songwriters']),
+				'length' => gmdate('i:s', round($r['metadata']['duration'] / 1000, 0, PHP_ROUND_HALF_UP))
+			]);
+		} catch (ConnectionException | JsonException | RequestException $th) {
+			abort(
+				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
+				'Error retrieving lyric: ' . parent::lyricallyError($th)
 			);
 		}
 	}

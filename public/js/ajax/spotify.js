@@ -133,6 +133,7 @@ if (lyricsModal) {
 				$("#song-copyright").text("");
 				$("#lyric-type").text("");
 				$(".placeholder-glow").removeClass("d-none");
+				$("#save-btn").prop('disabled',true);
 			},
 			complete: function () {
 				$(".placeholder-glow").addClass("d-none");
@@ -142,9 +143,10 @@ if (lyricsModal) {
 					if (Array.isArray(data.syllable) && data.syllable.length > 0) {
 						toast.fire({
 							icon: "info",
-							text: "This song may contain syllable lyric. Please contact site owner to confirm."
+							text: "Syllable lyric detected. Please inform site owner to implement this type."
 						});
 					}
+					$("#save-btn").prop('disabled',false);
 					plainContents = `${fileName}\n\n${data.plain}`;
 					$("#lyric-type").text(data.type);
 					if (

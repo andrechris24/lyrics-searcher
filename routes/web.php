@@ -102,7 +102,10 @@ Route::prefix('apple')->name('apple.')->group(function () {
 	Route::controller(AppleController::class)->name('search')->group(function () {
 		Route::get('results', 'search');
 		Route::get('download', 'download');
-		Route::get('{id}', 'get')->name('.get');
+		Route::prefix('{id}')->group(function () {
+			Route::get('alt', 'getAlt')->name('.alt');
+			Route::get('/', 'get')->name('.get');
+		});
 	});
 });
 // Route::prefix('youtube')->name('youtube.')->group(function () {

@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\{Artisan, Http};
+use App\Http\Controllers\Controller;
 
 Artisan::command('inspire', function () {
 	$this->comment(Inspiring::quote());
@@ -20,10 +21,7 @@ Artisan::command('usertoken', function () {
 	);
 	$body = $r['message']['body'];
 	if (array_key_exists('user_token', $body)) {
-		if (in_array($body['user_token'], [
-			'UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly',
-			'00000000000000000000000000000000000000000000000000000000'
-		])) {
+		if (in_array($body['user_token'], Controller::blacklistedTokens)) {
 			throw new Exception(
 				message: "Blacklisted token, please try again in a few minutes.",
 				previous: new Exception($body['user_token'] . ' is blacklisted')

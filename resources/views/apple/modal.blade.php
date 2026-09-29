@@ -9,7 +9,6 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				{{-- <x-lyrically /> --}}
 				<div class="row mb-3">
 					<div class="col-12 col-sm-4">
 						<b>Artist</b>
@@ -67,7 +66,7 @@
 					Close
 				</button>
 				<div class="dropdown">
-					<button class="btn btn-primary dropdown-toggle" type="button"
+					<button class="btn btn-primary dropdown-toggle" id="save-btn" type="button"
 						data-coreui-toggle="dropdown" aria-expanded="false">
 						Save
 					</button>

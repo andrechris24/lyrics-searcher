@@ -30,6 +30,7 @@ if (lyricsModal) {
 				// $("#song-copyright").text("");
 				// $("#song-license").text("");
 				$("#song-lyric-type").text("");
+				$("#save-btn").prop('disabled',true);
 			},
 			complete: function () {
 				$(".placeholder-glow").addClass("d-none");
@@ -37,6 +38,7 @@ if (lyricsModal) {
 			success: function (data) {
 				try {
 					const metaLyric = `[id:${data.id}]\n[ar:${artistName}]\n[ti:${songName}]\n[by:Amazon Music]\n`;
+					$("#save-btn").prop('disabled',false);
 					if (data.synced !== null && data.synced !== "") {
 						$("#song-lyric-type").text("Synced");
 						$("#dl-synced").removeClass("disabled");
@@ -59,7 +61,7 @@ if (lyricsModal) {
 					if (Array.isArray(data.syllable) && data.syllable.length > 0) {
 						toast.fire({
 							icon: "info",
-							text: "This song may contain word-by-word or syllable lyric. Please contact site owner to confirm."
+							text: "Word-by-word or syllable lyric detected. Please inform site owner to implement this type."
 						});
 					}
 					$("#lyrics-content").text(data.plain);

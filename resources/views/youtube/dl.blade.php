@@ -51,6 +51,7 @@
 							</div>
 						</div>
 					</div>
+					<small class="form-text text-center">Powered by Paxsenix</small>
 					<button type="submit" class="btn btn-primary">Download</button>
 				</form>
 			</div>
@@ -87,6 +88,7 @@
 							</div>
 						</div>
 					</div>
+					<small class="form-text text-center">Powered by Paxsenix</small>
 					<button type="submit" class="btn btn-primary">Download</button>
 				</form>
 			</div>
@@ -122,7 +124,7 @@
 							</div>
 						</div>
 					</div>
-					<small class="form-text text-center">Powered by SaveTube</small>
+					<small class="form-text text-center">Powered by SaveTube, provided by Paxsenix</small>
 					<button type="submit" class="btn btn-primary">Download</button>
 				</form>
 			</div>

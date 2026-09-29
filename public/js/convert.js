@@ -24,7 +24,8 @@ function xorKRC(rawData) {
 }
 
 function krc2lrc(krcText) {
-	let matches, lyricText = "";
+	let matches,
+		lyricText = "";
 	const metaRegex = /^\[(\S+):(\S+)\]$/,
 		timestampsRegex = /^\[(\d+),(\d+)\]/,
 		timestamps2Regex = /<(\d+),(\d+),(\d+)>([^<]*)/g,

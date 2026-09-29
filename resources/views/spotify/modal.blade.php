@@ -35,6 +35,12 @@
 						<span id="song-copyright"></span>
 					</div>
 				</div>
+				<p class="placeholder-glow d-none">
+					<span class="placeholder col-12"></span>
+					<span class="placeholder col-12"></span>
+					<span class="placeholder col-12"></span>
+					<span class="placeholder col-12"></span>
+				</p>
 				<p id="lyrics-content" style="white-space: pre-line"></p>
 			</div>
 			<div class="modal-footer">
@@ -42,7 +48,7 @@
 					Close
 				</button>
 				<div class="dropdown">
-					<button class="btn btn-primary dropdown-toggle" type="button"
+					<button class="btn btn-primary dropdown-toggle" id="save-btn" type="button"
 						data-coreui-toggle="dropdown" aria-expanded="false">
 						Save to Device
 					</button>

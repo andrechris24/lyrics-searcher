@@ -100,7 +100,7 @@ class DeezerController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				'Error retrieving lyric: ' . parent::lyricallyError($th, true)
+				'Error retrieving lyric: ' . parent::lyricallyError($th)
 			);
 		}
 	}

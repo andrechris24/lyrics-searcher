@@ -85,7 +85,7 @@
 					Close
 				</button>
 				<div class="dropdown">
-					<button class="btn btn-primary dropdown-toggle" type="button"
+					<button class="btn btn-primary dropdown-toggle" id="save-btn" type="button"
 						data-coreui-toggle="dropdown" aria-expanded="false">
 						Save
 					</button>

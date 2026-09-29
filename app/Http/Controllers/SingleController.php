@@ -7,6 +7,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\{Http, Log, Session};
+use Illuminate\Support\Str;
 use JsonException;
 
 class SingleController extends Controller
@@ -94,6 +95,16 @@ class SingleController extends Controller
 						$plainBody['restricted'] === 1,
 						403,
 						"Lyric for song {$tmBody['artist_name']} - {$tmBody['track_name']} is restricted"
+					);
+					abort_if(
+						(strcasecmp($tmBody['track_name'], parent::brokenMXResult['title']) === 0 &&
+							strcasecmp($tmBody['artist_name'], parent::brokenMXResult['artist']) === 0 &&
+							strcasecmp($tmBody['album_name'], parent::brokenMXResult['album']) === 0 &&
+							strcasecmp($tmBody['track_share_url'], parent::brokenMXResult['link']) === 0 &&
+							$tmBody['commontrack_id'] === parent::brokenMXResult['track_id'] &&
+							Str::contains($plainBody['lyrics_body'], parent::brokenMXResult['lyric'], true)),
+						500,
+						'Broken lyrics detected, Muisxmatch lyric fetching aborted.'
 					);
 					if ($tmBody['instrumental'] === 0) $plainText = $plainBody['lyrics_body'];
 					return response()->json([
@@ -196,7 +207,7 @@ class SingleController extends Controller
 						Log::error('YouTube request error: ', $data);
 						if (array_key_exists('response', $data) || array_key_exists('respone', $data)) {
 							abort(
-								(int)substr($data['response'] ?? $data['respone'], 0, 2),
+								(int)substr($data['response'] ?? $data['respone'], 0, 3),
 								$data['message'] ?? 'YouTube API error ' . $data['response'] ?? $data['respone']
 							);
 						}

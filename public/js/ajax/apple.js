@@ -22,7 +22,8 @@ if (lyricsModal) {
 			artistName = button.getAttribute("data-coreui-artist"),
 			albumName = button.getAttribute("data-coreui-album"),
 			songID = button.getAttribute("data-coreui-id"),
-			duration = button.getAttribute("data-coreui-duration");
+			duration = button.getAttribute("data-coreui-duration"),
+			source = button.getAttribute("data-coreui-source");
 
 		// Update the modal's content
 		$("#song-album").text(albumName);
@@ -33,12 +34,13 @@ if (lyricsModal) {
 		// Set file name and contents on save
 		fileName = `${artistName} - ${songName}`;
 		$.ajax({
-			url: `/apple/${songID}`,
+			url: source === 'paxsenix' ? `/apple/${songID}/alt` : `/apple/${songID}`,
 			beforeSend: function () {
 				$(".placeholder-glow").removeClass("d-none");
 				$("#lyrics-content").text("");
 				$("#song-writers").text("");
 				$("#song-lyric-type").text("");
+				$("#save-btn").prop('disabled',true);
 			},
 			complete: function () {
 				$(".placeholder-glow").addClass("d-none");
@@ -48,6 +50,7 @@ if (lyricsModal) {
 					const metaLyric =
 						`[id:${data.id}]\n[ar:${artistName}]\n[ti:${songName}]\n[al:${albumName}]\n` +
 						`[length:${duration}]\n${data.writers !== null || data.writers !== "" ? `[lr:${data.writers}]\n` : ""}`;
+					$("#save-btn").prop('disabled',false);
 					if (data.synced !== null && data.synced !== "") {
 						$("#dl-synced").removeClass("disabled");
 						syncedLyricContents = `${metaLyric}${data.synced}`;

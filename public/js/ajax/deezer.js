@@ -34,6 +34,7 @@ if (lyricsModal) {
 				$("#song-copyright").text("");
 				$("#song-license").text("");
 				$("#song-lyric-type").text("");
+				$("#save-btn").prop('disabled',true);
 			},
 			complete: function () {
 				$(".placeholder-glow").addClass("d-none");
@@ -43,6 +44,7 @@ if (lyricsModal) {
 					const metaLyric =
 						`[id:${data.id}]\n[ar:${artistName}]\n[ti:${songName}]\n[al:${albumName}]\n[by:Deezer]\n` +
 						`[length:${duration}]\n${data.writer !== null || data.writer !== "" ? `[lr:${data.writer}]\n` : ""}`;
+				$("#save-btn").prop('disabled',false);
 					if (data.synced !== null && data.synced !== "") {
 						$("#song-lyric-type").text("Synced");
 						$("#dl-synced").removeClass("disabled");
