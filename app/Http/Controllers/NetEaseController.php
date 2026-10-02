@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\BasicOffsetRequest;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Http, Log};
 use JsonException;
@@ -12,12 +12,9 @@ class NetEaseController extends Controller
 	private const array NETEASE_HEADERS =
 	['Referer' => 'https://music.163.com', 'X-Real-IP' => '202.96.0.0'];
 	private static string $url = 'https://music.163.com/api/';
-	public function search(Request $req)
+	public function search(BasicOffsetRequest $req)
 	{
 		try {
-			$req->validate(
-				['query' => 'required', 'offset' => 'nullable|integer|min:0|multiple_of:20']
-			);
 			$r = Http::retry(3, 100)->timeout(25000)->withHeaders(self::NETEASE_HEADERS)
 				->get(self::$url . 'search/get', [
 					's' => $req['query'],

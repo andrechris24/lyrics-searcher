@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SimpleDownloadRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Log, Http};
@@ -75,7 +76,7 @@ class AppleController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				'Error retrieving lyric: ' . parent::lyricallyError($th)
+				'Error retrieving lyric: ' . parent::lyricallyError($th, false)
 			);
 		}
 	}
@@ -115,14 +116,13 @@ class AppleController extends Controller
 			);
 		}
 	}
-	public function download(Request $req)
+	public function download(SimpleDownloadRequest $req)
 	{
 		abort_if(
 			empty(env('PAXSENIX_TOKEN')),
 			401,
 			'API Token is required for Paxsenix request and song downloads'
 		);
-		$req->validate(['url' => 'required|url']);
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)
 				->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\QrcDecoder;
-use Illuminate\Http\Request;
+use App\Http\Requests\TwoFormRequest;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Http, Log};
 use Illuminate\Support\Str;
@@ -12,10 +12,9 @@ class QQMusicController extends Controller
 {
 	private const array QQ_HEADER = ["Referer" => "https://y.qq.com/"];
 	private static string $url = 'https://c.y.qq.com/';
-	public function search(Request $req)
+	public function search(TwoFormRequest $req)
 	{
 		try {
-			$req->validate(['artist' => 'nullable', 'title' => 'required']);
 			$response = Http::retry(3, 100)->timeout(25000)->withHeaders(self::QQ_HEADER)
 				->get(self::$url . 'lyric/fcgi-bin/fcg_search_pc_lrc.fcg', [
 					'SONGNAME' => $req['title'],

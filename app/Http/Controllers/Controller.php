@@ -248,6 +248,7 @@ abstract class Controller
 			$msg = match ($header['hint']) {
 				'renew' => "Musixmatch token expired or invalid. Please try again to regenerate token.",
 				'captcha' => "Musixmatch blocked your IP, please wait for a few minutes or refresh your device IP address.",
+				'endpoint not found' => 'This Musixmatch URL was invalid or retired, please contact site owner.',
 				default => "Musixmatch returned an error with reason: {$header['hint']}"
 			};
 		} else {
@@ -407,25 +408,28 @@ abstract class Controller
 	/**
 	 * Get Lyrically & Paxsenix error message by exception type
 	 * @param  mixed        $e		Error Exception class
+	 * @param  bool         $paxsenix Whether to include Paxsenix-specific error handling
 	 * @return string							Error message by Exception class
 	 */
-	protected static function lyricallyError(mixed $e): string
+	protected static function lyricallyError(mixed $e, bool $paxsenix = true): string
 	{
+		if ($paxsenix === true) $provider = 'Paxsenix';
+		else $provider = 'Lyrically';
 		if (get_class($e) === RequestException::class) {
 			Log::warning('Request failed for ' . $e->response->effectiveUri());
 			$json = $e->response->json();
-			if (!$json) $reqerr = "Paxsenix API Error {$e->response->status()}";
+			if (!$json) $reqerr = "$provider API Error {$e->response->status()}";
 			// else if ($lrc === true && $e->response->status() === 404)
 			// 	$reqerr = 'No lyric found for this song';
 			else
-				$reqerr = $json['message'] ?? $json['error'] ?? $json['detail'] ?? "Paxsenix API Error {$e->response->status()}";
+				$reqerr = $json['message'] ?? $json['error'] ?? $json['detail'] ?? "$provider API Error {$e->response->status()}";
 		}
 		Log::error($e);
 		return match (get_class($e)) {
-			JsonException::class => "Malformed Paxsenix API response ({$e->getMessage()})",
-			ConnectionException::class => "Paxsenix API connection error, {$e->getMessage()}",
+			JsonException::class => "Malformed $provider API response ({$e->getMessage()})",
+			ConnectionException::class => "$provider API connection error, {$e->getMessage()}",
 			RequestException::class => $reqerr,
-			default => "Paxsenix API unexpected error"
+			default => "$provider API unexpected error"
 		};
 	}
 

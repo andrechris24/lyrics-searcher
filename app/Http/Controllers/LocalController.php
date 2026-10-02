@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Lyric;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\{File, Log};
+use Illuminate\Support\Facades\{File, Log, Storage};
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class LocalController extends Controller
 {
-	private const META_REGEX = "/^\[(ti|ar|al|offset|au|by|length|ve|re|id|lr|tool):([^\]]+)\]$/i";
+	private const META_REGEX = "/^\[(ti|ar|al|offset|by|length|ve|re|id|tool):([^\]]+)\]$/i";
 	private const FILE_REGEX = "/^(.+?)\s*-\s*(.+)$/u";
 	public function list()
 	{
@@ -31,16 +31,18 @@ class LocalController extends Controller
 	}
 	public function upload(Request $req)
 	{
-		$req->validate(
-			['lrc.*' => 'required|file|extensions:lrc,elrc,txt|max:2048|encoding:UTF-8']
-		);
+		$req->validate([
+			'lrc' => 'required|array',
+			'lrc.*' => 'required|file|mimetypes:text/plain|extensions:lrc,elrc,alrc,txt|max:4096|encoding:UTF-8'
+		]);
+		abort_if(!backpack_user(), 401, 'You need to be logged in to upload lyrics');
 		$failed = 0;
 		$total = count($req->file('lrc'));
 		$files = [];
 		foreach ($req->file('lrc') as $file) {
 			try {
 				$path = $file->store('files');
-				$absolutePath = storage_path('app/private/' . $path);
+				$absolutePath = Storage::path($path);
 				$lines = File::lines($absolutePath);
 				$lrcLines = $queries = [];
 				foreach ($lines as $line) {
@@ -61,11 +63,17 @@ class LocalController extends Controller
 							case 'length':
 								$duration = explode(':', Str::trim($matches[2]));
 								$queries['duration'] =
-									['minutes' => $duration[0], 'seconds' => $duration[1]];
+									['minutes' => (int) $duration[0], 'seconds' => (int) $duration[1]];
 								break;
 							default:
 								break;
 						}
+						// if (preg_match('/^(\d+):(\d+)$/', trim($matches[2]), $m)) {
+						// 	$queries['duration'] = [
+						// 		'minutes' => (int) $m[1],
+						// 		'seconds' => (int) $m[2]
+						// 	];
+						// }
 						continue;
 					}
 					$lrcLines[] = $line;

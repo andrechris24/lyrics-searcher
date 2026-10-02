@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\{AdvancedSearchRequest, BasicSearchRequest};
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Http, Log};
@@ -12,10 +13,9 @@ use JsonException;
 class LRCLibController extends Controller
 {
 	public static string $url = 'https://lrclib.net/api/search';
-	public function standard(Request $request)
+	public function standard(BasicSearchRequest $request)
 	{
 		try {
-			$request->validate(['query' => 'required']);
 			$data = Http::retry(3, 100)->timeout(25000)
 				->get(self::$url, ['q' => $request['query']])
 				->json(null, null, JSON_THROW_ON_ERROR);
@@ -27,10 +27,9 @@ class LRCLibController extends Controller
 			);
 		}
 	}
-	public function advanced(Request $request)
+	public function advanced(AdvancedSearchRequest $request)
 	{
 		try {
-			$request->validate(['title' => 'required']);
 			$data = Http::retry(3, 100)->timeout(25000)->get(self::$url, [
 				'track_name' => $request['title'],
 				'artist_name' => $request['artist'],

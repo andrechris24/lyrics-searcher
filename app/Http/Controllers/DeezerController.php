@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BasicOffsetRequest;
 use Illuminate\Support\Facades\{Http, Log};
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
@@ -9,13 +10,9 @@ use JsonException;
 
 class DeezerController extends Controller
 {
-	public function search(Request $req)
+	public function search(BasicOffsetRequest $req)
 	{
 		try {
-			$req->validate([
-				'query' => 'required',
-				'offset' => 'nullable|integer|min:0|multiple_of:20'
-			]);
 			$r = Http::retry(3, 100)->timeout(25000)->get(
 				'https://api.deezer.com/search/track',
 				['limit' => 20, 'q' => $req['query'], 'index' => $req['offset'] ?? 0]
@@ -111,7 +108,9 @@ class DeezerController extends Controller
 			401,
 			'API token is required for Deezer requests'
 		);
-		$req->validate(['url' => 'required|url', 'quality' => 'required|in:128kbps,320kbps,flac']);
+		$req->validate(
+			['url' => 'required|url',  'quality' => 'required|in:128kbps,320kbps,flac']
+		);
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)
 				->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])->get(

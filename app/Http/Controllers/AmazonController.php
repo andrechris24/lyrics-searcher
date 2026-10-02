@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\{BasicSearchRequest, SimpleDownloadRequest};
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Log, Http};
 use JsonException;
 
 class AmazonController extends Controller
 {
-	public function search(Request $req)
+	public function search(BasicSearchRequest $req)
 	{
 		abort_if(
 			empty(env('PAXSENIX_TOKEN')),
@@ -17,7 +17,6 @@ class AmazonController extends Controller
 			'API token is required for all Amazon Music requests'
 		);
 		try {
-			$req->validate(['query' => 'required']);
 			$r = Http::retry(3, 100)->timeout(25000)
 				->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])
 				->get("https://api.paxsenix.org/amazon-music/search", ['q' => $req['query']])
@@ -74,14 +73,13 @@ class AmazonController extends Controller
 			);
 		}
 	}
-	public function download(Request $req)
+	public function download(SimpleDownloadRequest $req)
 	{
 		abort_if(
 			empty(env('PAXSENIX_TOKEN')),
 			401,
 			'API token is required for all Amazon Music requests'
 		);
-		$req->validate(['url' => 'required|url']);
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)
 				->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])

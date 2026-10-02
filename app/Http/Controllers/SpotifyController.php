@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BasicSearchRequest;
 use Illuminate\Support\Facades\{Http, Log};
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
@@ -11,7 +12,7 @@ use SpotifyLyricsApi\SpotifyException;
 
 class SpotifyController extends Controller
 {
-	public function search(Request $req)
+	public function search(BasicSearchRequest $req)
 	{
 		abort_if(
 			empty(env('PAXSENIX_TOKEN')),
@@ -19,7 +20,6 @@ class SpotifyController extends Controller
 			'API token is required for Spotify requests'
 		);
 		try {
-			$req->validate(['query' => 'required']);
 			$r = Http::retry(2, 100)->timeout(25000)->withHeaders([
 				'Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')
 			])->get(parent::$paxsenix_url . 'spotify/search',	['q' => $req['query']])
@@ -59,7 +59,8 @@ class SpotifyController extends Controller
 			]);
 		} catch (SpotifyException $e) {
 			Log::error($e);
-			abort($e->getCode(), 'Error retrieving lyric: ' . $e->getMessage());
+			$code=$e->getCode();
+			abort($code===0?500:$code, 'Error retrieving lyric: ' . $e->getMessage());
 		}
 	}
 	public function download(Request $req)

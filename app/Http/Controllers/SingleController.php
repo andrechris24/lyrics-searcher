@@ -104,7 +104,7 @@ class SingleController extends Controller
 							$tmBody['commontrack_id'] === parent::brokenMXResult['track_id'] &&
 							Str::contains($plainBody['lyrics_body'], parent::brokenMXResult['lyric'], true)),
 						500,
-						'Broken lyrics detected, Muisxmatch lyric fetching aborted.'
+						'Broken result found, Muisxmatch lyric fetching aborted.'
 					);
 					if ($tmBody['instrumental'] === 0) $plainText = $plainBody['lyrics_body'];
 					return response()->json([

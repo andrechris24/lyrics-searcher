@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\KrcDecoder;
+use App\Http\Requests\BasicPagedRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Http, Log};
@@ -12,10 +13,9 @@ class KugouController extends Controller
 {
 	private static string $lrcUrl = 'https://lyrics.kugou.com/';
 	private static array $query = ['ver' => 1, 'man' => 'yes', 'client' => 'pc'];
-	public function search(Request $req)
+	public function search(BasicPagedRequest $req)
 	{
 		try {
-			$req->validate(['query' => 'required', 'page' => 'nullable|integer|min:1']);
 			$r = Http::retry(3, 100)->timeout(25000)
 				->get('http://mobilecdn.kugou.com/api/v3/search/song', [
 					'format' => 'json',

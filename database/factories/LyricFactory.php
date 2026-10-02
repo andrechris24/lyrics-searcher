@@ -22,7 +22,7 @@ class LyricFactory extends Factory
             'artist'=>fake()->name(),
             'album'=>fake()->word(),
             'duration'=>[
-                'minutes'=>fake()->numberBetween(0,59),
+                'minutes'=>fake()->numberBetween(0,199),
                 'seconds'=>fake()->numberBetween(0,59)
             ],
             'offset'=>fake()->numberBetween(-30000,30000),

@@ -13,6 +13,7 @@ $("#yt-alt-form").on("submit", function (event) {
 });
 function sendAjax(data, url) {
 	$("#ytdl-loader").removeClass("d-none");
+	$("#ytdl-container").html("");
 	$("form :input").prop("disabled", true);
 	$.ajax({
 		url: url,
