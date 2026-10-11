@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\BasicOffsetRequest;
-use Illuminate\Support\Facades\{Http, Log};
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\{Http, Log, Request};
+use Illuminate\Http\Request as FormRequest;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use JsonException;
 
@@ -44,7 +44,7 @@ class DeezerController extends Controller
 			])->get(parent::$paxsenix_url . 'lyrics/deezer', ['id' => $id])
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if ($r['ok'] === false) {
-				Log::error('Deezer API error: ', $r);
+				Log::error('Deezer API error (User Agent: ' . Request::userAgent() . ')', $r);
 				abort(500, 'Oops, something went wrong with Deezer API. Please try again later.');
 			}
 			if (empty($r['synchronizedLines'])) $synced = null;
@@ -101,7 +101,7 @@ class DeezerController extends Controller
 			);
 		}
 	}
-	public function download(Request $req)
+	public function download(FormRequest $req)
 	{
 		abort_if(
 			empty(env('PAXSENIX_TOKEN')),

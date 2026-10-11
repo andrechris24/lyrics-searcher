@@ -5,7 +5,7 @@
 				returned from {{ $data['total'] }} results.</div>
 		</div>
 	@else
-		<p class="text-center">Found {{ $data['total'] }} result(s)</p>
+		<p class="text-center">Found {{ count($data['items']) }} result(s)</p>
 	@endif
 	<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-3">
 		@foreach ($data['items'] as $result)

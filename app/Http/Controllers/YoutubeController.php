@@ -15,7 +15,8 @@ class YoutubeController extends Controller
 		$req->validate(['query' => 'required']);
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)
-				->get(parent::$paxsenix_url . 'youtube/search', ['q' => $req['query']])->json(null, null, JSON_THROW_ON_ERROR);
+				->get(parent::$paxsenix_url . 'youtube/search', ['q' => $req['query']])
+				->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
 				Log::error('YouTube API error: ', $r);
 				abort(
@@ -95,7 +96,7 @@ class YoutubeController extends Controller
 					Log::error('Error downloading YouTube Video: ', $arrQueue);
 					abort(
 						500,
-						$arrQueue['error'] ?? $arrQueue['message'] ?? 'Failed to download YouTube Video'
+						$arrQueue['error'] ?? $arrQueue['message'] ?? 'Oops, there was an error while downloading video'
 					);
 					break;
 				} else if ($arrQueue['status'] === 'pending')
@@ -152,7 +153,7 @@ class YoutubeController extends Controller
 					Log::error('Error downloading YouTube Audio: ', $arrQueue);
 					abort(
 						500,
-						$arrQueue['error'] ?? $arrQueue['message'] ?? 'Failed to download YouTube Audio'
+						$arrQueue['error'] ?? $arrQueue['message'] ?? 'Oops, there was an error while downloading audio'
 					);
 					break;
 				} else if ($arrQueue['status'] === 'pending')
@@ -201,7 +202,7 @@ class YoutubeController extends Controller
 					Log::error('Error downloading YouTube Content: ', $arrQueue);
 					abort(
 						500,
-						$arrQueue['message'] ?? 'Failed to download YouTube Content'
+						$arrQueue['message'] ?? 'Oops, there was an error while downloading YouTube Content'
 					);
 					break;
 				} else if ($arrQueue['status'] === 'pending')

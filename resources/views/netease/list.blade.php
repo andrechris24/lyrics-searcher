@@ -11,11 +11,10 @@
 					$artists[] = $ar['name'];
 				}
 			@endphp
-			<a class="list-group-item list-group-item-action" data-coreui-toggle="modal"
-				data-coreui-album="{{ $result['album']['name'] }}"
+			<a class="list-group-item list-group-item-action" href="#modalLyrics"
+				data-coreui-album="{{ $result['album']['name'] }}" data-coreui-toggle="modal"
 				data-coreui-duration="{{ $length }}" data-coreui-title="{{ $result['name'] }}"
-				data-coreui-id="{{ $result['id'] }}" data-coreui-artist="{{ implode(', ', $artists) }}"
-				href="#modalLyrics">
+				data-coreui-id="{{ $result['id'] }}" data-coreui-artist="{{ implode(', ', $artists) }}">
 				<div class="d-flex w-100 justify-content-between">
 					<h5 class="mb-1">{{ $result['name'] }}</h5>
 					<small>{{ $length }}</small>

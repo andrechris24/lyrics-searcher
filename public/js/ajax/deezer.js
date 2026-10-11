@@ -34,7 +34,7 @@ if (lyricsModal) {
 				$("#song-copyright").text("");
 				$("#song-license").text("");
 				$("#song-lyric-type").text("");
-				$("#save-btn").prop('disabled',true);
+				$("#save-btn").prop('disabled', true);
 			},
 			complete: function () {
 				$(".placeholder-glow").addClass("d-none");
@@ -44,7 +44,7 @@ if (lyricsModal) {
 					const metaLyric =
 						`[id:${data.id}]\n[ar:${artistName}]\n[ti:${songName}]\n[al:${albumName}]\n[by:Deezer]\n` +
 						`[length:${duration}]\n${data.writer !== null || data.writer !== "" ? `[lr:${data.writer}]\n` : ""}`;
-				$("#save-btn").prop('disabled',false);
+					$("#save-btn").prop('disabled', false);
 					if (data.synced !== null && data.synced !== "") {
 						$("#song-lyric-type").text("Synced");
 						$("#dl-synced").removeClass("disabled");
@@ -77,7 +77,7 @@ if (lyricsModal) {
 				}
 			},
 			error: function (xhr, st, err) {
-				console.warn(err);
+				console.warn(`${st}: ${err}`);
 				toast.fire({
 					icon: "error",
 					text:
@@ -169,12 +169,12 @@ function sendAjax(data) {
 									return JSON.stringify(data);
 								})
 								.fail(function (xhr, st, err) {
-									console.warn(err);
+									console.warn(`${st}: ${err}`);
 									throw new Error(
 										st === "timeout"
 											? "Connection timed out"
 											: (xhr.responseJSON?.message ??
-													"Server connection was lost")
+												"Server connection was lost")
 									);
 								});
 							return response;
@@ -199,7 +199,7 @@ function sendAjax(data) {
 			});
 		})
 		.fail(function (xhr, st, err) {
-			console.warn(err);
+			console.warn(`${st}: ${err}`);
 			if (
 				xhr.status === 422 &&
 				typeof xhr.responseJSON.errors.query !== "undefined"

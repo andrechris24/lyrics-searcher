@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Client\{ConnectionException, RequestException};
-use Illuminate\Support\Facades\{Log, Session};
+use Illuminate\Support\Facades\{Log, Session, Request};
 use Illuminate\Support\Str;
 use JsonException;
 
@@ -237,7 +237,6 @@ abstract class Controller
 
 	/**
 	 * Get error messages from Musixmatch
-	 *
 	 * @param array $header
 	 * @return string
 	 */
@@ -287,8 +286,7 @@ abstract class Controller
 			return '00:00.00';
 		}
 
-		if ($milliseconds === true)
-			$seconds = $seconds / 1000;
+		if ($milliseconds === true) $seconds = $seconds / 1000;
 
 		// Extract whole minutes
 		$minutes = floor($seconds / 60);
@@ -302,7 +300,6 @@ abstract class Controller
 
 	/**
 	 * Decodes JSON string
-	 *
 	 * @param  string $json
 	 * @return array|false	Return decoded json in array, false on failure
 	 */
@@ -409,18 +406,18 @@ abstract class Controller
 	 * Get Lyrically & Paxsenix error message by exception type
 	 * @param  mixed        $e		Error Exception class
 	 * @param  bool         $paxsenix Whether to include Paxsenix-specific error handling
-	 * @return string							Error message by Exception class
+	 * @return string				Error message by Exception class
 	 */
 	protected static function lyricallyError(mixed $e, bool $paxsenix = true): string
 	{
 		if ($paxsenix === true) $provider = 'Paxsenix';
 		else $provider = 'Lyrically';
 		if (get_class($e) === RequestException::class) {
-			Log::warning('Request failed for ' . $e->response->effectiveUri());
+			Log::warning(
+				'Request failed for ' . $e->response->effectiveUri() . ' (User Agent: ' . Request::userAgent() . ')'
+			);
 			$json = $e->response->json();
 			if (!$json) $reqerr = "$provider API Error {$e->response->status()}";
-			// else if ($lrc === true && $e->response->status() === 404)
-			// 	$reqerr = 'No lyric found for this song';
 			else
 				$reqerr = $json['message'] ?? $json['error'] ?? $json['detail'] ?? "$provider API Error {$e->response->status()}";
 		}
@@ -440,7 +437,7 @@ abstract class Controller
 	 */
 	protected static function setLrcAuthor(string $lrc, string $source): string
 	{
-		if (!Str::contains($lrc, '[by:')) $lrc = "[by:$source]\n$lrc";
+		if (!Str::contains($lrc, '[by:')) return "[by:$source]\n$lrc";
 		return Str::replace('[by:]', "[by:$source]", $lrc);
 	}
 }

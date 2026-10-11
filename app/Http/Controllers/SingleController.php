@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Lyric;
 use Illuminate\Database\QueryException;
-use Illuminate\Http\Request;
-use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\{Request, Client\ConnectionException};
 use Illuminate\Support\Facades\{Http, Log, Session};
 use Illuminate\Support\Str;
 use JsonException;

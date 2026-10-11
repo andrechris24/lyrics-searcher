@@ -10,6 +10,6 @@
 		<div class="row mb-2 placeholder-glow">
 			<span class="placeholder col-12"></span>
 		</div>
-		<a href="#" class="btn btn-primary disabled">Link</a>
+		<a href="#" class="btn btn-secondary disabled col-3" aria-disabled="true"></a>
 	</div>
 </div>

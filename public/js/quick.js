@@ -78,8 +78,7 @@ $("#searchSongLyric").on("submit", function (e) {
 						}
 					}
 					$(".search-term").text(
-						`${formData[2].value} - ${formData[0].value} ${
-							formData[3].value !== "" ? `(${formData[3].value})` : ""
+						`${formData[2].value} - ${formData[0].value} ${formData[3].value !== "" ? `(${formData[3].value})` : ""
 						}`
 					);
 					switch (data.source) {
@@ -183,7 +182,7 @@ $("#searchSongLyric").on("submit", function (e) {
 			}
 		},
 		error: function (xhr, st, err) {
-			console.warn(err);
+			console.warn(`${st}: ${err}`);
 			if (xhr.status === 422) {
 				if (typeof xhr.responseJSON.errors.title !== "undefined")
 					$("#track-name").addClass("is-invalid");
@@ -196,10 +195,6 @@ $("#searchSongLyric").on("submit", function (e) {
 			}
 			toast.fire({
 				icon: "error",
-				// titleText:
-				// 	typeof xhr.responseJSON.source !== "undefined"
-				// 		? xhr.responseJSON.source
-				// 		: "",
 				text:
 					st === "timeout"
 						? "Connection timed out"
@@ -237,7 +232,9 @@ mxRichsyncDL.onclick = function (e) {
 						error: function (xhr, st, err) {
 							console.warn(`${st}: ${err}`);
 							throw new Error(
-								xhr.responseJSON?.message ?? "Server connection was lost"
+								st === "timeout"
+									? "Connection timed out"
+									: (xhr.responseJSON?.message ?? "Server connection was lost")
 							);
 						}
 					});
@@ -287,7 +284,9 @@ wbwDL.onclick = function (e) {
 						error: function (xhr, st, err) {
 							console.warn(`${st}: ${err}`);
 							throw new Error(
-								xhr.responseJSON?.message ?? "Server connection was lost"
+								st === "timeout"
+									? "Connection timed out"
+									: (xhr.responseJSON?.message ?? "Server connection was lost")
 							);
 						}
 					});
@@ -295,7 +294,7 @@ wbwDL.onclick = function (e) {
 				} catch (e) {
 					console.warn(e);
 					Swal.showValidationMessage(
-						`Failed to convert: ${e.responseJSON?.message ?? "Server connection was lost"}`
+						`Failed to convert: ${e.responseJSON?.message ?? "Server connection was lost or timed out"}`
 					);
 				}
 			}

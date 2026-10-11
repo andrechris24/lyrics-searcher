@@ -66,7 +66,7 @@ function sendAjax(url, data) {
 						}
 					},
 					error: function (xhr, st, err) {
-						console.warn(err);
+						console.warn(`${st}: ${err}`);
 						toast.fire({
 							icon: "error",
 							text:
@@ -79,7 +79,7 @@ function sendAjax(url, data) {
 			});
 		})
 		.fail(function (xhr, st, err) {
-			console.warn(err);
+			console.warn(`${st}: ${err}`);
 			try {
 				if (xhr.status === 422) {
 					if (typeof xhr.responseJSON.errors.title !== "undefined")

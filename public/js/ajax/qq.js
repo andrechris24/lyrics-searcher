@@ -111,7 +111,7 @@ function sendAjax(data) {
 						}
 					},
 					error: function (xhr, st, err) {
-						console.warn(err);
+						console.warn(`${st}: ${err}`);
 						if (xhr.status === 422) {
 							if (typeof xhr.responseJSON.errors.title !== "undefined")
 								$("#track-name").addClass("is-invalid");
@@ -130,7 +130,7 @@ function sendAjax(data) {
 			});
 		},
 		error: function (xhr, st, err) {
-			console.warn(err);
+			console.warn(`${st}: ${err}`);
 			toast.fire({
 				icon: "error",
 				text:

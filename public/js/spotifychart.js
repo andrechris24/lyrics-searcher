@@ -46,7 +46,7 @@ $(".download-btn").on("click", function () {
 						return JSON.stringify(data);
 					})
 					.fail(function (xhr, st, err) {
-						console.warn(err);
+						console.warn(`${st}: ${err}`);
 						throw new Error(
 							st === "timeout"
 								? "Connection timed out"
@@ -145,7 +145,7 @@ if (lyricsModal) {
 				}
 			},
 			error: function (xhr, st, err) {
-				console.warn(err);
+				console.warn(`${st}: ${err}`);
 				toast.fire({
 					icon: "error",
 					text:

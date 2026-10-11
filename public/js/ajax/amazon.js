@@ -30,7 +30,7 @@ if (lyricsModal) {
 				// $("#song-copyright").text("");
 				// $("#song-license").text("");
 				$("#song-lyric-type").text("");
-				$("#save-btn").prop('disabled',true);
+				$("#save-btn").prop('disabled', true);
 			},
 			complete: function () {
 				$(".placeholder-glow").addClass("d-none");
@@ -38,7 +38,7 @@ if (lyricsModal) {
 			success: function (data) {
 				try {
 					const metaLyric = `[id:${data.id}]\n[ar:${artistName}]\n[ti:${songName}]\n[by:Amazon Music]\n`;
-					$("#save-btn").prop('disabled',false);
+					$("#save-btn").prop('disabled', false);
 					if (data.synced !== null && data.synced !== "") {
 						$("#song-lyric-type").text("Synced");
 						$("#dl-synced").removeClass("disabled");
@@ -74,7 +74,7 @@ if (lyricsModal) {
 				}
 			},
 			error: function (xhr, st, err) {
-				console.warn(err);
+				console.warn(`${st}: ${err}`);
 				toast.fire({
 					icon: "error",
 					text:
@@ -134,8 +134,7 @@ function sendAjax(data) {
 						musicDL(r.directUrl, file);
 					},
 					error: function (xhr, st, err) {
-						$.LoadingOverlay("hide");
-						console.warn(err);
+						console.warn(`${st}: ${err}`);
 						toast.fire({
 							icon: "error",
 							text:
@@ -148,7 +147,7 @@ function sendAjax(data) {
 			});
 		})
 		.fail(function (xhr, st, err) {
-			console.warn(err);
+			console.warn(`${st}: ${err}`);
 			if (
 				xhr.status === 422 &&
 				typeof xhr.responseJSON.errors.query !== "undefined"

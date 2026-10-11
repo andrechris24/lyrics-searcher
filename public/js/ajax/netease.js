@@ -30,14 +30,14 @@ if (lyricsModal) {
 			beforeSend: function () {
 				$(".placeholder-glow").removeClass("d-none");
 				$("#lyrics-content").text("");
-				$("#save-btn").prop('disabled',true);
+				$("#save-btn").prop('disabled', true);
 			},
 			complete: function () {
 				$(".placeholder-glow").addClass("d-none");
 			},
 			success: function (data) {
 				try {
-					$("#save-btn").prop('disabled',false);
+					$("#save-btn").prop('disabled', false);
 					if (typeof data.klyric !== "undefined") {
 						if (data.klyric.lyric !== "" && data.klyric.lyric !== null) {
 							$("#dl-klyric").removeClass("disabled");
@@ -67,7 +67,7 @@ if (lyricsModal) {
 				}
 			},
 			error: function (xhr, st, err) {
-				console.warn(err);
+				console.warn(`${st}: ${err}`);
 				toast.fire({
 					icon: "error",
 					text:
@@ -96,7 +96,7 @@ function sendAjax(data) {
 			$("#netease-container").html(r.html);
 		})
 		.fail(function (xhr, st, err) {
-			console.warn(err);
+			console.warn(`${st}: ${err}`);
 			if (
 				xhr.status === 422 &&
 				typeof xhr.responseJSON.errors.query !== "undefined"

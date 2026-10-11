@@ -40,7 +40,7 @@ if (lyricsModal) {
 				$("#lyrics-content").text("");
 				$("#song-writers").text("");
 				$("#song-lyric-type").text("");
-				$("#save-btn").prop('disabled',true);
+				$("#save-btn").prop('disabled', true);
 			},
 			complete: function () {
 				$(".placeholder-glow").addClass("d-none");
@@ -50,7 +50,7 @@ if (lyricsModal) {
 					const metaLyric =
 						`[id:${data.id}]\n[ar:${artistName}]\n[ti:${songName}]\n[al:${albumName}]\n` +
 						`[length:${duration}]\n${data.writers !== null || data.writers !== "" ? `[lr:${data.writers}]\n` : ""}`;
-					$("#save-btn").prop('disabled',false);
+					$("#save-btn").prop('disabled', false);
 					if (data.synced !== null && data.synced !== "") {
 						$("#dl-synced").removeClass("disabled");
 						syncedLyricContents = `${metaLyric}${data.synced}`;
@@ -92,13 +92,13 @@ if (lyricsModal) {
 				}
 			},
 			error: function (xhr, st, err) {
-				console.warn(err);
+				console.warn(`${st}: ${err}`);
 				toast.fire({
 					icon: "error",
 					text:
 						st === "timeout"
 							? "Connection timed out"
-							: (xhr.responseJSON?.message ?? err ?? st)
+							: (xhr.responseJSON?.message ?? 'Server connection was lost')
 				});
 				$("#modalLyrics").modal("hide");
 			}
@@ -160,21 +160,20 @@ $("#apple-form").submit(function (event) {
 						musicDL(r.directUrl, `${artist} - ${title}`);
 					},
 					error: function (xhr, st, err) {
-						$.LoadingOverlay("hide");
-						console.warn(err);
+						console.warn(`${st}: ${err}`);
 						toast.fire({
 							icon: "error",
 							text:
 								st === "timeout"
 									? "Connection timed out"
-									: (xhr.responseJSON?.message ?? err ?? st)
+									: (xhr.responseJSON?.message ?? 'Server connection was lost')
 						});
 					}
 				});
 			});
 		})
 		.fail(function (xhr, st, err) {
-			console.warn(err);
+			console.warn(`${st}: ${err}`);
 			if (
 				xhr.status === 422 &&
 				typeof xhr.responseJSON.errors.query !== "undefined"

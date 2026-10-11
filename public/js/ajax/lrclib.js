@@ -41,7 +41,7 @@ if (lyricsModal) {
 			syncedDL.classList.remove("disabled");
 			syncedContents =
 				`[id:${lyricID}]\n[ar:${artistName}]\n[ti:${songName}]\n[al:${albumName}]\n` +
-				`[by: LRCLib]\n[length:${songDuration.textContent}]\n${syncedLyrics}`;
+				`[by:LRCLib]\n[length:${songDuration.textContent}]\n${syncedLyrics}`;
 			$("#lrclib-lyric-type").text("Synced");
 		}
 		if (!wbwLyrics.includes("words:")) {
@@ -78,7 +78,7 @@ function sendAjax(url, data) {
 			$("#lrclib-container").html(r.html);
 		})
 		.fail(function (xhr, st, err) {
-			console.warn(err);
+			console.warn(`${st}: ${err}`);
 			try {
 				if (xhr.status === 422) {
 					if (typeof xhr.responseJSON.errors.title !== "undefined")
@@ -143,9 +143,11 @@ wbwDL.onclick = function (e) {
 							return JSON.stringify(data);
 						},
 						error: function (xhr, st, err) {
-							console.warn(err);
+							console.warn(`${st}: ${err}`);
 							throw new Error(
-								xhr.responseJSON?.message ?? "Server connection was lost"
+								st === "timeout"
+									? "Connection timed out"
+									: (xhr.responseJSON?.message ?? "Server connection was lost")
 							);
 						}
 					});

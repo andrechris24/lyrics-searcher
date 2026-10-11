@@ -57,6 +57,9 @@
 			</div>
 			<div class="tab-pane fade" id="audio-tab-pane" role="tabpanel"
 				aria-labelledby="audio-tab" tabindex="0">
+				<div class="callout callout-info">
+					If you want to download song, use YouTube Music link for better quality.
+				</div>
 				<form action="#" class="row g-3" id="yt-audio-form">
 					<div class="row g-2">
 						<div class="col-md-8">

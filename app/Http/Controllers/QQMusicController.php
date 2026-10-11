@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\QrcDecoder;
-use App\Http\Requests\TwoFormRequest;
+use App\{QrcDecoder, Http\Requests\TwoFormRequest};
 use Illuminate\Http\Client\{ConnectionException, RequestException};
-use Illuminate\Support\Facades\{Http, Log};
+use Illuminate\Support\Facades\{Http, Log, Request};
 use Illuminate\Support\Str;
 
 class QQMusicController extends Controller
@@ -29,7 +28,10 @@ class QQMusicController extends Controller
 			);
 			if ($xmlResponse === false) {
 				$xmlErrors = libxml_get_errors();
-				Log::error('Invalid XML response: ' . $response->body(), $xmlErrors);
+				Log::error(
+					'Invalid XML response: ' . $response->body() . ' (User Agent: ' . Request::userAgent() . ')',
+					$xmlErrors
+				);
 				abort(500, 'Error parsing results: ' . json_encode(libxml_get_last_error()));
 			}
 			$xml = self::decodeJson(json_encode($xmlResponse)); //Convert XML Objects to Array
@@ -72,7 +74,10 @@ class QQMusicController extends Controller
 			$xmlResponse = simplexml_load_string($res, 'SimpleXMLElement', LIBXML_NOCDATA);
 			if ($xmlResponse === false) {
 				$xmlErrors = libxml_get_errors();
-				Log::error("Malformed XML response: {$response->body()}", $xmlErrors);
+				Log::error(
+					"Malformed XML response: {$response->body()} (User Agent: " . Request::userAgent() . ')',
+					$xmlErrors
+				);
 				abort(
 					500,
 					'Error retrieving lyric: Malformed response (' . libxml_get_last_error() . ')'
@@ -87,7 +92,10 @@ class QQMusicController extends Controller
 			$data = $xml['cmd'];
 			if (!in_array($data['result'], [0, 200])) {
 				Log::error($data);
-				abort(500, "Error retrieving lyric: QQ Music error {$data['result']}");
+				abort(
+					500,
+					"Error retrieving lyric: QQ Music error {$data['result']} (User Agent: " . Request::userAgent() . ')'
+				);
 			}
 			abort_if(
 				empty($data['lyric']['content']),
@@ -103,7 +111,7 @@ class QQMusicController extends Controller
 				$lyric = parent::setLrcAuthor($converted, 'QQ Music');
 			} else {
 				if (is_array($data['lyric']['content'])) {
-					Log::error('Malformed lyric content from QQ Music: ', $data['lyric']['content']);
+					Log::error('Malformed lyric content from QQ Music (User Agent: ' . Request::userAgent() . ') ', $data['lyric']['content']);
 					abort(
 						500,
 						'Malformed lyric content. Wait for a while and try again or contact site owner if issue persist.'

@@ -7,8 +7,7 @@ use Illuminate\Support\Facades\{Http, Log};
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use JsonException;
-use SpotifyLyricsApi\Spotify;
-use SpotifyLyricsApi\SpotifyException;
+use SpotifyLyricsApi\{Spotify, SpotifyException};
 
 class SpotifyController extends Controller
 {
@@ -59,8 +58,8 @@ class SpotifyController extends Controller
 			]);
 		} catch (SpotifyException $e) {
 			Log::error($e);
-			$code=$e->getCode();
-			abort($code===0?500:$code, 'Error retrieving lyric: ' . $e->getMessage());
+			$code = $e->getCode();
+			abort($code === 0 ? 500 : $code, 'Error retrieving lyric: ' . $e->getMessage());
 		}
 	}
 	public function download(Request $req)

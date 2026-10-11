@@ -92,7 +92,7 @@ class AppleController extends Controller
 				->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])
 				->get(parent::$paxsenix_url . "lyrics/applemusic", ['id' => $id])
 				->json(null, null, JSON_THROW_ON_ERROR);
-			if ($r['ok']===false) {
+			if ($r['ok'] === false) {
 				Log::error("Apple Music API error: {$r['message']}", $r);
 				abort(500, 'Oops, an error occurred with Apple Music Paxsenix API.');
 			}

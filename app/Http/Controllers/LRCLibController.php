@@ -6,8 +6,7 @@ use App\Http\Requests\{AdvancedSearchRequest, BasicSearchRequest};
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Http, Log};
-use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\{Yaml, Exception\ParseException};
 use JsonException;
 
 class LRCLibController extends Controller

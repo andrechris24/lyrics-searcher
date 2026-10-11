@@ -13,8 +13,7 @@ if (lyricsModal) {
 		// Update the modal's content
 		dt_lyrics = $("#lyrics-table").DataTable({
 			language: {
-				emptyTable:
-					"No lyrics available for this song, try advanced search instead."
+				emptyTable: "No lyrics available, try advanced search instead."
 			},
 			lengthChange: false,
 			processing: true,
@@ -24,12 +23,13 @@ if (lyricsModal) {
 				url: `/kugou/${songID}`,
 				dataSrc: "",
 				error: function (xhr, st, err) {
+					console.warn(`${st}: ${err}`);
 					toast.fire({
 						icon: "error",
 						text:
 							st === "timeout"
 								? "Connection timed out"
-								: (xhr.responseJSON?.message ?? err ?? st)
+								: (xhr.responseJSON?.message ?? 'Server connection was lost')
 					});
 				}
 			},
@@ -94,7 +94,7 @@ function sendAjax(url, data) {
 			$("#kugou-container").html(r.html);
 		})
 		.fail(function (xhr, st, err) {
-			console.warn(err);
+			console.warn(`${st}: ${err}`);
 			try {
 				if (xhr.status === 422) {
 					if (typeof xhr.responseJSON.errors.title !== "undefined")
@@ -224,7 +224,7 @@ function dlLRC(id, key, file = null) {
 			}
 		},
 		error: function (xhr, st, err) {
-			console.warn(err);
+			console.warn(`${st}: ${err}`);
 			toast.fire({
 				icon: "error",
 				text:

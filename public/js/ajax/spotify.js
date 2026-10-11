@@ -65,12 +65,12 @@ $(basicForm).submit(function (event) {
 									return JSON.stringify(data);
 								})
 								.fail(function (xhr, st, err) {
-									console.warn(err);
+									console.warn(`${st}: ${err}`);
 									throw new Error(
 										st === "timeout"
 											? "Connection timed out"
 											: (xhr.responseJSON?.message ??
-													"Server connection was lost")
+												"Server connection was lost")
 									);
 								});
 							return response;
@@ -94,7 +94,7 @@ $(basicForm).submit(function (event) {
 			});
 		})
 		.fail(function (xhr, st, err) {
-			console.warn(err);
+			console.warn(`${st}: ${err}`);
 			if (
 				xhr.status === 422 &&
 				typeof xhr.responseJSON.errors.query !== "undefined"
@@ -133,7 +133,7 @@ if (lyricsModal) {
 				$("#song-copyright").text("");
 				$("#lyric-type").text("");
 				$(".placeholder-glow").removeClass("d-none");
-				$("#save-btn").prop('disabled',true);
+				$("#save-btn").prop('disabled', true);
 			},
 			complete: function () {
 				$(".placeholder-glow").addClass("d-none");
@@ -146,7 +146,7 @@ if (lyricsModal) {
 							text: "Syllable lyric detected. Please inform site owner to implement this type."
 						});
 					}
-					$("#save-btn").prop('disabled',false);
+					$("#save-btn").prop('disabled', false);
 					plainContents = `${fileName}\n\n${data.plain}`;
 					$("#lyric-type").text(data.type);
 					if (
@@ -201,7 +201,7 @@ if (lyricsModal) {
 				// $("#musixmatch-btn").attr("href", data.share);
 			},
 			error: function (xhr, st, err) {
-				console.warn(err);
+				console.warn(`${st}: ${err}`);
 				toast.fire({
 					icon: "error",
 					text:

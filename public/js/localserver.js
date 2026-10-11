@@ -36,7 +36,7 @@ $(document)
 					method: "GET",
 					headers: null,
 					error: function (xhr, st, err) {
-						console.warn(err);
+						console.warn(`${st}: ${err}`);
 						toast.fire({
 							icon: "error",
 							text:
@@ -92,8 +92,8 @@ $(document)
 						target: 6,
 						render: function (data, type, full) {
 							const create = luxon.DateTime.fromISO(
-									full["created_at"]
-								).toFormat("dd LLL yyyy HH:mm"),
+								full["created_at"]
+							).toFormat("dd LLL yyyy HH:mm"),
 								length = formatSeconds(full["duration"]);
 							return (
 								'<div class="btn-group btn-group-sm">' +
@@ -191,7 +191,7 @@ $("#uploadLyricForm").on("submit", function (e) {
 			$("#uploadLyricForm")[0].reset();
 		},
 		error: function (xhr, st, err) {
-			console.warn(err);
+			console.warn(`${st}: ${err}`);
 			toast.fire({
 				icon: "error",
 				text:

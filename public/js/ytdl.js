@@ -23,7 +23,7 @@ function sendAjax(data, url) {
 			$("#ytdl-container").html(r.html);
 		})
 		.fail(function (xhr, st, err) {
-			console.warn(err);
+			console.warn(`${st}: ${err}`);
 			toast.fire({
 				icon: "error",
 				text:
