@@ -5,7 +5,7 @@
 	<div class="px-lg-5 mx-lg-5 px-md-3 mx-md-3 pb-5 mb-5">
 		<p class="text-center">Welcome to LRCSearch! This site provides lyrics search from
 			Kugou, NetEase, QQ Music, Musixmatch, LRCLib, Deezer, Apple Music,
-			Amazon Music, plus optionally local server and plain sources.
+			plus optionally local server and plain sources.
 			This form below is a quick search to 6 providers.</p>
 		<form class="row g-3 mb-3" action="#" id="searchSongLyric">
 			<div class="col-12 col-md-8">

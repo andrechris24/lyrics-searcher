@@ -48,8 +48,27 @@ class QQMusicController extends Controller
 					"Error loading results: QQ Music error {$data['result']}, {$data['reason']}"
 				);
 			}
-			if (Str::contains($req->userAgent(), '(aimp/', true))
-				return view('qqmusic.list', $data);
+			if (Str::contains($req->userAgent(), '(aimp/', true)) {//for AIMP
+				$results = array();
+				if (!array_key_exists('@attributes', $data['songinfo'])) {
+					foreach ($data['songinfo'] as $songdata) {
+						$results[] = [
+							'id' => $songdata['@attributes']['id'],
+							'title' => urldecode($songdata['name']),
+							'artist' => urldecode($songdata['singername']),
+							'album' => urldecode($songdata['albumname'])
+						];
+					}
+				} else {
+					$results[] = [
+						'id' => $data['songinfo']['@attributes']['id'],
+						'title' => urldecode($data['songinfo']['name']),
+						'artist' => urldecode($data['songinfo']['singername']),
+						'album' => urldecode($data['songinfo']['albumname'])
+					];
+				}
+				return response()->json($results);
+			}
 			return response()->json(['html' => view('qqmusic.list', $data)->render()]);
 		} catch (ConnectionException  | RequestException $th) {
 			abort(

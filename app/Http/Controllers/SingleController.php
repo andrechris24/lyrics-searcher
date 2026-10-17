@@ -25,6 +25,7 @@ class SingleController extends Controller
 					$param = ['artist_name' => $req['artist'], 'track_name' => $req['title']];
 					if (!empty($req['album'])) $param['album_name'] = $req['album'];
 					$response = Http::retry(3, 100, throw: false)->timeout(25000)
+						->withHeaders(parent::APP_HEADER)
 						->get('https://lrclib.net/api/get', $param);
 					$r = $response->json(null, null, JSON_THROW_ON_ERROR);
 					abort_if(

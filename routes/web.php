@@ -10,7 +10,7 @@ use App\Http\Controllers\SingleController;
 use App\Http\Controllers\LocalController;
 use App\Http\Controllers\DeezerController;
 use App\Http\Controllers\SpotifyController;
-use App\Http\Controllers\AmazonController;
+// use App\Http\Controllers\AmazonController;
 use App\Http\Controllers\YoutubeController;
 use App\Http\Controllers\AppleController;
 
@@ -93,6 +93,7 @@ Route::prefix('spotify')->name('spotify.')->group(function () {
 		Route::name('search')->group(function () {
 			Route::get('results', 'search');
 			Route::get('download', 'download');
+			Route::get('aimp/{id}','aimp');
 			Route::get('{id}', 'get')->name('.get');
 		});
 	});
@@ -115,14 +116,14 @@ Route::prefix('apple')->name('apple.')->group(function () {
 // 		Route::get('{id}', 'get')->name('.get');
 // 	});
 // });
-Route::prefix('amazon')->name('amazon.')->group(function () {
-	Route::view('/', 'amazon.search')->name('index');
-	Route::controller(AmazonController::class)->name('search')->group(function () {
-		Route::get('results', 'search');
-		Route::get('download', 'download');
-		Route::get('{id}', 'get')->name('.get');
-	});
-});
+// Route::prefix('amazon')->name('amazon.')->group(function () {
+// 	Route::view('/', 'amazon.search')->name('index');
+// 	Route::controller(AmazonController::class)->name('search')->group(function () {
+// 		Route::get('results', 'search');
+// 		Route::get('download', 'download');
+// 		Route::get('{id}', 'get')->name('.get');
+// 	});
+// });
 Route::prefix('dl')->name('dl.')->group(function () {
 	Route::prefix('youtube')->name('youtube.')->group(function () {
 		Route::view('/', 'youtube.dl')->name('index');

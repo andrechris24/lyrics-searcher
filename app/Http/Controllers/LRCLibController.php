@@ -15,7 +15,7 @@ class LRCLibController extends Controller
 	public function standard(BasicSearchRequest $request)
 	{
 		try {
-			$data = Http::retry(3, 100)->timeout(25000)
+			$data = Http::retry(3, 100)->timeout(25000)->withHeaders(parent::APP_HEADER)
 				->get(self::$url, ['q' => $request['query']])
 				->json(null, null, JSON_THROW_ON_ERROR);
 			return response()->json(['html' => view('lrclib.list', compact('data'))->render()]);
@@ -29,7 +29,8 @@ class LRCLibController extends Controller
 	public function advanced(AdvancedSearchRequest $request)
 	{
 		try {
-			$data = Http::retry(3, 100)->timeout(25000)->get(self::$url, [
+			$data = Http::retry(3, 100)->timeout(25000)->withHeaders(parent::APP_HEADER)
+			->get(self::$url, [
 				'track_name' => $request['title'],
 				'artist_name' => $request['artist'],
 				'album_name' => $request['album']

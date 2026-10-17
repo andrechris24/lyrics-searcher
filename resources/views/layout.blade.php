@@ -168,7 +168,7 @@
 										Apple Music
 									</a>
 								</li>
-								<li>
+								{{-- <li>
 									<a @class([
 										'dropdown-item',
 										'active' => request()->routeIs('amazon.*'),
@@ -178,7 +178,7 @@
 										@if (request()->routeIs('amazon.*')) aria-current="page" @endif >
 										Amazon Music
 									</a>
-								</li>
+								</li> --}}
 							</ul>
 						</li>
 						<li class="nav-item col-sm-6 col-md-4 col-lg-auto col-12">

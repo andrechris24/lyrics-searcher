@@ -96,9 +96,10 @@ if (lyricsModal) {
 			success: function (data) {
 				try {
 					if (Array.isArray(data.syllable) && data.syllable.length > 0) {
+						console.log(data.syllable);
 						toast.fire({
 							icon: "info",
-							text: "Syllable lyric detected. Please inform site owner to implement this type."
+							text: "Syllable lyric found. Please inform site owner to implement this type."
 						});
 					}
 					plainContents = `${fileName}\n\n${data.plain}`;

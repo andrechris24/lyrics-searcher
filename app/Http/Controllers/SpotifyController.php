@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BasicSearchRequest;
 use Illuminate\Support\Facades\{Http, Log};
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use JsonException;
@@ -29,6 +30,22 @@ class SpotifyController extends Controller
 					500,
 					'Oops, something went wrong while loading results. Please try again later.'
 				);
+			}
+			if (Str::contains($req->userAgent(), '(aimp/', true)) { // for AIMP
+				$results = array();
+				foreach ($r['tracks']['items'] as $tracks) {
+					$art = array();
+					foreach ($tracks['artists'] as $artist) {
+						$art[] = $artist['name'];
+					}
+					$results[] = [
+						'id' => $tracks['id'],
+						'title' => $tracks['name'],
+						'artist' => implode(', ', $art),
+						'album' => $tracks['album']['name']
+					];
+				}
+				return response()->json($results);
 			}
 			return response()
 				->json(['html' => view('spotify.list', ['data' => $r['tracks']])->render()]);
@@ -61,6 +78,28 @@ class SpotifyController extends Controller
 			$code = $e->getCode();
 			abort($code === 0 ? 500 : $code, 'Error retrieving lyric: ' . $e->getMessage());
 		}
+	}
+	public function aimp(string $id)
+	{
+		$spotify = new Spotify(env('SPOTIFY_COOKIE'));
+		$spotify->checkTokenExpire();
+		$lyrics = $spotify->getLyrics(track_id: $id);
+		if (!empty($lyrics['lyrics']['lines'][0]['syllables']))
+			Log::debug($lyrics['lyrics']);
+		if ($lyrics['lyrics']['syncType'] === 'UNSYNCED') {
+			$content = $spotify->getRawLyrics($lyrics['lyrics']['lines']);
+		} else {
+			$content = "[id:{$lyrics['lyrics']['providerLyricsId']}]\n";
+			foreach ($spotify->getLrcLyrics($lyrics['lyrics']['lines']) as $lines) {
+				$content .= "[{$lines['timeTag']}]{$lines['words']}\n";
+			}
+		}
+		return response()->json([
+			'type' => $lyrics['lyrics']['syncType'],
+			'lyrics' => $content,
+			'provider' => $lyrics['lyrics']['providerDisplayName'],
+			'id' => $lyrics['lyrics']['providerLyricsId']
+		]);
 	}
 	public function download(Request $req)
 	{

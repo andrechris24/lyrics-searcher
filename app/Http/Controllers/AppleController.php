@@ -53,7 +53,7 @@ class AppleController extends Controller
 	public function get(int $id)
 	{
 		try {
-			$r = Http::retry(2, 100)->timeout(25000)
+			$r = Http::retry(2, 100)->timeout(25000)->withHeaders(parent::APP_HEADER)
 				->get(parent::$lyrically_url . "apple-music/lyrics", ['id' => $id])
 				->json(null, null, JSON_THROW_ON_ERROR);
 			if (array_key_exists('error', $r)) {
