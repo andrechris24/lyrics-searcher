@@ -1,14 +1,7 @@
 @empty($data)
 	<x-no-results source="lrclib" />
 @else
-	@if (count($data) === 20)
-		<div class="callout callout-warning">
-			<div class="text-center">Due to API limitation, only first 20 results are
-				returned.</div>
-		</div>
-	@else
-		<p class="text-center">Found {{ count($data) }} result(s)</p>
-	@endif
+	<p class="text-center">Found {{ count($data) }} result(s)</p>
 	<div class="list-group px-lg-5 mx-lg-5 px-md-3 mx-md-3 mb-5 pb-5">
 		@foreach ($data as $result)
 			@php

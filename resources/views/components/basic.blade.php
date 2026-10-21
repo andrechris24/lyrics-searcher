@@ -16,7 +16,7 @@
 			<a href="{{ route('spotify.chart') }}">Show charts</a>
 		</small>
 	@endif
-	@if (in_array($provider, ['lrclib', 'kugou']))
+	@if (in_array($provider, ['lrclib', 'kugou', 'lrcred','megalobiz']))
 		<small class="form-text">
 			<a href="{{ route($provider . '.advanced') }}">Advanced search</a>
 		</small>

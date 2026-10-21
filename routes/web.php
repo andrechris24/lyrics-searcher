@@ -13,6 +13,8 @@ use App\Http\Controllers\SpotifyController;
 // use App\Http\Controllers\AmazonController;
 use App\Http\Controllers\YoutubeController;
 use App\Http\Controllers\AppleController;
+use App\Http\Controllers\MegalobizController;
+use App\Http\Controllers\LrcredController;
 
 Route::view('/', 'index')->name('home');
 Route::get('result', SingleController::class)->name('result');
@@ -106,6 +108,27 @@ Route::prefix('apple')->name('apple.')->group(function () {
 		Route::prefix('{id}')->group(function () {
 			Route::get('alt', 'getAlt')->name('.alt');
 			Route::get('/', 'get')->name('.get');
+		});
+	});
+});
+Route::prefix('megalobiz')->name('megalobiz.')->group(function () {
+	Route::view('/', 'megalobiz.basic')->name('index');
+	Route::view('advanced', 'megalobiz.advanced')->name('advanced');
+	Route::controller(MegalobizController::class)->group(function () {
+		Route::name('search')->group(function () {
+			Route::get('results', 'standard');
+			Route::get('advanced/results', 'advanced')->name('.advanced');
+		});
+		Route::get('{id}', 'get')->name('.get');
+	});
+});
+Route::prefix('lrcred')->name('lrcred.')->group(function () {
+	Route::view('/', 'lrcred.basic')->name('index');
+	Route::view('advanced', 'lrcred.advanced')->name('advanced');
+	Route::controller(LrcredController::class)->group(function () {
+		Route::name('search')->group(function () {
+			Route::get('results', 'standard');
+			Route::get('advanced/results', 'advanced')->name('.advanced');
 		});
 	});
 });

@@ -127,10 +127,15 @@ class QQMusicController extends Controller
 				$lyricXml = Str::between($lyricXml, 'LyricContent="', "\"/>");
 				abort_if(empty($lyricXml), 404, 'Empty lyric, download aborted');
 				$converted = parent::qrcToLrc($lyricXml);
-				$lyric = parent::setLrcAuthor($converted, 'QQ Music');
+				$lyric = Str::contains(Request::userAgent(), '(aimp/', true) ? 
+					$converted : 
+					parent::setLrcAuthor($converted, 'QQ Music');
 			} else {
 				if (is_array($data['lyric']['content'])) {
-					Log::error('Malformed lyric content from QQ Music (User Agent: ' . Request::userAgent() . ') ', $data['lyric']['content']);
+					Log::error(
+						'Malformed lyric content from QQ Music (User Agent: ' . Request::userAgent() . ') ',
+						$data['lyric']['content']
+					);
 					abort(
 						500,
 						'Malformed lyric content. Wait for a while and try again or contact site owner if issue persist.'

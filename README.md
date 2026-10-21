@@ -1,6 +1,6 @@
 # LRCSearch
 
-<p align="center">A Laravel based lyrics searcher to Kugou, Musixmatch, NetEase, QQ Music, LRCLib, Deezer*, Spotify*, Apple Music, and ~~Amazon Music~~*, plus optionally Local database and Plain source. This lyrics searcher contains quick search and per-provider lyrics search. LRCSearch also provides LRC converter from SRT and KRC, and now comes with song downloaders and YouTube Downloader.</p>
+<p align="center">A Laravel based lyrics searcher to Kugou, Musixmatch, NetEase, QQ Music, LRCLib, Deezer*, Spotify*, Apple Music, MegaloBiz, and lrc.red, plus optionally Local database and Plain source. This lyrics searcher contains quick search and per-provider lyrics search. LRCSearch also provides LRC converter from SRT and KRC, and now comes with song downloaders and YouTube Downloader.</p>
 
 \*Configuration needed, read [Additional Config Setup](#additional-configuration)
 
@@ -48,10 +48,10 @@ php artisan backpack:user
 
 ### Additional Configuration
 
-#### Deezer, Spotify, Amazon Music, Genius, song downloaders (Deezer, Spotify, Apple Music, and ~~Amazon Music~~), and YouTube Downloader
+#### Deezer, Spotify, ~~Amazon Music~~, Genius, Apple Music (Paxsenix), song downloaders (Deezer, Spotify, Apple Music, and ~~Amazon Music~~), and YouTube Downloader
 
 Requires API Token. If not configured, it will be disabled.
-1. Log in to https://api.paxsenix.org/dashboard with your GitHub account.
+1. Log in to [Paxsenix API](https://api.paxsenix.org/dashboard) with your GitHub account.
 2. After log in, navigate to **API Keys**. Generate key, then copy generated key.
 3. Open .env file, then paste copied key into **PAXSENIX_TOKEN** entry and Save.
 
@@ -65,7 +65,13 @@ Requires API Token. If not configured, it will be disabled.
 3. Inside DevTools, open **Application** tab, select **Cookies** under **Storage**, choose `https://open.spotify.com/`, then copy `sp_dc` value.
 4. Open env file then paste `sp_dc` value to **SPOTIFY_COOKIE** and save.
 
-<!-- Follow steps from [SpotiFLAC guide](https://github.com/spotbye/SpotiFLAC-Next/wiki/How-to-Obtain-Spotify-sp_dc-Cookies/69d347ab6f4e08587faf31daa31c29571e7c2cb2) to obtain sp_dc cookie, then paste to SPOTIFY_COOKIE in env file. -->
+#### MegaloBiz
+
+Optional, but recommended if you encounter rate limit.
+1. Create or log in to Megalobiz.
+2. Open [Megalobiz Developer API](https://megalobiz.com/developers), then scroll down to **Your API keys**.
+3. Enter app name to generate API key, then copy generated key.
+4. Open env file, then paste to `MEGALOBIZ_KEY` and save.
 
 ## Admin credentials
 
@@ -91,7 +97,7 @@ Solution:
 
 ## Why aimp_webLyrics.ini file exist?
 
-That was my version of `aimp_webLyrics.ini` file containing remote source from providers above (except Kugou) and some codes are taken from AIMP WebLyrics forum. If you want, do setup first, then run `php artisan usertoken` to generate token and replace all `<MX_TOKEN_X>` inside INI file, and the token should be different. After entering Musixmatch token, replace original INI file inside `\path\to\AIMP\Plugins\aimp_webLyrics` folder.
+That was my version of `aimp_webLyrics.ini` file containing remote source from providers above (except Kugou & lrc.red) and some codes are taken from AIMP WebLyrics forum. If you want, do setup first, then run `php artisan usertoken` to generate token and replace all `<MX_TOKEN_X>` inside INI file, and the token should be different. Don't forget to replace `<PAXSENIX TOKEN HERE>` and optionally `<MEGALOBIZ API KEY HERE>` (remove ; at leading) with API key stated in Additional Configuration section. After editing weblyrics file, replace original file inside `\path\to\AIMP\Plugins\aimp_webLyrics` folder.
 
 - Example path (Windows): `C:\Program Files\AIMP\Plugins\aimp_webLyrics`
 

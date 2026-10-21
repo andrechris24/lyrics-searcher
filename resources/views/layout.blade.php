@@ -126,15 +126,17 @@
 								'active' =>
 									request()->routeIs('deezer.*') ||
 									request()->routeIs('spotify.*') ||
-									// request()->routeIs('youtube.*') ||
 									request()->routeIs('apple.*') ||
-									request()->routeIs('amazon.*')
+									request()->routeIs('amazon.*') ||
+									request()->routeIs('lrcred.*') ||
+									request()->routeIs('megalobiz.*')
 							])
 								@if (request()->routeIs('deezer.*') ||
 										request()->routeIs('spotify.*') ||
-										// request()->routeIs('youtube.*') ||
+										request()->routeIs('lrcred.*') ||
 										request()->routeIs('apple.*') ||
-										request()->routeIs('amazon.*')
+										request()->routeIs('amazon.*') ||
+										request()->routeIs('megalobiz.*')
 								) aria-current="page" @endif href="#"
 								role="button" data-coreui-toggle="dropdown" aria-expanded="false">
 								More
@@ -179,6 +181,20 @@
 										Amazon Music
 									</a>
 								</li> --}}
+								<li>
+									<a @class(['dropdown-item','active' => request()->routeIs('lrcred.*')])
+										href="{{ route('lrcred.index') }}"
+										@if (request()->routeIs('lrcred.*')) aria-current="page" @endif >
+										lrc.red
+									</a>
+								</li>
+								<li>
+									<a @class(['dropdown-item','active' => request()->routeIs('megalobiz.*')])
+										href="{{ route('megalobiz.index') }}"
+										@if (request()->routeIs('megalobiz.*')) aria-current="page" @endif >
+										MegaloBiz
+									</a>
+								</li>
 							</ul>
 						</li>
 						<li class="nav-item col-sm-6 col-md-4 col-lg-auto col-12">

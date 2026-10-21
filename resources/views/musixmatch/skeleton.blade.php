@@ -56,7 +56,7 @@
 							</ul>
 						</div>
 						<a href="#" class="btn btn-info disabled" aria-disabled="true">
-							<i class="fa-solid fa-eye"></i>
+							<i class="fa-solid fa-arrow-up-right-from-square"></i>
 						</a>
 						<a class="btn btn-success disabled" href="#" aria-disabled="true">
 							<i class="fa-brands fa-spotify"></i>

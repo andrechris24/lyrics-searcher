@@ -115,7 +115,7 @@
 							<a href="{{ $track['track_share_url'] }}" @class(['btn', 'btn-info', 'disabled' => !$track['has_lyrics']])
 								aria-disabled="{{ !$track['has_lyrics'] }}" target="_blank"
 								data-coreui-toggle="tooltip" data-coreui-title="View Lyric on Musixmatch">
-								<i class="fa-solid fa-eye"></i>
+								<i class="fa-solid fa-arrow-up-right-from-square"></i>
 							</a>
 							<a href="https://open.spotify.com/track/{{ $track['track_spotify_id'] }}"
 								@class([

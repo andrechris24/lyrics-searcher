@@ -27,18 +27,18 @@ $(document)
 		$("form :input").prop("disabled", false);
 	});
 const toast = Swal.mixin({
-	toast: true,
-	position: "top",
-	showConfirmButton: false,
-	timer: 7000,
-	timerProgressBar: true,
-	theme: "bootstrap-5",
-	didOpen: (toast) => {
-		toast.onmouseenter = Swal.stopTimer;
-		toast.onmouseleave = Swal.resumeTimer;
-		toast.onclick = Swal.close;
-	}
-}),
+		toast: true,
+		position: "top",
+		showConfirmButton: false,
+		timer: 7000,
+		timerProgressBar: true,
+		theme: "bootstrap-5",
+		didOpen: (toast) => {
+			toast.onmouseenter = Swal.stopTimer;
+			toast.onmouseleave = Swal.resumeTimer;
+			toast.onclick = Swal.close;
+		}
+	}),
 	swalConfirm = Swal.mixin({
 		icon: "question",
 		theme: "bootstrap-5",
@@ -52,7 +52,8 @@ const toast = Swal.mixin({
 		reverseButtons: true
 	}),
 	basicForm = "#basic-search-form",
-	advancedForm = "#advanced-search-form";
+	advancedForm = "#advanced-search-form",
+	advancedAltForm = "#advanced-alt-search-form";
 $.LoadingOverlaySetup({
 	background: "rgba(0, 0, 0, 0.5)",
 	image: "",

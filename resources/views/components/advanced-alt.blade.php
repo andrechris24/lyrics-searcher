@@ -30,8 +30,8 @@
 	</div>
 	<div class="col-sm-6">
 		<div class="input-group input-group-lg" id="song-duration">
-			<span class="input-group-text">Duration (Minutes:seconds)</span>
-			<input type="number" name="minutes" min="0" max="199" class="form-control"
+			<span class="input-group-text">m:s</span>
+			<input type="number" name="minutes" min="0" max="99" class="form-control"
 				id="search-minutes" value="{{ request('minutes') ?? (old('minutes') ?? 0) }}"
 				required>
 			<input type="number" name="seconds" min="0" max="59" class="form-control"

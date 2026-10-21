@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\KrcDecoder;
-use App\Http\Requests\BasicPagedRequest;
+use App\Http\Requests\{BasicPagedRequest,AdvancedAltRequest};
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Http, Log};
@@ -62,15 +62,9 @@ class KugouController extends Controller
 			);
 		}
 	}
-	public function advanced(Request $req)
+	public function advanced(AdvancedAltRequest $req)
 	{
 		try {
-			$req->validate([
-				'artist' => 'required',
-				'title' => 'required',
-				'minutes' => 'required|numeric|between:0,59',
-				'seconds' => 'required|numeric|between:0,59'
-			]);
 			$query = self::$query;
 			$query['keyword'] = "{$req['artist']} - {$req['title']}";
 			$query['duration'] = ($req['minutes'] * 60 + $req['seconds']) * 1000;
