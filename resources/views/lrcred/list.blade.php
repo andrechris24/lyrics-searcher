@@ -8,7 +8,7 @@
 				$length = gmdate('i:s', $track['duration']);
 				switch ($track['timing_type']) {
 					case 'word':
-						$lyricType = 'Word-by-word';
+						$lyricType = 'Syllable';
 						$color = 'text-success';
 						break;
 					case 'line':

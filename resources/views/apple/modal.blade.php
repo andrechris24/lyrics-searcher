@@ -4,7 +4,9 @@
 		class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 id="modalLyricsLabel" class="modal-title">Preview lyric</h5>
+				<h5 id="modalLyricsLabel" class="modal-title">
+					Preview lyric (<span id="lyric-source"></span>)
+				</h5>
 				<button type="button" class="btn-close" data-coreui-dismiss="modal"
 					aria-label="Close"></button>
 			</div>
@@ -84,6 +86,13 @@
 								Syllable
 							</a>
 						</li>
+						{{-- <li>
+							<a class="dropdown-item" href="#" id="dl-duetsyllyric"
+								data-coreui-toggle="tooltip"
+								data-coreui-title="Not all players supports Syllable lyrics, use with compatible players like Gramophone (Android) or AMLL Player (Windows, Linux, macOS)">
+								Duet Syllable
+							</a>
+						</li> --}}
 						<li>
 							<a class="dropdown-item" href="#" id="dl-multisyllyric"
 								data-coreui-toggle="tooltip"

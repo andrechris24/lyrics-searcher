@@ -48,7 +48,7 @@ class QQMusicController extends Controller
 					"Error loading results: QQ Music error {$data['result']}, {$data['reason']}"
 				);
 			}
-			if (Str::contains($req->userAgent(), '(aimp/', true)) {//for AIMP
+			if (Str::contains($req->userAgent(), '(aimp/', true)) { //for AIMP
 				$results = array();
 				if (!array_key_exists('@attributes', $data['songinfo'])) {
 					foreach ($data['songinfo'] as $songdata) {
@@ -123,18 +123,19 @@ class QQMusicController extends Controller
 			);
 			if (ctype_xdigit($data['lyric']['content'])) {
 				$decoder = new QrcDecoder();
-				$lyricXml = $decoder->decode($data['lyric']['content']);
+				$raw = $data['lyric']['content'];
+				$lyricXml = $decoder->decode($raw);
 				$lyricXml = Str::between($lyricXml, 'LyricContent="', "\"/>");
 				abort_if(empty($lyricXml), 404, 'Empty lyric, download aborted');
 				$converted = parent::qrcToLrc($lyricXml);
-				$lyric = Str::contains(Request::userAgent(), '(aimp/', true) ? 
-					$converted : 
+				$lyric = Str::contains(Request::userAgent(), '(aimp/', true) ?
+					$converted :
 					parent::setLrcAuthor($converted, 'QQ Music');
 			} else {
 				if (is_array($data['lyric']['content'])) {
 					Log::error(
 						'Malformed lyric content from QQ Music (User Agent: ' . Request::userAgent() . ') ',
-						$data['lyric']['content']
+						$data['lyric']
 					);
 					abort(
 						500,
@@ -145,6 +146,7 @@ class QQMusicController extends Controller
 			}
 			return response()->json([
 				'lyric' => $lyric,
+				'raw' => $raw ?? null,
 				'encoded' => ctype_xdigit($data['lyric']['content']),
 				'id' => $id
 			]);

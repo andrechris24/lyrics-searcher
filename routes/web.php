@@ -95,7 +95,7 @@ Route::prefix('spotify')->name('spotify.')->group(function () {
 		Route::name('search')->group(function () {
 			Route::get('results', 'search');
 			Route::get('download', 'download');
-			Route::get('aimp/{id}','aimp');
+			Route::get('aimp/{id}', 'aimp');
 			Route::get('{id}', 'get')->name('.get');
 		});
 	});
@@ -105,10 +105,7 @@ Route::prefix('apple')->name('apple.')->group(function () {
 	Route::controller(AppleController::class)->name('search')->group(function () {
 		Route::get('results', 'search');
 		Route::get('download', 'download');
-		Route::prefix('{id}')->group(function () {
-			Route::get('alt', 'getAlt')->name('.alt');
-			Route::get('/', 'get')->name('.get');
-		});
+		Route::get('get', 'get')->name('.get');
 	});
 });
 Route::prefix('megalobiz')->name('megalobiz.')->group(function () {

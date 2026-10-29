@@ -6,7 +6,6 @@ use App\Http\Requests\SimpleDownloadRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Log, Http};
-use Illuminate\Support\Str;
 use JsonException;
 
 class AppleController extends Controller
@@ -36,7 +35,7 @@ class AppleController extends Controller
 			abort_if(
 				$req['api'] === 'paxsenix',
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				'Error loading results: ' . parent::lyricallyError($th)
+				'Error loading results: ' . parent::lyricallyError($th, 'paxsenix')
 			);
 			Log::error($th);
 			abort(
@@ -50,25 +49,46 @@ class AppleController extends Controller
 			);
 		}
 	}
-	public function get(int $id)
+	public function get(Request $req)
 	{
+		$req->validate(['id' => 'required|integer', 'source' => 'required|in:lyrically,paxsenix,zarz']);
 		try {
-			$r = Http::retry(2, 100)->timeout(25000)->withHeaders(parent::APP_HEADER)
-				->get(parent::$lyrically_url . "apple-music/lyrics", ['id' => $id])
-				->json(null, null, JSON_THROW_ON_ERROR);
+			$http = Http::retry(2, 100)->timeout(25000);
+			switch ($req['source']) {
+				case 'lyrically':
+					$r = $http->withHeaders(parent::APP_HEADER)
+						->get(parent::$lyrically_url . "apple-music/lyrics", ['id' => $req['id']])
+						->json(null, null, JSON_THROW_ON_ERROR);
+					break;
+				case 'paxsenix':
+					abort_if(
+						empty(env('PAXSENIX_TOKEN')),
+						401,
+						'API Token is required for Paxsenix request and song downloads'
+					);
+					$r = $http->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])
+						->get(parent::$paxsenix_url . "lyrics/applemusic", ['id' => $req['id']])
+						->json(null, null, JSON_THROW_ON_ERROR);
+					break;
+				case 'zarz':
+					$r = $http->get("https://api.zarz.moe/apple-music/lyrics", ['id' => $req['id']])
+						->json(null, null, JSON_THROW_ON_ERROR);
+					break;
+				default:
+					abort(400, 'Invalid lyric source provided');
+					break;
+			}
 			if (array_key_exists('error', $r)) {
 				Log::error("Apple Music API error: {$r['message']}", $r);
-				abort(500, 'Oops, an error occurred with Lyrically API.');
+				abort(500, 'Oops, an error occurred with ' . ucfirst($req['source']) . ' API.');
 			}
-			if ($r['type'] === 'Syllable')
-				$endtime = $r['content'][count($r['content']) - 1]['sectionEnd'];
 			return response()->json([
-				'id' => $id,
+				'id' => $req['id'],
 				'plain' => $r['plain'],
 				'synced' => $r['lrc'],
-				'syllable' => self::mlWorkaround($r['elrc'], $endtime ?? 0),
-				'multisyl' => self::mlWorkaround($r['elrcMultiPerson'], $endtime ?? 0),
-				'ttml' => $r['ttmlContent'],
+				'syllable' => $r['type'] === 'Syllable' ? self::multiSyl($r['content']) : null,
+				'multisyl' => $r['type'] === 'Syllable' ? self::multiSyl($r['content'], true) : null,
+				'ttml' => $r['ttmlContent'] ?? $r['ttml_content'],
 				'type' => $r['type'],
 				'writers' => implode(', ', $r['metadata']['songwriters']),
 				'length' => gmdate('i:s', round($r['metadata']['duration'] / 1000, 0, PHP_ROUND_HALF_UP))
@@ -76,43 +96,7 @@ class AppleController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				'Error retrieving lyric: ' . parent::lyricallyError($th, false)
-			);
-		}
-	}
-	public function getAlt(int $id)
-	{
-		abort_if(
-			empty(env('PAXSENIX_TOKEN')),
-			401,
-			'API Token is required for Paxsenix request and song downloads'
-		);
-		try {
-			$r = Http::retry(2, 100)->timeout(25000)
-				->withHeaders(['Authorization' => 'Bearer ' . env('PAXSENIX_TOKEN')])
-				->get(parent::$paxsenix_url . "lyrics/applemusic", ['id' => $id])
-				->json(null, null, JSON_THROW_ON_ERROR);
-			if ($r['ok'] === false) {
-				Log::error("Apple Music API error: {$r['message']}", $r);
-				abort(500, 'Oops, an error occurred with Apple Music Paxsenix API.');
-			}
-			if ($r['type'] === 'Syllable')
-				$endtime = $r['content'][count($r['content']) - 1]['sectionEnd'];
-			return response()->json([
-				'id' => $id,
-				'plain' => $r['plain'],
-				'synced' => $r['lrc'],
-				'syllable' => self::mlWorkaround($r['elrc'], $endtime ?? 0),
-				'multisyl' => self::mlWorkaround($r['elrc_multi_person'], $endtime ?? 0),
-				'ttml' => $r['ttml_content'],
-				'type' => $r['type'],
-				'writers' => implode(', ', $r['metadata']['songwriters']),
-				'length' => gmdate('i:s', round($r['metadata']['duration'] / 1000, 0, PHP_ROUND_HALF_UP))
-			]);
-		} catch (ConnectionException | JsonException | RequestException $th) {
-			abort(
-				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				'Error retrieving lyric: ' . parent::lyricallyError($th)
+				'Error retrieving lyric: ' . parent::lyricallyError($th, $req['source'])
 			);
 		}
 	}
@@ -140,18 +124,63 @@ class AppleController extends Controller
 		} catch (ConnectionException | RequestException | JsonException $e) {
 			abort(
 				(get_class($e) === RequestException::class) ? $e->response->status() : 500,
-				'Download failed: ' . parent::lyricallyError($e)
+				'Download failed: ' . parent::lyricallyError($e, 'paxsenix')
 			);
 		}
 	}
-	private static function mlWorkaround(string|null $elrc, int $last): string|null
+	private static function multiSyl(array $content, bool $multi = false): string|null
 	{
-		if (empty($elrc)) return null;
-		return env('MINILYRICS_COMPATIBLE', false) ?
-			sprintf(
-				"%s \n[%s]",
-				Str::replace(">\n", "> \n", $elrc, false),
-				parent::formatTime($last + 1, true)
-			) : $elrc;
+		$body = '';
+		$prevtime = 0;
+		foreach ($content as $idx => $line) {
+			if (($line['timestamp'] - $prevtime) > 5000 && $idx !== 0) {
+				if ($multi) {
+					$body .= sprintf(
+						"[%s]\n[%s]%s: ",
+						parent::formatTime($prevtime + 1, true),
+						parent::formatTime($line['timestamp'], true),
+						$line['agent']
+					);
+				} else {
+					$body .= sprintf(
+						"[%s]\n[%s]",
+						parent::formatTime($prevtime, true),
+						parent::formatTime($line['timestamp'], true),
+					);
+				}
+			} else {
+				if ($multi)
+					$body .= '[' . parent::formatTime($line['timestamp'], true) . "]{$line['agent']}: ";
+				else $body .= '[' . parent::formatTime($line['timestamp'], true) . ']';
+			}
+			foreach ($line['text'] as $syl) {
+				$part = sprintf(
+					"<%s>%s",
+					parent::formatTime($syl['timestamp'], true),
+					$syl['text']
+				);
+				if ($syl['part'] === false)
+					$part .= sprintf("<%s> ", parent::formatTime($syl['endtime'], true));
+				$body .= $part;
+			}
+			if (env('MINILYRICS_COMPATIBLE', false))
+				$body .= "<" . parent::formatTime($line['endtime'], true) . ">" . PHP_EOL;
+			if ($line['background'] === true) {
+				$body .= '[bg: ';
+				foreach ($line['backgroundText'] as $syl) {
+					$part = sprintf(
+						"<%s>%s",
+						parent::formatTime($syl['timestamp'], true),
+						$syl['text']
+					);
+					if ($syl['part'] === false)
+						$part .= sprintf("<%s> ", parent::formatTime($syl['endtime'], true));
+					$body .= $part;
+				}
+				$body .= ']' . PHP_EOL;
+			}
+			$prevtime = $line['endtime'];
+		}
+		return $body . '[' . parent::formatTime($content[count($content) - 1]['sectionEnd'] + 1, true) . ']' . PHP_EOL;
 	}
 }

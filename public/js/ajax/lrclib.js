@@ -124,9 +124,9 @@ wbwDL.onclick = function (e) {
 			title: "Convert to LRC format?",
 			text: "LRCLib's Word-by-word lyric is in YAML format and only a few players supported. Convert to LRC?",
 			customClass: {
-				confirmButton: "btn btn-primary btn-lg me-2",
+				confirmButton: "btn btn-primary btn-lg",
 				denyButton: "btn btn-danger btn-lg me-2",
-				cancelButton: "btn btn-warning btn-lg"
+				cancelButton: "btn btn-warning btn-lg me-2"
 			},
 			denyButtonText: "No",
 			showDenyButton: true,

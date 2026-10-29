@@ -2,6 +2,7 @@
 let syncedLyricContents,
 	sylLyricContent,
 	plainLyricContent,
+	// duetsylLyricContent,
 	multisylLyricContent,
 	ttmlContent,
 	fileName;
@@ -9,6 +10,7 @@ const lyricsModal = document.getElementById("modalLyrics"),
 	plainLyricDL = document.getElementById("dl-plain"),
 	syncedLyricDL = document.getElementById("dl-synced"),
 	sylLyricDL = document.getElementById("dl-syllyric"),
+	// duetsylLyricDL = document.getElementById("dl-duetsyllyric"),
 	multiSylLyricDL = document.getElementById("dl-multisyllyric"),
 	ttmlDL = document.getElementById("dl-ttml"),
 	previewModal = document.getElementById("modalPreviewSong"),
@@ -30,11 +32,29 @@ if (lyricsModal) {
 		$("#song-duration").text(duration);
 		$("#song-title").text(songName);
 		$("#song-artist").text(artistName);
+		switch (source) {
+			case 'lyrically':
+				$("#lyric-source").text('Lyrically');
+				break;
+			case 'paxsenix':
+				$("#lyric-source").text('Paxsenix');
+				break;
+			case 'zarz':
+				$("#lyric-source").text('Zarz LRC API');
+				break;
+			default:
+				$("#lyric-source").text('Unknown');
+				break;
+		}
 
 		// Set file name and contents on save
 		fileName = `${artistName} - ${songName}`;
 		$.ajax({
-			url: source === 'paxsenix' ? `/apple/${songID}/alt` : `/apple/${songID}`,
+			url: '/apple/get',
+			data: {
+				id: songID,
+				source: source
+			},
 			beforeSend: function () {
 				$(".placeholder-glow").removeClass("d-none");
 				$("#lyrics-content").text("");
@@ -58,17 +78,18 @@ if (lyricsModal) {
 						$("#dl-synced").addClass("disabled");
 						syncedLyricContents = "";
 					}
-					if (data.syllable !== null && data.syllable !== "") {
+					if (data.type === "Syllable") {
 						$("#dl-syllyric").removeClass("disabled");
 						sylLyricContent = `${metaLyric}${data.syllable}`;
-					} else {
-						sylLyricContent = "";
-						$("#dl-syllyric").addClass("disabled");
-					}
-					if (data.multisyl !== null && data.multisyl !== "") {
+						// $("#dl-duetsyllyric").removeClass("disabled");
+						// duetsylLyricContent = `${metaLyric}${data.duetsyl}`;
 						$("#dl-multisyllyric").removeClass("disabled");
 						multisylLyricContent = `${metaLyric}${data.multisyl}`;
 					} else {
+						sylLyricContent = "";
+						$("#dl-syllyric").addClass("disabled");
+						// duetsylLyricContent="";
+						// $("#dl-duetsyllyric").addClass("disabled");
 						multisylLyricContent = "";
 						$("#dl-multisyllyric").addClass("disabled");
 					}
@@ -199,6 +220,10 @@ sylLyricDL.onclick = function (e) {
 	e.preventDefault();
 	blobDL(sylLyricContent, `${fileName}.lrc`);
 };
+// duetsylLyricDL.onclick = function (e) {
+// 	e.preventDefault();
+// 	blobDL(duetsylLyricContent, `${fileName}.lrc`);
+// };
 multiSylLyricDL.onclick = function (e) {
 	e.preventDefault();
 	blobDL(multisylLyricContent, `${fileName}.lrc`);

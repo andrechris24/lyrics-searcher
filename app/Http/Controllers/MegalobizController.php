@@ -29,10 +29,10 @@ class MegalobizController extends Controller
 	{
 		try {
 			$r = Http::retry(2, 100)->timeout(25000)
-				->withHeaders(['X-API-KEY' => env('MEGALOBIZ_KEY')])->get(self::$url . 'search',[
+				->withHeaders(['X-API-KEY' => env('MEGALOBIZ_KEY')])->get(self::$url . 'search', [
 					'title' => $req['title'],
 					'artist' => $req['artist'],
-					'duration'=> $req['minutes']*60+$req['seconds'],
+					'duration' => $req['minutes'] * 60 + $req['seconds'],
 					'limit' => 20
 				])->json(null, null, JSON_THROW_ON_ERROR);
 			return response()->json(['html' => view('megalobiz.list', $r)->render()]);

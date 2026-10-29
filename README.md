@@ -50,7 +50,7 @@ php artisan backpack:user
 
 #### Deezer, Spotify, ~~Amazon Music~~, Genius, Apple Music (Paxsenix), song downloaders (Deezer, Spotify, Apple Music, and ~~Amazon Music~~), and YouTube Downloader
 
-Requires API Token. If not configured, it will be disabled.
+Requires API Token. If not configured, it will be disabled. Please note that Paxsenix API is unstable.
 1. Log in to [Paxsenix API](https://api.paxsenix.org/dashboard) with your GitHub account.
 2. After log in, navigate to **API Keys**. Generate key, then copy generated key.
 3. Open .env file, then paste copied key into **PAXSENIX_TOKEN** entry and Save.

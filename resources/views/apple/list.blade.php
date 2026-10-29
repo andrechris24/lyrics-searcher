@@ -63,6 +63,16 @@
 											Paxsenix
 										</a>
 									</li>
+									<li>
+										<a class="dropdown-item" href="#modalLyrics" data-coreui-toggle="modal"
+											data-coreui-id="{{ $result['trackId'] ?? $result['playParams']['id'] }}"
+											data-coreui-source="zarz" data-coreui-duration="{{ $length }}"
+											data-coreui-artist="{{ $result['artistName'] }}"
+											data-coreui-track="{{ $result['trackName'] ?? $result['name'] }}"
+											data-coreui-album="{{ $result['collectionName'] ?? $result['albumName'] }}">
+											Zarz LRC
+										</a>
+									</li>
 								</ul>
 							</div>
 							<button type="button" class="btn btn-info" @disabled(!array_key_exists('previewUrl', $result) && !array_key_exists('previews', $result))

@@ -37,10 +37,13 @@ function sendAjax(data) {
 					},
 					success: function (data) {
 						try {
+							let fileMime = 'text/plain';
 							if (data.encoded === true) {
 								Swal.fire({
 									title: "Word-by-word lyric detected",
-									text: "Select lyric type to download, then click OK. Please note that only a few players support word-by-word lyrics.",
+									text: "Select lyric type to download, then click OK. To import lyric into Aegisub, choose QRC Raw or Synced. Please note that only a few players support word-by-word lyrics.",
+									footer:
+										'<a href="https://github.com/qwe7989199/Lyric-Importer-for-Aegisub">Additional script for Aegisub (Buggy for KRC)</a>',
 									theme: "bootstrap-5",
 									buttonsStyling: false,
 									customClass: {
@@ -51,7 +54,8 @@ function sendAjax(data) {
 									inputOptions: {
 										wordbyword: "Word-by-Word",
 										synced: "Synced",
-										plain: "Plain"
+										plain: "Plain",
+										raw: "QRC Raw"
 									},
 									input: "select",
 									inputPlaceholder: "Select lyric type",
@@ -77,6 +81,10 @@ function sendAjax(data) {
 												lyricContent = data.lyric;
 												ext = ".lrc";
 												break;
+											case "raw":
+												lyricContent = data.raw;
+												ext = ".qrc";
+												break;
 											default: //plain or unknown
 												lyricContent = data.lyric
 													.replace(/<(\d+):(\d+).(\d+)>/g, "")
@@ -85,18 +93,28 @@ function sendAjax(data) {
 												break;
 										}
 										if (ext === ".txt")
-											blobDL(`${fileName}\n\n${lyricContent}`, fileName + ext);
-										else
-											blobDL(
-												`[id:${data.id ?? songID}]\n${lyricContent}`,
-												fileName + ext
-											);
+											lyricContent = `${fileName}\n\n${lyricContent}`;
+										else if (ext === '.qrc') {
+											const sig = "[offset:0]\n";
+											let arrBuf = new Uint8Array(lyricContent.length / 2 + sig.length);
+											for (let i = 0; i < sig.length; ++i)
+												arrBuf[i] = sig.charCodeAt(i);
+											const offset = sig.length;
+											for (let i = 0; i < lyricContent.length; i += 2) {
+												arrBuf[offset + i / 2] = parseInt(lyricContent.slice(i, i + 2), 16);
+											}
+											lyricContent = arrBuf.buffer;
+											fileMime = "application/octet-stream";
+										} else
+											lyricContent = `[id:${data.id ?? songID}]\n${lyricContent}`;
+										blobDL(lyricContent, fileName + ext, fileMime);
 									}
 								});
 							} else if (data.lyric.match(/\[(\d+):(\d+).(\d+)\]/))
 								blobDL(
 									`[id:${data.id ?? songID}]\n${data.lyric}`,
-									`${fileName}.lrc`
+									`${fileName}.lrc`,
+									fileMime
 								);
 							else {
 								toast.fire({ icon: "warning", text: "Plain lyric detected" });

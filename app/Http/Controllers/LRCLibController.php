@@ -30,11 +30,11 @@ class LRCLibController extends Controller
 	{
 		try {
 			$data = Http::retry(2, 100)->timeout(25000)->withHeaders(parent::APP_HEADER)
-			->get(self::$url, [
-				'track_name' => $request['title'],
-				'artist_name' => $request['artist'],
-				'album_name' => $request['album']
-			])->json(null, null, JSON_THROW_ON_ERROR);
+				->get(self::$url, [
+					'track_name' => $request['title'],
+					'artist_name' => $request['artist'],
+					'album_name' => $request['album']
+				])->json(null, null, JSON_THROW_ON_ERROR);
 			return response()->json(['html' => view('lrclib.list', compact('data'))->render()]);
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
@@ -59,19 +59,18 @@ class LRCLibController extends Controller
 				've' => $yaml['version']
 			];
 			$lyricsfile = '';
-			foreach ($meta as $key => $value) {
+			foreach ($meta as $key => $value)
 				$lyricsfile .= sprintf("[%s:%s]\n", $key, $value);
-			}
 			foreach ($yaml['lines'] as $idx => $line) {
 				if ($idx === 0) {
 					if ($line['start_ms'] > 3000)
-						$lyricsfile .= "[" . parent::formatTime(($line['start_ms'] - mt_rand(2500, 3000)), true) . "]";
+						$lyricsfile .= "[" . parent::formatTime(($line['start_ms'] - mt_rand(2400, 3000)), true) . "]";
 					else $lyricsfile .= "[00:00.00]";
 				} else if (($line['start_ms'] - $prevtime) > 9000) {
 					$lyricsfile .= sprintf(
 						"[%s]\n[%s]",
-						parent::formatTime(($prevtime + mt_rand(2500, 3500)), true),
-						parent::formatTime(($line['start_ms'] - mt_rand(2500, 3500)), true)
+						parent::formatTime(($prevtime + mt_rand(2400, 3600)), true),
+						parent::formatTime(($line['start_ms'] - mt_rand(2400, 3600)), true)
 					);
 				} else $lyricsfile .= "[" . parent::formatTime($line['start_ms'], true) . "]";
 				foreach ($line['words'] as $word) {
@@ -84,9 +83,9 @@ class LRCLibController extends Controller
 				if (array_key_exists('end_ms', $line)) {
 					$prevtime = $line['end_ms'];
 					$formattedTime = parent::formatTime($line['end_ms'], true);
-					$lyricsfile .= env('MINILYRICS_COMPATIBLE', false)
-						? sprintf("<%s> <%s>\n", $formattedTime, $formattedTime)
-						: sprintf("<%s>\n", $formattedTime);
+					$lyricsfile .= '<' . $formattedTime . '>' . (env('MINILYRICS_COMPATIBLE', false)
+						? ' <' . $formattedTime . '>'
+						: '') . PHP_EOL;
 				} else $lyricsfile .= PHP_EOL;
 			}
 			return response()->json([

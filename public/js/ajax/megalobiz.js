@@ -16,10 +16,10 @@ if (lyricsModal) {
 		$("#song-lyric-type").text(lrcTiming);
 		$("#song-duration").text(duration);
 		$("#song-title").text(songName);
-		$("#song-artist").text(artistName??'-');
+		$("#song-artist").text(artistName ?? '-');
 
 		// Set file name and contents on save
-		fileName = (artistName===''||artistName===null?artistName+' - ':'') + songName;
+		fileName = (artistName === '' || artistName === null ? artistName + ' - ' : '') + songName;
 		$.ajax({
 			url: `/megalobiz/${songID}`,
 			beforeSend: function () {
@@ -27,17 +27,17 @@ if (lyricsModal) {
 				$("#lyric-content").text("");
 				$("#lrc-owner").text("");
 				$("#lrc-update").text("");
-				$("#save-btn").prop("disabled",true);
+				$("#save-btn").prop("disabled", true);
 			},
 			complete: function () {
 				$(".placeholder-glow").addClass("d-none");
 			},
 			success: function (data) {
 				try {
-					lrcContents = (data.synced_by===''||data.synced_by===null?'[by:MegaloBiz]\n':'')+ data.lrc;
-					$("#save-btn").prop("disabled",false);
+					lrcContents = (data.synced_by === '' || data.synced_by === null ? '[by:MegaloBiz]\n' : '') + data.lrc;
+					$("#save-btn").prop("disabled", false);
 					$("#lyric-content").text(data.lrc);
-					$("#lrc-owner").text(data.synced_by??'Guest');
+					$("#lrc-owner").text(data.synced_by ?? 'Guest');
 					$("#lrc-update").text(luxon.DateTime.fromISO(data.updated_at).toFormat('cccc, d LLLL yyyy'));
 				} catch (e) {
 					console.error(e);
@@ -63,8 +63,8 @@ if (lyricsModal) {
 } else console.warn("No lyrics modal found");
 $(document).on("click", "#save-btn", function () {
 	let ext;
-	if (!lrcContents.match(/\[(\d+):(\d+).(\d+)\]/)) ext='txt';
-	else ext='lrc';
+	if (!lrcContents.match(/\[(\d+):(\d+).(\d+)\]/)) ext = 'txt';
+	else ext = 'lrc';
 	blobDL(lrcContents, `${fileName}.${ext}`);
 });
 $(basicForm).submit(function (event) {

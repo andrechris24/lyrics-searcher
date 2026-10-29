@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\KrcDecoder;
-use App\Http\Requests\{BasicPagedRequest,AdvancedAltRequest};
+use App\Http\Requests\{BasicPagedRequest, AdvancedAltRequest};
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\{ConnectionException, RequestException};
 use Illuminate\Support\Facades\{Http, Log};
@@ -121,26 +121,26 @@ class KugouController extends Controller
 			);
 		}
 	}
-	public function aimp(string $hash)
-	{
-		try {
-			$r = Http::retry(2, 100)->timeout(25000)
-				->get(parent::$lyrically_url . 'kugou/lyrics', ['id' => $hash])
-				->json(null, null, JSON_THROW_ON_ERROR);
-			if ($r['status'] !== 200) {
-				Log::error($r);
-				abort($r['status'], "Kugou Music API error {$r['status']}: {$r['info']}");
-			}
-			if ($r['fmt'] === 'krc') $lyric = parent::krc2lrc($r['lyrics_text']);
-			else $lyric = $r['lyrics_text'];
-			return response()->json(['hash' => $hash, 'lyric' => $lyric]);
-		} catch (JsonException | RequestException | ConnectionException $th) {
-			abort(
-				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				parent::lyricallyError($th)
-			);
-		}
-	}
+	// public function aimp(string $hash)
+	// {
+	// 	try {
+	// 		$r = Http::retry(2, 100)->timeout(25000)
+	// 			->get(parent::$lyrically_url . 'kugou/lyrics', ['id' => $hash])
+	// 			->json(null, null, JSON_THROW_ON_ERROR);
+	// 		if ($r['status'] !== 200) {
+	// 			Log::error($r);
+	// 			abort($r['status'], "Kugou Music API error {$r['status']}: {$r['info']}");
+	// 		}
+	// 		if ($r['fmt'] === 'krc') $lyric = parent::krc2lrc($r['lyrics_text']);
+	// 		else $lyric = $r['lyrics_text'];
+	// 		return response()->json(['hash' => $hash, 'lyric' => $lyric]);
+	// 	} catch (JsonException | RequestException | ConnectionException $th) {
+	// 		abort(
+	// 			(get_class($th) === RequestException::class) ? $th->response->status() : 500,
+	// 			parent::lyricallyError($th)
+	// 		);
+	// 	}
+	// }
 	private static function matchError(mixed $ex): string
 	{
 		Log::error($ex);

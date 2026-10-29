@@ -227,7 +227,7 @@ class MusixmatchController extends Controller
 		foreach ($lrc as $idx => $line) {
 			if ($idx === 0) {
 				$richsync .= ($line['ts'] > 3) ?
-					sprintf("[%s]", parent::formatTime($line['ts'] - 3)) :
+					'[' . parent::formatTime($line['ts'] - 3) . ']' :
 					"[00:00.00]";
 			} else {
 				$richsync .= (($line['ts'] - $prevtime) > 9)
@@ -235,7 +235,7 @@ class MusixmatchController extends Controller
 						"[%s]\n[%s]",
 						parent::formatTime($prevtime + 3),
 						parent::formatTime($line['ts'] - 3)
-					) : sprintf("[%s]", parent::formatTime($line['ts']));
+					) : '[' . parent::formatTime($line['ts']) . ']';
 			}
 			foreach ($line['l'] as $word) {
 				$richsync .= sprintf(
@@ -245,12 +245,12 @@ class MusixmatchController extends Controller
 				);
 			}
 			$formattedTime = parent::formatTime($line['te']);
-			$richsync .= env('MINILYRICS_COMPATIBLE', false)
-				? sprintf("<%s> <%s>\n", $formattedTime, $formattedTime)
-				: sprintf("<%s>\n", $formattedTime);
+			$richsync .= '<' . $formattedTime . '>' .
+				(env('MINILYRICS_COMPATIBLE', false) ? ' <' . $formattedTime . '>' : '') .
+				PHP_EOL;
 			$prevtime = $line['te'];
 			if ($idx === count($lrc) - 1)
-				$richsync .= sprintf("[%s]\n", parent::formatTime($line['te'] + 0.01));
+				$richsync .= '[' . parent::formatTime($line['te'] + 0.01) . ']' . PHP_EOL;
 		}
 		return $richsync;
 	}

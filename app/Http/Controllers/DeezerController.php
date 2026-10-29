@@ -70,18 +70,18 @@ class DeezerController extends Controller
 					if ($idx === 0) {
 						$wbw .= ($line['start'] <= 3000)
 							? '[00:00.00]'
-							: "[" . parent::formatTime($line['start'] - mt_rand(2500, 3000), true) . "]";
+							: "[" . parent::formatTime($line['start'] - mt_rand(2400, 3000), true) . "]";
 					} elseif (($line['start'] - $prevtime) > 9000) {
 						$wbw .= sprintf(
 							"[%s]\n[%s]",
-							parent::formatTime($prevtime + mt_rand(2500, 3500), true),
-							parent::formatTime($line['start'] - mt_rand(2500, 3500), true)
+							parent::formatTime($prevtime + mt_rand(2400, 3600), true),
+							parent::formatTime($line['start'] - mt_rand(2400, 3600), true)
 						);
-					} else $wbw .= sprintf("[%s]", parent::formatTime($line['start'], true));
+					} else $wbw .= '[' . parent::formatTime($line['start'], true) . ']';
 					foreach ($line['words'] as $syl) $wbw .= self::mergeSyl($syl);
-					$wbw .= PHP_EOL;
+					$wbw .= (env('MINILYRICS_COMPATIBLE', false) ? ' <' . parent::formatTime($line['end'], true) . '>' : '') . PHP_EOL;
 					if ($idx === count($r['synchronizedWordByWordLines']) - 1)
-						$wbw .= $lastTime ?? '[' . parent::formatTime($line['end'], true) . ']';
+						$wbw .= $lastTime ?? '[' . parent::formatTime($line['end'] + 1, true) . ']' . PHP_EOL;
 					$prevtime = $line['end'];
 				}
 			}
@@ -97,7 +97,7 @@ class DeezerController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				'Error retrieving lyric: ' . parent::lyricallyError($th)
+				'Error retrieving lyric: ' . parent::lyricallyError($th, 'paxsenix')
 			);
 		}
 	}
@@ -128,7 +128,7 @@ class DeezerController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $e) {
 			abort(
 				(get_class($e) === RequestException::class) ? $e->response->status() : 500,
-				'Download failed: ' . parent::lyricallyError($e)
+				'Download failed: ' . parent::lyricallyError($e, 'paxsenix')
 			);
 		}
 	}

@@ -16,7 +16,7 @@
 					<div class="input-group">
 						<span class="input-group-text"><i class="fa-solid fa-file-lines"></i></span>
 						<input type="file" class="form-control" id="lyric-file"
-							accept=".lrc, .elrc, .txt" name="lrc[]" multiple required>
+							accept=".lrc, .elrc, .alrc, .txt" name="lrc[]" multiple required>
 					</div>
 					<div class="form-text">This form expects the file to contain artist, title, album,
 						and duration info. Otherwise, file name will be used in format Artist - Title.

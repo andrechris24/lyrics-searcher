@@ -52,7 +52,7 @@ class SpotifyController extends Controller
 		} catch (ConnectionException | JsonException | RequestException $th) {
 			abort(
 				(get_class($th) === RequestException::class) ? $th->response->status() : 500,
-				'Error loading results: ' . parent::lyricallyError($th)
+				'Error loading results: ' . parent::lyricallyError($th, 'paxsenix')
 			);
 		}
 	}
@@ -129,7 +129,7 @@ class SpotifyController extends Controller
 		} catch (ConnectionException | RequestException | JsonException $e) {
 			abort(
 				(get_class($e) === RequestException::class) ? $e->response->status() : 500,
-				'Download failed: ' . parent::lyricallyError($e)
+				'Download failed: ' . parent::lyricallyError($e, 'paxsenix')
 			);
 		}
 	}
@@ -154,7 +154,7 @@ class SpotifyController extends Controller
 			return view('spotify.chart', $r);
 		} catch (ConnectionException | RequestException | JsonException $e) {
 			return to_route('spotify.index')
-				->withError('Error loading charts: ' . parent::lyricallyError($e));
+				->withError('Error loading charts: ' . parent::lyricallyError($e, 'paxsenix'));
 		}
 	}
 }

@@ -348,15 +348,15 @@ abstract class Controller
 				$duration = (int)$matches[2];
 				if ($idx === 0) {
 					$lyricLine .= ($startTime > 3000)
-						? "[" . self::formatTime(($startTime - mt_rand(2500, 3000)), true) . "]"
+						? "[" . self::formatTime(($startTime - mt_rand(2400, 3000)), true) . "]"
 						: "[00:00.00]";
 				} else if (($startTime - $prevtime) > 9000) {
 					$lyricLine .= sprintf(
 						"[%s]\n[%s]",
-						self::formatTime(($prevtime + mt_rand(2500, 3500)), true),
-						self::formatTime(($startTime - mt_rand(2500, 3500)), true)
+						self::formatTime(($prevtime + mt_rand(2400, 3600)), true),
+						self::formatTime(($startTime - mt_rand(2400, 3600)), true)
 					);
-				} else $lyricLine .= sprintf("[%s]", self::formatTime($startTime, true));
+				} else $lyricLine .= '[' . self::formatTime($startTime, true) . ']';
 				// parse sub-timestamps
 				if (preg_match_all($timestamps2Regex, $line, $subMatches)) {
 					for ($a = 0; $a < count($subMatches[0]); $a++) {
@@ -369,12 +369,10 @@ abstract class Controller
 				}
 				$prevtime = $startTime + $duration;
 				$formattedTime = self::formatTime(($startTime + $duration), true);
-				$lyricText .=
-					env('MINILYRICS_COMPATIBLE', false)
-					? sprintf("%s<%s> <%s>\n", $lyricLine, $formattedTime, $formattedTime)
-					: sprintf("%s<%s>\n", $lyricLine, $formattedTime);
+				$lyricText .= sprintf("%s<%s>", $lyricLine, $formattedTime) .
+					(env('MINILYRICS_COMPATIBLE', false) ? ' <' . $formattedTime . ">" : '') . PHP_EOL;
 				if ($idx === count($lines) - 1)
-					$lyricText .= "[" . self::formatTime(($startTime + $duration + 1), true) . "]";
+					$lyricText .= "[" . self::formatTime(($startTime + $duration + 1), true) . "]" . PHP_EOL;
 			}
 		}
 		return $lyricText;
@@ -405,17 +403,20 @@ abstract class Controller
 	/**
 	 * Get Lyrically & Paxsenix error message by exception type
 	 * @param  mixed        $e		Error Exception class
-	 * @param  bool         $paxsenix Whether to include Paxsenix-specific error handling
+	 * @param  string       $source
 	 * @return string				Error message by Exception class
 	 */
-	protected static function lyricallyError(mixed $e, bool $paxsenix = true): string
+	protected static function lyricallyError(mixed $e, string $source): string
 	{
-		if ($paxsenix === true) $provider = 'Paxsenix';
-		else $provider = 'Lyrically';
+		$provider = match ($source) {
+			'paxsenix' => 'Paxsenix',
+			'lyrically' => 'Lyrically',
+			default => 'Zarz LRC'
+		};
 		if (get_class($e) === RequestException::class) {
-			Log::warning(
-				'Request failed for ' . $e->response->effectiveUri() . ' (User Agent: ' . Request::userAgent() . ')'
-			);
+			// Log::warning(
+			// 	'Request failed for ' . $e->response->effectiveUri() . ' (User Agent: ' . Request::userAgent() . ')'
+			// );
 			$json = $e->response->json();
 			if (!$json) $reqerr = "$provider API Error {$e->response->status()}";
 			else
